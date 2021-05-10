@@ -8,10 +8,25 @@ module.exports = (sequelize, DataTypes) => {
       unique: true,
       autoIncrement: true,
     },
+    user_id: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false,
+    },
     username: {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
+    },
+    firstname: {
+      type: DataTypes.STRING,
+      unique: false,
+      allowNull: true,
+    },
+    lastname: {
+      type: DataTypes.STRING,
+      unique: false,
+      allowNull: true,
     },
     role: {
       type: DataTypes.TINYINT,
@@ -26,9 +41,6 @@ module.exports = (sequelize, DataTypes) => {
   // 2: The model options.
   const modelOptions = {
     freezeTableName: true,
-    hooks: {
-      beforeCreate: hashPassword,
-    },
   };
 
   // 3: Define the User model.

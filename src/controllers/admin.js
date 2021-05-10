@@ -7,6 +7,260 @@ const { getInstance } = require('../services/rclient');
 
 require('dotenv').config();
 
+/**
+ * Create Withdrawal
+ */
+export const withdrawTelegramAdminFetch = async (bot, ctx, adminTelegramId) => {
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    console.log('start the widtdddd');
+    const withdrawal = await db.transaction.findOne({
+      order: [['createdAt', 'DESC']],
+      include: [{
+        model: db.address,
+        as: 'address',
+        include: [{
+          model: db.wallet,
+          as: 'wallet',
+          include: [{
+            model: db.user,
+            as: 'user',
+          }],
+        }],
+      }],
+      where: {
+        type: 'send',
+        phase: 'review',
+      },
+    });
+
+    if (!withdrawal) {
+      ctx.reply('No Withdrawals');
+    }
+    if (withdrawal) {
+      const withdrawalMessage = `${withdrawal.address.wallet.user.username} with user_id ${withdrawal.address.wallet.user.user_id}
+available: ${withdrawal.address.wallet.available / 1e8} 
+locked: ${withdrawal.address.wallet.locked / 1e8} 
+amount: ${withdrawal.amount / 1e8} 
+      `;
+      ctx.deleteMessage();
+      bot.telegram.sendMessage(adminTelegramId, withdrawalMessage, {
+        reply_markup: {
+          inline_keyboard: [
+            [{
+              text: "acceptWithdrawal",
+              callback_data: `acceptWithdrawal-${withdrawal.id}`,
+            },
+            {
+              text: "declineWithdrawal",
+              callback_data: `declineWithdrawal-${withdrawal.id}`,
+            },
+            ],
+
+          ],
+        },
+      });
+    }
+
+    t.afterCommit(() => {
+      console.log('done');
+    });
+  }).catch((err) => {
+    ctx.reply('Something went wrong');
+  });
+};
+
+/**
+ * isAdmin
+ */
+export const withdrawTelegramAdminAccept = async (bot, ctx, adminTelegramId, withdrawalId, runesGroup) => {
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    const transaction = await db.transaction.findOne({
+      where: {
+        id: withdrawalId,
+        phase: 'review',
+      },
+      include: [
+        {
+          model: db.address,
+          as: 'address',
+          include: [
+            {
+              model: db.wallet,
+              as: 'wallet',
+              include: [{
+                model: db.user,
+                as: 'user',
+              }],
+            },
+          ],
+        },
+      ],
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    });
+    if (!transaction) {
+      ctx.reply('Transaction not found');
+    }
+    if (transaction) {
+      const amount = ((transaction.amount - (1 * 1e8)) / 1e8);
+      const response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
+      const updatedTrans = await transaction.update(
+        {
+          txid: response,
+          phase: 'confirming',
+          type: 'send',
+        },
+        {
+          transaction: t,
+          lock: t.LOCK.UPDATE,
+        },
+      );
+      bot.telegram.sendMessage(adminTelegramId, `Withdrawal Accepted
+https://explorer.runebase.io/tx/${updatedTrans.txid}`);
+      bot.telegram.sendMessage(runesGroup, `${transaction.address.wallet.user.username}'s withdrawal has been accepted
+https://explorer.runebase.io/tx/${updatedTrans.txid}`);
+    }
+
+    t.afterCommit(() => {
+      withdrawTelegramAdminFetch(bot, ctx, adminTelegramId);
+    });
+  }).catch((err) => {
+    bot.telegram.sendMessage(adminTelegramId, `Something went wrong`);
+  });
+  const newTransaction = await db.transaction.findOne({
+    where: {
+      id: withdrawalId,
+      phase: 'confirming',
+    },
+    include: [
+      {
+        model: db.address,
+        as: 'address',
+        include: [
+          {
+            model: db.wallet,
+            as: 'wallet',
+            include: [{
+              model: db.user,
+              as: 'user',
+            }],
+          },
+        ],
+      },
+    ],
+  });
+  console.log(newTransaction.address.wallet.user.user_id);
+  const userTelegramId = newTransaction.address.wallet.user.user_id.substring(9);
+  console.log(userTelegramId);
+  if (newTransaction) {
+    bot.telegram.sendMessage(userTelegramId, `Your withdrawal has been accepted
+https://explorer.runebase.io/tx/${newTransaction.txid}`);
+  }
+};
+
+export const withdrawTelegramAdminDecline = async (bot, ctx, adminTelegramId, withdrawalId, runesGroup) => {
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    const transaction = await db.transaction.findOne({
+      where: {
+        id: withdrawalId,
+        phase: 'review',
+      },
+      include: [{
+        model: db.address,
+        as: 'address',
+        include: [{
+          model: db.wallet,
+          as: 'wallet',
+          include: [{
+            model: db.user,
+            as: 'user',
+          }],
+        }],
+      }],
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    });
+
+    if (!transaction) {
+      ctx.reply('Transaction not found');
+    }
+
+    if (transaction) {
+      const wallet = await db.wallet.findOne({
+        where: {
+          userId: transaction.address.wallet.userId,
+        },
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      });
+
+      if (!wallet) {
+        ctx.reply('Wallet not found');
+      }
+      if (wallet) {
+        const updatedWallet = await wallet.update({
+          available: wallet.available + transaction.amount,
+          locked: wallet.locked - transaction.amount,
+        }, {
+          transaction: t,
+          lock: t.LOCK.UPDATE,
+        });
+        const updatedTransaction = await transaction.update(
+          {
+            phase: 'rejected',
+          },
+          {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          },
+        );
+        bot.telegram.sendMessage(adminTelegramId, `Withdrawal Rejected`);
+      bot.telegram.sendMessage(runesGroup, `${transaction.address.wallet.user.username}'s withdrawal has been rejected`);
+      }
+    }
+
+    t.afterCommit(() => {
+      withdrawTelegramAdminFetch(bot, ctx, adminTelegramId);
+    });
+  }).catch((err) => {
+    bot.telegram.sendMessage(adminTelegramId, `Something went wrong`);
+  });
+  const newTransaction = await db.transaction.findOne({
+    where: {
+      id: withdrawalId,
+      phase: 'rejected',
+    },
+    include: [
+      {
+        model: db.address,
+        as: 'address',
+        include: [
+          {
+            model: db.wallet,
+            as: 'wallet',
+            include: [{
+              model: db.user,
+              as: 'user',
+            }],
+          },
+        ],
+      },
+    ],
+  });
+  console.log(newTransaction.address.wallet.user.user_id);
+  const userTelegramId = newTransaction.address.wallet.user.user_id.substring(9);
+  console.log(userTelegramId);
+  if (newTransaction) {
+    bot.telegram.sendMessage(userTelegramId, `Your withdrawal has been rejected`);
+  }
+};
+
 const transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST,
   port: process.env.MAIL_PORT,

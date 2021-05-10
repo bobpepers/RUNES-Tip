@@ -53,12 +53,6 @@ module.exports = (sequelize, DataTypes) => {
   const TransactionModel = sequelize.define('transaction', modelDefinition, modelOptions);
 
   TransactionModel.associate = (model) => {
-    TransactionModel.hasMany(model.activity, {
-      as: 'txActivity',
-    });
-    TransactionModel.hasMany(model.activity, {
-      as: 'transaction',
-    });
     // TransactionModel.hasMany(model.activity, { as: 'transaction' });
     TransactionModel.belongsTo(model.address, { as: 'address' });
     TransactionModel.belongsTo(model.block, { as: 'block' });

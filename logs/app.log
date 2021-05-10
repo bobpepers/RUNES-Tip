@@ -1,0 +1,270 @@
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Error Balance Requested by: 672239325-Bagosan - SequelizeEagerLoadingError: wallet is associated to user using an alias. You've included an alias (walllet), but it does not match the alias(es) defined in your association (wallet).","level":"error"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Error Balance Requested by: 672239325-Bagosan - SequelizeEagerLoadingError: address is associated to wallet using an alias. You've included an alias (address), but it does not match the alias(es) defined in your association (addresses).","level":"error"}
+{"message":"Error Balance Requested by: 672239325-Bagosan - SequelizeEagerLoadingError: address is associated to wallet using an alias. You've included an alias (address), but it does not match the alias(es) defined in your association (addresses).","level":"error"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Error Balance Requested by: 672239325-Bagosan - TypeError: ctx.sendMessage is not a function","level":"error"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Error Deposit Address Requested by: 672239325-Bagosan - TypeError: Cannot read property '0' of undefined","level":"error"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Deposit Address Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"deposit detected for addressid: 1 and txid: 372a3143727860a610017a8e1e46f638ff94c743ffac3f7c4e203abfeccfe549","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"deposit detected for addressid: 1 and txid: e73ad4dfd3a9e82a7943c4dd20736611006fbcf12689197cb74ca167bcd7d355","level":"info"}
+{"message":"deposit detected for addressid: 1 and txid: 372a3143727860a610017a8e1e46f638ff94c743ffac3f7c4e203abfeccfe549","level":"info"}
+{"message":"deposit detected for addressid: 1 and txid: e73ad4dfd3a9e82a7943c4dd20736611006fbcf12689197cb74ca167bcd7d355","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"Success Deposit Address Requested by: 672239325-Bagosan","level":"info"}
+{"message":"deposit detected for addressid: 1 and txid: 8005137d81aae4956c5a1b51ad5a17e96696f57887c119cd63843f57496d9119","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"deposit detected for addressid: 1 and txid: 2babfe71591c80407948bb50d72e9c854b97df4aca316055c9d6ce636ab1b117","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"deposit detected for addressid: 1 and txid: 2babfe71591c80407948bb50d72e9c854b97df4aca316055c9d6ce636ab1b117","level":"info"}
+{"message":"deposit detected for addressid: 1 and txid: 53b3fa8435e10eb60f27b069178850d1fda1ad5cbda731b5ce91128b67359043","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"deposit detected for addressid: 1 and txid: 53b3fa8435e10eb60f27b069178850d1fda1ad5cbda731b5ce91128b67359043","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"Success Deposit Address Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Deposit Address Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Deposit Address Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Deposit Address Requested by: 672239325-Bagosan","level":"info"}
+{"message":"Success Deposit Address Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Deposit Address Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Deposit Address Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Deposit Address Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Deposit Address Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Deposit Address Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Deposit Address Requested by: 672239325-Bagosan","level":"info"}
+{"message":"deposit detected for addressid: 1 and txid: ef07abeead61898035fc09e26ba8c3dff1092f1dc94373e89031c34f56cf72e7","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Deposit Address Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Deposit Address Requested by: 672239325-Bagosan","level":"info"}
+{"message":"deposit detected for addressid: 1 and txid: ef07abeead61898035fc09e26ba8c3dff1092f1dc94373e89031c34f56cf72e7","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Error Balance Requested by: 672239325-Bagosan - Error: 400: Bad Request: can't parse entities: Character '.' is reserved and must be escaped with the preceding '\\'","level":"error"}
+{"error":{"pos":3437,"loc":{"line":118,"column":110},"_babel":true,"codeFrame":"\u001b[0m \u001b[90m 116 | \u001b[39m    \u001b[36mif\u001b[39m (user \u001b[33m&&\u001b[39m user\u001b[33m.\u001b[39mwallet) {\n \u001b[90m 117 | \u001b[39m      await ctx\u001b[33m.\u001b[39mreply(\u001b[32m`${ctx.update.message.from.username}'s current available balance: *${user.wallet.available / 1e8} RUNES*\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 118 | \u001b[39m\u001b[32m${ctx.update.message.from.username}'s current locked balance: *${user.wallet.locked / 1e8} RUNES*`\u001b[39m\u001b[33m,\u001b[39m parse_mode\u001b[33m:\u001b[39m \u001b[32m'MarkdownV2'\u001b[39m )\u001b[33m;\u001b[39m\n \u001b[90m     | \u001b[39m                                                                                                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 119 | \u001b[39m    }\n \u001b[90m 120 | \u001b[39m\n \u001b[90m 121 | \u001b[39m    t\u001b[33m.\u001b[39mafterCommit(() \u001b[33m=>\u001b[39m {\u001b[0m"},"level":"error","message":"uncaughtException: /home/app/RUNES-Tip/src/controllers/wallet.js: Unexpected token, expected , (118:110)\nSyntaxError: /home/app/RUNES-Tip/src/controllers/wallet.js: Unexpected token, expected , (118:110)\n\u001b[0m \u001b[90m 116 | \u001b[39m    \u001b[36mif\u001b[39m (user \u001b[33m&&\u001b[39m user\u001b[33m.\u001b[39mwallet) {\n \u001b[90m 117 | \u001b[39m      await ctx\u001b[33m.\u001b[39mreply(\u001b[32m`${ctx.update.message.from.username}'s current available balance: *${user.wallet.available / 1e8} RUNES*\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 118 | \u001b[39m\u001b[32m${ctx.update.message.from.username}'s current locked balance: *${user.wallet.locked / 1e8} RUNES*`\u001b[39m\u001b[33m,\u001b[39m parse_mode\u001b[33m:\u001b[39m \u001b[32m'MarkdownV2'\u001b[39m )\u001b[33m;\u001b[39m\n \u001b[90m     | \u001b[39m                                                                                                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 119 | \u001b[39m    }\n \u001b[90m 120 | \u001b[39m\n \u001b[90m 121 | \u001b[39m    t\u001b[33m.\u001b[39mafterCommit(() \u001b[33m=>\u001b[39m {\u001b[0m\n    at Parser.pp$5.raise (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:4454:13)\n    at Parser.pp.unexpected (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:1761:8)\n    at Parser.pp.expect (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:1749:33)\n    at Parser.pp$3.parseCallExpressionArguments (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:3564:12)\n    at Parser.pp$3.parseSubscripts (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:3533:31)\n    at Parser.pp$3.parseExprSubscripts (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:3504:15)\n    at Parser.pp$3.parseMaybeUnary (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:3474:19)\n    at Parser.pp$3.parseAwait (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:4365:24)\n    at Parser.pp$3.parseExprAtom (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:3652:23)\n    at Parser.pp$3.parseExprSubscripts (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:3494:19)","stack":"SyntaxError: /home/app/RUNES-Tip/src/controllers/wallet.js: Unexpected token, expected , (118:110)\n\u001b[0m \u001b[90m 116 | \u001b[39m    \u001b[36mif\u001b[39m (user \u001b[33m&&\u001b[39m user\u001b[33m.\u001b[39mwallet) {\n \u001b[90m 117 | \u001b[39m      await ctx\u001b[33m.\u001b[39mreply(\u001b[32m`${ctx.update.message.from.username}'s current available balance: *${user.wallet.available / 1e8} RUNES*\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 118 | \u001b[39m\u001b[32m${ctx.update.message.from.username}'s current locked balance: *${user.wallet.locked / 1e8} RUNES*`\u001b[39m\u001b[33m,\u001b[39m parse_mode\u001b[33m:\u001b[39m \u001b[32m'MarkdownV2'\u001b[39m )\u001b[33m;\u001b[39m\n \u001b[90m     | \u001b[39m                                                                                                              \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 119 | \u001b[39m    }\n \u001b[90m 120 | \u001b[39m\n \u001b[90m 121 | \u001b[39m    t\u001b[33m.\u001b[39mafterCommit(() \u001b[33m=>\u001b[39m {\u001b[0m\n    at Parser.pp$5.raise (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:4454:13)\n    at Parser.pp.unexpected (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:1761:8)\n    at Parser.pp.expect (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:1749:33)\n    at Parser.pp$3.parseCallExpressionArguments (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:3564:12)\n    at Parser.pp$3.parseSubscripts (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:3533:31)\n    at Parser.pp$3.parseExprSubscripts (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:3504:15)\n    at Parser.pp$3.parseMaybeUnary (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:3474:19)\n    at Parser.pp$3.parseAwait (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:4365:24)\n    at Parser.pp$3.parseExprAtom (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:3652:23)\n    at Parser.pp$3.parseExprSubscripts (/home/app/RUNES-Tip/node_modules/babylon/lib/index.js:3494:19)","exception":true,"date":"Mon May 10 2021 20:11:32 GMT+0200 (Central European Summer Time)","process":{"pid":70041,"uid":1000,"gid":1000,"cwd":"/home/app/RUNES-Tip","execPath":"/home/app/.nvm/versions/node/v12.19.0/bin/node","version":"v12.19.0","argv":["node","/home/app/RUNES-Tip/src/index.js"],"memoryUsage":{"rss":169766912,"heapTotal":105902080,"heapUsed":80091384,"external":13494248,"arrayBuffers":11489331}},"os":{"loadavg":[2.38,2.1,1.8],"uptime":324743},"trace":[{"column":13,"file":"/home/app/RUNES-Tip/node_modules/babylon/lib/index.js","function":"Parser.pp$5.raise","line":4454,"method":"raise","native":false},{"column":8,"file":"/home/app/RUNES-Tip/node_modules/babylon/lib/index.js","function":"Parser.pp.unexpected","line":1761,"method":"unexpected","native":false},{"column":33,"file":"/home/app/RUNES-Tip/node_modules/babylon/lib/index.js","function":"Parser.pp.expect","line":1749,"method":"expect","native":false},{"column":12,"file":"/home/app/RUNES-Tip/node_modules/babylon/lib/index.js","function":"Parser.pp$3.parseCallExpressionArguments","line":3564,"method":"parseCallExpressionArguments","native":false},{"column":31,"file":"/home/app/RUNES-Tip/node_modules/babylon/lib/index.js","function":"Parser.pp$3.parseSubscripts","line":3533,"method":"parseSubscripts","native":false},{"column":15,"file":"/home/app/RUNES-Tip/node_modules/babylon/lib/index.js","function":"Parser.pp$3.parseExprSubscripts","line":3504,"method":"parseExprSubscripts","native":false},{"column":19,"file":"/home/app/RUNES-Tip/node_modules/babylon/lib/index.js","function":"Parser.pp$3.parseMaybeUnary","line":3474,"method":"parseMaybeUnary","native":false},{"column":24,"file":"/home/app/RUNES-Tip/node_modules/babylon/lib/index.js","function":"Parser.pp$3.parseAwait","line":4365,"method":"parseAwait","native":false},{"column":23,"file":"/home/app/RUNES-Tip/node_modules/babylon/lib/index.js","function":"Parser.pp$3.parseExprAtom","line":3652,"method":"parseExprAtom","native":false},{"column":19,"file":"/home/app/RUNES-Tip/node_modules/babylon/lib/index.js","function":"Parser.pp$3.parseExprSubscripts","line":3494,"method":"parseExprSubscripts","native":false}]}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"logger loader","level":"info"}
+{"message":"Jackpot Error","level":"info"}
+{"message":"Success Balance Requested by: 672239325-Bagosan","level":"info"}
