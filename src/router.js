@@ -162,6 +162,7 @@ const schedule = require('node-schedule');
 
 const path = require('path');
 const multer = require('multer');
+const { startSync } = require('./services/sync');
 
 const appRoot = process.env.PWD;
 
@@ -174,6 +175,11 @@ const { Telegraf } = require('telegraf');
 const bot = new Telegraf(telegramBotToken);
 
 const router = (app, io, pub, sub, expired_subKey, volumeInfo, onlineUsers) => {
+  app.post('/api/chaininfo/block',
+    (req, res) => {
+      startSync(io, onlineUsers);
+    });
+
   app.post('/api/rpc/walletnotify',
     walletNotify,
     (req, res) => {

@@ -18,7 +18,7 @@ const walletNotify = async (req, res, next) => {
   console.log('transaction');
   console.log('transaction');
   console.log('transaction');
-  
+
   console.log(transaction);
 
   // const testt = await getInstance().utils.toUtf8(transaction.hex);
@@ -71,14 +71,17 @@ const walletNotify = async (req, res, next) => {
           lock: t.LOCK.UPDATE,
         });
 
+        console.log('res.locals.transaction');
+
         console.log(res.locals.transaction);
+        console.log('res.locals.transaction[1]');
         console.log(res.locals.transaction[1]);
         console.log('111111111111111111112222222222222222222222222222222222');
+        logger.info(`deposit detected for addressid: ${res.locals.transaction[0].addressId} and txid: ${res.locals.transaction[0].txid}`);
       }
     }));
-
+    
     t.afterCommit(() => {
-      logger.info(`deposit detected for addressid: ${res.locals.transaction[0].addressId} and txid: ${res.locals.transaction[0].txid}`)
       next();
       console.log('commited');
     });
