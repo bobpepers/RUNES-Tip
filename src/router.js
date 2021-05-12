@@ -1,99 +1,11 @@
-import passport from 'passport';
-import PQueue from 'p-queue';
-import {
-  signin,
-  signup,
-  verifyEmail,
-  resendVerification,
-  destroySession,
-  isUserBanned,
-} from './controllers/auth';
-
-import {
-  getPhoneCode,
-  verifyPhoneCode,
-} from './controllers/verifyPhone';
-
-import {
-  uploadIdentity,
-} from './controllers/identity';
-
-import {
-  uploadAvatar,
-} from './controllers/upload';
-
-import {
-  fetchReferralContests,
-  fetchReferralRewards,
-  fetchReferralWeekStats,
-} from './controllers/referralContests';
-
-import {
-  insertIp,
-  isIpBanned,
-} from './controllers/ip';
-import {
-  fetchActivity,
-  fetchRecentUserActivity,
-} from './controllers/activity';
-import {
-  resetPassword,
-  verifyResetPassword,
-  resetPasswordNew,
-} from './controllers/resetPassword';
-import {
-  // fetchUsers,
-  fetchUserCount,
-} from './controllers/users';
-import trustUser from './controllers/trust';
-import blockUser from './controllers/blocked';
-
 import walletNotify from './controllers/walletNotify';
 import updatePrice from './helpers/updatePrice';
 
 import {
-  isAdmin,
-  fetchAdminWithdrawals,
-  acceptWithdraw,
-  rejectWithdraw,
-  fetchAdminUserList,
-  fetchAdminUser,
-  banAdminUser,
-  fetchAdminCountries,
-  addAdminCountries,
-  addAdminCurrencies,
-  fetchAdminCurrencies,
-  addAdminPaymentMethod,
-  fetchAdminPaymentMethod,
-  fetchAdminPendingIdentity,
-  acceptAdminPendingIdentity,
-  rejectAdminPendingIdentity,
-  updateAdminCurrency,
-  updateAdminCountry,
-  fetchAdminDeposits,
-  fetchAdminTrades,
-  fetchAdminPendingWithdrawals,
-  fetchAdminPendingDisputes,
-  fetchAdminPendingWithdrawalsCount,
-  fetchAdminPendingIdentityCount,
-  fetchAdminPendingDisputeCount,
-  fetchAdminCurrentTrade,
-  adminCompleteDispute,
-  fetchAdminMargin,
-  updateAdminMargin,
-  updateAdminContestRewards,
-  sendAdminMassMail,
-  fetchAdminContestRewards,
-  fetchAdminNodeBalance,
-  fetchAdminLiability,
   withdrawTelegramAdminFetch,
   withdrawTelegramAdminAccept,
   withdrawTelegramAdminDecline,
 } from './controllers/admin';
-
-import {
-  getLocation,
-} from './controllers/location';
 
 import {
   fetchWalletBalance,
@@ -102,71 +14,22 @@ import {
   tipRunesToUser,
   rainRunesToUsers,
 } from './controllers/wallet';
-import {
-  createMessage,
-  createMessageDispute,
-} from './controllers/messages';
 
 import {
-  fetchUser,
-  fetchSpecificUser,
-  updateBio,
-  updateStoreStatus,
   updateLastSeen,
   createUpdateUser,
 } from './controllers/user';
 
 import {
-  verifyMyCaptcha,
-  isSurfCaptcha,
-} from './helpers/recaptcha';
-import {
-  disabletfa,
-  enabletfa,
-  ensuretfa,
-  unlocktfa,
-  istfa,
-} from './controllers/tfa';
-import fetchPriceInfo from './controllers/price';
-import fetchPaymentMethods from './controllers/paymentMethods';
-import fetchCurrencies from './controllers/currencies';
-import fetchCountries from './controllers/countries';
-import {
-  addPostAd,
-  fetchPostAd,
-  fetchMyPostAd,
-  deactivatePostAd,
-} from './controllers/postAd';
-
-import {
-  updateFeedback,
-  fetchAverageRating,
-  removeFeedback,
-} from './controllers/feedback';
-
-import { endUnacceptedTrade } from './helpers/trade';
-
-import storeIp from './helpers/storeIp';
-
-import updateUserCountry from './helpers/updateUserCountry';
-
-import {
-  rateLimiterMiddlewareUser,
-  rateLimiterMiddlewareIp,
-  rateLimiterMiddlewarePhone,
-} from './helpers/rateLimiter';
-
-import {
   fetchHelp,
 } from './controllers/help';
+import PQueue from 'p-queue';
+//const PQueue = require('p-queue');
 
 const queue = new PQueue({ concurrency: 1 });
 
-const isbot = require('isbot');
 const schedule = require('node-schedule');
 
-const path = require('path');
-const multer = require('multer');
 const { startSync } = require('./services/sync');
 
 const appRoot = process.env.PWD;
@@ -188,10 +51,10 @@ const limitConfig = {
 const bot = new Telegraf(telegramBotToken);
 bot.use(rateLimit(limitConfig));
 
-const router = (app, io, pub, sub, expired_subKey, volumeInfo, onlineUsers) => {
+const router = (app) => {
   app.post('/api/chaininfo/block',
     (req, res) => {
-      startSync(io, onlineUsers);
+      startSync();
     });
 
   app.post('/api/rpc/walletnotify',
@@ -259,7 +122,7 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
   bot.command('runestip', (ctx) => {
     const runesTipSplit = ctx.update.message.text.split(' ');
     console.log(runesTipSplit);
-    
+
     if (!runesTipSplit[1]) {
       (async () => {
         const task = await fetchHelp(ctx);

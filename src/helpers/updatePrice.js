@@ -3,7 +3,7 @@ import db from '../models';
 
 const { Sequelize, Transaction, Op } = require('sequelize');
 
-const updatePrice = async (io) => {
+const updatePrice = async () => {
   try {
     const createFirstRecord = await db.priceInfo.findOrCreate({
       where: {
@@ -106,8 +106,6 @@ const updatePrice = async (io) => {
       setTimeout(() => {
         Promise.all(promises).then(async () => {
           const priceRecords = await db.priceInfo.findAll({});
-          // console.log(priceRecords);
-          io.emit('updatePrice', priceRecords);
         });
       }, 5000);
     }

@@ -66,7 +66,7 @@ const sequentialLoop = (iterations, process, exit) => {
   return loop;
 };
 
-const syncTransactions = async (startBlock, endBlock, io, onlineUsers) => {
+const syncTransactions = async (startBlock, endBlock) => {
   const transactions = await db.transaction.findAll({
     where: {
       phase: 'confirming',
@@ -239,7 +239,7 @@ const calculateSyncPercent = async (blockCount, blockTime) => {
   return Math.floor((blockCount / peerBlockHeader) * 100);
 };
 
-const sync = async (io, onlineUsers) => {
+const sync = async () => {
   const currentBlockCount = Math.max(0, await getInstance().getBlockCount());
   const currentBlockHash = await getInstance().getBlockHash(currentBlockCount);
   const currentBlockTime = (await getInstance().getBlock(currentBlockHash)).time;
@@ -262,7 +262,7 @@ const sync = async (io, onlineUsers) => {
     async (loop) => {
       const endBlock = Math.min((startBlock + BLOCK_BATCH_SIZE) - 1, currentBlockCount);
 
-      await syncTransactions(startBlock, endBlock, io, onlineUsers);
+      await syncTransactions(startBlock, endBlock);
       console.log('Synced syncTrade');
 
       const { insertBlockPromises } = await getInsertBlockPromises(startBlock, endBlock);
@@ -288,7 +288,7 @@ const sync = async (io, onlineUsers) => {
   );
 };
 
-async function startSync(io, onlineUsers) {
+async function startSync() {
   // const transactions = await getInstance().listTransactions(1000);
   // console.log(transactions);
 
@@ -296,7 +296,7 @@ async function startSync(io, onlineUsers) {
   // MetaData = await getContractMetadata();
   senderAddress = isMainnet() ? 'RKBLGRvYqunBtpueEPuXzQQmoVsQQTvd3a' : '5VMGo2gGHhkW5TvRRtcKM1RkyUgrnNP7dn';
   console.log('startSync');
-  sync(io, onlineUsers);
+  sync();
 }
 
 module.exports = {

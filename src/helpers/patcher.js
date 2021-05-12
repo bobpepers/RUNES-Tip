@@ -28,28 +28,6 @@ async function patchDeposits() {
 
   const transactions = await getInstance().listTransactions(1000);
   transactions.forEach(async (trans) => {
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log('patchDeposits');
-    console.log(trans);
     if (trans.address) {
       const address = await db.address.findOne({
         where: {
