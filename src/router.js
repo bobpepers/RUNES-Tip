@@ -217,14 +217,42 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
     })();
   });
 
+  bot.on('new_chat_members', (ctx) => {
+    (async () => {
+      if (ctx.update.message.chat.id === Number(runesGroup)) {
+        console.log('test add');
+        console.log(ctx.message);
+        const task = await createUpdateUser(ctx);
+        await queue.add(() => task);
+      }
+    })();
+  });
+
   bot.on('text', (ctx) => {
     (async () => {
+      console.log('hearing text');
+      console.log('hearing text');
+      console.log('hearing text');
+      console.log('hearing text');
+      console.log('hearing text');
+      console.log('hearing text');
+      console.log('hearing text');
+      console.log('hearing text');
+      console.log('hearing text');
+      console.log('hearing text');
+
       const task = await createUpdateUser(ctx);
       await queue.add(() => task);
-      console.log(ctx.update.message.chat.id.toString());
-      console.log(runesGroup);
+      console.log(ctx.update.message.chat.id);
+      console.log(Number(runesGroup));
       if (ctx.update.message.chat.id === Number(runesGroup)) {
         console.log('start update lastseen');
+        console.log('start update lastseen');
+        console.log('start update lastseen');
+        console.log('start update lastseen');
+        console.log('start update lastseen');
+        console.log('start update lastseen');
+
         const lastSeenTask = await updateLastSeen(ctx);
         await queue.add(() => lastSeenTask);
       }

@@ -6,4 +6,9 @@
 npm-debug.log
 .env
 /uploads
+logs
+logs/app.log
+logs/error.log
 /logs
+/logs/app.log
+/logs/error.log
