@@ -96,6 +96,7 @@
     "socketio-jwt": "^4.6.2",
     "speakeasy": "^2.0.0",
     "telegraf": "^4.3.0",
+    "telegraf-ratelimit": "^2.0.0",
     "telegram-bot-api": "^2.0.1",
     "twilio": "^3.54.1",
     "winston": "^3.3.3",

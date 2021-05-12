@@ -123,7 +123,7 @@ const syncTransactions = async (startBlock, endBlock, io, onlineUsers) => {
           if (detail.category === 'send' && trans.type === 'send') {
             console.log(detail.amount);
             console.log(((detail.amount * 1e8)));
-            const removeLockedAmount = Math.abs(((detail.amount * 1e8)));
+            const removeLockedAmount = Math.abs(((detail.amount * 1e8) + 1e7));
 
             console.log(removeLockedAmount);
             updatedWallet = await wallet.update({

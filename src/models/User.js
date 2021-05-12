@@ -36,6 +36,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    lastSeen: {
+      type: DataTypes.DATE,
+      allowNull: true,
+    },
   };
 
   // 2: The model options.
@@ -48,6 +52,16 @@ module.exports = (sequelize, DataTypes) => {
 
   UserModel.associate = (model) => {
     UserModel.hasOne(model.wallet);
+    UserModel.hasMany(model.tip, {
+      foreignKey: 'userId',
+      as: 'userTip',
+    });
+    UserModel.hasMany(model.tip, {
+      foreignKey: 'userTippedId',
+      as: 'userTipped',
+    });
+    UserModel.hasMany(model.rain);
+    UserModel.hasMany(model.raintip);
   };
 
   return UserModel;

@@ -7,10 +7,255 @@ const qr = require('qr-image');
 const QRCode = require('qrcode');
 const logger = require('../helpers/logger');
 
+const minimumTip = 1 * 1e6;
+const minimumRain = 1 * 1e7;
+
+export const rainRunesToUsers = async (ctx, runesTipSplit, bot, runesGroup) => {
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    const amount = new BigNumber(runesTipSplit[2]).times(1e8).toNumber();
+    console.log('rain amount');
+    console.log(amount);
+    if (amount < (minimumRain)) { // smaller then 2 RUNES
+      ctx.reply(`Minimum Rain is ${minimumRain / 1e8} RUNES`);
+    }
+    if (amount % 1 !== 0) {
+      ctx.reply('Invalid amount');
+    }
+    console.log('rain 1');
+    //const userToTip = runesTipSplit[2].substring(1);
+    const user = await db.user.findOne({
+      where: {
+        user_id: `telegram-${ctx.update.message.from.id}`,
+      },
+      include: [
+        {
+          model: db.wallet,
+          as: 'wallet',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    console.log(user);
+    if (!user) {
+      ctx.reply('User Not Found');
+    }
+    if (user) {
+      console.log('foudn the user for rain');
+      if (user.wallet.available < amount) {
+        ctx.reply('Insufficient Balance');
+      }
+      if (user.wallet.available >= amount) {
+        console.log('rain 3');
+        const usersToRain = await db.user.findAll({
+          where: {
+            [Op.and]: [
+              {
+                lastSeen: {
+                  [Op.gte]: new Date(Date.now() - (3 * 24 * 60 * 60 * 1000)),
+                },
+              },
+              {
+                user_id: { [Op.not]: `telegram-${ctx.update.message.from.id}` },
+              },
+            ],
+          },
+          include: [
+            {
+              model: db.wallet,
+              as: 'wallet',
+            },
+          ],          
+          lock: t.LOCK.UPDATE,
+          transaction: t,
+        });
+        console.log('rain 4');
+        console.log(usersToRain);
+        if (usersToRain.length < 2) {
+          ctx.reply('not enough active users');
+        }
+        if (usersToRain.length >= 2) {
+          const amountPerUser = (((amount / usersToRain.length).toFixed(0)));
+          const rainRecord = await db.rain.create({
+            amount,
+            userCount: usersToRain.length,
+            userId: user.id,
+          }, {
+            lock: t.LOCK.UPDATE,
+            transaction: t,
+          });
+          const listOfUsersRained = [];
+          // eslint-disable-next-line no-restricted-syntax
+          for (const rainee of usersToRain) {
+            console.log('raineee');
+            console.log(rainee);
+            console.log(amountPerUser);
+            console.log(rainee.id);
+            console.log(rainRecord.id);
+            // eslint-disable-next-line no-await-in-loop
+            await rainee.wallet.update({
+              available: rainee.wallet.available + Number(amountPerUser),
+            }, {
+              lock: t.LOCK.UPDATE,
+              transaction: t,
+            });
+            console.log('afterrainee update');
+            console.log(amountPerUser);
+            console.log(rainee.id);
+            console.log(rainRecord.id);
+            // eslint-disable-next-line no-await-in-loop            
+            await db.raintip.create({
+              amount: amountPerUser,
+              userId: rainee.id,
+              rainId: rainRecord.id,
+            }, {
+              lock: t.LOCK.UPDATE,
+              transaction: t,
+            });
+            console.log('after raintip create');
+            listOfUsersRained.push(`@${rainee.username}`);
+          }
+
+          await ctx.reply(`Raining ${amount / 1e8} RUNES on ${usersToRain.length} active users -- ${amountPerUser / 1e8} RUNES each`);
+
+          const newStringListUsers = listOfUsersRained.join(", ");
+          console.log(newStringListUsers);
+          const cutStringListUsers = newStringListUsers.match(/.{1,4000}(\s|$)/g);
+          // eslint-disable-next-line no-restricted-syntax
+          for (const element of cutStringListUsers) {
+            // eslint-disable-next-line no-await-in-loop
+            await ctx.reply(element);
+          }
+          logger.info(`Success Rain Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} for ${amount / 1e8}`);
+         // cutStringListUsers.forEach((element) => ctx.reply(element));
+        }
+      }
+    }
+    t.afterCommit(() => {
+      console.log('done');
+    });
+  }).catch((err) => {
+    ctx.reply('Something went wrong with raining');
+  });
+};
+
+export const tipRunesToUser = async (ctx, runesTipSplit, bot, runesGroup) => {
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    const amount = new BigNumber(runesTipSplit[3]).times(1e8).toNumber();
+    console.log('tip amount');
+    console.log(amount);
+    if (amount < (minimumTip)) { // smaller then 2 RUNES
+      ctx.reply('Minimum Tip is 0.01 RUNES');
+    }
+    if (amount % 1 !== 0) {
+      ctx.reply('Invalid amount');
+    }
+    console.log('1');
+    const userToTip = runesTipSplit[2].substring(1);
+    const findUserToTip = await db.user.findOne({
+      where: {
+        username: userToTip,
+      },
+      include: [
+        {
+          model: db.wallet,
+          as: 'wallet',
+          include: [
+            {
+              model: db.address,
+              as: 'addresses',
+            },
+          ],
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    console.log('2');
+    if (!findUserToTip) {
+      ctx.reply('Unable to find user to tip');
+    }
+    
+
+    if (amount >= (minimumTip) && amount % 1 === 0 && findUserToTip) {
+      console.log('beforeuserfind');
+      console.log(ctx.update.message.from.id);
+      const user = await db.user.findOne({
+        where: {
+          user_id: `telegram-${ctx.update.message.from.id}`,
+        },
+        include: [
+          {
+            model: db.wallet,
+            as: 'wallet',
+          },
+        ],
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      console.log('3');
+      if (!user) {
+        ctx.reply('User not found');
+      }
+      if (user) {
+        if (amount > user.wallet.available) {
+          ctx.reply('Insufficient funds');
+        }
+        if (amount <= user.wallet.available) {
+          const wallet = await user.wallet.update({
+            available: user.wallet.available - amount,
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          console.log('4');
+          const updatedFindUserToTip = findUserToTip.wallet.update({
+            available: findUserToTip.wallet.available + amount,
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          console.log('5');
+          console.log('----');
+          console.log(user.id);
+          console.log(findUserToTip.id);
+          console.log(amount);
+          console.log('----');
+          
+
+          const tipTransaction = await db.tip.create({
+            userId: user.id,
+            userTippedId: findUserToTip.id,
+            amount,
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          console.log(tipTransaction);
+          console.log('6');
+          bot.telegram.sendMessage(runesGroup, `${user.username} tipped ${amount / 1e8} RUNES to ${findUserToTip.username}`);
+          logger.info(`Success tip Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} to ${findUserToTip.username} with ${amount / 1e8} RUNES`);
+         // ctx.reply(`${user.username} tipped ${amount / 1e8} RUNES to ${updatedFindUserToTip.username}`);
+        }
+      }
+    }
+    t.afterCommit(() => {
+      console.log('done');
+    });
+  }).catch((err) => {
+    ctx.reply('Something went wrong with tipping');
+  });
+};
+
 /**
  * Create Withdrawal
  */
 export const withdrawTelegramCreate = async (ctx, runesTipSplit) => {
+  logger.info(`Start Withdrawal Request: ${ctx.update.message.from.id}-${ctx.update.message.from.username}`);
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -192,113 +437,3 @@ export const fetchWallet = async (req, res, next) => {
   res.json({ success: true });
 };
 
-/**
- * Create Withdrawal
- */
-export const withdraw = async (req, res, next) => {
-  await db.sequelize.transaction({
-    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-  }, async (t) => {
-    const amount = new BigNumber(req.body.amount).times(1e8).toNumber();
-    console.log('withdrawal amount');
-    console.log(amount);
-    if (amount < (5 * 1e8)) { // smaller then 5 RUNES
-      throw new Error('MINIMUM_WITHDRAW_5_RUNES');
-    }
-    if (amount % 1 !== 0) {
-      throw new Error('MAX_8_DECIMALS');
-    }
-    const isRunebaseAddress = await getInstance().utils.isRunebaseAddress(req.body.address);
-    if (!isRunebaseAddress) {
-      throw new Error('INVALID_ADDRESS');
-    }
-    console.log('find user wallet');
-    // Find Users Wallet
-    const userWallet = await db.wallet.findOne({
-      where: {
-        userId: req.user.id,
-      },
-      include: [
-        {
-          model: db.address,
-          as: 'addresses',
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-
-    // Withdrawal error conditions
-    if (!userWallet) {
-      console.log('wallet not found');
-      throw new Error('WALLET_NOT_FOUND');
-    }
-
-    if (amount > userWallet.available) {
-      console.log('not enough funds');
-      throw new Error('NOT_ENOUGH_FUNDS');
-    }
-    const wallet = await userWallet.update({
-      available: userWallet.available - amount,
-      locked: userWallet.locked + amount,
-    }, {
-      transaction: t,
-      lock: t.LOCK.UPDATE,
-    });
-    console.log('updated wallet');
-    console.log(wallet);
-    const transaction = await db.transaction.create({
-      addressId: wallet.addresses[0].id,
-      phase: 'review',
-      type: 'send',
-      to_from: req.body.address,
-      amount,
-    }, {
-      transaction: t,
-      lock: t.LOCK.UPDATE,
-    });
-    console.log('created transaction');
-    const activity = await db.activity.create(
-      {
-        spenderId: wallet.userId,
-        type: 'withdrawRequested',
-        amount: transaction.amount,
-        spender_balance: wallet.available + wallet.locked,
-        ipId: res.locals.ipId,
-      },
-      {
-        transaction: t,
-        lock: t.LOCK.UPDATE,
-      },
-    );
-    console.log('created activity');
-    res.locals.activity = await db.activity.findOne({
-      where: {
-        id: activity.id,
-      },
-      attributes: [
-        'createdAt',
-        'type',
-      ],
-      include: [
-        {
-          model: db.user,
-          as: 'spender',
-          required: false,
-          attributes: ['username'],
-        },
-      ],
-      transaction: t,
-      lock: t.LOCK.UPDATE,
-    });
-    console.log('end withdrawal request');
-    t.afterCommit(() => {
-      res.locals.wallet = wallet;
-      res.locals.transaction = transaction;
-      next();
-    });
-  }).catch((err) => {
-    res.locals.error = err.message;
-    next();
-  });
-};

@@ -78,6 +78,7 @@ export const withdrawTelegramAdminAccept = async (bot, ctx, adminTelegramId, wit
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    console.log('1');
     const transaction = await db.transaction.findOne({
       where: {
         id: withdrawalId,
@@ -102,11 +103,14 @@ export const withdrawTelegramAdminAccept = async (bot, ctx, adminTelegramId, wit
       transaction: t,
       lock: t.LOCK.UPDATE,
     });
+    console.log('2');
     if (!transaction) {
       ctx.reply('Transaction not found');
     }
     if (transaction) {
-      const amount = ((transaction.amount - (1 * 1e8)) / 1e8);
+      console.log('3');
+      const amount = ((transaction.amount - (1 * 1e7)) / 1e8);
+      console.log('4');
       const response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
       const updatedTrans = await transaction.update(
         {

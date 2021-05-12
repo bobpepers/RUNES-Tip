@@ -8,127 +8,32 @@ const { getInstance } = require('../services/rclient');
 export const fetchHelp = async (ctx) => {
   console.log('32111');
   console.log(ctx);
-  console.log(ctx.update.message.from);
-  if (!ctx.update.message.from.is_bot) {
-    await db.sequelize.transaction({
-      isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-    }, async (t) => {
-      let user = await db.user.findOne(
-        {
-          where: {
-            user_id: `telegram-${ctx.update.message.from.id}`,
-          },
-          transaction: t,
-          lock: t.LOCK.UPDATE,
-        },
-      );
-      console.log(user);
-      if (!user) {
-        user = await db.user.create({
-          user_id: `telegram-${ctx.update.message.from.id}`,
-          username: ctx.update.message.from.username,
-          firstname: ctx.update.message.from.first_name,
-          lastname: ctx.update.message.from.last_name,
-        }, {
-          transaction: t,
-          lock: t.LOCK.UPDATE,
-        });
-      }
-      if (user) {
-        if (user.firstname !== ctx.update.message.from.first_name) {
-          user = await user.update(
-            {
-              firstname: ctx.update.message.from.first_name,
-            },
-            {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            },
-          );
-        }
-        if (user.lastname !== ctx.update.message.from.last_name) {
-          user = await user.update(
-            {
-              lastname: ctx.update.message.from.last_name,
-            },
-            {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            },
-          );
-        }
-        if (user.username !== ctx.update.message.from.username) {
-          user = await user.update(
-            {
-              username: ctx.update.message.from.username,
-            },
-            {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            },
-          );
-        }
-        let wallet = await db.wallet.findOne(
-          {
-            where: {
-              userId: user.id,
-            },
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          },
-        );
-        if (!wallet) {
-          wallet = await db.wallet.create({
-            userId: user.id,
-            available: 0,
-            locked: 0,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
-        }
-        let address = await db.address.findOne(
-          {
-            where: {
-              walletId: wallet.id,
-            },
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          },
-        );
-        if (!address) {
-          console.log('adress not found');
-          const newAddress = await getInstance().getNewAddress();
-          console.log(newAddress);
-          address = await db.address.create({
-            address: newAddress,
-            walletId: wallet.id,
-            type: 'deposit',
-            confirmed: true,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
-          ctx.reply(`Welcome ${ctx.update.message.from.username}, we created a wallet for you.
-Type "/runestip help" for usage info`);
-        }
-      }
+  console.log(ctx.update.message.from);  
+  ctx.replyWithHTML(`
+<b>Tipbot Help</b>
 
-      t.afterCommit(() => {
-        console.log('done');
-        ctx.reply(`done`);
-      });
-    }).catch((err) => {
-      console.log(err.message);
-    });
+/runestip
+<pre>display this message</pre>
 
-    // Explicit usage
+/runestip help
+<pre>display this message</pre>
 
-    ctx.telegram.sendMessage(ctx.message.chat.id, `Hello ${ctx.state.role}`);
+/runestip tip [@user] [amount]
+<pre>Tips the @ mentioned user with the desired amount, e.g.</pre>
+/runestip tip @Bagosan 1.00
 
-    // Using context shortcut
-    
-  }
+/runestip rain [amount]
+<pre>Rains the desired amount onto all active users (active time 3 hours), e.g.</pre>
+/runestip rain 1.00
+
+/runestip deposit
+<pre>Displays your deposit address</pre>
+
+/runestip withdraw [address] [amount]
+<pre>Withdraws the entered amount to a RUNES address of your choice, e.g.</pre>
+/runestip withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
+<pre>Note: Minimal amount to withdraw: 2 RUNES. A withdrawal fee of 0.1 RUNES will be automatically deducted from the amount.</pre>
+`);
 };
 
 /**
