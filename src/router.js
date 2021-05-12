@@ -25,6 +25,11 @@ import {
   fetchHelp,
 } from './controllers/help';
 
+import {
+  createReferral,
+} from './controllers/referral';
+
+
 // const PQueue = require('p-queue');
 
 const queue = new PQueue({ concurrency: 1 });
@@ -224,6 +229,8 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
         console.log(ctx.message);
         const task = await createUpdateUser(ctx);
         await queue.add(() => task);
+        const taskReferred = await createReferral(ctx);
+        await queue.add(() => taskReferred);
       }
     })();
   });

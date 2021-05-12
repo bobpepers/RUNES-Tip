@@ -119,11 +119,12 @@ const syncTransactions = async (startBlock, endBlock) => {
         }
         if (transaction.confirmations >= 5) {
           // transaction.details.forEach(async (detail) => {
-
+          
           if (detail.category === 'send' && trans.type === 'send') {
             console.log(detail.amount);
             console.log(((detail.amount * 1e8)));
-            const removeLockedAmount = Math.abs(((detail.amount * 1e8) + 1e7));
+            const prepareLockedAmount = ((detail.amount * 1e8) - 1e7);
+            const removeLockedAmount = Math.abs(prepareLockedAmount);
 
             console.log(removeLockedAmount);
             updatedWallet = await wallet.update({

@@ -62,6 +62,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     UserModel.hasMany(model.rain);
     UserModel.hasMany(model.raintip);
+    UserModel.hasMany(model.referral);
   };
 
   return UserModel;
