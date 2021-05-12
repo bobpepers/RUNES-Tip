@@ -1,3 +1,4 @@
+import PQueue from 'p-queue';
 import walletNotify from './controllers/walletNotify';
 import updatePrice from './helpers/updatePrice';
 
@@ -23,14 +24,12 @@ import {
 import {
   fetchHelp,
 } from './controllers/help';
-import PQueue from 'p-queue';
-//const PQueue = require('p-queue');
+
+// const PQueue = require('p-queue');
 
 const queue = new PQueue({ concurrency: 1 });
 
 const schedule = require('node-schedule');
-
-const { startSync } = require('./services/sync');
 
 const appRoot = process.env.PWD;
 
@@ -40,6 +39,7 @@ const adminTelegramId = 672239325;
 
 const { Telegraf } = require('telegraf');
 const rateLimit = require('telegraf-ratelimit');
+const { startSync } = require('./services/sync');
 
 // Set limit to 1 message per 3 seconds
 const limitConfig = {
@@ -164,7 +164,7 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
             await queue.add(() => task);
           })();
         }
-      }     
+      }
     }
     if (runesTipSplit[1] === 'tip') {
       console.log(ctx.update.message.chat);
@@ -199,7 +199,7 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
             const task = await rainRunesToUsers(ctx, runesTipSplit, bot, runesGroup);
             await queue.add(() => task);
           })();
-        }        
+        }
       }
     }
     if (runesTipSplit[1] === 'hodlrain') {
