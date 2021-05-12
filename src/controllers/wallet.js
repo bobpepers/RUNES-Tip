@@ -24,7 +24,7 @@ export const rainRunesToUsers = async (ctx, runesTipSplit, bot, runesGroup) => {
       ctx.reply('Invalid amount');
     }
     console.log('rain 1');
-    //const userToTip = runesTipSplit[2].substring(1);
+    // const userToTip = runesTipSplit[2].substring(1);
     const user = await db.user.findOne({
       where: {
         user_id: `telegram-${ctx.update.message.from.id}`,
@@ -54,7 +54,7 @@ export const rainRunesToUsers = async (ctx, runesTipSplit, bot, runesGroup) => {
             [Op.and]: [
               {
                 lastSeen: {
-                  [Op.gte]: new Date(Date.now() - (3 * 24 * 60 * 60 * 1000)),
+                  [Op.gte]: new Date(Date.now() - (3 * 60 * 60 * 1000)),
                 },
               },
               {
@@ -67,7 +67,7 @@ export const rainRunesToUsers = async (ctx, runesTipSplit, bot, runesGroup) => {
               model: db.wallet,
               as: 'wallet',
             },
-          ],          
+          ],
           lock: t.LOCK.UPDATE,
           transaction: t,
         });
@@ -105,7 +105,7 @@ export const rainRunesToUsers = async (ctx, runesTipSplit, bot, runesGroup) => {
             console.log(amountPerUser);
             console.log(rainee.id);
             console.log(rainRecord.id);
-            // eslint-disable-next-line no-await-in-loop            
+            // eslint-disable-next-line no-await-in-loop
             await db.raintip.create({
               amount: amountPerUser,
               userId: rainee.id,
@@ -129,7 +129,7 @@ export const rainRunesToUsers = async (ctx, runesTipSplit, bot, runesGroup) => {
             await ctx.reply(element);
           }
           logger.info(`Success Rain Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} for ${amount / 1e8}`);
-         // cutStringListUsers.forEach((element) => ctx.reply(element));
+          // cutStringListUsers.forEach((element) => ctx.reply(element));
         }
       }
     }
@@ -179,7 +179,6 @@ export const tipRunesToUser = async (ctx, runesTipSplit, bot, runesGroup) => {
     if (!findUserToTip) {
       ctx.reply('Unable to find user to tip');
     }
-    
 
     if (amount >= (minimumTip) && amount % 1 === 0 && findUserToTip) {
       console.log('beforeuserfind');
@@ -225,7 +224,6 @@ export const tipRunesToUser = async (ctx, runesTipSplit, bot, runesGroup) => {
           console.log(findUserToTip.id);
           console.log(amount);
           console.log('----');
-          
 
           const tipTransaction = await db.tip.create({
             userId: user.id,
@@ -239,7 +237,7 @@ export const tipRunesToUser = async (ctx, runesTipSplit, bot, runesGroup) => {
           console.log('6');
           bot.telegram.sendMessage(runesGroup, `${user.username} tipped ${amount / 1e8} RUNES to ${findUserToTip.username}`);
           logger.info(`Success tip Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} to ${findUserToTip.username} with ${amount / 1e8} RUNES`);
-         // ctx.reply(`${user.username} tipped ${amount / 1e8} RUNES to ${updatedFindUserToTip.username}`);
+          // ctx.reply(`${user.username} tipped ${amount / 1e8} RUNES to ${updatedFindUserToTip.username}`);
         }
       }
     }
@@ -436,4 +434,3 @@ export const fetchWallet = async (req, res, next) => {
   console.log('Fetch wallet here');
   res.json({ success: true });
 };
-
