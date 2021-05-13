@@ -26,6 +26,7 @@ import {
 } from './controllers/help';
 
 import {
+  fetchReferralCount,
   createReferral,
 } from './controllers/referral';
 
@@ -140,6 +141,12 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
         await queue.add(() => task);
       })();
     }
+    if (runesTipSplit[1] === 'referral') {
+      (async () => {
+        const task = await fetchReferralCount(ctx);
+        await queue.add(() => task);
+      })();
+    }
     if (runesTipSplit[1] === 'balance') {
       (async () => {
         const task = await fetchWalletBalance(ctx);
@@ -229,7 +236,7 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
         console.log(ctx.message);
         const task = await createUpdateUser(ctx);
         await queue.add(() => task);
-        const taskReferred = await createReferral(ctx);
+        const taskReferred = await createReferral(ctx, bot, runesGroup);
         await queue.add(() => taskReferred);
       }
     })();

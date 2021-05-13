@@ -40,6 +40,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       allowNull: true,
     },
+    referral_count: {
+      type: DataTypes.BIGINT,
+      defaultValue: 0,
+    },
   };
 
   // 2: The model options.
@@ -63,6 +67,7 @@ module.exports = (sequelize, DataTypes) => {
     UserModel.hasMany(model.rain);
     UserModel.hasMany(model.raintip);
     UserModel.hasMany(model.referral);
+    UserModel.hasMany(model.referralReward);    
   };
 
   return UserModel;

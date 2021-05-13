@@ -33,6 +33,10 @@ export const fetchHelp = async (ctx) => {
 <pre>Withdraws the entered amount to a RUNES address of your choice, e.g.</pre>
 /runestip withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
 <pre>Note: Minimal amount to withdraw: 2 RUNES. A withdrawal fee of 0.1 RUNES will be automatically deducted from the amount.</pre>
+
+/runestip referral
+<pre>Displays your referral count</pre>
+<pre>Note: We reward members for every 10 new members they add. current reward = 20 RUNES</pre>
 `);
 };
 
