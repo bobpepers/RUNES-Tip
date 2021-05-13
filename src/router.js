@@ -55,7 +55,7 @@ const limitConfig = {
 };
 
 const bot = new Telegraf(telegramBotToken);
-bot.use(rateLimit(limitConfig));
+//bot.use(rateLimit(limitConfig));
 
 const router = (app) => {
   app.post('/api/chaininfo/block',
