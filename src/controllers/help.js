@@ -21,6 +21,9 @@ export const fetchHelp = async (ctx) => {
 /runestip price
 <pre>display current RUNES price</pre>
 
+/runestip exchanges
+<pre>display list of exchanges to trade RUNES</pre>
+
 /runestip tip [@user] [amount]
 <pre>Tips the @ mentioned user with the desired amount, e.g.</pre>
 /runestip tip @Bagosan 1.00

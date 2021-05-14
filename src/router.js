@@ -32,6 +32,12 @@ import {
 
 import fetchPriceInfo from './controllers/price';
 
+import {
+  fetchExchangeList,
+} from './controllers/exchanges';
+
+
+
 // const PQueue = require('p-queue');
 
 const queue = new PQueue({ concurrency: 1 });
@@ -142,6 +148,12 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
         await queue.add(() => task);
       })();
     }
+    if (runesTipSplit[1] === 'exchanges') {
+      (async () => {
+        const task = await fetchExchangeList(ctx);
+        await queue.add(() => task);
+      })();
+    }    
     if (runesTipSplit[1] === 'help') {
       (async () => {
         const task = await fetchHelp(ctx);
@@ -252,29 +264,11 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
 
   bot.on('text', (ctx) => {
     (async () => {
-      console.log('hearing text');
-      console.log('hearing text');
-      console.log('hearing text');
-      console.log('hearing text');
-      console.log('hearing text');
-      console.log('hearing text');
-      console.log('hearing text');
-      console.log('hearing text');
-      console.log('hearing text');
-      console.log('hearing text');
-
       const task = await createUpdateUser(ctx);
       await queue.add(() => task);
       console.log(ctx.update.message.chat.id);
       console.log(Number(runesGroup));
       if (ctx.update.message.chat.id === Number(runesGroup)) {
-        console.log('start update lastseen');
-        console.log('start update lastseen');
-        console.log('start update lastseen');
-        console.log('start update lastseen');
-        console.log('start update lastseen');
-        console.log('start update lastseen');
-
         const lastSeenTask = await updateLastSeen(ctx);
         await queue.add(() => lastSeenTask);
       }
