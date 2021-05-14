@@ -367,7 +367,7 @@ export const fetchWalletBalance = async (ctx) => {
     if (user && user.wallet) {
       await ctx.reply(`${ctx.update.message.from.username}'s current available balance: ${user.wallet.available / 1e8} RUNES
 ${ctx.update.message.from.username}'s current locked balance: ${user.wallet.locked / 1e8} RUNES
-Estimated value of ${ctx.update.message.from.username}'s balance: $${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(8)}`);
+Estimated value of ${ctx.update.message.from.username}'s balance: $${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(2)}`);
     }
 
     t.afterCommit(() => {
