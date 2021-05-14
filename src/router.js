@@ -30,6 +30,7 @@ import {
   createReferral,
 } from './controllers/referral';
 
+import fetchPriceInfo from './controllers/price';
 
 // const PQueue = require('p-queue');
 
@@ -135,6 +136,12 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
         await queue.add(() => task);
       })();
     }
+    if (runesTipSplit[1] === 'price') {
+      (async () => {
+        const task = await fetchPriceInfo(ctx);
+        await queue.add(() => task);
+      })();
+    }
     if (runesTipSplit[1] === 'help') {
       (async () => {
         const task = await fetchHelp(ctx);
@@ -231,6 +238,7 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
 
   bot.on('new_chat_members', (ctx) => {
     (async () => {
+      console.log(ctx);
       if (ctx.update.message.chat.id === Number(runesGroup)) {
         console.log('test add');
         console.log(ctx.message);

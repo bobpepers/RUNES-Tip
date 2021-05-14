@@ -5,14 +5,17 @@ const { Sequelize, Transaction, Op } = require('sequelize');
 /**
  * Fetch PriceInfo
  */
-const fetchPriceInfo = async (req, res, next) => {
+const fetchPriceInfo = async (ctx) => {
   try {
     const priceRecord = await db.priceInfo.findAll({});
-    res.locals.price = priceRecord;
-    next();
+    console.log(priceRecord);
+    //res.locals.price = priceRecord;
+    //next();
+    let replyString = '<b><u>RUNES PRICE</u></b>\n';
+    replyString += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('\n');
+    ctx.replyWithHTML(replyString);
   } catch (error) {
-    res.locals.error = error;
-    next();
+    console.log(error);
   }
 };
 

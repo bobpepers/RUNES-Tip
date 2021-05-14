@@ -36,12 +36,7 @@ const updatePrice = async () => {
         throw new Error('PRICE_INFO_NOT_FOUND');
       }
 
-      const margin = await db.priceMargin.findAll({
-        limit: 1,
-        order: [['createdAt', 'DESC']],
-      });
-
-      const newPrice = Number(data.data.quotes.USD.price) + ((Number(data.data.quotes.USD.price) / 100) * Number(margin[0].value));
+      const newPrice = Number(data.data.quotes.USD.price) + ((Number(data.data.quotes.USD.price) / 100));
 
       const price = await priceInfo.update({
         price: newPrice.toFixed(8).toString(),

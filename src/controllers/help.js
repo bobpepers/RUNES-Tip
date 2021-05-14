@@ -8,7 +8,7 @@ const { getInstance } = require('../services/rclient');
 export const fetchHelp = async (ctx) => {
   console.log('32111');
   console.log(ctx);
-  console.log(ctx.update.message.from);  
+  console.log(ctx.update.message.from);
   ctx.replyWithHTML(`
 <b>Tipbot Help</b>
 
@@ -17,6 +17,9 @@ export const fetchHelp = async (ctx) => {
 
 /runestip help
 <pre>display this message</pre>
+
+/runestip price
+<pre>display current RUNES price</pre>
 
 /runestip tip [@user] [amount]
 <pre>Tips the @ mentioned user with the desired amount, e.g.</pre>
