@@ -352,13 +352,22 @@ export const fetchWalletBalance = async (ctx) => {
       transaction: t,
     });
 
+    const priceInfo = await db.priceInfo.findOne({
+      where: {
+        currency: 'USD',
+      },
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
     if (!user && !user.wallet) {
       ctx.reply(`Wallet not found`);
     }
 
     if (user && user.wallet) {
       await ctx.reply(`${ctx.update.message.from.username}'s current available balance: ${user.wallet.available / 1e8} RUNES
-${ctx.update.message.from.username}'s current locked balance: ${user.wallet.locked / 1e8} RUNES`);
+${ctx.update.message.from.username}'s current locked balance: ${user.wallet.locked / 1e8} RUNES
+Estimated value of ${ctx.update.message.from.username}'s balance: $${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(8)}`);
     }
 
     t.afterCommit(() => {
