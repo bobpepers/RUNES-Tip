@@ -114,3 +114,34 @@ export const fetchReferralCount = async (ctx) => {
     ctx.reply('Something went wrong with fetching referral');
   });
 };
+
+export const fetchReferralTopTen = async (ctx) => {
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    console.log(ctx);
+    const users = await db.user.findAll({
+      order: [
+        // Will escape title and validate DESC against a list of valid direction parameters
+        ['referral_count', 'DESC'],
+      ],
+      limit: 10,
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    });
+    if (!users) {
+      ctx.reply(`Users not found`);
+    }
+    if (users) {
+      let replyString = '<b><u>Referral Top 10</u></b>\n';
+      replyString += users.map((a, index) => `${index + 1}. @${a.username}: ${a.referral_count}`).join('\n');
+      ctx.replyWithHTML(replyString);
+      // ctx.reply(`${user.username}'s referral count: ${user.referral_count}`);
+    }
+    t.afterCommit(() => {
+      console.log('done');
+    });
+  }).catch((err) => {
+    ctx.reply('Something went wrong with fetching referral');
+  });
+};

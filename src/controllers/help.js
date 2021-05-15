@@ -43,6 +43,9 @@ export const fetchHelp = async (ctx) => {
 /runestip referral
 <pre>Displays your referral count</pre>
 <pre>Note: We reward members for every 10 new members they add. current reward = 20 RUNES</pre>
+
+/runestip referral top
+<pre>Displays referral top 10</pre>
 `);
 };
 

@@ -235,7 +235,7 @@ export const tipRunesToUser = async (ctx, runesTipSplit, bot, runesGroup) => {
           });
           console.log(tipTransaction);
           console.log('6');
-          bot.telegram.sendMessage(runesGroup, `${user.username} tipped ${amount / 1e8} RUNES to ${findUserToTip.username}`);
+          bot.telegram.sendMessage(runesGroup, `@${user.username} tipped ${amount / 1e8} RUNES to @${findUserToTip.username}`);
           logger.info(`Success tip Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} to ${findUserToTip.username} with ${amount / 1e8} RUNES`);
           // ctx.reply(`${user.username} tipped ${amount / 1e8} RUNES to ${updatedFindUserToTip.username}`);
         }

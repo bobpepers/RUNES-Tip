@@ -28,6 +28,7 @@ import {
 import {
   fetchReferralCount,
   createReferral,
+  fetchReferralTopTen,
 } from './controllers/referral';
 
 import fetchPriceInfo from './controllers/price';
@@ -35,8 +36,6 @@ import fetchPriceInfo from './controllers/price';
 import {
   fetchExchangeList,
 } from './controllers/exchanges';
-
-
 
 // const PQueue = require('p-queue');
 
@@ -62,7 +61,7 @@ const limitConfig = {
 };
 
 const bot = new Telegraf(telegramBotToken);
-//bot.use(rateLimit(limitConfig));
+// bot.use(rateLimit(limitConfig));
 
 const router = (app) => {
   app.post('/api/chaininfo/block',
@@ -153,16 +152,22 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
         const task = await fetchExchangeList(ctx);
         await queue.add(() => task);
       })();
-    }    
+    }
     if (runesTipSplit[1] === 'help') {
       (async () => {
         const task = await fetchHelp(ctx);
         await queue.add(() => task);
       })();
     }
-    if (runesTipSplit[1] === 'referral') {
+    if (runesTipSplit[1] === 'referral' && !runesTipSplit[2]) {
       (async () => {
         const task = await fetchReferralCount(ctx);
+        await queue.add(() => task);
+      })();
+    }
+    if (runesTipSplit[1] === 'referral' && runesTipSplit[2] === 'top') {
+      (async () => {
+        const task = await fetchReferralTopTen(ctx);
         await queue.add(() => task);
       })();
     }
