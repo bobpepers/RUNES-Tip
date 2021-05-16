@@ -49,6 +49,12 @@ export const rainRunesToUsers = async (ctx, runesTipSplit, bot, runesGroup) => {
       }
       if (user.wallet.available >= amount) {
         console.log('rain 3');
+        const updatedBalance = await user.wallet.update({
+          available: user.wallet.available - amount,
+        }, {
+          lock: t.LOCK.UPDATE,
+          transaction: t,
+        });
         const usersToRain = await db.user.findAll({
           where: {
             [Op.and]: [
