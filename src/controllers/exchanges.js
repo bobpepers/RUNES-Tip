@@ -6,9 +6,9 @@ const { getInstance } = require('../services/rclient');
  * Fetch Wallet
  */
 export const fetchExchangeList = async (ctx) => {
-  console.log('32111');
-  console.log(ctx);
-  console.log(ctx.update.message.from);
+  //console.log('32111');
+  //console.log(ctx);
+  //console.log(ctx.update.message.from);
   ctx.replyWithHTML(`
 <b><u>Exchanges with RUNES listed</u></b>
 

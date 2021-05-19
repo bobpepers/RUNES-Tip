@@ -2,6 +2,7 @@ import db from '../models';
 
 const { Sequelize, Transaction, Op } = require('sequelize');
 const { getInstance } = require('../services/rclient');
+const { Markup } = require('telegraf');
 /**
  * Fetch Wallet
  */
@@ -11,42 +12,75 @@ export const fetchHelp = async (ctx) => {
   console.log(ctx.update.message.from);
   ctx.replyWithHTML(`
 <b>Tipbot Help</b>
-
+  
 /runestip
-<pre>display this message</pre>
+<code>Display this message</code>
 
+  
 /runestip help
-<pre>display this message</pre>
+/help
+<code>Display this message</code>
 
+  
 /runestip price
-<pre>display current RUNES price</pre>
+/price
+<code>Display current RUNES price</code>
 
+  
 /runestip exchanges
-<pre>display list of exchanges to trade RUNES</pre>
+/exchanges
+<code>Display list of exchanges to trade RUNES</code>
 
+
+/runestip balance
+/balance
+<code>Display wallet balance</code>
+
+  
 /runestip tip [@user] [amount]
-<pre>Tips the @ mentioned user with the desired amount, e.g.</pre>
+/tip [@user] [amount]
+<code>Tips the @ mentioned user with the desired amount, e.g.</code>
 /runestip tip @Bagosan 1.00
+/tip @Bagosan 1.00
 
+  
 /runestip rain [amount]
-<pre>Rains the desired amount onto all active users (active time 3 hours), e.g.</pre>
+/rain [amount]
+<code>Rains the desired amount onto all active users (active time 3 hours), e.g.</code>
 /runestip rain 1.00
+/rain 1.00
 
+  
 /runestip deposit
-<pre>Displays your deposit address</pre>
+/deposit
+<code>Displays your deposit address</code>
 
+  
 /runestip withdraw [address] [amount]
-<pre>Withdraws the entered amount to a RUNES address of your choice, e.g.</pre>
+/withdraw [address] [amount]
+<code>Withdraws the entered amount to a RUNES address of your choice, e.g.</code>
 /runestip withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
-<pre>Note: Minimal amount to withdraw: 2 RUNES. A withdrawal fee of 0.1 RUNES will be automatically deducted from the amount.</pre>
+/withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
+<code>Note: Minimal amount to withdraw: 2 RUNES. A withdrawal fee of 0.1 RUNES will be automatically deducted from the amount.</code>
+  
 
 /runestip referral
-<pre>Displays your referral count</pre>
-<pre>Note: We reward members for every 10 new members they add. current reward = 20 RUNES</pre>
+/referral
+<code>Displays your referral count</code>
+<code>Note: We reward members for every 10 new members they add. current reward = 20 RUNES</code>
+  
 
 /runestip referral top
-<pre>Displays referral top 10</pre>
-`);
+/top
+<code>Displays referral top 10</code>
+  `, Markup.inlineKeyboard([
+    [Markup.button.callback('Balance', 'Balance'),
+      Markup.button.callback('Price', 'Price')],
+    [Markup.button.callback('Exchanges', 'Exchanges'),
+      Markup.button.callback('Deposit', 'Deposit')],
+    [Markup.button.callback('Referral', 'Referral'),
+      Markup.button.callback('Referral Top 10', 'ReferralTop')],
+  ]));
 };
 
 /**

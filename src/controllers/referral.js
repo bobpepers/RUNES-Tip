@@ -89,14 +89,14 @@ we added ${referralRunesReward / 1e8} RUNES to your wallet as a reward.`);
   });
 };
 
-export const fetchReferralCount = async (ctx) => {
+export const fetchReferralCount = async (ctx, telegramUserId, telegramUserName) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     console.log(ctx);
     const user = await db.user.findOne({
       where: {
-        user_id: `telegram-${ctx.update.message.from.id}`,
+        user_id: `telegram-${telegramUserId}`,
       },
       transaction: t,
       lock: t.LOCK.UPDATE,

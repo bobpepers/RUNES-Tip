@@ -10,11 +10,11 @@ const logger = require('../helpers/logger');
 const minimumTip = 1 * 1e6;
 const minimumRain = 1 * 1e7;
 
-export const rainRunesToUsers = async (ctx, runesTipSplit, bot, runesGroup) => {
+export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const amount = new BigNumber(runesTipSplit[2]).times(1e8).toNumber();
+    const amount = new BigNumber(rainAmount).times(1e8).toNumber();
     console.log('rain amount');
     console.log(amount);
     if (amount < (minimumRain)) { // smaller then 2 RUNES
@@ -147,11 +147,11 @@ export const rainRunesToUsers = async (ctx, runesTipSplit, bot, runesGroup) => {
   });
 };
 
-export const tipRunesToUser = async (ctx, runesTipSplit, bot, runesGroup) => {
+export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const amount = new BigNumber(runesTipSplit[3]).times(1e8).toNumber();
+    const amount = new BigNumber(tipAmount).times(1e8).toNumber();
     console.log('tip amount');
     console.log(amount);
     if (amount < (minimumTip)) { // smaller then 2 RUNES
@@ -161,7 +161,7 @@ export const tipRunesToUser = async (ctx, runesTipSplit, bot, runesGroup) => {
       ctx.reply('Invalid amount');
     }
     console.log('1');
-    const userToTip = runesTipSplit[2].substring(1);
+    const userToTip = tipTo.substring(1);
     const findUserToTip = await db.user.findOne({
       where: {
         username: userToTip,
@@ -258,12 +258,12 @@ export const tipRunesToUser = async (ctx, runesTipSplit, bot, runesGroup) => {
 /**
  * Create Withdrawal
  */
-export const withdrawTelegramCreate = async (ctx, runesTipSplit) => {
+export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalAmount) => {
   logger.info(`Start Withdrawal Request: ${ctx.update.message.from.id}-${ctx.update.message.from.username}`);
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const amount = new BigNumber(runesTipSplit[3]).times(1e8).toNumber();
+    const amount = new BigNumber(withdrawalAmount).times(1e8).toNumber();
     console.log('withdrawal amount');
     console.log(amount);
     if (amount < (2 * 1e8)) { // smaller then 2 RUNES
@@ -272,7 +272,7 @@ export const withdrawTelegramCreate = async (ctx, runesTipSplit) => {
     if (amount % 1 !== 0) {
       ctx.reply('Invalid amount');
     }
-    const isRunebaseAddress = await getInstance().utils.isRunebaseAddress(runesTipSplit[2]);
+    const isRunebaseAddress = await getInstance().utils.isRunebaseAddress(withdrawalAddress);
     if (!isRunebaseAddress) {
       ctx.reply('Invalid Runebase Address');
     }
@@ -316,7 +316,7 @@ export const withdrawTelegramCreate = async (ctx, runesTipSplit) => {
             addressId: wallet.addresses[0].id,
             phase: 'review',
             type: 'send',
-            to_from: runesTipSplit[2],
+            to_from: withdrawalAddress,
             amount,
           }, {
             transaction: t,
@@ -334,13 +334,13 @@ export const withdrawTelegramCreate = async (ctx, runesTipSplit) => {
   });
 };
 
-export const fetchWalletBalance = async (ctx) => {
+export const fetchWalletBalance = async (ctx, telegramUserId, telegramUserName) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const user = await db.user.findOne({
       where: {
-        user_id: `telegram-${ctx.update.message.from.id}`,
+        user_id: `telegram-${telegramUserId}`,
       },
       include: [
         {
@@ -371,26 +371,26 @@ export const fetchWalletBalance = async (ctx) => {
     }
 
     if (user && user.wallet) {
-      await ctx.reply(`${ctx.update.message.from.username}'s current available balance: ${user.wallet.available / 1e8} RUNES
-${ctx.update.message.from.username}'s current locked balance: ${user.wallet.locked / 1e8} RUNES
-Estimated value of ${ctx.update.message.from.username}'s balance: $${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(2)}`);
+      await ctx.reply(`${telegramUserName}'s current available balance: ${user.wallet.available / 1e8} RUNES
+${telegramUserName}'s current locked balance: ${user.wallet.locked / 1e8} RUNES
+Estimated value of ${telegramUserName}'s balance: $${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(2)}`);
     }
 
     t.afterCommit(() => {
-      logger.info(`Success Balance Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username}`);
+      logger.info(`Success Balance Requested by: ${telegramUserId}-${telegramUserName}`);
     });
   }).catch((err) => {
-    logger.error(`Error Balance Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} - ${err}`);
+    logger.error(`Error Balance Requested by: ${telegramUserId}-${telegramUserName} - ${err}`);
   });
 };
 
-export const fetchWalletDepositAddress = async (ctx) => {
+export const fetchWalletDepositAddress = async (ctx, telegramUserId, telegramUserName) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const user = await db.user.findOne({
       where: {
-        user_id: `telegram-${ctx.update.message.from.id}`,
+        user_id: `telegram-${telegramUserId}`,
       },
       include: [
         {
@@ -423,22 +423,22 @@ export const fetchWalletDepositAddress = async (ctx) => {
         {
           source: Buffer.from(depositQrFixed, 'base64'),
         }, {
-          caption: `${ctx.update.message.from.username}'s deposit address: 
+          caption: `${telegramUserName}'s deposit address: 
 *${user.wallet.addresses[0].address}*`,
           parse_mode: 'MarkdownV2',
         },
       );
       // ctx.replyWithPhoto(depositQrFixed, {caption:'Your caption here'});
-      await ctx.reply(`${ctx.update.message.from.username}'s deposit address: 
+      await ctx.reply(`${telegramUserName}'s deposit address: 
 *${user.wallet.addresses[0].address}*`,
       { parse_mode: 'MarkdownV2' });
     }
 
     t.afterCommit(() => {
-      logger.info(`Success Deposit Address Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username}`);
+      logger.info(`Success Deposit Address Requested by: ${telegramUserId}-${telegramUserName}`);
     });
   }).catch((err) => {
-    logger.error(`Error Deposit Address Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} - ${err}`);
+    logger.error(`Error Deposit Address Requested by: ${telegramUserId}-${telegramUserName} - ${err}`);
   });
 };
 
