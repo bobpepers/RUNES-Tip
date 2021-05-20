@@ -46,7 +46,6 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-
 router(app);
 
 server.listen(port);

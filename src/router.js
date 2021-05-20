@@ -38,6 +38,7 @@ import {
 } from './controllers/exchanges';
 
 // const PQueue = require('p-queue');
+const logger = require('./helpers/logger');
 
 const queue = new PQueue({ concurrency: 1 });
 
@@ -453,6 +454,9 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
   });
 
   bot.on('text', (ctx) => {
+    console.log(ctx.update.message.text);
+    console.log(ctx.update.message.from.username);
+    logger.info(`Chat - ${ctx.update.message.from.username}: ${ctx.update.message.text}`);
     (async () => {
       const task = await createUpdateUser(ctx);
       await queue.add(() => task);
