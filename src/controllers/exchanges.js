@@ -19,7 +19,16 @@ https://bololex.com/trading/?symbol=RUNES-BTC
   
 <pre>RUNES/USDT</pre>
 https://bololex.com/trading/?symbol=RUNES-USDT
-  
+
+<pre>RUNES/DOGE</pre>
+https://bololex.com/trading/?symbol=RUNES-DOGE
+
+<pre>RUNES/ETH</pre>
+https://bololex.com/trading/?symbol=RUNES-ETH
+
+<pre>RUNES/BOLO</pre>
+https://bololex.com/trading/?symbol=RUNES-BOLO
+
 <b>Altmarkets</b>
   
 <pre>RUNES/DOGE</pre>
