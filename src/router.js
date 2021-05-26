@@ -442,6 +442,8 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
   bot.on('new_chat_members', (ctx) => {
     (async () => {
       console.log(ctx);
+      console.log(ctx.update.message.chat.id);
+      console.log(Number(runesGroup));
       if (ctx.update.message.chat.id === Number(runesGroup)) {
         console.log('test add');
         console.log(ctx.message);
@@ -454,6 +456,9 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
   });
 
   bot.on('text', (ctx) => {
+    console.log(ctx.update);
+    console.log(ctx.update.message);
+    console.log(ctx.update.message.from);
     console.log(ctx.update.message.text);
     console.log(ctx.update.message.from.username);
     logger.info(`Chat - ${ctx.update.message.from.username}: ${ctx.update.message.text}`);
