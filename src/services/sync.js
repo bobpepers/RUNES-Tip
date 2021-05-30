@@ -147,7 +147,7 @@ const syncTransactions = async (startBlock, endBlock) => {
           }
 
           updatedTransaction = await trans.update({
-            confirmations: transaction.confirmations,
+            confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
             phase: 'confirmed',
           }, {
             transaction: t,
