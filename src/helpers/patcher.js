@@ -4,30 +4,10 @@ const { Sequelize, Transaction, Op } = require('sequelize');
 const { getInstance } = require('../services/rclient');
 
 async function patchDeposits() {
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
-  console.log('patchDeposits');
 
   const transactions = await getInstance().listTransactions(1000);
-  transactions.forEach(async (trans) => {
+  //transactions.forEach(async (trans) => {
+  for (const trans of transactions) {
     if (trans.address) {
       const address = await db.address.findOne({
         where: {
@@ -68,7 +48,8 @@ async function patchDeposits() {
         });
       });
     }
-  });
+  //});
+}
 }
 
 module.exports = {
