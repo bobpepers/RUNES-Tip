@@ -4,7 +4,6 @@ const { Sequelize, Transaction, Op } = require('sequelize');
 const { getInstance } = require('../services/rclient');
 
 async function patchDeposits() {
-
   const transactions = await getInstance().listTransactions(1000);
   //transactions.forEach(async (trans) => {
   // eslint-disable-next-line no-restricted-syntax
