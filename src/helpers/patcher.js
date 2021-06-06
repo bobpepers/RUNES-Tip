@@ -7,8 +7,10 @@ async function patchDeposits() {
 
   const transactions = await getInstance().listTransactions(1000);
   //transactions.forEach(async (trans) => {
+  // eslint-disable-next-line no-restricted-syntax
   for (const trans of transactions) {
     if (trans.address) {
+      // eslint-disable-next-line no-await-in-loop
       const address = await db.address.findOne({
         where: {
           address: trans.address,
@@ -25,6 +27,7 @@ async function patchDeposits() {
       }
       console.log(trans);
       console.log(address);
+      // eslint-disable-next-line no-await-in-loop
       await db.sequelize.transaction({
         isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
       }, async (t) => {
@@ -49,7 +52,7 @@ async function patchDeposits() {
       });
     }
   //});
-}
+  }
 }
 
 module.exports = {
