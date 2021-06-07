@@ -91,10 +91,11 @@ const syncTransactions = async (startBlock, endBlock) => {
 
   console.log(transactions);
   // eslint-disable-next-line no-restricted-syntax
-  for (const trans of transactions) {
+  for await (const trans of transactions) {
     const transaction = await getInstance().getTransaction(trans.txid);
+    
     // eslint-disable-next-line no-restricted-syntax
-    for (const detail of transaction.details) {
+    for await (const detail of transaction.details) {
       // eslint-disable-next-line no-await-in-loop
       await db.sequelize.transaction({
         isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -138,6 +139,19 @@ const syncTransactions = async (startBlock, endBlock) => {
             });
           }
           if (detail.category === 'receive' && trans.type === 'receive') {
+            console.log('updating balance');
+            console.log('updating balance');
+            console.log('updating balance');
+            console.log('updating balance');
+            console.log('updating balance');
+            console.log('updating balance');
+            console.log('updating balance');
+            console.log('updating balance');
+            console.log('updating balance');
+            console.log('updating balance');
+            console.log('updating balance');
+            console.log('updating balance');
+            console.log('updating balance');
             updatedWallet = await wallet.update({
               available: wallet.available + (detail.amount * 1e8),
             }, {

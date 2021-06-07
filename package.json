@@ -27,7 +27,12 @@
   "author": "Dimtiri Mikadze",
   "license": "MIT",
   "devDependencies": {
-    "babel-cli": "^6.9.0",
+    "@babel/cli": "^7.14.3",
+    "@babel/core": "^7.14.3",
+    "@babel/node": "^7.14.2",
+    "@babel/plugin-proposal-async-generator-functions": "^7.14.2",
+    "@babel/preset-env": "^7.14.4",
+    "@babel/preset-es2015": "^7.0.0-beta.53",
     "babel-preset-env": "^1.7.0",
     "babel-preset-es2015": "^6.9.0",
     "eslint": "^7.26.0",
