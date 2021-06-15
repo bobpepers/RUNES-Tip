@@ -19,8 +19,8 @@ const { isMainnet } = require('./rclientConfig');
 
 const { getInstance } = require('./rclient');
 
-const RPC_BATCH_SIZE = 5;
-const BLOCK_BATCH_SIZE = 5;
+const RPC_BATCH_SIZE = 1;
+const BLOCK_BATCH_SIZE = 1;
 const SYNC_THRESHOLD_SECS = 2400;
 const BLOCK_0_TIMESTAMP = 0;
 
@@ -275,7 +275,7 @@ const sync = async () => {
 
   const numOfIterations = Math.ceil(((currentBlockCount - startBlock) + 1) / BLOCK_BATCH_SIZE);
 
-  sequentialLoop(
+  await sequentialLoop(
     numOfIterations,
     async (loop) => {
       const endBlock = Math.min((startBlock + BLOCK_BATCH_SIZE) - 1, currentBlockCount);
