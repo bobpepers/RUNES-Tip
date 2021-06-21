@@ -1,6 +1,7 @@
 /* eslint no-underscore-dangle: [2, { "allow": ["_eventName", "_address", "_time", "_orderId"] }] */
 
 import db from '../models';
+import PQueue from 'p-queue';
 
 const _ = require('lodash');
 const moment = require('moment');
@@ -19,6 +20,8 @@ const { isMainnet } = require('./rclientConfig');
 
 const { getInstance } = require('./rclient');
 
+const queue = new PQueue({ concurrency: 1 });
+
 const RPC_BATCH_SIZE = 1;
 const BLOCK_BATCH_SIZE = 1;
 const SYNC_THRESHOLD_SECS = 2400;
@@ -28,13 +31,13 @@ const BLOCK_0_TIMESTAMP = 0;
 // let MetaData;
 let senderAddress;
 
-const sequentialLoop = (iterations, process, exit) => {
+const sequentialLoop = async (iterations, process, exit) => {
   let index = 0;
   let done = false;
   let shouldExit = false;
 
   const loop = {
-    next() {
+    async next() {
       if (done) {
         if (shouldExit && exit) {
           return exit();
@@ -43,7 +46,7 @@ const sequentialLoop = (iterations, process, exit) => {
 
       if (index < iterations) {
         index++;
-        process(loop);
+        await process(loop);
       } else {
         done = true;
 
@@ -62,7 +65,7 @@ const sequentialLoop = (iterations, process, exit) => {
       shouldExit = end;
     },
   };
-  loop.next();
+  await loop.next();
   return loop;
 };
 
@@ -80,13 +83,6 @@ const syncTransactions = async (startBlock, endBlock) => {
       }],
     }],
   });
-  console.log('transactions');
-  console.log('transactions');
-  console.log('transactions');
-  console.log('transactions');
-  console.log('transactions');
-  console.log('transactions');
-  console.log('transactions');
   console.log('transactions');
 
   console.log(transactions);
@@ -175,6 +171,7 @@ const syncTransactions = async (startBlock, endBlock) => {
     }
   }
   console.log(transactions.length);
+  return true;
 };
 
 const getInsertBlockPromises = async (startBlock, endBlock) => {
@@ -224,38 +221,6 @@ const getInsertBlockPromises = async (startBlock, endBlock) => {
   return { insertBlockPromises };
 };
 
-const peerHighestSyncedHeader = async () => {
-  let peerBlockHeader = null;
-  try {
-    const res = await getInstance().getPeerInfo();
-    _.each(res, (nodeInfo) => {
-      if (_.isNumber(nodeInfo.synced_headers) && nodeInfo.synced_headers !== -1) {
-        peerBlockHeader = Math.max(nodeInfo.synced_headers, peerBlockHeader);
-      }
-    });
-  } catch (err) {
-    console.log(`Error calling getPeerInfo: ${err.message}`);
-    return null;
-  }
-
-  return peerBlockHeader;
-};
-
-const calculateSyncPercent = async (blockCount, blockTime) => {
-  const peerBlockHeader = await peerHighestSyncedHeader();
-  if (_.isNull(peerBlockHeader)) {
-    // estimate by blockTime
-    let syncPercent = 100;
-    const timestampNow = moment().unix();
-    // if blockTime is 20 min behind, we are not fully synced
-    if (blockTime < timestampNow - SYNC_THRESHOLD_SECS) {
-      syncPercent = Math.floor(((blockTime - BLOCK_0_TIMESTAMP) / (timestampNow - BLOCK_0_TIMESTAMP)) * 100);
-    }
-    return syncPercent;
-  }
-
-  return Math.floor((blockCount / peerBlockHeader) * 100);
-};
 
 const sync = async () => {
   const currentBlockCount = Math.max(0, await getInstance().getBlockCount());
@@ -280,15 +245,17 @@ const sync = async () => {
     async (loop) => {
       const endBlock = Math.min((startBlock + BLOCK_BATCH_SIZE) - 1, currentBlockCount);
 
-      await syncTransactions(startBlock, endBlock);
+      //await syncTransactions(startBlock, endBlock);
+      await queue.add(() => syncTransactions(startBlock, endBlock));
       console.log('Synced syncTrade');
 
       const { insertBlockPromises } = await getInsertBlockPromises(startBlock, endBlock);
-      await Promise.all(insertBlockPromises);
+      await queue.add(() => Promise.all(insertBlockPromises));
+      //await Promise.all(insertBlockPromises);
       console.log('Inserted Blocks');
 
       startBlock = endBlock + 1;
-      loop.next();
+      await loop.next();
     },
     async () => {
       if (numOfIterations > 0) {
@@ -319,6 +286,6 @@ async function startSync() {
 
 module.exports = {
   startSync,
-  calculateSyncPercent,
+  // calculateSyncPercent,
   // getAddressBalances,
 };

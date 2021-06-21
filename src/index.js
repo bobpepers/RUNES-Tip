@@ -50,9 +50,14 @@ router(app);
 
 server.listen(port);
 // setRunebaseEnv('Mainnet', process.env.RUNEBASE_ENV_PATH);
-startSync();
 
-patchDeposits();
+(async function () {
+  await startSync();
+  await patchDeposits();
+}());
+//startSync();
+
+//patchDeposits();
 const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
   patchDeposits();
 });
