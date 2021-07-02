@@ -22,6 +22,10 @@ import {
 } from './controllers/user';
 
 import {
+  updateGroup,
+} from './controllers/group';
+
+import {
   fetchHelp,
 } from './controllers/help';
 
@@ -141,6 +145,8 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
 
   bot.command('price', (ctx) => {
     (async () => {
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
       const task = await fetchPriceInfo(ctx);
       await queue.add(() => task);
     })();
@@ -156,6 +162,8 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
 
   bot.command('exchanges', (ctx) => {
     (async () => {
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
       const task = await fetchExchangeList(ctx);
       await queue.add(() => task);
     })();
@@ -163,6 +171,8 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
 
   bot.action('Exchanges', (ctx) => {
     (async () => {
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
       const task = await fetchExchangeList(ctx);
       await queue.add(() => task);
     })();
@@ -170,6 +180,8 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
 
   bot.command('balance', (ctx) => {
     (async () => {
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
       const telegramUserId = ctx.update.message.from.id;
       const telegramUserName = ctx.update.message.from.username;
       const task = await fetchWalletBalance(ctx, telegramUserId, telegramUserName);
@@ -179,6 +191,8 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
 
   bot.action('Balance', (ctx) => {
     (async () => {
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
       const telegramUserId = ctx.update.callback_query.from.id;
       const telegramUserName = ctx.update.callback_query.from.username;
       const task = await fetchWalletBalance(ctx, telegramUserId, telegramUserName);
@@ -190,10 +204,10 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
     const runesTipSplit = ctx.update.message.text.split(' ');
     console.log(runesTipSplit);
     console.log(ctx.update.message.chat);
-    if (ctx.update.message.chat.id !== Number(runesGroup)) {
-      ctx.reply('can only tip command in RUNES telegram group');
-    }
-    if (ctx.update.message.chat.id === Number(runesGroup)) {
+    //if (ctx.update.message.chat.id !== Number(runesGroup)) {
+    //  ctx.reply('can only tip command in RUNES telegram group');
+    //}
+    //if (ctx.update.message.chat.id === Number(runesGroup)) {
       if (!runesTipSplit[1]) {
         ctx.reply('insufficient Arguments');
       }
@@ -202,37 +216,43 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
       }
       if (runesTipSplit[1] && runesTipSplit[2]) {
         (async () => {
+          const groupTask = await updateGroup(ctx);
+          await queue.add(() => groupTask);
           const tipAmount = runesTipSplit[2];
           const tipTo = runesTipSplit[1];
           const task = await tipRunesToUser(ctx, tipTo, tipAmount, bot, runesGroup);
           await queue.add(() => task);
         })();
       }
-    }
+    //}
   });
 
   bot.command('rain', (ctx) => {
     const runesTipSplit = ctx.update.message.text.split(' ');
     console.log(runesTipSplit);
-    if (ctx.update.message.chat.id !== Number(runesGroup)) {
-      ctx.reply('can only rain command in RUNES telegram group');
-    }
-    if (ctx.update.message.chat.id === Number(runesGroup)) {
+    //if (ctx.update.message.chat.id !== Number(runesGroup)) {
+    //  ctx.reply('can only rain command in RUNES telegram group');
+    //}
+    //if (ctx.update.message.chat.id === Number(runesGroup)) {
       if (!runesTipSplit[1]) {
         ctx.reply('invalid amount of arguments');
       }
       if (runesTipSplit[1]) {
         (async () => {
+          const groupTask = await updateGroup(ctx);
+          await queue.add(() => groupTask);
           const rainAmount = runesTipSplit[1];
           const task = await rainRunesToUsers(ctx, rainAmount, bot, runesGroup);
           await queue.add(() => task);
         })();
       }
-    }
+    //}
   });
 
   bot.command('deposit', (ctx) => {
     (async () => {
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
       const telegramUserId = ctx.update.message.from.id;
       const telegramUserName = ctx.update.message.from.username;
       const task = await fetchWalletDepositAddress(ctx, telegramUserId, telegramUserName);
@@ -242,6 +262,8 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
 
   bot.action('Deposit', (ctx) => {
     (async () => {
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
       const telegramUserId = ctx.update.callback_query.from.id;
       const telegramUserName = ctx.update.callback_query.from.username;
       const task = await fetchWalletDepositAddress(ctx, telegramUserId, telegramUserName);
@@ -253,10 +275,10 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
     const runesTipSplit = ctx.update.message.text.split(' ');
     console.log(runesTipSplit);
 
-    if (ctx.update.message.chat.type !== 'private' && ctx.update.message.chat.id !== Number(runesGroup)) {
-      ctx.reply('can only request withdrawal in private or RUNES group');
-    }
-    if (ctx.update.message.chat.type === 'private' || ctx.update.message.chat.id === Number(runesGroup)) {
+    //if (ctx.update.message.chat.type !== 'private' && ctx.update.message.chat.id !== Number(runesGroup)) {
+    //  ctx.reply('can only request withdrawal in private or RUNES group');
+    //}
+    //if (ctx.update.message.chat.type === 'private' || ctx.update.message.chat.id === Number(runesGroup)) {
       if (!runesTipSplit[1]) {
         ctx.reply('insufficient Arguments');
       }
@@ -265,17 +287,21 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
       }
       if (runesTipSplit[1] && runesTipSplit[2]) {
         (async () => {
+          const groupTask = await updateGroup(ctx);
+          await queue.add(() => groupTask);
           const withdrawalAddress = runesTipSplit[1];
           const withdrawalAmount = runesTipSplit[2];
           const task = await withdrawTelegramCreate(ctx, withdrawalAddress, withdrawalAmount);
           await queue.add(() => task);
         })();
       }
-    }
+    //}
   });
 
   bot.command('referral', (ctx) => {
     (async () => {
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
       const telegramUserId = ctx.update.message.from.id;
       const telegramUserName = ctx.update.message.from.username;
       const task = await fetchReferralCount(ctx, telegramUserId, telegramUserName);
@@ -285,6 +311,8 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
 
   bot.action('Referral', (ctx) => {
     (async () => {
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
       const telegramUserId = ctx.update.callback_query.from.id;
       const telegramUserName = ctx.update.callback_query.from.username;
       const task = await fetchReferralCount(ctx, telegramUserId, telegramUserName);
@@ -294,6 +322,8 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
 
   bot.command('top', (ctx) => {
     (async () => {
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
       const task = await fetchReferralTopTen(ctx);
       await queue.add(() => task);
     })();
@@ -301,6 +331,8 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
 
   bot.action('ReferralTop', (ctx) => {
     (async () => {
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
       const task = await fetchReferralTopTen(ctx);
       await queue.add(() => task);
     })();
@@ -312,30 +344,40 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
 
     if (!runesTipSplit[1]) {
       (async () => {
+        const groupTask = await updateGroup(ctx);
+        await queue.add(() => groupTask);
         const task = await fetchHelp(ctx);
         await queue.add(() => task);
       })();
     }
     if (runesTipSplit[1] === 'price') {
       (async () => {
+        const groupTask = await updateGroup(ctx);
+        await queue.add(() => groupTask);
         const task = await fetchPriceInfo(ctx);
         await queue.add(() => task);
       })();
     }
     if (runesTipSplit[1] === 'exchanges') {
       (async () => {
+        const groupTask = await updateGroup(ctx);
+        await queue.add(() => groupTask);
         const task = await fetchExchangeList(ctx);
         await queue.add(() => task);
       })();
     }
     if (runesTipSplit[1] === 'help') {
       (async () => {
+        const groupTask = await updateGroup(ctx);
+        await queue.add(() => groupTask);
         const task = await fetchHelp(ctx);
         await queue.add(() => task);
       })();
     }
     if (runesTipSplit[1] === 'referral' && !runesTipSplit[2]) {
       (async () => {
+        const groupTask = await updateGroup(ctx);
+        await queue.add(() => groupTask);
         const telegramUserId = ctx.update.message.from.id;
         const telegramUserName = ctx.update.message.from.username;
         const task = await fetchReferralCount(ctx, telegramUserId, telegramUserName);
@@ -344,12 +386,16 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
     }
     if (runesTipSplit[1] === 'referral' && runesTipSplit[2] === 'top') {
       (async () => {
+        const groupTask = await updateGroup(ctx);
+        await queue.add(() => groupTask);
         const task = await fetchReferralTopTen(ctx);
         await queue.add(() => task);
       })();
     }
     if (runesTipSplit[1] === 'balance') {
       (async () => {
+        const groupTask = await updateGroup(ctx);
+        await queue.add(() => groupTask);
         const telegramUserId = ctx.update.message.from.id;
         const telegramUserName = ctx.update.message.from.username;
         const task = await fetchWalletBalance(ctx, telegramUserId, telegramUserName);
@@ -358,6 +404,8 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
     }
     if (runesTipSplit[1] === 'deposit') {
       (async () => {
+        const groupTask = await updateGroup(ctx);
+        await queue.add(() => groupTask);
         const telegramUserId = ctx.update.message.from.id;
         const telegramUserName = ctx.update.message.from.username;
         const task = await fetchWalletDepositAddress(ctx, telegramUserId, telegramUserName);
@@ -365,10 +413,10 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
       })();
     }
     if (runesTipSplit[1] === 'withdraw') {
-      if (ctx.update.message.chat.type !== 'private' && ctx.update.message.chat.id !== Number(runesGroup)) {
-        ctx.reply('can only request withdrawal in private or RUNES group');
-      }
-      if (ctx.update.message.chat.type === 'private' || ctx.update.message.chat.id === Number(runesGroup)) {
+      //if (ctx.update.message.chat.type !== 'private' && ctx.update.message.chat.id !== Number(runesGroup)) {
+      //  ctx.reply('can only request withdrawal in private or RUNES group');
+      //}
+      //if (ctx.update.message.chat.type === 'private' || ctx.update.message.chat.id === Number(runesGroup)) {
         if (!runesTipSplit[2]) {
           ctx.reply('insufficient Arguments');
         }
@@ -377,20 +425,22 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
         }
         if (runesTipSplit[2] && runesTipSplit[3]) {
           (async () => {
+            const groupTask = await updateGroup(ctx);
+            await queue.add(() => groupTask);
             const withdrawalAddress = runesTipSplit[2];
             const withdrawalAmount = runesTipSplit[3];
             const task = await withdrawTelegramCreate(ctx, withdrawalAddress, withdrawalAmount);
             await queue.add(() => task);
           })();
         }
-      }
+      //}
     }
     if (runesTipSplit[1] === 'tip') {
       console.log(ctx.update.message.chat);
-      if (ctx.update.message.chat.id !== Number(runesGroup)) {
-        ctx.reply('can only tip command in RUNES telegram group');
-      }
-      if (ctx.update.message.chat.id === Number(runesGroup)) {
+      //if (ctx.update.message.chat.id !== Number(runesGroup)) {
+      //  ctx.reply('can only tip command in RUNES telegram group');
+      //}
+      //if (ctx.update.message.chat.id === Number(runesGroup)) {
         if (!runesTipSplit[2]) {
           ctx.reply('insufficient Arguments');
         }
@@ -399,33 +449,39 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
         }
         if (runesTipSplit[2] && runesTipSplit[3]) {
           (async () => {
+            const groupTask = await updateGroup(ctx);
+            await queue.add(() => groupTask);
             const tipAmount = runesTipSplit[3];
             const tipTo = runesTipSplit[2];
             const task = await tipRunesToUser(ctx, tipTo, tipAmount, bot, runesGroup);
             await queue.add(() => task);
           })();
         }
-      }
+      //}
     }
     if (runesTipSplit[1] === 'rain') {
-      if (ctx.update.message.chat.id !== Number(runesGroup)) {
-        ctx.reply('can only rain command in RUNES telegram group');
-      }
-      if (ctx.update.message.chat.id === Number(runesGroup)) {
+      //if (ctx.update.message.chat.id !== Number(runesGroup)) {
+      //  ctx.reply('can only rain command in RUNES telegram group');
+      //}
+      //if (ctx.update.message.chat.id === Number(runesGroup)) {
         if (!runesTipSplit[2]) {
           ctx.reply('invalid amount of arguments');
         }
         if (runesTipSplit[2]) {
           (async () => {
+            const groupTask = await updateGroup(ctx);
+            await queue.add(() => groupTask);
             const rainAmount = runesTipSplit[2];
             const task = await rainRunesToUsers(ctx, rainAmount, bot, runesGroup);
             await queue.add(() => task);
           })();
         }
-      }
+      //}
     }
     if (runesTipSplit[1] === 'hodlrain') {
       (async () => {
+        const groupTask = await updateGroup(ctx);
+        await queue.add(() => groupTask);
         const task = await fetchWalletBalance(ctx);
         await queue.add(() => task);
       })();
@@ -434,6 +490,8 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
     console.log(ctx.update.message.entities);
     console.log(runesTipSplit);
     (async () => {
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
       const task = await createUpdateUser(ctx);
       await queue.add(() => task);
     })();
@@ -441,6 +499,8 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
 
   bot.on('new_chat_members', (ctx) => {
     (async () => {
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
       console.log(ctx);
       console.log(ctx.update.message.chat.id);
       console.log(Number(runesGroup));
@@ -461,16 +521,18 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
     console.log(ctx.update.message.from);
     console.log(ctx.update.message.text);
     console.log(ctx.update.message.from.username);
-    logger.info(`Chat - ${ctx.update.message.from.username}: ${ctx.update.message.text}`);
+    logger.info(`Chat - ${ctx.update.message.chat.id}: ${ctx.update.message.chat.title} : ${ctx.update.message.from.username}: ${ctx.update.message.text}`);
     (async () => {
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
       const task = await createUpdateUser(ctx);
       await queue.add(() => task);
       console.log(ctx.update.message.chat.id);
       console.log(Number(runesGroup));
-      if (ctx.update.message.chat.id === Number(runesGroup)) {
+      //if (ctx.update.message.chat.id === Number(runesGroup)) {
         const lastSeenTask = await updateLastSeen(ctx);
         await queue.add(() => lastSeenTask);
-      }
+      //}
     })();
   });
   bot.launch();

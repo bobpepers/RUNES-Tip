@@ -55,87 +55,114 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
           lock: t.LOCK.UPDATE,
           transaction: t,
         });
-        const usersToRain = await db.user.findAll({
+        const group = await db.group.findOne({
           where: {
-            [Op.and]: [
-              {
-                lastSeen: {
-                  [Op.gte]: new Date(Date.now() - (3 * 60 * 60 * 1000)),
-                },
-              },
-              {
-                user_id: { [Op.not]: `telegram-${ctx.update.message.from.id}` },
-              },
-            ],
+            groupId: `telegram-${ctx.update.message.chat.id}`,
           },
-          include: [
-            {
-              model: db.wallet,
-              as: 'wallet',
-            },
-          ],
           lock: t.LOCK.UPDATE,
           transaction: t,
         });
-        console.log('rain 4');
-        console.log(usersToRain);
-        if (usersToRain.length < 2) {
-          ctx.reply('not enough active users');
-        }
-        if (usersToRain.length >= 2) {
-          const amountPerUser = (((amount / usersToRain.length).toFixed(0)));
-          const rainRecord = await db.rain.create({
-            amount,
-            userCount: usersToRain.length,
-            userId: user.id,
-          }, {
+        console.log(group);
+        if (group) {
+          console.log('fetchuserstart');
+          const usersToRain = await db.user.findAll({
+            where: {
+              [Op.and]: [
+                {
+                  user_id: { [Op.not]: `telegram-${ctx.update.message.from.id}` },
+                },
+              ],
+            },
+            include: [
+              {
+                model: db.active,
+                as: 'active',
+                //required: false,
+                where: {
+                  [Op.and]: [
+                    {
+                      lastSeen: {
+                        [Op.gte]: new Date(Date.now() - (3 * 60 * 60 * 1000)),
+                      },
+                    },
+                    {
+                      groupId: group.id,
+                    },
+                  ],
+                },
+              },
+              {
+                model: db.wallet,
+                as: 'wallet',
+              },
+            ],
             lock: t.LOCK.UPDATE,
             transaction: t,
           });
-          const listOfUsersRained = [];
-          // eslint-disable-next-line no-restricted-syntax
-          for (const rainee of usersToRain) {
-            console.log('raineee');
-            console.log(rainee);
-            console.log(amountPerUser);
-            console.log(rainee.id);
-            console.log(rainRecord.id);
-            // eslint-disable-next-line no-await-in-loop
-            await rainee.wallet.update({
-              available: rainee.wallet.available + Number(amountPerUser),
+          console.log('fetched');
+          console.log('rain 4');
+          console.log(usersToRain);
+          if (usersToRain.length < 2) {
+            ctx.reply('not enough active users');
+          }
+          if (usersToRain.length >= 2) {
+            const amountPerUser = (((amount / usersToRain.length).toFixed(0)));
+            const rainRecord = await db.rain.create({
+              amount,
+              userCount: usersToRain.length,
+              userId: user.id,
             }, {
               lock: t.LOCK.UPDATE,
               transaction: t,
             });
-            console.log('afterrainee update');
-            console.log(amountPerUser);
-            console.log(rainee.id);
-            console.log(rainRecord.id);
-            // eslint-disable-next-line no-await-in-loop
-            await db.raintip.create({
-              amount: amountPerUser,
-              userId: rainee.id,
-              rainId: rainRecord.id,
-            }, {
-              lock: t.LOCK.UPDATE,
-              transaction: t,
-            });
-            console.log('after raintip create');
-            listOfUsersRained.push(`@${rainee.username}`);
-          }
+            const listOfUsersRained = [];
+            // eslint-disable-next-line no-restricted-syntax
+            for (const rainee of usersToRain) {
+              console.log('raineee');
+              console.log(rainee);
+              console.log(amountPerUser);
+              console.log(rainee.id);
+              console.log(rainRecord.id);
+              // eslint-disable-next-line no-await-in-loop
+              await rainee.wallet.update({
+                available: rainee.wallet.available + Number(amountPerUser),
+              }, {
+                lock: t.LOCK.UPDATE,
+                transaction: t,
+              });
+              console.log('afterrainee update');
+              console.log(amountPerUser);
+              console.log(rainee.id);
+              console.log(rainRecord.id);
+              // eslint-disable-next-line no-await-in-loop
+              await db.raintip.create({
+                amount: amountPerUser,
+                userId: rainee.id,
+                rainId: rainRecord.id,
+              }, {
+                lock: t.LOCK.UPDATE,
+                transaction: t,
+              });
+              console.log('after raintip create');
+              listOfUsersRained.push(`@${rainee.username}`);
+            }
 
-          await ctx.reply(`Raining ${amount / 1e8} RUNES on ${usersToRain.length} active users -- ${amountPerUser / 1e8} RUNES each`);
+            await ctx.reply(`Raining ${amount / 1e8} RUNES on ${usersToRain.length} active users -- ${amountPerUser / 1e8} RUNES each`);
 
-          const newStringListUsers = listOfUsersRained.join(", ");
-          console.log(newStringListUsers);
-          const cutStringListUsers = newStringListUsers.match(/.{1,4000}(\s|$)/g);
-          // eslint-disable-next-line no-restricted-syntax
-          for (const element of cutStringListUsers) {
-            // eslint-disable-next-line no-await-in-loop
-            await ctx.reply(element);
+            const newStringListUsers = listOfUsersRained.join(", ");
+            console.log(newStringListUsers);
+            const cutStringListUsers = newStringListUsers.match(/.{1,4000}(\s|$)/g);
+            // eslint-disable-next-line no-restricted-syntax
+            for (const element of cutStringListUsers) {
+              // eslint-disable-next-line no-await-in-loop
+              await ctx.reply(element);
+            }
+            logger.info(`Success Rain Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} for ${amount / 1e8}`);
+            // cutStringListUsers.forEach((element) => ctx.reply(element));
           }
-          logger.info(`Success Rain Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} for ${amount / 1e8}`);
-          // cutStringListUsers.forEach((element) => ctx.reply(element));
+        }
+        if (!group) {
+          await ctx.reply('Group not found');
         }
       }
     }
@@ -241,7 +268,8 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
           });
           console.log(tipTransaction);
           console.log('6');
-          bot.telegram.sendMessage(runesGroup, `@${user.username} tipped ${amount / 1e8} RUNES to @${findUserToTip.username}`);
+          ctx.reply(`@${user.username} tipped ${amount / 1e8} RUNES to @${findUserToTip.username}`);
+          //bot.telegram.sendMessage(runesGroup, `@${user.username} tipped ${amount / 1e8} RUNES to @${findUserToTip.username}`);
           logger.info(`Success tip Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} to ${findUserToTip.username} with ${amount / 1e8} RUNES`);
           // ctx.reply(`${user.username} tipped ${amount / 1e8} RUNES to ${updatedFindUserToTip.username}`);
         }

@@ -1,7 +1,7 @@
 /* eslint no-underscore-dangle: [2, { "allow": ["_eventName", "_address", "_time", "_orderId"] }] */
 
-import db from '../models';
 import PQueue from 'p-queue';
+import db from '../models';
 
 const _ = require('lodash');
 const moment = require('moment');
@@ -89,7 +89,7 @@ const syncTransactions = async (startBlock, endBlock) => {
   // eslint-disable-next-line no-restricted-syntax
   for await (const trans of transactions) {
     const transaction = await getInstance().getTransaction(trans.txid);
-    
+
     // eslint-disable-next-line no-restricted-syntax
     for await (const detail of transaction.details) {
       // eslint-disable-next-line no-await-in-loop
@@ -119,7 +119,7 @@ const syncTransactions = async (startBlock, endBlock) => {
         }
         if (transaction.confirmations >= 5) {
           // transaction.details.forEach(async (detail) => {
-          
+
           if (detail.category === 'send' && trans.type === 'send') {
             console.log(detail.amount);
             console.log(((detail.amount * 1e8)));
@@ -133,20 +133,25 @@ const syncTransactions = async (startBlock, endBlock) => {
               transaction: t,
               lock: t.LOCK.UPDATE,
             });
+            updatedTransaction = await trans.update({
+              confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
+              phase: 'confirmed',
+            }, {
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            });
+            const createActivity = await db.activity.create({
+              spenderId: updatedWallet.userId,
+              type: 'withdrawComplete',
+              amount: detail.amount * 1e8,
+              spender_balance: updatedWallet.available + updatedWallet.locked,
+              txId: updatedTransaction.id,
+            }, {
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            });
           }
           if (detail.category === 'receive' && trans.type === 'receive') {
-            console.log('updating balance');
-            console.log('updating balance');
-            console.log('updating balance');
-            console.log('updating balance');
-            console.log('updating balance');
-            console.log('updating balance');
-            console.log('updating balance');
-            console.log('updating balance');
-            console.log('updating balance');
-            console.log('updating balance');
-            console.log('updating balance');
-            console.log('updating balance');
             console.log('updating balance');
             updatedWallet = await wallet.update({
               available: wallet.available + (detail.amount * 1e8),
@@ -154,15 +159,26 @@ const syncTransactions = async (startBlock, endBlock) => {
               transaction: t,
               lock: t.LOCK.UPDATE,
             });
+            updatedTransaction = await trans.update({
+              confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
+              phase: 'confirmed',
+            }, {
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            });
+            const createActivity = await db.activity.create({
+              earnerId: updatedWallet.userId,
+              type: 'depositComplete',
+              amount: detail.amount * 1e8,
+              earner_balance: updatedWallet.available + updatedWallet.locked,
+              txId: updatedTransaction.id,
+            }, {
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            });
           }
 
-          updatedTransaction = await trans.update({
-            confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
-            phase: 'confirmed',
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
+          
         }
         t.afterCommit(() => {
           console.log('done');
@@ -221,7 +237,6 @@ const getInsertBlockPromises = async (startBlock, endBlock) => {
   return { insertBlockPromises };
 };
 
-
 const sync = async () => {
   const currentBlockCount = Math.max(0, await getInstance().getBlockCount());
   const currentBlockHash = await getInstance().getBlockHash(currentBlockCount);
@@ -245,13 +260,13 @@ const sync = async () => {
     async (loop) => {
       const endBlock = Math.min((startBlock + BLOCK_BATCH_SIZE) - 1, currentBlockCount);
 
-      //await syncTransactions(startBlock, endBlock);
+      // await syncTransactions(startBlock, endBlock);
       await queue.add(() => syncTransactions(startBlock, endBlock));
       console.log('Synced syncTrade');
 
       const { insertBlockPromises } = await getInsertBlockPromises(startBlock, endBlock);
       await queue.add(() => Promise.all(insertBlockPromises));
-      //await Promise.all(insertBlockPromises);
+      // await Promise.all(insertBlockPromises);
       console.log('Inserted Blocks');
 
       startBlock = endBlock + 1;

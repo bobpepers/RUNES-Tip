@@ -71,6 +71,22 @@ const walletNotify = async (req, res, next) => {
           lock: t.LOCK.UPDATE,
         });
 
+        if (res.locals.transaction[1]) {
+          const activity = await db.activity.findOrCreate({
+            where: {
+              txid: res.locals.transaction[0].id,
+            },
+            defaults: {
+              earnerId: res.locals.userId,
+              type: 'depositAccepted',
+              amount: detail.amount * 1e8,
+              txId: res.locals.transaction[0].id,
+            },
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+        }
+
         console.log('res.locals.transaction');
 
         console.log(res.locals.transaction);
@@ -80,7 +96,7 @@ const walletNotify = async (req, res, next) => {
         logger.info(`deposit detected for addressid: ${res.locals.transaction[0].addressId} and txid: ${res.locals.transaction[0].txid}`);
       }
     }));
-    
+
     t.afterCommit(() => {
       next();
       console.log('commited');

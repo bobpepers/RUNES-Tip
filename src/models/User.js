@@ -67,7 +67,11 @@ module.exports = (sequelize, DataTypes) => {
     UserModel.hasMany(model.rain);
     UserModel.hasMany(model.raintip);
     UserModel.hasMany(model.referral);
-    UserModel.hasMany(model.referralReward);    
+    UserModel.hasMany(model.referralReward);
+    UserModel.hasMany(model.active, {
+      foreignKey: 'userId',
+      as: 'active',
+    });
   };
 
   return UserModel;

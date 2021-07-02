@@ -116,7 +116,7 @@ Type "/runestip help" for usage info`);
 
       t.afterCommit(() => {
         console.log('done');
-        //ctx.reply(`done`);
+        // ctx.reply(`done`);
       });
     }).catch((err) => {
       console.log(err.message);
@@ -124,13 +124,11 @@ Type "/runestip help" for usage info`);
 
     // Explicit usage
 
-    //ctx.telegram.sendMessage(ctx.message.chat.id, `Hello ${ctx.state.role}`);
+    // ctx.telegram.sendMessage(ctx.message.chat.id, `Hello ${ctx.state.role}`);
 
     // Using context shortcut
-    
   }
 };
-
 
 export const updateLastSeen = async (ctx) => {
   await db.sequelize.transaction({
@@ -145,6 +143,53 @@ export const updateLastSeen = async (ctx) => {
         lock: t.LOCK.UPDATE,
       },
     );
+    const group = await db.group.findOne(
+      {
+        where: {
+          groupId: `telegram-${ctx.update.message.chat.id}`,
+        },
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      },
+    );
+    const active = await db.active.findOne(
+      {
+        where: {
+          userId: user.id,
+          groupId: group.id,
+        },
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      },
+    );
+    if (group) {
+      if (user) {
+        if (active) {
+          const updatedActive = await active.update(
+            {
+              lastSeen: new Date(Date.now()),
+            },
+            {
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            },
+          );
+        }
+        if (!active) {
+          const updatedActive = await db.active.create(
+            {
+              groupId: group.id,
+              userId: user.id,
+              lastSeen: new Date(Date.now()),
+            },
+            {
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            },
+          );
+        }
+      }
+    }
     console.log(user);
     if (user) {
       const updatedUser = await user.update(
@@ -156,7 +201,7 @@ export const updateLastSeen = async (ctx) => {
           lock: t.LOCK.UPDATE,
         },
       );
-    }    
+    }
 
     t.afterCommit(() => {
       console.log('done');
