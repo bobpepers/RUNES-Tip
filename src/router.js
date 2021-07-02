@@ -516,6 +516,7 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
   });
 
   bot.on('text', (ctx) => {
+    console.log('found text');
     console.log(ctx.update);
     console.log(ctx.update.message);
     console.log(ctx.update.message.from);
