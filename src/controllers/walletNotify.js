@@ -18,6 +18,12 @@ const walletNotify = async (req, res, next) => {
   console.log('transaction');
   console.log('transaction');
   console.log('transaction');
+  console.log('transaction');
+  console.log('transaction');
+  console.log('transaction');
+  console.log('transaction');
+  console.log('transaction');
+  console.log('transaction');
 
   console.log(transaction);
 
@@ -55,6 +61,13 @@ const walletNotify = async (req, res, next) => {
         console.log('detail walletnotifyu');
         console.log(detail);
         res.locals.userId = address.wallet.userId;
+        console.log(transaction);
+        console.log(transaction);
+        console.log(transaction);
+        console.log(transaction);
+        console.log(transaction);
+        console.log(transaction);
+        console.log(transaction);
         res.locals.transaction = await db.transaction.findOrCreate({
           where: {
             txid: transaction.txid,
@@ -74,13 +87,13 @@ const walletNotify = async (req, res, next) => {
         if (res.locals.transaction[1]) {
           const activity = await db.activity.findOrCreate({
             where: {
-              txid: res.locals.transaction[0].id,
+              transactionId: res.locals.transaction[0].id,
             },
             defaults: {
               earnerId: res.locals.userId,
               type: 'depositAccepted',
               amount: detail.amount * 1e8,
-              txId: res.locals.transaction[0].id,
+              transactionId: res.locals.transaction[0].id,
             },
             transaction: t,
             lock: t.LOCK.UPDATE,

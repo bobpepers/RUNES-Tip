@@ -145,7 +145,7 @@ const syncTransactions = async (startBlock, endBlock) => {
               type: 'withdrawComplete',
               amount: detail.amount * 1e8,
               spender_balance: updatedWallet.available + updatedWallet.locked,
-              txId: updatedTransaction.id,
+              transactionId: updatedTransaction.id,
             }, {
               transaction: t,
               lock: t.LOCK.UPDATE,
@@ -171,7 +171,7 @@ const syncTransactions = async (startBlock, endBlock) => {
               type: 'depositComplete',
               amount: detail.amount * 1e8,
               earner_balance: updatedWallet.available + updatedWallet.locked,
-              txId: updatedTransaction.id,
+              transactionId: updatedTransaction.id,
             }, {
               transaction: t,
               lock: t.LOCK.UPDATE,

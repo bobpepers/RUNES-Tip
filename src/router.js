@@ -71,6 +71,22 @@ const bot = new Telegraf(telegramBotToken);
 const router = (app) => {
   app.post('/api/chaininfo/block',
     (req, res) => {
+      console.log('new block found');
+      console.log('new block found');
+      console.log('new block found');
+      console.log('new block found');
+      console.log('new block found');
+      console.log('new block found');
+      console.log('new block found');
+      console.log('new block found');
+      console.log('new block found');
+      console.log('new block found');
+      console.log('new block found');
+      console.log('new block found');
+      console.log('new block found');
+      console.log('new block found');
+      console.log('new block found');
+      console.log('new block found');
       startSync();
     });
 
@@ -82,6 +98,21 @@ const router = (app) => {
         console.log('walletnotify...');
         console.log(res.locals.error);
       } else if (!res.locals.error && res.locals.transaction) {
+        console.log('walletnotify...');
+        console.log('walletnotify...');
+        console.log('walletnotify...');
+        console.log('walletnotify...');
+        console.log('walletnotify...');
+        console.log('walletnotify...');
+        console.log('walletnotify...');
+        console.log('walletnotify...');
+        console.log('walletnotify...');
+        console.log('walletnotify...');
+        console.log('walletnotify...');
+        console.log('walletnotify...');
+        console.log('walletnotify...');
+        console.log('walletnotify...');
+        
         console.log(res.locals.transaction);
         console.log('wtf');
         console.log(runesGroup);
@@ -517,6 +548,27 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
 
   bot.on('text', (ctx) => {
     console.log('found text');
+    console.log(ctx.update);
+    console.log(ctx.update.message);
+    console.log(ctx.update.message.from);
+    console.log(ctx.update.message.text);
+    console.log(ctx.update.message.from.username);
+    logger.info(`Chat - ${ctx.update.message.chat.id}: ${ctx.update.message.chat.title} : ${ctx.update.message.from.username}: ${ctx.update.message.text}`);
+    (async () => {
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
+      const task = await createUpdateUser(ctx);
+      await queue.add(() => task);
+      console.log(ctx.update.message.chat.id);
+      console.log(Number(runesGroup));
+      //if (ctx.update.message.chat.id === Number(runesGroup)) {
+        const lastSeenTask = await updateLastSeen(ctx);
+        await queue.add(() => lastSeenTask);
+      //}
+    })();
+  });
+  bot.on('message', (ctx) => {
+    console.log('found message');
     console.log(ctx.update);
     console.log(ctx.update.message);
     console.log(ctx.update.message.from);

@@ -351,6 +351,18 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
+          const activity = await db.activity.create(
+            {
+              spenderId: user.id,
+              type: 'withdrawRequested',
+              amount,
+              transactionId: transaction.id,
+            },
+            {
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            },
+          );
           ctx.reply('Withdrawal is being reviewed');
         }
       }
