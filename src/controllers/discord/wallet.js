@@ -12,6 +12,339 @@ const logger = require('../../helpers/logger');
 const minimumTip = 1 * 1e6;
 const minimumRain = 1 * 1e7;
 
+/**
+ * Create Withdrawal
+ */
+export const withdrawDiscordCreate = async (message, filteredMessage) => {
+  console.log(filteredMessage);
+  logger.info(`Start Withdrawal Request: ${message.author.id}-${message.author.username}`);
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    const amount = new BigNumber(filteredMessage[3]).times(1e8).toNumber();
+    console.log('withdrawal amount');
+    console.log(amount);
+    if (amount < (2 * 1e8)) { // smaller then 2 RUNES
+      const toSmaallMessage = new MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('Withdraw')
+        .setDescription(`<@${message.author.id}>, Minimum Withdrawal is 2 RUNES`)
+        .setTimestamp()
+        .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+      await message.author.send({ embeds: [toSmaallMessage] });
+    }
+    if (amount % 1 !== 0) {
+      const invalidAmountMessage = new MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('Withdraw')
+        .setDescription(`<@${message.author.id}>, Invalid Amount`)
+        .setTimestamp()
+        .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+      await message.author.send({ embeds: [invalidAmountMessage] });
+    }
+    const isRunebaseAddress = await getInstance().utils.isRunebaseAddress(filteredMessage[2]);
+    if (!isRunebaseAddress) {
+      const invalidAddressMessage = new MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('Withdraw')
+        .setDescription(`<@${message.author.id}>, Invalid Runebase Address`)
+        .setTimestamp()
+        .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+      await message.author.send({ embeds: [invalidAddressMessage] });
+    }
+
+    if (amount >= (2 * 1e8) && amount % 1 === 0 && isRunebaseAddress) {
+      const user = await db.user.findOne({
+        where: {
+          user_id: `discord-${message.author.id}`,
+        },
+        include: [
+          {
+            model: db.wallet,
+            as: 'wallet',
+            include: [
+              {
+                model: db.address,
+                as: 'addresses',
+              },
+            ],
+          },
+        ],
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      if (!user) {
+        const userNotFoundMessage = new MessageEmbed()
+          .setColor('#0099ff')
+          .setTitle('Withdraw')
+          .setDescription(`<@${message.author.id}>, Wallet not found`)
+          .setTimestamp()
+          .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+        await message.author.send({ embeds: [userNotFoundMessage] });
+      }
+      if (user) {
+        if (amount > user.wallet.available) {
+          const Insufficient = new MessageEmbed()
+            .setColor('#0099ff')
+            .setTitle('Withdraw')
+            .setDescription(`<@${message.author.id}>, Insufficient funds`)
+            .setTimestamp()
+            .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+          await message.author.send({ embeds: [Insufficient] });
+        }
+        if (amount <= user.wallet.available) {
+          const wallet = await user.wallet.update({
+            available: user.wallet.available - amount,
+            locked: user.wallet.locked + amount,
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          const transaction = await db.transaction.create({
+            addressId: wallet.addresses[0].id,
+            phase: 'review',
+            type: 'send',
+            to_from: filteredMessage[2],
+            amount,
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          const activity = await db.activity.create(
+            {
+              spenderId: user.id,
+              type: 'withdrawRequested',
+              amount,
+              transactionId: transaction.id,
+            },
+            {
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            },
+          );
+          const reviewMessage = new MessageEmbed()
+            .setColor('#0099ff')
+            .setTitle('Withdraw')
+            .setDescription(`<@${message.author.id}>, Your withdrawal is being reviewed`)
+            .setTimestamp()
+            .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+          await message.author.send({ embeds: [reviewMessage] });
+        }
+      }
+    }
+    t.afterCommit(() => {
+      console.log('done');
+    });
+  }).catch((err) => {
+    message.author.send("Something went wrong.");
+  });
+};
+
+export const discordSleet = async (client, message, filteredMessage) => {
+  // const guild = await client.guilds.cache.get(message.guildId);
+  // const members = guild.presences.cache;
+  // const onlineMembers = members.filter((member) => member.status === 'online');
+  // const onlineMembersIds = members.map((a) => a.userId);
+
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    const amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
+    console.log('rain amount');
+    console.log(amount);
+    if (amount < (minimumRain)) { // smaller then 2 RUNES
+      const minimumSleetMessage = new MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('Sleet')
+        .setDescription(`<@${message.author.id}>, Minimum Rain is ${minimumRain / 1e8} RUNES`)
+        .setTimestamp()
+        .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+      await message.channel.send({ embeds: [minimumSleetMessage] });
+    }
+    if (amount % 1 !== 0) {
+      const invalidAmountMessage = new MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('Sleet')
+        .setDescription(`<@${message.author.id}>, Invalid Amount`)
+        .setTimestamp()
+        .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+      await message.channel.send({ embeds: [invalidAmountMessage] });
+    }
+    // const userToTip = runesTipSplit[2].substring(1);
+    const user = await db.user.findOne({
+      where: {
+        user_id: `discord-${message.author.id}`,
+      },
+      include: [
+        {
+          model: db.wallet,
+          as: 'wallet',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    console.log(user);
+    if (!user) {
+      const walletNotFoundMessage = new MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('Sleet')
+        .setDescription(`<@${message.author.id}>, Wallet not found`)
+        .setTimestamp()
+        .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+      await message.channel.send({ embeds: [walletNotFoundMessage] });
+    }
+    if (user) {
+      if (user.wallet.available < amount) {
+        const notEnoughBalanceMessage = new MessageEmbed()
+          .setColor('#0099ff')
+          .setTitle('Sleet')
+          .setDescription(`<@${message.author.id}>, Insufficient Balance`)
+          .setTimestamp()
+          .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+        await message.channel.send({ embeds: [notEnoughBalanceMessage] });
+      }
+      if (user.wallet.available >= amount) {
+        const group = await db.group.findOne({
+          where: {
+            groupId: `discord-${message.guildId}`,
+          },
+          lock: t.LOCK.UPDATE,
+          transaction: t,
+        });
+        console.log(group);
+        if (group) {
+          console.log('fetchuserstart');
+          const usersToRain = await db.user.findAll({
+            where: {
+              [Op.and]: [
+                {
+                  user_id: { [Op.not]: `discord-${message.author.id}` },
+                },
+              ],
+            },
+            include: [
+              {
+                model: db.active,
+                as: 'active',
+                // required: false,
+                where: {
+                  [Op.and]: [
+                    {
+                      lastSeen: {
+                        [Op.gte]: new Date(Date.now() - (15 * 60 * 1000)),
+                      },
+                    },
+                    {
+                      groupId: group.id,
+                    },
+                  ],
+                },
+              },
+              {
+                model: db.wallet,
+                as: 'wallet',
+              },
+            ],
+            lock: t.LOCK.UPDATE,
+            transaction: t,
+          });
+          console.log('fetched');
+          console.log('rain 4');
+          console.log(usersToRain);
+          if (usersToRain.length < 2) {
+            const notEnoughActiveUsersMessage = new MessageEmbed()
+              .setColor('#0099ff')
+              .setTitle('Sleet')
+              .setDescription(`<@${message.author.id}>, not enough active users`)
+              .setTimestamp()
+              .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+            await message.channel.send({ embeds: [notEnoughActiveUsersMessage] });
+          }
+          if (usersToRain.length >= 2) {
+            const updatedBalance = await user.wallet.update({
+              available: user.wallet.available - amount,
+            }, {
+              lock: t.LOCK.UPDATE,
+              transaction: t,
+            });
+            const amountPerUser = (((amount / usersToRain.length).toFixed(0)));
+            const rainRecord = await db.rain.create({
+              amount,
+              userCount: usersToRain.length,
+              userId: user.id,
+            }, {
+              lock: t.LOCK.UPDATE,
+              transaction: t,
+            });
+            const listOfUsersRained = [];
+            // eslint-disable-next-line no-restricted-syntax
+            for (const rainee of usersToRain) {
+              console.log('raineee');
+              console.log(rainee);
+              console.log(amountPerUser);
+              console.log(rainee.id);
+              console.log(rainRecord.id);
+              // eslint-disable-next-line no-await-in-loop
+              await rainee.wallet.update({
+                available: rainee.wallet.available + Number(amountPerUser),
+              }, {
+                lock: t.LOCK.UPDATE,
+                transaction: t,
+              });
+              console.log('afterrainee update');
+              console.log(amountPerUser);
+              console.log(rainee.id);
+              console.log(rainRecord.id);
+              // eslint-disable-next-line no-await-in-loop
+              await db.raintip.create({
+                amount: amountPerUser,
+                userId: rainee.id,
+                rainId: rainRecord.id,
+              }, {
+                lock: t.LOCK.UPDATE,
+                transaction: t,
+              });
+              const userIdTest = rainee.user_id.replace('discord-', '');
+              console.log('after raintip create');
+              listOfUsersRained.push(`<@${userIdTest}>`);
+            }
+
+            // await ctx.reply(`Raining ${amount / 1e8} RUNES on ${usersToRain.length} active users -- ${amountPerUser / 1e8} RUNES each`);
+
+            const newStringListUsers = listOfUsersRained.join(", ");
+            console.log(newStringListUsers);
+            const cutStringListUsers = newStringListUsers.match(/.{1,4000}(\s|$)/g);
+            // eslint-disable-next-line no-restricted-syntax
+            for (const element of cutStringListUsers) {
+              // eslint-disable-next-line no-await-in-loop
+              // await ctx.reply(element);
+              await message.channel.send(element);
+            }
+            const notEnoughActiveUsersMessage = new MessageEmbed()
+              .setColor('#0099ff')
+              .setTitle('Sleet')
+              .setDescription(`<@${message.author.id}> Sleeted ${amount / 1e8} RUNES on ${usersToRain.length} active users -- ${amountPerUser / 1e8} RUNES each`)
+              .setTimestamp()
+              .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+            await message.channel.send({ embeds: [notEnoughActiveUsersMessage] });
+            logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+            // cutStringListUsers.forEach((element) => ctx.reply(element));
+          }
+        }
+        if (!group) {
+          await message.channel.send("Group not found");
+        }
+      }
+    }
+    t.afterCommit(() => {
+      console.log('done');
+    });
+  }).catch((err) => {
+    message.channel.send("Somethign went wrong.");
+  });
+};
+
 export const discordFlood = async (client, message, filteredMessage) => {
   // console.log(message);
   const guild = await client.guilds.cache.get(message.guildId);
@@ -66,7 +399,7 @@ export const discordFlood = async (client, message, filteredMessage) => {
         .setDescription(`<@${message.author.id}>, Minimum Flood is ${minimumRain / 1e8} RUNES`)
         .setTimestamp()
         .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-      message.channel.send({ embeds: [minimumRainMessage] });
+      await message.channel.send({ embeds: [minimumRainMessage] });
     }
     if (amount % 1 !== 0) {
       const invalidAmountMessage = new MessageEmbed()
@@ -75,7 +408,7 @@ export const discordFlood = async (client, message, filteredMessage) => {
         .setDescription(`<@${message.author.id}>, Invalid Amount`)
         .setTimestamp()
         .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-      message.channel.send({ embeds: [invalidAmountMessage] });
+      await message.channel.send({ embeds: [invalidAmountMessage] });
     } else {
       console.log('rain 1');
       // const userToTip = runesTipSplit[2].substring(1);
@@ -108,7 +441,7 @@ export const discordFlood = async (client, message, filteredMessage) => {
           .setDescription(`<@${message.author.id}>, User Wallet Not Found`)
           .setTimestamp()
           .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-        message.channel.send({ embeds: [walletNotFound] });
+        await message.channel.send({ embeds: [walletNotFound] });
       }
       if (user) {
         if (user.wallet.available < amount) {
@@ -118,11 +451,11 @@ export const discordFlood = async (client, message, filteredMessage) => {
             .setDescription(`<@${message.author.id}>, Insufficient Balance`)
             .setTimestamp()
             .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-          message.channel.send({ embeds: [notEnoughBalanceRain] });
+          await message.channel.send({ embeds: [notEnoughBalanceRain] });
         }
         if (user.wallet.available >= amount) {
           if (withoutBots.length < 2) {
-            message.channel.send('not enough online users');
+            await message.channel.send('not enough online users');
           }
           if (withoutBots.length >= 2) {
             const updatedBalance = await user.wallet.update({
@@ -189,7 +522,7 @@ export const discordFlood = async (client, message, filteredMessage) => {
               .setDescription(`<@${message.author.id}> Flooded ${amount / 1e8} RUNES on ${withoutBots.length} users -- ${amountPerUser / 1e8} RUNES each`)
               .setTimestamp()
               .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-            message.channel.send({ embeds: [successRained] });
+            await message.channel.send({ embeds: [successRained] });
             logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
             // cutStringListUsers.forEach((element) => ctx.reply(element));
           }
@@ -259,7 +592,7 @@ export const discordRain = async (client, message, filteredMessage) => {
         .setDescription(`<@${message.author.id}>, Minimum Rain is ${minimumRain / 1e8} RUNES`)
         .setTimestamp()
         .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-      message.channel.send({ embeds: [minimumRainMessage] });
+      await message.channel.send({ embeds: [minimumRainMessage] });
     }
     if (amount % 1 !== 0) {
       const invalidAmountMessage = new MessageEmbed()
@@ -268,7 +601,7 @@ export const discordRain = async (client, message, filteredMessage) => {
         .setDescription(`<@${message.author.id}>, Invalid Amount`)
         .setTimestamp()
         .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-      message.channel.send({ embeds: [invalidAmountMessage] });
+      await message.channel.send({ embeds: [invalidAmountMessage] });
     } else {
       console.log('rain 1');
       // const userToTip = runesTipSplit[2].substring(1);
@@ -301,7 +634,7 @@ export const discordRain = async (client, message, filteredMessage) => {
           .setDescription(`<@${message.author.id}>, User Wallet Not Found`)
           .setTimestamp()
           .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-        message.channel.send({ embeds: [walletNotFound] });
+        await message.channel.send({ embeds: [walletNotFound] });
       }
       if (user) {
         if (user.wallet.available < amount) {
@@ -311,11 +644,11 @@ export const discordRain = async (client, message, filteredMessage) => {
             .setDescription(`<@${message.author.id}>, Insufficient Balance`)
             .setTimestamp()
             .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-          message.channel.send({ embeds: [notEnoughBalanceRain] });
+          await message.channel.send({ embeds: [notEnoughBalanceRain] });
         }
         if (user.wallet.available >= amount) {
           if (withoutBots.length < 2) {
-            message.channel.send('not enough online users');
+            await message.channel.send('not enough online users');
           }
           if (withoutBots.length >= 2) {
             const updatedBalance = await user.wallet.update({
@@ -382,7 +715,7 @@ export const discordRain = async (client, message, filteredMessage) => {
               .setDescription(`<@${message.author.id}> rained ${amount / 1e8} RUNES on ${withoutBots.length} users -- ${amountPerUser / 1e8} RUNES each`)
               .setTimestamp()
               .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-            message.channel.send({ embeds: [successRained] });
+            await message.channel.send({ embeds: [successRained] });
             logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
             // cutStringListUsers.forEach((element) => ctx.reply(element));
           }
@@ -439,7 +772,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
         .setDescription(`<@${message.author.id}>, Invalid Amount`)
         .setTimestamp()
         .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-      message.channel.send({ embeds: [invalidAmountMessage] });
+      await message.channel.send({ embeds: [invalidAmountMessage] });
     } else if (amount < (minimumTip)) { // smaller then 0.01 RUNES
       const minimumTipMessage = new MessageEmbed()
         .setColor('#0099ff')
@@ -447,7 +780,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
         .setDescription(`<@${message.author.id}>, Minimum Tip is 0.01 RUNES`)
         .setTimestamp()
         .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-      message.channel.send({ embeds: [minimumTipMessage] });
+      await message.channel.send({ embeds: [minimumTipMessage] });
     } else {
       const findUserToTip = await db.user.findOne({
         where: {
@@ -476,7 +809,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
           .setDescription(`Unable to find user to tip.`)
           .setTimestamp()
           .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-        message.channel.send({ embeds: [unableToFindUserMessage] });
+        await message.channel.send({ embeds: [unableToFindUserMessage] });
       }
 
       if (amount >= (minimumTip) && amount % 1 === 0 && findUserToTip) {
@@ -500,7 +833,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
             .setDescription(`User not found.`)
             .setTimestamp()
             .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-          message.channel.send({ embeds: [userNotFoundMessage] });
+          await message.channel.send({ embeds: [userNotFoundMessage] });
         }
         if (user) {
           if (amount > user.wallet.available) {
@@ -510,7 +843,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
               .setDescription(`Insufficient Balance.`)
               .setTimestamp()
               .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-            message.channel.send({ embeds: [notEnoughBalanceMessage] });
+            await message.channel.send({ embeds: [notEnoughBalanceMessage] });
             // ctx.reply('Insufficient funds');
           }
           if (amount <= user.wallet.available) {
@@ -545,7 +878,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
               .setDescription(`<@${userId}> tipped ${amount / 1e8} RUNES to <@${userIdTipped}>`)
               .setTimestamp()
               .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-            message.channel.send({ embeds: [userNotFoundMessage] });
+            await message.channel.send({ embeds: [userNotFoundMessage] });
             logger.info(`Success tip Requested by: ${user.user_id}-${user.username} to ${findUserToTip.user_id}-${findUserToTip.username} with ${amount / 1e8} RUNES`);
           }
         }
@@ -685,7 +1018,7 @@ export const fetchDiscordWalletBalance = async (message) => {
 
     if (!user && !user.wallet) {
       // ctx.reply(`Wallet not found`);
-      message.author.send("Wallet not found");
+      await message.author.send("Wallet not found");
     }
 
     if (user && user.wallet) {
@@ -706,12 +1039,14 @@ Estimated value of <@${userId}>'s balance: $${(((user.wallet.available + user.wa
         .setThumbnail('https://downloads.runebase.io/logo-512x512.png')
         .setTimestamp()
         .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+      console.log('messagechanneltype');
+      console.log(message.channel.type);
       if (message.channel.type === 'DM') {
-        message.author.send({ embeds: [balanceMessage] });
+        await message.author.send({ embeds: [balanceMessage] });
       }
       if (message.channel.type === 'GUILD_TEXT') {
-        message.channel.send({ embeds: [directMessage] });
-        message.author.send({ embeds: [balanceMessage] });
+        await message.channel.send({ embeds: [directMessage] });
+        await message.author.send({ embeds: [balanceMessage] });
       }
     }
 
@@ -748,7 +1083,7 @@ export const fetchDiscordWalletDepositAddress = async (message) => {
     });
 
     if (!user && !user.wallet && !user.wallet.addresses) {
-      message.author.send("Deposit Address not found");
+      await message.author.send("Deposit Address not found");
     }
 
     if (user && user.wallet && user.wallet.addresses) {
@@ -780,14 +1115,14 @@ export const fetchDiscordWalletDepositAddress = async (message) => {
         .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
 
       if (message.channel.type === 'DM') {
-        message.author.send({
+        await message.author.send({
           embeds: [depositAddressMessage],
           files: [new MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')],
         });
       }
       if (message.channel.type === 'GUILD_TEXT') {
-        message.channel.send({ embeds: [directMessage] });
-        message.author.send({
+        await message.channel.send({ embeds: [directMessage] });
+        await message.author.send({
           embeds: [depositAddressMessage],
           files: [new MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')],
         });

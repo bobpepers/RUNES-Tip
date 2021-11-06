@@ -99,23 +99,25 @@ Type "/runestip help" for usage info`);
   });
 };
 
-export const updateLastSeen = async (ctx) => {
+export const updateDiscordLastSeen = async (client, message) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    console.log('updateddddd');
     const user = await db.user.findOne(
       {
         where: {
-          user_id: `telegram-${ctx.update.message.from.id}`,
+          user_id: `discord-${message.author.id}`,
         },
         transaction: t,
         lock: t.LOCK.UPDATE,
       },
     );
+    console.log(user);
     const group = await db.group.findOne(
       {
         where: {
-          groupId: `telegram-${ctx.update.message.chat.id}`,
+          groupId: `discord-${message.guildId}`,
         },
         transaction: t,
         lock: t.LOCK.UPDATE,

@@ -4,7 +4,7 @@ import PQueue from 'p-queue';
 import db from '../models';
 
 const _ = require('lodash');
-const moment = require('moment');
+// const moment = require('moment');
 // const BigNumber = require('bignumber.js');
 // const { forEach } = require('p-iteration');
 // const abi = require('ethjs-abi');
@@ -177,8 +177,6 @@ const syncTransactions = async (startBlock, endBlock) => {
               lock: t.LOCK.UPDATE,
             });
           }
-
-          
         }
         t.afterCommit(() => {
           console.log('done');

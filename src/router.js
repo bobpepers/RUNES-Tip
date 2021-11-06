@@ -1,4 +1,5 @@
 import PQueue from 'p-queue';
+import { filter } from 'lodash';
 import walletNotify from './controllers/walletNotify';
 import updatePrice from './helpers/updatePrice';
 
@@ -22,6 +23,8 @@ import {
   tipRunesToDiscordUser,
   discordRain,
   discordFlood,
+  discordSleet,
+  withdrawDiscordCreate,
 } from './controllers/discord/wallet';
 
 import {
@@ -31,11 +34,16 @@ import {
 
 import {
   createUpdateDiscordUser,
+  updateDiscordLastSeen,
 } from './controllers/discord/user';
 
 import {
   updateGroup,
 } from './controllers/group';
+
+import {
+  updateDiscordGroup,
+} from './controllers/discord/group';
 
 import {
   fetchHelp,
@@ -114,12 +122,18 @@ const router = (app) => {
 
   const prefix = "!runestip";
   client.on("messageCreate", async (message) => {
+    console.log('1');
     if (!message.author.bot) {
       const walletExists = await createUpdateDiscordUser(message);
       await queue.add(() => walletExists);
+      const groupTask = await updateDiscordGroup(client, message);
+      await queue.add(() => groupTask);
+      const lastSeenDiscordTask = await updateDiscordLastSeen(client, message);
+      await queue.add(() => lastSeenDiscordTask);
     }
+    console.log('2');
     if (!message.content.startsWith(prefix) || message.author.bot) return;
-
+    console.log('3');
     const runesTipSplit = message.content.split(' ');
     const filteredMessage = runesTipSplit.filter((el) => el !== '');
 
@@ -140,8 +154,9 @@ const router = (app) => {
       const task = await discordHelp(message);
       await queue.add(() => task);
     }
-
+    console.log(filteredMessage);
     if (filteredMessage[1].toLowerCase() === 'balance') {
+      console.log('calling balance');
       const task = await fetchDiscordWalletBalance(message);
       await queue.add(() => task);
     }
@@ -152,7 +167,8 @@ const router = (app) => {
     }
 
     if (filteredMessage[1].toLowerCase() === 'withdraw') {
-      message.channel.send("Called withdraw");
+      const task = await withdrawDiscordCreate(message, filteredMessage);
+      await queue.add(() => task);
     }
 
     if (filteredMessage[1].toLowerCase() === 'rain') {
@@ -166,7 +182,8 @@ const router = (app) => {
     }
 
     if (filteredMessage[1].toLowerCase() === 'sleet') {
-      message.channel.send("Called sleet");
+      const task = await discordSleet(client, message, filteredMessage);
+      await queue.add(() => task);
     }
 
     if (message.content.startsWith(`${prefix}`)) {
@@ -180,8 +197,6 @@ filterMessage[5] = ${filteredMessage[5]}
       `);
     }
   });
-
-  client.login(process.env.CLIENT_TOKEN);
 
   /// //////////////////
 
@@ -262,7 +277,7 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
       console.log('botg hears admindrawrals');
 
       (async () => {
-        const task = await withdrawTelegramAdminAccept(bot, ctx, adminTelegramId, withdrawalId, runesGroup);
+        const task = await withdrawTelegramAdminAccept(bot, ctx, adminTelegramId, withdrawalId, runesGroup, client);
         await queue.add(() => task);
       })();
     }
@@ -277,7 +292,7 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
       // console.log(ctx.from)
       console.log('botg hears admindrawrals');
       (async () => {
-        const task = await withdrawTelegramAdminDecline(bot, ctx, adminTelegramId, withdrawalId, runesGroup);
+        const task = await withdrawTelegramAdminDecline(bot, ctx, adminTelegramId, withdrawalId, runesGroup, client);
         await queue.add(() => task);
       })();
     }
@@ -705,6 +720,7 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
     })();
   });
   bot.launch();
+  client.login(process.env.CLIENT_TOKEN);
 };
 
 export default router;

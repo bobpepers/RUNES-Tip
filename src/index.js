@@ -55,9 +55,9 @@ server.listen(port);
   await startSync();
   await patchDeposits();
 }());
-//startSync();
+// startSync();
 
-//patchDeposits();
+// patchDeposits();
 const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
   patchDeposits();
 });

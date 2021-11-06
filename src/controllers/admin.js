@@ -1,6 +1,8 @@
 import nodemailer from 'nodemailer';
-import axios from 'axios';
+// import axios from 'axios';
 import db from '../models';
+
+const { MessageEmbed, MessageAttachment } = require('discord.js');
 
 const { Sequelize, Transaction, Op } = require('sequelize');
 const { getInstance } = require('../services/rclient');
@@ -74,11 +76,12 @@ amount: ${withdrawal.amount / 1e8}
 /**
  * isAdmin
  */
-export const withdrawTelegramAdminAccept = async (bot, ctx, adminTelegramId, withdrawalId, runesGroup) => {
+export const withdrawTelegramAdminAccept = async (bot, ctx, adminTelegramId, withdrawalId, runesGroup, discordClient) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     console.log('1');
+
     const transaction = await db.transaction.findOne({
       where: {
         id: withdrawalId,
@@ -134,9 +137,28 @@ export const withdrawTelegramAdminAccept = async (bot, ctx, adminTelegramId, wit
           lock: t.LOCK.UPDATE,
         },
       );
-      bot.telegram.sendMessage(adminTelegramId, `Withdrawal Accepted
+      console.log('startswith crap');
+      console.log(transaction.address.wallet.user.user_id.startsWith('discord-'));
+      if (transaction.address.wallet.user.user_id.startsWith('discord-')) {
+        const newUserId = transaction.address.wallet.user.user_id.replace('discord-', '');
+        console.log('before my  client');
+        const myClient = await discordClient.users.fetch(newUserId, false);
+        console.log('after my client');
+        console.log(myClient);
+        const userNotFoundMessage = new MessageEmbed()
+          .setColor('#0099ff')
+          .setTitle('Withdraw')
+          .setDescription(`Your withdrawal has been accepted
+https://explorer.runebase.io/tx/${updatedTrans.txid}`)
+          .setTimestamp()
+          .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+        await myClient.send({ embeds: [userNotFoundMessage] });
+      }
+      if (transaction.address.wallet.user.user_id.startsWith('telegram-')) {
+        bot.telegram.sendMessage(runesGroup, `${transaction.address.wallet.user.username}'s withdrawal has been accepted
 https://explorer.runebase.io/tx/${updatedTrans.txid}`);
-      bot.telegram.sendMessage(runesGroup, `${transaction.address.wallet.user.username}'s withdrawal has been accepted
+      }
+      bot.telegram.sendMessage(adminTelegramId, `Withdrawal Accepted
 https://explorer.runebase.io/tx/${updatedTrans.txid}`);
     }
 
@@ -177,7 +199,7 @@ https://explorer.runebase.io/tx/${newTransaction.txid}`);
   }
 };
 
-export const withdrawTelegramAdminDecline = async (bot, ctx, adminTelegramId, withdrawalId, runesGroup) => {
+export const withdrawTelegramAdminDecline = async (bot, ctx, adminTelegramId, withdrawalId, runesGroup, discordClient) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -246,8 +268,21 @@ export const withdrawTelegramAdminDecline = async (bot, ctx, adminTelegramId, wi
             lock: t.LOCK.UPDATE,
           },
         );
+        if (transaction.address.wallet.user.user_id.startsWith('discord-')) {
+          const newUserId = transaction.address.wallet.user.user_id.replace('discord-', '');
+          const myClient = discordClient.users.fetch(newUserId, false);
+          const userNotFoundMessage = new MessageEmbed()
+            .setColor('#0099ff')
+            .setTitle('Withdraw')
+            .setDescription(`Your withdrawal has been rejected`)
+            .setTimestamp()
+            .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+          await myClient.send({ embeds: [userNotFoundMessage] });
+        }
+        if (transaction.address.wallet.user.user_id.startsWith('telegram-')) {
+          bot.telegram.sendMessage(runesGroup, `${transaction.address.wallet.user.username}'s withdrawal has been rejected`);
+        }
         bot.telegram.sendMessage(adminTelegramId, `Withdrawal Rejected`);
-        bot.telegram.sendMessage(runesGroup, `${transaction.address.wallet.user.username}'s withdrawal has been rejected`);
       }
     }
 
