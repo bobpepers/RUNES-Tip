@@ -224,8 +224,18 @@ export const withdrawTelegramAdminDecline = async (bot, ctx, adminTelegramId, wi
       lock: t.LOCK.UPDATE,
     });
 
+    const newUserId = transaction.address.wallet.user.user_id.replace('discord-', '');
+    const myClient = await discordClient.users.fetch(newUserId, false);
+
     if (!transaction) {
-      ctx.reply('Transaction not found');
+      // ctx.reply('Transaction not found');
+      const walletnotfoundmessagne = new MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('Withdraw')
+        .setDescription(`Transaction not found`)
+        .setTimestamp()
+        .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+      await myClient.send({ embeds: [walletnotfoundmessagne] });
     }
 
     if (transaction) {
@@ -238,7 +248,13 @@ export const withdrawTelegramAdminDecline = async (bot, ctx, adminTelegramId, wi
       });
 
       if (!wallet) {
-        ctx.reply('Wallet not found');
+        const walletnotfoundmessagne = new MessageEmbed()
+          .setColor('#0099ff')
+          .setTitle('Withdraw')
+          .setDescription(`Wallet not found`)
+          .setTimestamp()
+          .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
+        await myClient.send({ embeds: [walletnotfoundmessagne] });
       }
       if (wallet) {
         const updatedWallet = await wallet.update({
@@ -269,8 +285,6 @@ export const withdrawTelegramAdminDecline = async (bot, ctx, adminTelegramId, wi
           },
         );
         if (transaction.address.wallet.user.user_id.startsWith('discord-')) {
-          const newUserId = transaction.address.wallet.user.user_id.replace('discord-', '');
-          const myClient = discordClient.users.fetch(newUserId, false);
           const userNotFoundMessage = new MessageEmbed()
             .setColor('#0099ff')
             .setTitle('Withdraw')

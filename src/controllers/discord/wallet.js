@@ -21,7 +21,35 @@ export const withdrawDiscordCreate = async (message, filteredMessage) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const amount = new BigNumber(filteredMessage[3]).times(1e8).toNumber();
+    let amount = 0;
+    if (filteredMessage[3].toLowerCase() === 'all') {
+      const tipper = await db.user.findOne({
+        where: {
+          user_id: `discord-${message.author.id}`,
+        },
+        include: [
+          {
+            model: db.wallet,
+            as: 'wallet',
+            include: [
+              {
+                model: db.address,
+                as: 'addresses',
+              },
+            ],
+          },
+        ],
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      if (tipper) {
+        amount = tipper.wallet.available;
+      } else {
+        amount = 0;
+      }
+    } else {
+      amount = new BigNumber(filteredMessage[3]).times(1e8).toNumber();
+    }
     console.log('withdrawal amount');
     console.log(amount);
     if (amount < (2 * 1e8)) { // smaller then 2 RUNES
