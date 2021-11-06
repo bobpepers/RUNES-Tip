@@ -139,7 +139,7 @@ const router = (app) => {
 
     // console.log(message);
 
-    if (filteredMessage[1].startsWith('<@!')) {
+    if (filteredMessage.length > 1 && filteredMessage[1].startsWith('<@!')) {
       const userToTipId = filteredMessage[1].substring(0, filteredMessage[1].length - 1).substring(3);
       const task = await tipRunesToDiscordUser(message, filteredMessage, userToTipId);
       await queue.add(() => task);
@@ -186,16 +186,16 @@ const router = (app) => {
       await queue.add(() => task);
     }
 
-    if (message.content.startsWith(`${prefix}`)) {
-      message.channel.send(`filtered message:
-filterMessage[0] = ${filteredMessage[0]}
-filterMessage[1] = ${filteredMessage[1]}
-filterMessage[2] = ${filteredMessage[2]}
-filterMessage[3] = ${filteredMessage[3]}
-filterMessage[4] = ${filteredMessage[4]}
-filterMessage[5] = ${filteredMessage[5]}
-      `);
-    }
+    //    if (message.content.startsWith(`${prefix}`)) {
+    //      message.channel.send(`filtered message:
+    // filterMessage[0] = ${filteredMessage[0]}
+    // filterMessage[1] = ${filteredMessage[1]}
+    // filterMessage[2] = ${filteredMessage[2]}
+    // filterMessage[3] = ${filteredMessage[3]}
+    // filterMessage[4] = ${filteredMessage[4]}
+    // filterMessage[5] = ${filteredMessage[5]}
+    //      `);
+    //    }
   });
 
   /// //////////////////
