@@ -109,7 +109,7 @@ const discordClient = new Client({
     Intents.FLAGS.GUILD_MESSAGES,
     Intents.FLAGS.DIRECT_MESSAGES,
   ],
-  // partials: ['MESSAGE', 'CHANNEL'],
+  partials: ['MESSAGE', 'CHANNEL'],
 });
 
 const router = (app) => {
