@@ -342,7 +342,7 @@ export const discordSleet = async (client, message, filteredMessage) => {
 
             const newStringListUsers = listOfUsersRained.join(", ");
             console.log(newStringListUsers);
-            const cutStringListUsers = newStringListUsers.match(/.{1,4000}(\s|$)/g);
+            const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
             // eslint-disable-next-line no-restricted-syntax
             for (const element of cutStringListUsers) {
               // eslint-disable-next-line no-await-in-loop
@@ -538,7 +538,7 @@ export const discordFlood = async (client, message, filteredMessage) => {
 
             const newStringListUsers = listOfUsersRained.join(", ");
             console.log(newStringListUsers);
-            const cutStringListUsers = newStringListUsers.match(/.{1,4000}(\s|$)/g);
+            const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
             // eslint-disable-next-line no-restricted-syntax
             for (const element of cutStringListUsers) {
               // eslint-disable-next-line no-await-in-loop
@@ -731,7 +731,7 @@ export const discordRain = async (client, message, filteredMessage) => {
 
             const newStringListUsers = listOfUsersRained.join(", ");
             console.log(newStringListUsers);
-            const cutStringListUsers = newStringListUsers.match(/.{1,4000}(\s|$)/g);
+            const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
             // eslint-disable-next-line no-restricted-syntax
             for (const element of cutStringListUsers) {
               // eslint-disable-next-line no-await-in-loop
