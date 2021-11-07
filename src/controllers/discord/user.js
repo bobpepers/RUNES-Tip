@@ -85,7 +85,7 @@ export const createUpdateDiscordUser = async (message) => {
           lock: t.LOCK.UPDATE,
         });
         message.author.send(`Welcome ${message.author.username}, we created a wallet for you.
-Type "/runestip help" for usage info`);
+Type "!runestip help" for usage info`);
         // ctx.reply(``);
       }
     }
