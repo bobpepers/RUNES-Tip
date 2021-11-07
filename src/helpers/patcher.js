@@ -6,7 +6,7 @@ const { getInstance } = require('../services/rclient');
 async function patchDeposits() {
   const transactions = await getInstance().listTransactions(1000);
   console.log(transactions);
-  //transactions.forEach(async (trans) => {
+  // transactions.forEach(async (trans) => {
   // eslint-disable-next-line no-restricted-syntax
   for await (const trans of transactions) {
     console.log(trans);
@@ -23,16 +23,9 @@ async function patchDeposits() {
           },
         ],
       });
-      
+
       if (!address) {
         console.log(trans.address);
-        console.log('address not found');
-        console.log('address not found');
-        console.log('address not found');
-        console.log('address not found');
-        console.log('address not found');
-        console.log('address not found');
-        console.log('address not found');
         console.log('address not found');
       }
       if (address) {
@@ -43,14 +36,7 @@ async function patchDeposits() {
           isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
         }, async (t) => {
           console.log('begin transaction');
-          console.log('begin transaction');
-          console.log('begin transaction');
-          console.log('begin transaction');
-          console.log('begin transaction');
-          console.log('begin transaction');
-          console.log('begin transaction');
-          console.log('begin transaction');
-          
+
           const newTrans = await db.transaction.findOrCreate({
             where: {
               txid: trans.txid,
@@ -66,23 +52,16 @@ async function patchDeposits() {
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
+
           console.log('newTrans');
-          console.log('newTrans');
-          console.log('newTrans');
-          console.log('newTrans');
-          console.log('newTrans');
-          console.log('newTrans');
-          console.log('newTrans');
-          
           console.log(newTrans);
           t.afterCommit(() => {
             console.log('commited');
           });
         });
       }
-     
     }
-  //});
+  // });
   }
 }
 
