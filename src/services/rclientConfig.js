@@ -21,8 +21,6 @@ const Config = {
   UNLOCK_SECONDS: 604800,
 };
 // const rpcPassword = getRandomPassword(); // Generate random password for every session
-console.log('shut up');
-console.log(process.env.RPC_PASS);
 const rpcPassword = process.env.RPC_PASS;
 
 let runebaseEnv;
