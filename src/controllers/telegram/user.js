@@ -1,12 +1,10 @@
 import db from '../../models';
+import { welcomeMessage } from '../../messages/telegram';
 
-const { Sequelize, Transaction, Op } = require('sequelize');
+const { Transaction, Op } = require('sequelize');
 const { getInstance } = require('../../services/rclient');
 
 export const createUpdateUser = async (ctx) => {
-  console.log('32111');
-  console.log(ctx);
-  console.log(ctx.update.message.from);
   if (!ctx.update.message.from.is_bot) {
     await db.sequelize.transaction({
       isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -105,8 +103,7 @@ export const createUpdateUser = async (ctx) => {
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
-          ctx.reply(`Welcome ${ctx.update.message.from.username}, we created a wallet for you.
-Type "/runestip help" for usage info`);
+          ctx.reply(welcomeMessage(ctx));
         }
       }
 

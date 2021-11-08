@@ -1,16 +1,32 @@
 import db from '../../models';
 import { getInstance } from '../../services/rclient';
+import {
+  depositAddressMessage,
+  minimumWithdrawalMessage,
+  invalidAmountMessage,
+  invalidAddressMessage,
+  userNotFoundMessage,
+  unableToFindUserMessage,
+  insufficientBalanceMessage,
+  notEnoughActiveUsersMessage,
+  minimumRainMessage,
+  rainSuccessMessage,
+  rainErrorMessage,
+  groupNotFoundMessage,
+  minimumTipMessage,
+  tipSuccessMessage,
+  somethingWentWrongMessage,
+  withdrawalReviewMessage,
+  depositAddressNotFoundMessage,
+  balanceMessage,
+} from '../../messages/telegram';
 
 require('dotenv').config();
 
-const { Sequelize, Transaction, Op } = require('sequelize');
+const { Transaction, Op } = require('sequelize');
 const BigNumber = require('bignumber.js');
-const qr = require('qr-image');
 const QRCode = require('qrcode');
 const logger = require('../../helpers/logger');
-
-const minimumTip = 1 * 1e6;
-const minimumRain = 1 * 1e7;
 
 export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
   await db.sequelize.transaction({
@@ -18,14 +34,13 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
   }, async (t) => {
     const amount = new BigNumber(rainAmount).times(1e8).toNumber();
 
-    if (amount < (minimumRain)) { // smaller then 2 RUNES
-      ctx.reply(`Minimum Rain is ${minimumRain / 1e8} ${process.env.CURRENCY_SYMBOL}`);
+    if (amount < Number(process.env.MINIMUM_RAIN)) { // smaller then 2 RUNES
+      ctx.reply(minimumRainMessage());
     }
     if (amount % 1 !== 0) {
-      ctx.reply('Invalid amount');
+      ctx.reply(invalidAmountMessage());
     }
-    console.log('rain 1');
-    // const userToTip = runesTipSplit[2].substring(1);
+
     const user = await db.user.findOne({
       where: {
         user_id: `telegram-${ctx.update.message.from.id}`,
@@ -39,13 +54,13 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    console.log(user);
+
     if (!user) {
-      ctx.reply('User Not Found');
+      ctx.reply(userNotFoundMessage());
     }
     if (user) {
       if (user.wallet.available < amount) {
-        ctx.reply('Insufficient Balance');
+        ctx.reply(insufficientBalanceMessage());
       }
       if (user.wallet.available >= amount) {
         const group = await db.group.findOne({
@@ -91,7 +106,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
             transaction: t,
           });
           if (usersToRain.length < 2) {
-            ctx.reply('not enough active users');
+            ctx.reply(notEnoughActiveUsersMessage());
           }
           if (usersToRain.length >= 2) {
             const updatedBalance = await user.wallet.update({
@@ -131,7 +146,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
               listOfUsersRained.push(`@${rainee.username}`);
             }
 
-            await ctx.reply(`Raining ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} on ${usersToRain.length} active users -- ${amountPerUser / 1e8} ${process.env.CURRENCY_SYMBOL} each`);
+            await ctx.reply(rainSuccessMessage(amount, usersToRain, amountPerUser));
 
             const newStringListUsers = listOfUsersRained.join(", ");
             const cutStringListUsers = newStringListUsers.match(/.{1,4000}(\s|$)/g);
@@ -145,7 +160,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
           }
         }
         if (!group) {
-          await ctx.reply('Group not found');
+          await ctx.reply(groupNotFoundMessage());
         }
       }
     }
@@ -153,7 +168,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
       console.log('done');
     });
   }).catch((err) => {
-    ctx.reply('Something went wrong with raining');
+    ctx.reply(rainErrorMessage());
   });
 };
 
@@ -162,11 +177,11 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const amount = new BigNumber(tipAmount).times(1e8).toNumber();
-    if (amount < (minimumTip)) { // smaller then 2 RUNES
-      ctx.reply(`Minimum Tip is 0.01 ${process.env.CURRENCY_SYMBOL}`);
+    if (amount < Number(process.env.MINIMUM_TIP)) { // smaller then 2 RUNES
+      ctx.reply(minimumTipMessage());
     }
     if (amount % 1 !== 0) {
-      ctx.reply('Invalid amount');
+      ctx.reply(invalidAmountMessage());
     }
 
     const userToTip = tipTo.substring(1);
@@ -190,10 +205,10 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
       transaction: t,
     });
     if (!findUserToTip) {
-      ctx.reply('Unable to find user to tip');
+      ctx.reply(unableToFindUserMessage());
     }
 
-    if (amount >= (minimumTip) && amount % 1 === 0 && findUserToTip) {
+    if (amount >= Number(process.env.MINIMUM_TIP) && amount % 1 === 0 && findUserToTip) {
       const user = await db.user.findOne({
         where: {
           user_id: `telegram-${ctx.update.message.from.id}`,
@@ -208,11 +223,11 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
         transaction: t,
       });
       if (!user) {
-        ctx.reply('User not found');
+        ctx.reply(userNotFoundMessage());
       }
       if (user) {
         if (amount > user.wallet.available) {
-          ctx.reply('Insufficient funds');
+          ctx.reply(insufficientBalanceMessage());
         }
         if (amount <= user.wallet.available) {
           const wallet = await user.wallet.update({
@@ -236,9 +251,8 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
-          console.log(tipTransaction);
-          console.log('6');
-          ctx.reply(`@${user.username} tipped ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} to @${findUserToTip.username}`);
+
+          ctx.reply(tipSuccessMessage(user, amount, findUserToTip));
           logger.info(`Success tip Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} to ${findUserToTip.username} with ${amount / 1e8} ${process.env.CURRENCY_SYMBOL}`);
         }
       }
@@ -247,7 +261,7 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
       console.log('done');
     });
   }).catch((err) => {
-    ctx.reply('Something went wrong with tipping');
+    ctx.reply(somethingWentWrongMessage());
   });
 };
 
@@ -260,18 +274,18 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const amount = new BigNumber(withdrawalAmount).times(1e8).toNumber();
-    if (amount < (2 * 1e8)) { // smaller then 2 RUNES
-      ctx.reply(`Minimum ${process.env.CURRENCY_SYMBOL} is 2 ${process.env.CURRENCY_SYMBOL}`);
+    if (amount < Number(process.env.MINIMUM_WITHDRAWAL)) { // smaller then 2 RUNES
+      ctx.reply(minimumWithdrawalMessage());
     }
     if (amount % 1 !== 0) {
-      ctx.reply('Invalid amount');
+      ctx.reply(invalidAmountMessage());
     }
     const isRunebaseAddress = await getInstance().utils.isRunebaseAddress(withdrawalAddress);
     if (!isRunebaseAddress) {
-      ctx.reply('Invalid Runebase Address');
+      ctx.reply(invalidAddressMessage());
     }
 
-    if (amount >= (2 * 1e8) && amount % 1 === 0 && isRunebaseAddress) {
+    if (amount >= Number(process.env.MINIMUM_WITHDRAWAL) && amount % 1 === 0 && isRunebaseAddress) {
       const user = await db.user.findOne({
         where: {
           user_id: `telegram-${ctx.update.message.from.id}`,
@@ -292,11 +306,11 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
         transaction: t,
       });
       if (!user) {
-        ctx.reply('User not found');
+        ctx.reply(userNotFoundMessage());
       }
       if (user) {
         if (amount > user.wallet.available) {
-          ctx.reply('Insufficient funds');
+          ctx.reply(insufficientBalanceMessage());
         }
         if (amount <= user.wallet.available) {
           const wallet = await user.wallet.update({
@@ -328,7 +342,7 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
               lock: t.LOCK.UPDATE,
             },
           );
-          ctx.reply('Withdrawal is being reviewed');
+          ctx.reply(withdrawalReviewMessage());
         }
       }
     }
@@ -336,7 +350,7 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
       console.log('done');
     });
   }).catch((err) => {
-    ctx.reply('Something went wrong');
+    ctx.reply(somethingWentWrongMessage());
   });
 };
 
@@ -377,9 +391,7 @@ export const fetchWalletBalance = async (ctx, telegramUserId, telegramUserName) 
     }
 
     if (user && user.wallet) {
-      await ctx.reply(`${telegramUserName}'s current available balance: ${user.wallet.available / 1e8} ${process.env.CURRENCY_SYMBOL}
-${telegramUserName}'s current locked balance: ${user.wallet.locked / 1e8} ${process.env.CURRENCY_SYMBOL}
-Estimated value of ${telegramUserName}'s balance: $${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(2)}`);
+      await ctx.reply(balanceMessage(telegramUserName, user, priceInfo));
     }
 
     t.afterCommit(() => {
@@ -415,7 +427,7 @@ export const fetchWalletDepositAddress = async (ctx, telegramUserId, telegramUse
     });
 
     if (!user && !user.wallet && !user.wallet.addresses) {
-      ctx.reply(`Deposit Address not found`);
+      ctx.reply(depositAddressNotFoundMessage());
     }
 
     if (user && user.wallet && user.wallet.addresses) {
@@ -425,15 +437,13 @@ export const fetchWalletDepositAddress = async (ctx, telegramUserId, telegramUse
         {
           source: Buffer.from(depositQrFixed, 'base64'),
         }, {
-          caption: `${telegramUserName}'s deposit address: 
-*${user.wallet.addresses[0].address}*`,
+          caption: depositAddressMessage(telegramUserName, user),
           parse_mode: 'MarkdownV2',
         },
       );
 
-      await ctx.reply(`${telegramUserName}'s deposit address: 
-*${user.wallet.addresses[0].address}*`,
-      { parse_mode: 'MarkdownV2' });
+      await ctx.reply(depositAddressMessage(telegramUserName, user),
+        { parse_mode: 'MarkdownV2' });
     }
 
     t.afterCommit(() => {
