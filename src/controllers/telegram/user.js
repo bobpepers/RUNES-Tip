@@ -2,9 +2,7 @@ import db from '../../models';
 
 const { Sequelize, Transaction, Op } = require('sequelize');
 const { getInstance } = require('../../services/rclient');
-/**
- * Fetch Wallet
- */
+
 export const createUpdateUser = async (ctx) => {
   console.log('32111');
   console.log(ctx);
@@ -97,9 +95,7 @@ export const createUpdateUser = async (ctx) => {
           },
         );
         if (!address) {
-          console.log('adress not found');
           const newAddress = await getInstance().getNewAddress();
-          console.log(newAddress);
           address = await db.address.create({
             address: newAddress,
             walletId: wallet.id,
@@ -116,17 +112,10 @@ Type "/runestip help" for usage info`);
 
       t.afterCommit(() => {
         console.log('done');
-        // ctx.reply(`done`);
       });
     }).catch((err) => {
       console.log(err.message);
     });
-
-    // Explicit usage
-
-    // ctx.telegram.sendMessage(ctx.message.chat.id, `Hello ${ctx.state.role}`);
-
-    // Using context shortcut
   }
 };
 
@@ -208,14 +197,5 @@ export const updateLastSeen = async (ctx) => {
     });
   }).catch((err) => {
     console.log(err.message);
-  });
-};
-
-/**
- * Fetch Wallet
- */
-export const dbsync = async (req, res, next) => {
-  db.sequelize.sync().then(() => {
-    res.status(201).json({ message: 'Tables Created' });
   });
 };

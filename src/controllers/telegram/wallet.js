@@ -17,8 +17,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const amount = new BigNumber(rainAmount).times(1e8).toNumber();
-    console.log('rain amount');
-    console.log(amount);
+
     if (amount < (minimumRain)) { // smaller then 2 RUNES
       ctx.reply(`Minimum Rain is ${minimumRain / 1e8} ${process.env.CURRENCY_SYMBOL}`);
     }
@@ -45,13 +44,10 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
       ctx.reply('User Not Found');
     }
     if (user) {
-      console.log('foudn the user for rain');
       if (user.wallet.available < amount) {
         ctx.reply('Insufficient Balance');
       }
       if (user.wallet.available >= amount) {
-        console.log('rain 3');
-
         const group = await db.group.findOne({
           where: {
             groupId: `telegram-${ctx.update.message.chat.id}`,
@@ -59,9 +55,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
           lock: t.LOCK.UPDATE,
           transaction: t,
         });
-        console.log(group);
         if (group) {
-          console.log('fetchuserstart');
           const usersToRain = await db.user.findAll({
             where: {
               [Op.and]: [
@@ -118,11 +112,6 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
             const listOfUsersRained = [];
             // eslint-disable-next-line no-restricted-syntax
             for (const rainee of usersToRain) {
-              console.log('raineee');
-              console.log(rainee);
-              console.log(amountPerUser);
-              console.log(rainee.id);
-              console.log(rainRecord.id);
               // eslint-disable-next-line no-await-in-loop
               await rainee.wallet.update({
                 available: rainee.wallet.available + Number(amountPerUser),
@@ -130,10 +119,6 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
                 lock: t.LOCK.UPDATE,
                 transaction: t,
               });
-              console.log('afterrainee update');
-              console.log(amountPerUser);
-              console.log(rainee.id);
-              console.log(rainRecord.id);
               // eslint-disable-next-line no-await-in-loop
               await db.raintip.create({
                 amount: amountPerUser,
@@ -143,14 +128,12 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
                 lock: t.LOCK.UPDATE,
                 transaction: t,
               });
-              console.log('after raintip create');
               listOfUsersRained.push(`@${rainee.username}`);
             }
 
             await ctx.reply(`Raining ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} on ${usersToRain.length} active users -- ${amountPerUser / 1e8} ${process.env.CURRENCY_SYMBOL} each`);
 
             const newStringListUsers = listOfUsersRained.join(", ");
-            console.log(newStringListUsers);
             const cutStringListUsers = newStringListUsers.match(/.{1,4000}(\s|$)/g);
             // eslint-disable-next-line no-restricted-syntax
             for (const element of cutStringListUsers) {
@@ -179,15 +162,13 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const amount = new BigNumber(tipAmount).times(1e8).toNumber();
-    console.log('tip amount');
-    console.log(amount);
     if (amount < (minimumTip)) { // smaller then 2 RUNES
       ctx.reply(`Minimum Tip is 0.01 ${process.env.CURRENCY_SYMBOL}`);
     }
     if (amount % 1 !== 0) {
       ctx.reply('Invalid amount');
     }
-    console.log('1');
+
     const userToTip = tipTo.substring(1);
     const findUserToTip = await db.user.findOne({
       where: {
@@ -208,14 +189,11 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    console.log('2');
     if (!findUserToTip) {
       ctx.reply('Unable to find user to tip');
     }
 
     if (amount >= (minimumTip) && amount % 1 === 0 && findUserToTip) {
-      console.log('beforeuserfind');
-      console.log(ctx.update.message.from.id);
       const user = await db.user.findOne({
         where: {
           user_id: `telegram-${ctx.update.message.from.id}`,
@@ -229,7 +207,6 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      console.log('3');
       if (!user) {
         ctx.reply('User not found');
       }
@@ -244,19 +221,12 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
-          console.log('4');
           const updatedFindUserToTip = findUserToTip.wallet.update({
             available: findUserToTip.wallet.available + amount,
           }, {
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
-          console.log('5');
-          console.log('----');
-          console.log(user.id);
-          console.log(findUserToTip.id);
-          console.log(amount);
-          console.log('----');
 
           const tipTransaction = await db.tip.create({
             userId: user.id,
@@ -269,9 +239,7 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
           console.log(tipTransaction);
           console.log('6');
           ctx.reply(`@${user.username} tipped ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} to @${findUserToTip.username}`);
-          // bot.telegram.sendMessage(runesGroup, `@${user.username} tipped ${amount / 1e8} RUNES to @${findUserToTip.username}`);
           logger.info(`Success tip Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} to ${findUserToTip.username} with ${amount / 1e8} ${process.env.CURRENCY_SYMBOL}`);
-          // ctx.reply(`${user.username} tipped ${amount / 1e8} RUNES to ${updatedFindUserToTip.username}`);
         }
       }
     }
@@ -292,8 +260,6 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const amount = new BigNumber(withdrawalAmount).times(1e8).toNumber();
-    console.log('withdrawal amount');
-    console.log(amount);
     if (amount < (2 * 1e8)) { // smaller then 2 RUNES
       ctx.reply(`Minimum ${process.env.CURRENCY_SYMBOL} is 2 ${process.env.CURRENCY_SYMBOL}`);
     }
@@ -453,12 +419,8 @@ export const fetchWalletDepositAddress = async (ctx, telegramUserId, telegramUse
     }
 
     if (user && user.wallet && user.wallet.addresses) {
-      // const qr_png = qr.image(user.wallet.addresses[0].address, { type: 'png' });
       const depositQr = await QRCode.toDataURL(user.wallet.addresses[0].address);
       const depositQrFixed = depositQr.replace('data:image/png;base64,', '');
-      console.log(user.wallet.addresses);
-      console.log(depositQrFixed);
-      // console.log(qr_png);
       await ctx.replyWithPhoto(
         {
           source: Buffer.from(depositQrFixed, 'base64'),
@@ -468,7 +430,7 @@ export const fetchWalletDepositAddress = async (ctx, telegramUserId, telegramUse
           parse_mode: 'MarkdownV2',
         },
       );
-      // ctx.replyWithPhoto(depositQrFixed, {caption:'Your caption here'});
+
       await ctx.reply(`${telegramUserName}'s deposit address: 
 *${user.wallet.addresses[0].address}*`,
       { parse_mode: 'MarkdownV2' });
@@ -480,12 +442,4 @@ export const fetchWalletDepositAddress = async (ctx, telegramUserId, telegramUse
   }).catch((err) => {
     logger.error(`Error Deposit Address Requested by: ${telegramUserId}-${telegramUserName} - ${err}`);
   });
-};
-
-/**
- * Fetch Wallet
- */
-export const fetchWallet = async (req, res, next) => {
-  console.log('Fetch wallet here');
-  res.json({ success: true });
 };

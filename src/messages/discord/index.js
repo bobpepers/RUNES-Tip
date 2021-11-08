@@ -227,7 +227,7 @@ export const warnDirectMessage = (userId, title) => {
 
 export const helpMessage = new MessageEmbed()
   .setColor(`#${process.env.BOT_COLOR}`)
-  .setTitle('RunesTip Help')
+  .setTitle(`${process.env.BOT_NAME} Help`)
   .setDescription(`\`\`\`
 ${process.env.DISCORD_BOT_COMMAND}
 \`\`\`
