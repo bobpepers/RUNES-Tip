@@ -73,10 +73,9 @@ const logger = require('./helpers/logger');
 const queue = new PQueue({ concurrency: 1 });
 const schedule = require('node-schedule');
 
-const appRoot = process.env.PWD;
+// const appRoot = process.env.PWD;
 const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN;
 const runesGroup = process.env.TELEGRAM_RUNES_GROUP;
-const adminTelegramId = 672239325;
 
 const { Telegraf } = require('telegraf');
 const rateLimit = require('telegraf-ratelimit');
@@ -214,10 +213,10 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
     });
 
   telegramClient.hears('adminwithdrawals', (ctx) => {
-    if (ctx.update.message.from.id === adminTelegramId) {
+    if (ctx.update.message.from.id === Number(process.env.TELEGRAM_ADMIN_ID)) {
       // console.log(ctx.from)
       (async () => {
-        const task = await withdrawTelegramAdminFetch(telegramClient, ctx, adminTelegramId);
+        const task = await withdrawTelegramAdminFetch(telegramClient, ctx, Number(process.env.TELEGRAM_ADMIN_ID));
         await queue.add(() => task);
       })();
     }
@@ -226,12 +225,12 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
   telegramClient.action(/acceptWithdrawal-+/, (ctx) => {
     const withdrawalId = ctx.match.input.substring(17);
     console.log(ctx);
-    console.log(adminTelegramId);
+    console.log(Number(process.env.TELEGRAM_ADMIN_ID));
     console.log(ctx.update.callback_query.from.id);
-    if (ctx.update.callback_query.from.id === adminTelegramId) {
+    if (ctx.update.callback_query.from.id === Number(process.env.TELEGRAM_ADMIN_ID)) {
       // console.log(ctx.from)
       (async () => {
-        const task = await withdrawTelegramAdminAccept(telegramClient, ctx, adminTelegramId, withdrawalId, runesGroup, discordClient);
+        const task = await withdrawTelegramAdminAccept(telegramClient, ctx, Number(process.env.TELEGRAM_ADMIN_ID), withdrawalId, runesGroup, discordClient);
         await queue.add(() => task);
       })();
     }
@@ -242,10 +241,10 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
   telegramClient.action(/declineWithdrawal-+/, (ctx) => {
     console.log(ctx);
     const withdrawalId = ctx.match.input.substring(18);
-    if (ctx.update.callback_query.from.id === adminTelegramId) {
+    if (ctx.update.callback_query.from.id === Number(process.env.TELEGRAM_ADMIN_ID)) {
       // console.log(ctx.from)
       (async () => {
-        const task = await withdrawTelegramAdminDecline(telegramClient, ctx, adminTelegramId, withdrawalId, runesGroup, discordClient);
+        const task = await withdrawTelegramAdminDecline(telegramClient, ctx, Number(process.env.TELEGRAM_ADMIN_ID), withdrawalId, runesGroup, discordClient);
         await queue.add(() => task);
       })();
     }
