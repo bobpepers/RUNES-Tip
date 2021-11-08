@@ -1,5 +1,104 @@
 /* eslint-disable import/prefer-default-export */
 
+export const balanceMessage = (telegramUserName, user, priceInfo) => {
+  const result = `${telegramUserName}'s current available balance: ${user.wallet.available / 1e8} ${process.env.CURRENCY_SYMBOL}
+${telegramUserName}'s current locked balance: ${user.wallet.locked / 1e8} ${process.env.CURRENCY_SYMBOL}
+Estimated value of ${telegramUserName}'s balance: $${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(2)}`;
+  return result;
+};
+
+export const depositAddressNotFoundMessage = () => {
+  const result = `Deposit Address not found`;
+  return result;
+};
+
+export const withdrawalReviewMessage = () => {
+  const result = `Withdrawal is being reviewed`;
+  return result;
+};
+
+export const somethingWentWrongMessage = () => {
+  const result = `Something went wrong`;
+  return result;
+};
+
+export const tipSuccessMessage = (user, amount, findUserToTip) => {
+  const result = `@${user.username} tipped ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} to @${findUserToTip.username}`;
+  return result;
+};
+
+export const minimumTipMessage = () => {
+  const result = `Minimum Tip is ${Number(process.env.MINIMUM_TIP) / 1e8} ${process.env.CURRENCY_SYMBOL}`;
+  return result;
+};
+
+export const groupNotFoundMessage = () => {
+  const result = `Group not found`;
+  return result;
+};
+
+export const rainErrorMessage = () => {
+  const result = `Something went wrong with raining`;
+  return result;
+};
+
+export const rainSuccessMessage = (amount, usersToRain, amountPerUser) => {
+  const result = `Raining ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} on ${usersToRain.length} active users -- ${amountPerUser / 1e8} ${process.env.CURRENCY_SYMBOL} each`;
+  return result;
+};
+
+export const minimumRainMessage = () => {
+  const result = `Minimum Rain is ${Number(process.env.MINIMUM_RAIN) / 1e8} ${process.env.CURRENCY_SYMBOL}`;
+  return result;
+};
+
+export const notEnoughActiveUsersMessage = () => {
+  const result = `not enough active users`;
+  return result;
+};
+
+export const insufficientBalanceMessage = () => {
+  const result = `Insufficient Balance`;
+  return result;
+};
+
+export const unableToFindUserMessage = () => {
+  const result = `Unable to find user`;
+  return result;
+};
+
+export const userNotFoundMessage = () => {
+  const result = `User not found`;
+  return result;
+};
+
+export const invalidAddressMessage = () => {
+  const result = `Invalid Runebase Address`;
+  return result;
+};
+
+export const invalidAmountMessage = () => {
+  const result = `Invalid amount`;
+  return result;
+};
+
+export const minimumWithdrawalMessage = () => {
+  const result = `Minimum ${process.env.CURRENCY_SYMBOL} is ${Number(process.env.MINIMUM_WITHDRAWAL) / 1e8} ${process.env.CURRENCY_SYMBOL}`;
+  return result;
+};
+
+export const depositAddressMessage = (telegramUserName, user) => {
+  const result = `${telegramUserName}'s deposit address: 
+*${user.wallet.addresses[0].address}*`;
+  return result;
+};
+
+export const welcomeMessage = (ctx) => {
+  const result = `Welcome ${ctx.update.message.from.username}, we created a wallet for you.
+Type "/runestip help" for usage info`;
+  return result;
+};
+
 export const helpMessage = () => {
   const result = `<b>Tipbot Help</b>
       
