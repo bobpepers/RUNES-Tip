@@ -206,7 +206,7 @@ export const minimumWithdrawalMessage = (message) => {
   const result = new MessageEmbed()
     .setColor(`#${process.env.BOT_COLOR}`)
     .setTitle('Withdraw')
-    .setDescription(`<@${message.author.id}>, Minimum Withdrawal is 2 ${process.env.CURRENCY_SYMBOL}`)
+    .setDescription(`<@${message.author.id}>, Minimum Withdrawal is ${Number(process.env.MINIMUM_WITHDRAWAL)} ${process.env.CURRENCY_SYMBOL}`)
     .setTimestamp()
     .setFooter(process.env.BOT_NAME, process.env.CURRENCY_LOGO);
 
