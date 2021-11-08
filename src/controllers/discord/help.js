@@ -35,7 +35,7 @@ Displays your deposit address
 \`\`\`
 !runestip withdraw <address> <amount|all> 
 \`\`\`
-Withdraws the entered amount to a RUNES address of your choice
+Withdraws the entered amount to a ${process.env.CURRENCY_NAME} address of your choice
 
 \`\`\`
 !arrrtip <@user> <amount|all>

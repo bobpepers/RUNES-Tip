@@ -1,8 +1,8 @@
 import db from '../models';
 
 const { Sequelize, Transaction, Op } = require('sequelize');
-const { getInstance } = require('../services/rclient');
 const { Markup } = require('telegraf');
+const { getInstance } = require('../services/rclient');
 /**
  * Fetch Wallet
  */
@@ -24,12 +24,12 @@ export const fetchHelp = async (ctx) => {
   
 /runestip price
 /price
-<code>Display current RUNES price</code>
+<code>Display current ${process.env.CURRENCY_SYMBOL} price</code>
 
   
 /runestip exchanges
 /exchanges
-<code>Display list of exchanges to trade RUNES</code>
+<code>Display list of exchanges to trade ${process.env.CURRENCY_SYMBOL}</code>
 
 
 /runestip balance
@@ -58,16 +58,16 @@ export const fetchHelp = async (ctx) => {
   
 /runestip withdraw [address] [amount]
 /withdraw [address] [amount]
-<code>Withdraws the entered amount to a RUNES address of your choice, e.g.</code>
+<code>Withdraws the entered amount to a ${process.env.CURRENCY_SYMBOL} address of your choice, e.g.</code>
 /runestip withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
 /withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
-<code>Note: Minimal amount to withdraw: 2 RUNES. A withdrawal fee of 0.1 RUNES will be automatically deducted from the amount.</code>
+<code>Note: Minimal amount to withdraw: 2 ${process.env.CURRENCY_SYMBOL}. A withdrawal fee of 0.1 ${process.env.CURRENCY_SYMBOL} will be automatically deducted from the amount.</code>
   
 
 /runestip referral
 /referral
 <code>Displays your referral count</code>
-<code>Note: We reward members for every 10 new members they add. current reward = 20 RUNES</code>
+<code>Note: We reward members for every 10 new members they add. current reward = 20 ${process.env.CURRENCY_SYMBOL}</code>
   
 
 /runestip referral top

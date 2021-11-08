@@ -56,7 +56,7 @@ export const withdrawDiscordCreate = async (message, filteredMessage) => {
       const toSmaallMessage = new MessageEmbed()
         .setColor('#0099ff')
         .setTitle('Withdraw')
-        .setDescription(`<@${message.author.id}>, Minimum Withdrawal is 2 RUNES`)
+        .setDescription(`<@${message.author.id}>, Minimum Withdrawal is 2 ${process.env.CURRENCY_SYMBOL}`)
         .setTimestamp()
         .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
       await message.author.send({ embeds: [toSmaallMessage] });
@@ -184,7 +184,7 @@ export const discordSleet = async (client, message, filteredMessage) => {
       const minimumSleetMessage = new MessageEmbed()
         .setColor('#0099ff')
         .setTitle('Sleet')
-        .setDescription(`<@${message.author.id}>, Minimum Rain is ${minimumRain / 1e8} RUNES`)
+        .setDescription(`<@${message.author.id}>, Minimum Rain is ${minimumRain / 1e8} ${process.env.CURRENCY_SYMBOL}`)
         .setTimestamp()
         .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
       await message.channel.send({ embeds: [minimumSleetMessage] });
@@ -338,7 +338,7 @@ export const discordSleet = async (client, message, filteredMessage) => {
               listOfUsersRained.push(`<@${userIdTest}>`);
             }
 
-            // await ctx.reply(`Raining ${amount / 1e8} RUNES on ${usersToRain.length} active users -- ${amountPerUser / 1e8} RUNES each`);
+            // await ctx.reply(`Raining ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} on ${usersToRain.length} active users -- ${amountPerUser / 1e8} ${process.env.CURRENCY_SYMBOL} each`);
 
             const newStringListUsers = listOfUsersRained.join(", ");
             console.log(newStringListUsers);
@@ -352,7 +352,7 @@ export const discordSleet = async (client, message, filteredMessage) => {
             const notEnoughActiveUsersMessage = new MessageEmbed()
               .setColor('#0099ff')
               .setTitle('Sleet')
-              .setDescription(`<@${message.author.id}> Sleeted ${amount / 1e8} RUNES on ${usersToRain.length} active users -- ${amountPerUser / 1e8} RUNES each`)
+              .setDescription(`<@${message.author.id}> Sleeted ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} on ${usersToRain.length} active users -- ${amountPerUser / 1e8} ${process.env.CURRENCY_SYMBOL} each`)
               .setTimestamp()
               .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
             await message.channel.send({ embeds: [notEnoughActiveUsersMessage] });
@@ -424,7 +424,7 @@ export const discordFlood = async (client, message, filteredMessage) => {
       const minimumRainMessage = new MessageEmbed()
         .setColor('#0099ff')
         .setTitle('Flood')
-        .setDescription(`<@${message.author.id}>, Minimum Flood is ${minimumRain / 1e8} RUNES`)
+        .setDescription(`<@${message.author.id}>, Minimum Flood is ${minimumRain / 1e8} ${process.env.CURRENCY_SYMBOL}`)
         .setTimestamp()
         .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
       await message.channel.send({ embeds: [minimumRainMessage] });
@@ -534,7 +534,7 @@ export const discordFlood = async (client, message, filteredMessage) => {
               listOfUsersRained.push(`<@${userIdReceivedRain}>`);
             }
 
-            // await ctx.reply(`Raining ${amount / 1e8} RUNES on ${usersToRain.length} active users -- ${amountPerUser / 1e8} RUNES each`);
+            // await ctx.reply(`Raining ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} on ${usersToRain.length} active users -- ${amountPerUser / 1e8} ${process.env.CURRENCY_SYMBOL} each`);
 
             const newStringListUsers = listOfUsersRained.join(", ");
             console.log(newStringListUsers);
@@ -547,7 +547,7 @@ export const discordFlood = async (client, message, filteredMessage) => {
             const successRained = new MessageEmbed()
               .setColor('#0099ff')
               .setTitle('Rain')
-              .setDescription(`<@${message.author.id}> Flooded ${amount / 1e8} RUNES on ${withoutBots.length} users -- ${amountPerUser / 1e8} RUNES each`)
+              .setDescription(`<@${message.author.id}> Flooded ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} on ${withoutBots.length} users -- ${amountPerUser / 1e8} ${process.env.CURRENCY_SYMBOL} each`)
               .setTimestamp()
               .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
             await message.channel.send({ embeds: [successRained] });
@@ -617,7 +617,7 @@ export const discordRain = async (client, message, filteredMessage) => {
       const minimumRainMessage = new MessageEmbed()
         .setColor('#0099ff')
         .setTitle('Rain')
-        .setDescription(`<@${message.author.id}>, Minimum Rain is ${minimumRain / 1e8} RUNES`)
+        .setDescription(`<@${message.author.id}>, Minimum Rain is ${minimumRain / 1e8} ${process.env.CURRENCY_SYMBOL}`)
         .setTimestamp()
         .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
       await message.channel.send({ embeds: [minimumRainMessage] });
@@ -727,7 +727,7 @@ export const discordRain = async (client, message, filteredMessage) => {
               listOfUsersRained.push(`<@${userIdReceivedRain}>`);
             }
 
-            // await ctx.reply(`Raining ${amount / 1e8} RUNES on ${usersToRain.length} active users -- ${amountPerUser / 1e8} RUNES each`);
+            // await ctx.reply(`Raining ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} on ${usersToRain.length} active users -- ${amountPerUser / 1e8} ${process.env.CURRENCY_SYMBOL} each`);
 
             const newStringListUsers = listOfUsersRained.join(", ");
             console.log(newStringListUsers);
@@ -740,7 +740,7 @@ export const discordRain = async (client, message, filteredMessage) => {
             const successRained = new MessageEmbed()
               .setColor('#0099ff')
               .setTitle('Rain')
-              .setDescription(`<@${message.author.id}> rained ${amount / 1e8} RUNES on ${withoutBots.length} users -- ${amountPerUser / 1e8} RUNES each`)
+              .setDescription(`<@${message.author.id}> rained ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} on ${withoutBots.length} users -- ${amountPerUser / 1e8} ${process.env.CURRENCY_SYMBOL} each`)
               .setTimestamp()
               .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
             await message.channel.send({ embeds: [successRained] });
@@ -805,7 +805,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
       const minimumTipMessage = new MessageEmbed()
         .setColor('#0099ff')
         .setTitle('Tip')
-        .setDescription(`<@${message.author.id}>, Minimum Tip is 0.01 RUNES`)
+        .setDescription(`<@${message.author.id}>, Minimum Tip is 0.01 ${process.env.CURRENCY_SYMBOL}`)
         .setTimestamp()
         .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
       await message.channel.send({ embeds: [minimumTipMessage] });
@@ -903,11 +903,11 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
             const userNotFoundMessage = new MessageEmbed()
               .setColor('#0099ff')
               .setTitle('Tip')
-              .setDescription(`<@${userId}> tipped ${amount / 1e8} RUNES to <@${userIdTipped}>`)
+              .setDescription(`<@${userId}> tipped ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} to <@${userIdTipped}>`)
               .setTimestamp()
               .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
             await message.channel.send({ embeds: [userNotFoundMessage] });
-            logger.info(`Success tip Requested by: ${user.user_id}-${user.username} to ${findUserToTip.user_id}-${findUserToTip.username} with ${amount / 1e8} RUNES`);
+            logger.info(`Success tip Requested by: ${user.user_id}-${user.username} to ${findUserToTip.user_id}-${findUserToTip.username} with ${amount / 1e8} ${process.env.CURRENCY_SYMBOL}`);
           }
         }
       }
@@ -933,7 +933,7 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
     console.log('withdrawal amount');
     console.log(amount);
     if (amount < (2 * 1e8)) { // smaller then 2 RUNES
-      ctx.reply('Minimum Withdrawal is 2 RUNES');
+      ctx.reply(`Minimum Withdrawal is 2 ${process.env.CURRENCY_SYMBOL}`);
     }
     if (amount % 1 !== 0) {
       ctx.reply('Invalid amount');
@@ -1061,8 +1061,8 @@ export const fetchDiscordWalletBalance = async (message) => {
       const balanceMessage = new MessageEmbed()
         .setColor('#0099ff')
         .setTitle('Balance')
-        .setDescription(`<@${userId}>'s current available balance: ${user.wallet.available / 1e8} RUNES
-<@${userId}>'s current locked balance: ${user.wallet.locked / 1e8} RUNES
+        .setDescription(`<@${userId}>'s current available balance: ${user.wallet.available / 1e8} ${process.env.CURRENCY_SYMBOL}
+<@${userId}>'s current locked balance: ${user.wallet.locked / 1e8} ${process.env.CURRENCY_SYMBOL}
 Estimated value of <@${userId}>'s balance: $${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(2)}`)
         .setThumbnail('https://downloads.runebase.io/logo-512x512.png')
         .setTimestamp()

@@ -74,7 +74,7 @@ export const createReferral = async (ctx, bot, runesGroup) => {
               console.log(updatedUser);
               console.log(updatedUserWallet);
               await bot.telegram.sendMessage(runesGroup, `Congratulations ${user.username}, you added ${updatedUser.referral_count} users in total to Runebase Telegram group,
-we added ${referralRunesReward / 1e8} RUNES to your wallet as a reward.`);
+we added ${referralRunesReward / 1e8} ${process.env.CURRENCY_SYMBOL} to your wallet as a reward.`);
             }
           }
         }

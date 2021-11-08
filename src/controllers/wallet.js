@@ -18,7 +18,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
     console.log('rain amount');
     console.log(amount);
     if (amount < (minimumRain)) { // smaller then 2 RUNES
-      ctx.reply(`Minimum Rain is ${minimumRain / 1e8} RUNES`);
+      ctx.reply(`Minimum Rain is ${minimumRain / 1e8} ${process.env.CURRENCY_SYMBOL}`);
     }
     if (amount % 1 !== 0) {
       ctx.reply('Invalid amount');
@@ -49,7 +49,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
       }
       if (user.wallet.available >= amount) {
         console.log('rain 3');
-        
+
         const group = await db.group.findOne({
           where: {
             groupId: `telegram-${ctx.update.message.chat.id}`,
@@ -72,7 +72,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
               {
                 model: db.active,
                 as: 'active',
-                //required: false,
+                // required: false,
                 where: {
                   [Op.and]: [
                     {
@@ -148,7 +148,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
               listOfUsersRained.push(`@${rainee.username}`);
             }
 
-            await ctx.reply(`Raining ${amount / 1e8} RUNES on ${usersToRain.length} active users -- ${amountPerUser / 1e8} RUNES each`);
+            await ctx.reply(`Raining ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} on ${usersToRain.length} active users -- ${amountPerUser / 1e8} ${process.env.CURRENCY_SYMBOL} each`);
 
             const newStringListUsers = listOfUsersRained.join(", ");
             console.log(newStringListUsers);
@@ -183,7 +183,7 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
     console.log('tip amount');
     console.log(amount);
     if (amount < (minimumTip)) { // smaller then 2 RUNES
-      ctx.reply('Minimum Tip is 0.01 RUNES');
+      ctx.reply(`Minimum Tip is 0.01 ${process.env.CURRENCY_SYMBOL}`);
     }
     if (amount % 1 !== 0) {
       ctx.reply('Invalid amount');
@@ -269,9 +269,9 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
           });
           console.log(tipTransaction);
           console.log('6');
-          ctx.reply(`@${user.username} tipped ${amount / 1e8} RUNES to @${findUserToTip.username}`);
-          //bot.telegram.sendMessage(runesGroup, `@${user.username} tipped ${amount / 1e8} RUNES to @${findUserToTip.username}`);
-          logger.info(`Success tip Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} to ${findUserToTip.username} with ${amount / 1e8} RUNES`);
+          ctx.reply(`@${user.username} tipped ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} to @${findUserToTip.username}`);
+          // bot.telegram.sendMessage(runesGroup, `@${user.username} tipped ${amount / 1e8} RUNES to @${findUserToTip.username}`);
+          logger.info(`Success tip Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} to ${findUserToTip.username} with ${amount / 1e8} ${process.env.CURRENCY_SYMBOL}`);
           // ctx.reply(`${user.username} tipped ${amount / 1e8} RUNES to ${updatedFindUserToTip.username}`);
         }
       }
@@ -296,7 +296,7 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
     console.log('withdrawal amount');
     console.log(amount);
     if (amount < (2 * 1e8)) { // smaller then 2 RUNES
-      ctx.reply('Minimum Withdrawal is 2 RUNES');
+      ctx.reply(`Minimum ${process.env.CURRENCY_SYMBOL} is 2 ${process.env.CURRENCY_SYMBOL}`);
     }
     if (amount % 1 !== 0) {
       ctx.reply('Invalid amount');
@@ -412,8 +412,8 @@ export const fetchWalletBalance = async (ctx, telegramUserId, telegramUserName) 
     }
 
     if (user && user.wallet) {
-      await ctx.reply(`${telegramUserName}'s current available balance: ${user.wallet.available / 1e8} RUNES
-${telegramUserName}'s current locked balance: ${user.wallet.locked / 1e8} RUNES
+      await ctx.reply(`${telegramUserName}'s current available balance: ${user.wallet.available / 1e8} ${process.env.CURRENCY_SYMBOL}
+${telegramUserName}'s current locked balance: ${user.wallet.locked / 1e8} ${process.env.CURRENCY_SYMBOL}
 Estimated value of ${telegramUserName}'s balance: $${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(2)}`);
     }
 
