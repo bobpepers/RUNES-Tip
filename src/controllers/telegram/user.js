@@ -1,7 +1,7 @@
-import db from '../models';
+import db from '../../models';
 
 const { Sequelize, Transaction, Op } = require('sequelize');
-const { getInstance } = require('../services/rclient');
+const { getInstance } = require('../../services/rclient');
 /**
  * Fetch Wallet
  */

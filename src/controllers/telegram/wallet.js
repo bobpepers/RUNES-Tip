@@ -1,5 +1,5 @@
-import db from '../models';
-import { getInstance } from '../services/rclient';
+import db from '../../models';
+import { getInstance } from '../../services/rclient';
 
 require('dotenv').config();
 
@@ -7,7 +7,7 @@ const { Sequelize, Transaction, Op } = require('sequelize');
 const BigNumber = require('bignumber.js');
 const qr = require('qr-image');
 const QRCode = require('qrcode');
-const logger = require('../helpers/logger');
+const logger = require('../../helpers/logger');
 
 const minimumTip = 1 * 1e6;
 const minimumRain = 1 * 1e7;
@@ -96,9 +96,6 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
             lock: t.LOCK.UPDATE,
             transaction: t,
           });
-          console.log('fetched');
-          console.log('rain 4');
-          console.log(usersToRain);
           if (usersToRain.length < 2) {
             ctx.reply('not enough active users');
           }

@@ -1,7 +1,7 @@
 import PQueue from 'p-queue';
-import { filter } from 'lodash';
+// import { filter } from 'lodash';
 import walletNotify from './controllers/walletNotify';
-import updatePrice from './helpers/updatePrice';
+// import updatePrice from './helpers/updatePrice';
 
 import {
   withdrawTelegramAdminFetch,
@@ -15,7 +15,7 @@ import {
   withdrawTelegramCreate,
   tipRunesToUser,
   rainRunesToUsers,
-} from './controllers/wallet';
+} from './controllers/telegram/wallet';
 
 import {
   fetchDiscordWalletBalance,
@@ -30,7 +30,7 @@ import {
 import {
   updateLastSeen,
   createUpdateUser,
-} from './controllers/user';
+} from './controllers/telegram/user';
 
 import {
   createUpdateDiscordUser,
@@ -39,7 +39,7 @@ import {
 
 import {
   updateGroup,
-} from './controllers/group';
+} from './controllers/telegram/group';
 
 import {
   updateDiscordGroup,
@@ -47,7 +47,7 @@ import {
 
 import {
   fetchHelp,
-} from './controllers/help';
+} from './controllers/telegram/help';
 
 import {
   discordHelp,
@@ -57,13 +57,13 @@ import {
   fetchReferralCount,
   createReferral,
   fetchReferralTopTen,
-} from './controllers/referral';
+} from './controllers/telegram/referral';
 
-import fetchPriceInfo from './controllers/price';
+import fetchPriceInfo from './controllers/telegram/price';
 
 import {
   fetchExchangeList,
-} from './controllers/exchanges';
+} from './controllers/telegram/exchanges';
 
 require('dotenv').config();
 

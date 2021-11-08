@@ -1,7 +1,7 @@
-import db from '../models';
+import db from '../../models';
 
 const { Sequelize, Transaction, Op } = require('sequelize');
-const { getInstance } = require('../services/rclient');
+const { getInstance } = require('../../services/rclient');
 /**
  * Fetch Wallet
  */
@@ -13,7 +13,7 @@ export const updateGroup = async (ctx) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-      console.log('find group');
+    console.log('find group');
     let group = await db.group.findOne(
       {
         where: {

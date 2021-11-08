@@ -1,13 +1,13 @@
 /* eslint-disable no-await-in-loop */
-import db from '../models';
-import { getInstance } from '../services/rclient';
+import db from '../../models';
+import { getInstance } from '../../services/rclient';
 
 require('dotenv').config();
 
 const { Sequelize, Transaction, Op } = require('sequelize');
 const BigNumber = require('bignumber.js');
 const qr = require('qr-image');
-const logger = require('../helpers/logger');
+const logger = require('../../helpers/logger');
 
 const referralRunesReward = 20 * 1e8;
 

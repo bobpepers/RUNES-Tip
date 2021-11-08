@@ -9,11 +9,9 @@ import cors from 'cors';
 import compression from 'compression';
 import router from './router';
 import updatePrice from './helpers/updatePrice';
-import db from './models';
+// import db from './models';
 import logger from './helpers/logger';
 import { patchDeposits } from './helpers/patcher';
-
-// import drawReferralContest from './helpers/referralContest';
 
 logger.info('logger loader');
 const schedule = require('node-schedule');
@@ -21,9 +19,6 @@ const { startSync } = require('./services/sync');
 const {
   Config,
   setRunebaseEnv,
-  getRunebasePath,
-  isMainnet,
-  getRPCPassword,
 } = require('./services/rclientConfig');
 
 // const cookieParser = require('cookie-parser');
@@ -67,26 +62,5 @@ updatePrice();
 const schedulePriceUpdate = schedule.scheduleJob('*/10 * * * *', () => {
   updatePrice();
 });
-
-// drawReferralContest(sub, pub, expired_subKey);
-
-// Run every 2 hours at 5 minute mark
-// db.cronjob.findOne({
-//  where: {
-//    type: 'drawJackpot',
-//    state: 'executing',
-//  },
-// }).then((exist) => {
-//  const scheduleReferralContestDrawPatcher = schedule.scheduleJob(new Date(exist.expression), (fireDate) => {
-//    console.log(`This job was supposed to run at ${fireDate}, but actually ran at ${new Date()}`);
-//    drawReferralContest(sub, pub, expired_subKey);
-//  });
-// }).catch((error) => {
-//  console.log(error);
-// });
-
-// const scheduleReferralContestDrawPatcher = schedule.scheduleJob('5 */2 * * *', () => {
-//  drawReferralContest(sub, pub, expired_subKey);
-// });
 
 console.log('server listening on:', port);
