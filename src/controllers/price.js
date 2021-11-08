@@ -1,5 +1,6 @@
 import db from '../models';
 
+require('dotenv').config();
 const { Sequelize, Transaction, Op } = require('sequelize');
 
 /**

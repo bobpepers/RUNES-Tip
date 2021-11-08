@@ -1,4 +1,5 @@
 /* eslint-disable import/prefer-default-export */
+require('dotenv').config();
 const { MessageEmbed } = require('discord.js');
 
 const textChannelHelp = new MessageEmbed()

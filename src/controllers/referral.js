@@ -2,6 +2,8 @@
 import db from '../models';
 import { getInstance } from '../services/rclient';
 
+require('dotenv').config();
+
 const { Sequelize, Transaction, Op } = require('sequelize');
 const BigNumber = require('bignumber.js');
 const qr = require('qr-image');

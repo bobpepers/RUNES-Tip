@@ -1,5 +1,7 @@
 import db from '../models';
 
+require('dotenv').config();
+
 const { Sequelize, Transaction, Op } = require('sequelize');
 const { Markup } = require('telegraf');
 const { getInstance } = require('../services/rclient');

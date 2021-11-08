@@ -1,6 +1,8 @@
 import db from '../../models';
 import { getInstance } from '../../services/rclient';
 
+require('dotenv').config();
+
 const { MessageEmbed, MessageAttachment } = require('discord.js');
 
 const { Sequelize, Transaction, Op } = require('sequelize');
