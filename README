@@ -1,5 +1,3 @@
-
-
 # SETUP
 
 Create .env
@@ -24,9 +22,15 @@ TELEGRAM_RUNES_GROUP=xxx
 ## DISCORD
 CLIENT_TOKEN=xxx
 
+#BOT
+BOT_NAME=RunesTipBot
+BOT_COLOR=0099ff
+
 # CURRENCY
 CURRENCY_SYMBOL=RUNES
 CURRENCY_NAME=Runebase
+CURRENCY_LOGO=https://downloads.runebase.io/logo-512x512.png
+
 
 #OTHER
 
@@ -41,6 +45,5 @@ MINIMUM_SLEET=1e7
 
 #MINUMUM_FLOOD (VALUE SATOSHIS)
 MINIMUM_FLOOD=1e7
-
 
 ```
