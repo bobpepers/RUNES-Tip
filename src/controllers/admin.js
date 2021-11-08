@@ -414,27 +414,6 @@ export const fetchAdminLiability = async (req, res, next) => {
     res.locals.liability = ((Number(available) + Number(locked)) + Number(unconfirmedDeposits)) - Number(unconfirmledWithdrawals);
 
     console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-    console.log('sumAvailable');
-
     console.log(available);
     console.log(locked);
     console.log(unconfirmedDeposits);
@@ -580,22 +559,8 @@ export const acceptWithdraw = async (req, res, next) => {
       throw new Error('TRANSACTION_NOT_EXIST');
     }
     const amount = (((transaction.amount / 100) * 99) / 1e8);
-    console.log((amount.toFixed(8)).toString());
-    console.log('before reps');
-    console.log(transaction.to_from);
-    console.log(amount.toFixed(8).toString());
 
     const response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
-    console.log('999999999999');
-    console.log('999999999999');
-    console.log('999999999999');
-    console.log('999999999999');
-    console.log('999999999999');
-    console.log('999999999999');
-    console.log('999999999999');
-    console.log('999999999999');
-    console.log('999999999999');
-    console.log('999999999999');
     console.log(amount);
     console.log(response);
     res.locals.transaction = await transaction.update(
@@ -751,28 +716,6 @@ export const rejectWithdraw = async (req, res, next) => {
     next();
   });
   console.log(req.body.id);
-};
-
-/**
- * Fetch admin publishers
- */
-export const fetchAdminPublishers = async (req, res, next) => {
-  try {
-    res.locals.publishers = await db.publisher.findAll({
-      include: [
-        {
-          model: db.domain,
-          // required: false,
-          as: 'domain',
-        },
-      ],
-    });
-    next();
-  } catch (error) {
-    console.log(error);
-    res.locals.error = error;
-    next();
-  }
 };
 
 export const fetchAdminDeposits = async (req, res, next) => {
