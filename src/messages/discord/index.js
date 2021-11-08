@@ -229,42 +229,42 @@ export const helpMessage = new MessageEmbed()
   .setColor(`#${process.env.BOT_COLOR}`)
   .setTitle('RunesTip Help')
   .setDescription(`\`\`\`
-!runestip
+${process.env.DISCORD_BOT_COMMAND}
 \`\`\`
 Displays this message
 
 \`\`\`
-!runestip help
+${process.env.DISCORD_BOT_COMMAND} help
 \`\`\`
 Displays this message
 
 \`\`\`
-!runestip balance
+${process.env.DISCORD_BOT_COMMAND} balance
 \`\`\`
 Displays your balance
 
 \`\`\`
-!runestip deposit
+${process.env.DISCORD_BOT_COMMAND} deposit
 \`\`\`
 Displays your deposit address
 
 \`\`\`
-!runestip withdraw <address> <amount|all> 
+${process.env.DISCORD_BOT_COMMAND} withdraw <address> <amount|all> 
 \`\`\`
 Withdraws the entered amount to a ${process.env.CURRENCY_NAME} address of your choice
 
 \`\`\`
-!runestip <@user> <amount|all>
+${process.env.DISCORD_BOT_COMMAND} <@user> <amount|all>
 \`\`\`
 Tips the @ mentioned user with the desired amount
 
 \`\`\`
-!runestip rain <amount|all> [<@role>]
+${process.env.DISCORD_BOT_COMMAND} rain <amount|all> [<@role>]
 \`\`\`
 Rains the desired amount onto all online users (optionally, within specified role)
 
 \`\`\`
-!runestip flood <amount|all> [<@role>]
+${process.env.DISCORD_BOT_COMMAND} flood <amount|all> [<@role>]
 \`\`\`
 Floods the desired amount onto all users (including offline users) (optionally, within specified role)
   `)
