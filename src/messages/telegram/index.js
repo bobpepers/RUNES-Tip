@@ -95,71 +95,71 @@ export const depositAddressMessage = (telegramUserName, user) => {
 
 export const welcomeMessage = (ctx) => {
   const result = `Welcome ${ctx.update.message.from.username}, we created a wallet for you.
-Type "/runestip help" for usage info`;
+Type "${process.env.TELEGRAM_BOT_COMMAND} help" for usage info`;
   return result;
 };
 
 export const helpMessage = () => {
   const result = `<b>Tipbot Help</b>
       
-/runestip
+${process.env.TELEGRAM_BOT_COMMAND}
 <code>Display this message</code>
     
       
-/runestip help
+${process.env.TELEGRAM_BOT_COMMAND} help
 /help
 <code>Display this message</code>
     
       
-/runestip price
+${process.env.TELEGRAM_BOT_COMMAND} price
 /price
 <code>Display current ${process.env.CURRENCY_SYMBOL} price</code>
     
       
-/runestip exchanges
+${process.env.TELEGRAM_BOT_COMMAND} exchanges
 /exchanges
 <code>Display list of exchanges to trade ${process.env.CURRENCY_SYMBOL}</code>
     
     
-/runestip balance
+${process.env.TELEGRAM_BOT_COMMAND} balance
 /balance
 <code>Display wallet balance</code>
     
       
-/runestip tip [@user] [amount]
+${process.env.TELEGRAM_BOT_COMMAND} tip [@user] [amount]
 /tip [@user] [amount]
 <code>Tips the @ mentioned user with the desired amount, e.g.</code>
-/runestip tip @Bagosan 1.00
+${process.env.TELEGRAM_BOT_COMMAND} tip @Bagosan 1.00
 /tip @Bagosan 1.00
     
       
-/runestip rain [amount]
+${process.env.TELEGRAM_BOT_COMMAND} rain [amount]
 /rain [amount]
 <code>Rains the desired amount onto all active users (active time 3 hours), e.g.</code>
-/runestip rain 1.00
+${process.env.TELEGRAM_BOT_COMMAND} rain 1.00
 /rain 1.00
     
       
-/runestip deposit
+${process.env.TELEGRAM_BOT_COMMAND} deposit
 /deposit
 <code>Displays your deposit address</code>
     
       
-/runestip withdraw [address] [amount]
+${process.env.TELEGRAM_BOT_COMMAND} withdraw [address] [amount]
 /withdraw [address] [amount]
 <code>Withdraws the entered amount to a ${process.env.CURRENCY_SYMBOL} address of your choice, e.g.</code>
-/runestip withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
+${process.env.TELEGRAM_BOT_COMMAND} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
 /withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
 <code>Note: Minimal amount to withdraw: 2 ${process.env.CURRENCY_SYMBOL}. A withdrawal fee of 0.1 ${process.env.CURRENCY_SYMBOL} will be automatically deducted from the amount.</code>
       
     
-/runestip referral
+${process.env.TELEGRAM_BOT_COMMAND} referral
 /referral
 <code>Displays your referral count</code>
 <code>Note: We reward members for every 10 new members they add. current reward = 20 ${process.env.CURRENCY_SYMBOL}</code>
       
     
-/runestip referral top
+${process.env.TELEGRAM_BOT_COMMAND} referral top
 /top
 <code>Displays referral top 10</code>`;
 
