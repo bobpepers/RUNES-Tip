@@ -163,7 +163,7 @@ export const discordSleet = async (client, message, filteredMessage) => {
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
-    console.log('rain amount');
+    console.log('sleet amount');
     console.log(amount);
     if (amount < Number(process.env.MINIMUM_SLEET)) { // smaller then 2 RUNES
       await message.channel.send({ embeds: [minimumSleetMessage(message)] });
@@ -304,7 +304,7 @@ export const discordSleet = async (client, message, filteredMessage) => {
               await message.channel.send(element);
             }
 
-            await message.channel.send({ embeds: [AfterSleetSuccessMessage(message, amount)] });
+            await message.channel.send({ embeds: [AfterSleetSuccessMessage(message, amount, usersToRain, amountPerUser)] });
             logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
             // cutStringListUsers.forEach((element) => ctx.reply(element));
           }
@@ -470,7 +470,7 @@ export const discordFlood = async (client, message, filteredMessage) => {
               await message.channel.send(element);
             }
 
-            await message.channel.send({ embeds: [AfterFloodSuccessMessage(message, amount)] });
+            await message.channel.send({ embeds: [AfterFloodSuccessMessage(message, amount, withoutBots, amountPerUser)] });
             logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
             // cutStringListUsers.forEach((element) => ctx.reply(element));
           }
@@ -634,7 +634,7 @@ export const discordRain = async (client, message, filteredMessage) => {
               await message.channel.send(element);
             }
 
-            await message.channel.send({ embeds: [AfterRainSuccessMessage(message, amount)] });
+            await message.channel.send({ embeds: [AfterRainSuccessMessage(message, amount, withoutBots, amountPerUser)] });
             logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
             // cutStringListUsers.forEach((element) => ctx.reply(element));
           }

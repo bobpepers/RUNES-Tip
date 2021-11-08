@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { MessageEmbed } = require('discord.js');
 
-export const balanceMessage = (userId, user) => {
+export const balanceMessage = (userId, user, priceInfo) => {
   const result = new MessageEmbed()
     .setColor(`#${process.env.BOT_COLOR}`)
     .setTitle('Balance')
@@ -48,7 +48,7 @@ export const unableToFindUserTipMessage = (message, amount) => {
   return result;
 };
 
-export const AfterRainSuccessMessage = (message, amount) => {
+export const AfterRainSuccessMessage = (message, amount, withoutBots, amountPerUser) => {
   const result = new MessageEmbed()
     .setColor(`#${process.env.BOT_COLOR}`)
     .setTitle('Rain')
@@ -59,7 +59,7 @@ export const AfterRainSuccessMessage = (message, amount) => {
   return result;
 };
 
-export const AfterFloodSuccessMessage = (message, amount) => {
+export const AfterFloodSuccessMessage = (message, amount, withoutBots, amountPerUser) => {
   const result = new MessageEmbed()
     .setColor(`#${process.env.BOT_COLOR}`)
     .setTitle('Rain')
@@ -70,7 +70,7 @@ export const AfterFloodSuccessMessage = (message, amount) => {
   return result;
 };
 
-export const AfterSleetSuccessMessage = (message, amount) => {
+export const AfterSleetSuccessMessage = (message, amount, usersToRain, amountPerUser) => {
   const result = new MessageEmbed()
     .setColor(`#${process.env.BOT_COLOR}`)
     .setTitle('Sleet')
