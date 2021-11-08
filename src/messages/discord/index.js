@@ -254,17 +254,17 @@ Displays your deposit address
 Withdraws the entered amount to a ${process.env.CURRENCY_NAME} address of your choice
 
 \`\`\`
-!arrrtip <@user> <amount|all>
+!runestip <@user> <amount|all>
 \`\`\`
 Tips the @ mentioned user with the desired amount
 
 \`\`\`
-!arrrtip rain <amount|all> [<@role>]
+!runestip rain <amount|all> [<@role>]
 \`\`\`
 Rains the desired amount onto all online users (optionally, within specified role)
 
 \`\`\`
-!arrrtip flood <amount|all> [<@role>]
+!runestip flood <amount|all> [<@role>]
 \`\`\`
 Floods the desired amount onto all users (including offline users) (optionally, within specified role)
   `)
