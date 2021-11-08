@@ -65,6 +65,8 @@ import {
   fetchExchangeList,
 } from './controllers/exchanges';
 
+require('dotenv').config();
+
 // const PQueue = require('p-queue');
 const logger = require('./helpers/logger');
 
@@ -117,8 +119,8 @@ const router = (app) => {
     console.log(`Logged in as ${discordClient.user.tag}!`);
   });
 
-  const prefix = "!runestip";
   discordClient.on("messageCreate", async (message) => {
+    console.log(message);
     if (!message.author.bot) {
       const walletExists = await createUpdateDiscordUser(message);
       await queue.add(() => walletExists);
@@ -127,7 +129,8 @@ const router = (app) => {
       const lastSeenDiscordTask = await updateDiscordLastSeen(discordClient, message);
       await queue.add(() => lastSeenDiscordTask);
     }
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
+
+    if (!message.content.startsWith(process.env.DISCORD_BOT_COMMAND) || message.author.bot) return;
     const runesTipSplit = message.content.split(' ');
     const filteredMessage = runesTipSplit.filter((el) => el !== '');
 

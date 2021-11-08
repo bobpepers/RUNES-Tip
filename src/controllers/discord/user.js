@@ -6,8 +6,6 @@ const { getInstance } = require('../../services/rclient');
  * Fetch Wallet
  */
 export const createUpdateDiscordUser = async (message) => {
-  console.log('createUpdateUser message');
-  console.log(message);
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -85,7 +83,7 @@ export const createUpdateDiscordUser = async (message) => {
           lock: t.LOCK.UPDATE,
         });
         message.author.send(`Welcome ${message.author.username}, we created a wallet for you.
-Type "!runestip help" for usage info`);
+Type "${process.env.DISCORD_BOT_COMMAND} help" for usage info`);
         // ctx.reply(``);
       }
     }
@@ -103,7 +101,6 @@ export const updateDiscordLastSeen = async (client, message) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    console.log('updateddddd');
     const user = await db.user.findOne(
       {
         where: {
@@ -113,7 +110,6 @@ export const updateDiscordLastSeen = async (client, message) => {
         lock: t.LOCK.UPDATE,
       },
     );
-    console.log(user);
     const group = await db.group.findOne(
       {
         where: {
@@ -161,7 +157,6 @@ export const updateDiscordLastSeen = async (client, message) => {
         }
       }
     }
-    console.log(user);
     if (user) {
       const updatedUser = await user.update(
         {
