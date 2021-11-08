@@ -4,32 +4,17 @@ import PQueue from 'p-queue';
 import db from '../models';
 
 const _ = require('lodash');
-// const moment = require('moment');
-// const BigNumber = require('bignumber.js');
-// const { forEach } = require('p-iteration');
-// const abi = require('ethjs-abi');
-// const { sendSyncInfo } = require('../publisher');
-// const { getLogger } = require('../utils/logger');
-// const { Utils } = require('rweb3');
-const { Sequelize, Transaction, Op } = require('sequelize');
-const { isMainnet } = require('./rclientConfig');
-// const { BLOCK_0_TIMESTAMP, SATOSHI_CONVERSION, fill } = require('../constants');
-// const { db, DBHelper } = require('../db');
-// const MarketMaker = require('../models/marketMaker');
-// const network = require('../api/network');
+const { Transaction, Op } = require('sequelize');
+// const { isMainnet } = require('./runebaseConfig');
 
 const { getInstance } = require('./rclient');
 
 const queue = new PQueue({ concurrency: 1 });
 
-const RPC_BATCH_SIZE = 1;
+// const RPC_BATCH_SIZE = 1;
 const BLOCK_BATCH_SIZE = 1;
-const SYNC_THRESHOLD_SECS = 2400;
-const BLOCK_0_TIMESTAMP = 0;
-
-// hardcode sender address as it doesnt matter
-// let MetaData;
-let senderAddress;
+// const SYNC_THRESHOLD_SECS = 2400;
+// const BLOCK_0_TIMESTAMP = 0;
 
 const sequentialLoop = async (iterations, process, exit) => {
   let index = 0;
@@ -292,8 +277,8 @@ async function startSync() {
 
   // TransactionModel.findAll
   // MetaData = await getContractMetadata();
-  senderAddress = isMainnet() ? 'RKBLGRvYqunBtpueEPuXzQQmoVsQQTvd3a' : '5VMGo2gGHhkW5TvRRtcKM1RkyUgrnNP7dn';
-  console.log('startSync');
+  // senderAddress = isMainnet() ? 'RKBLGRvYqunBtpueEPuXzQQmoVsQQTvd3a' : '5VMGo2gGHhkW5TvRRtcKM1RkyUgrnNP7dn';
+  // console.log('startSync');
   sync();
 }
 

@@ -16,17 +16,16 @@ import { patchDeposits } from './helpers/patcher';
 logger.info('logger loader');
 const schedule = require('node-schedule');
 const { startSync } = require('./services/sync');
-const {
-  Config,
-  setRunebaseEnv,
-} = require('./services/rclientConfig');
+// const {
+//  setblockchainNodeEnv,
+// } = require('./services/runebaseConfig');
 
 // const cookieParser = require('cookie-parser');
 
 const port = process.env.PORT || 8080;
 
 const app = express();
-setRunebaseEnv('Mainnet', process.env.RUNEBASE_ENV_PATH);
+// setblockchainNodeEnv('Mainnet', process.env.RUNEBASE_ENV_PATH);
 
 const server = http.createServer(app);
 

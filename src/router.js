@@ -93,7 +93,6 @@ const telegramClient = new Telegraf(telegramBotToken);
 const {
   Client,
   Intents,
-  MessageEmbed,
   GuildMemberManager,
 } = require('discord.js');
 
