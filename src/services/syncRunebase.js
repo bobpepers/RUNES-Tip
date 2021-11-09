@@ -54,7 +54,7 @@ const sequentialLoop = async (iterations, process, exit) => {
   return loop;
 };
 
-const syncTransactions = async (startBlock, endBlock) => {
+const syncTransactions = async (discordClient, telegramClient) => {
   const transactions = await db.transaction.findAll({
     where: {
       phase: 'confirming',
@@ -220,7 +220,7 @@ const getInsertBlockPromises = async (startBlock, endBlock) => {
   return { insertBlockPromises };
 };
 
-const sync = async () => {
+const sync = async (discordClient, telegramClient) => {
   const currentBlockCount = Math.max(0, await getInstance().getBlockCount());
   const currentBlockHash = await getInstance().getBlockHash(currentBlockCount);
   const currentBlockTime = (await getInstance().getBlock(currentBlockHash)).time;
@@ -244,7 +244,7 @@ const sync = async () => {
       const endBlock = Math.min((startBlock + BLOCK_BATCH_SIZE) - 1, currentBlockCount);
 
       // await syncTransactions(startBlock, endBlock);
-      await queue.add(() => syncTransactions(startBlock, endBlock));
+      await queue.add(() => syncTransactions(discordClient, telegramClient));
       console.log('Synced syncTrade');
 
       const { insertBlockPromises } = await getInsertBlockPromises(startBlock, endBlock);
@@ -271,7 +271,7 @@ const sync = async () => {
   );
 };
 
-async function startRunebaseSync() {
+async function startRunebaseSync(discordClient, telegramClient) {
   // const transactions = await getInstance().listTransactions(1000);
   // console.log(transactions);
 
@@ -279,7 +279,7 @@ async function startRunebaseSync() {
   // MetaData = await getContractMetadata();
   // senderAddress = isMainnet() ? 'RKBLGRvYqunBtpueEPuXzQQmoVsQQTvd3a' : '5VMGo2gGHhkW5TvRRtcKM1RkyUgrnNP7dn';
   // console.log('startSync');
-  sync();
+  sync(discordClient, telegramClient);
 }
 
 module.exports = {

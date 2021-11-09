@@ -45,21 +45,44 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-router(app);
+const {
+  Client,
+  Intents,
+  GuildMemberManager,
+} = require('discord.js');
+const { Telegraf } = require('telegraf');
+
+const discordClient = new Client({
+  intents: [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MEMBERS,
+    Intents.FLAGS.GUILD_PRESENCES,
+    Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.DIRECT_MESSAGES,
+  ],
+  partials: ['MESSAGE', 'CHANNEL'],
+});
+
+const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+
+router(app, discordClient, telegramClient);
+
+telegramClient.launch();
+discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
 
 server.listen(port);
 // setRunebaseEnv('Mainnet', process.env.RUNEBASE_ENV_PATH);
 
 (async function () {
   if (process.env.CURRENCY_NAME === 'Runebase') {
-    await startRunebaseSync();
+    await startRunebaseSync(discordClient, telegramClient);
     await patchRunebaseDeposits();
 
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
       patchRunebaseDeposits();
     });
   } else if (process.env.CURRENCY_NAME === 'Pirate') {
-    await startPirateSync();
+    await startPirateSync(discordClient, telegramClient);
     await patchPirateDeposits();
     await consolidatePirate();
 
@@ -70,7 +93,7 @@ server.listen(port);
       consolidatePirate();
     });
   } else {
-    await startRunebaseSync();
+    await startRunebaseSync(discordClient, telegramClient);
     await patchRunebaseDeposits();
 
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {

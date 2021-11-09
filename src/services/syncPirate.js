@@ -54,7 +54,7 @@ const sequentialLoop = async (iterations, process, exit) => {
   return loop;
 };
 
-const syncTransactions = async (startBlock, endBlock) => {
+const syncTransactions = async (discordClient, telegramClient) => {
   const transactions = await db.transaction.findAll({
     where: {
       phase: 'confirming',
@@ -229,7 +229,7 @@ const getInsertBlockPromises = async (startBlock, endBlock) => {
   return { insertBlockPromises };
 };
 
-const sync = async () => {
+const sync = async (discordClient, telegramClient) => {
   const currentBlockCount = Math.max(0, await getInstance().getBlockCount());
   const currentBlockHash = await getInstance().getBlockHash(currentBlockCount);
   const currentBlockTime = (await getInstance().getBlock(currentBlockHash)).time;
@@ -253,7 +253,7 @@ const sync = async () => {
       const endBlock = Math.min((startBlock + BLOCK_BATCH_SIZE) - 1, currentBlockCount);
 
       // await syncTransactions(startBlock, endBlock);
-      await queue.add(() => syncTransactions(startBlock, endBlock));
+      await queue.add(() => syncTransactions(discordClient, telegramClient));
 
       const { insertBlockPromises } = await getInsertBlockPromises(startBlock, endBlock);
       await queue.add(() => Promise.all(insertBlockPromises));
@@ -279,8 +279,8 @@ const sync = async () => {
   );
 };
 
-async function startPirateSync() {
-  sync();
+async function startPirateSync(discordClient, telegramClient) {
+  sync(discordClient, telegramClient);
 }
 
 module.exports = {

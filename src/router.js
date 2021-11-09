@@ -77,11 +77,8 @@ const logger = require('./helpers/logger');
 const queue = new PQueue({ concurrency: 1 });
 const schedule = require('node-schedule');
 
-// const appRoot = process.env.PWD;
-const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN;
 const runesGroup = process.env.TELEGRAM_RUNES_GROUP;
 
-const { Telegraf } = require('telegraf');
 const rateLimit = require('telegraf-ratelimit');
 const { startRunebaseSync } = require('./services/syncRunebase');
 const { startPirateSync } = require('./services/syncPirate');
@@ -93,26 +90,7 @@ const limitConfig = {
   onLimitExceeded: (ctx, next) => ctx.reply('Rate limit exceeded - please wait 10 seconds'),
 };
 
-const telegramClient = new Telegraf(telegramBotToken);
-
-const {
-  Client,
-  Intents,
-  GuildMemberManager,
-} = require('discord.js');
-
-const discordClient = new Client({
-  intents: [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.GUILD_PRESENCES,
-    Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.DIRECT_MESSAGES,
-  ],
-  partials: ['MESSAGE', 'CHANNEL'],
-});
-
-const router = (app) => {
+const router = (app, discordClient, telegramClient) => {
   if (process.env.CURRENCY_NAME === 'Pirate') {
     app.post('/api/rpc/walletnotify',
       transactionNotifyPirate,
@@ -623,8 +601,6 @@ const router = (app) => {
       await queue.add(() => lastSeenTask);
     })();
   });
-  telegramClient.launch();
-  discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
 };
 
 export default router;
