@@ -1,5 +1,11 @@
 /* eslint-disable import/prefer-default-export */
 
+export const telegramDepositConfirmedMessage = (amount) => {
+  const result = `Deposit Confirmed 
+${amount} ${process.env.CURRENCY_SYMBOL} has been credited to your wallet`;
+  return result;
+};
+
 export const telegramIncomingDepositMessage = (res) => {
   const result = `incoming deposit detected for ${res.locals.amount} ${process.env.CURRENCY_SYMBOL}
 Balance will be reflected in your wallet in ~${process.env.MINIMUM_TRANSACTION_CONFIRMATIONS}+ confirmations

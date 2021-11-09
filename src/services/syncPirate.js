@@ -2,10 +2,16 @@
 
 import PQueue from 'p-queue';
 import db from '../models';
+// const { isMainnet } = require('./runebaseConfig');
+import {
+  telegramDepositConfirmedMessage,
+} from '../messages/telegram';
+import {
+  discordDepositConfirmedMessage,
+} from '../messages/discord';
 
 const _ = require('lodash');
 const { Transaction, Op } = require('sequelize');
-// const { isMainnet } = require('./runebaseConfig');
 
 const { getInstance } = require('./rclient');
 
@@ -170,6 +176,23 @@ const syncTransactions = async (discordClient, telegramClient) => {
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
+          const userToMessage = await db.user.findOne({
+            where: {
+              id: updatedWallet.userId,
+            },
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          let userClientId;
+          if (userToMessage.user_id.startsWith('discord')) {
+            userClientId = userToMessage.user_id.replace('discord-', '');
+            const myClient = await discordClient.users.fetch(userClientId, false);
+            await myClient.send({ embeds: [discordDepositConfirmedMessage(transaction.received[0].value)] });
+          }
+          if (userToMessage.user_id.startsWith('telegram')) {
+            userClientId = userToMessage.user_id.replace('telegram-', '');
+            telegramClient.telegram.sendMessage(userClientId, telegramDepositConfirmedMessage(transaction.received[0].value));
+          }
         }
       }
       t.afterCommit(() => {

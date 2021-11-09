@@ -1,6 +1,18 @@
 require('dotenv').config();
 const { MessageEmbed } = require('discord.js');
 
+export const discordDepositConfirmedMessage = (amount) => {
+  const result = new MessageEmbed()
+    .setColor(`#${process.env.BOT_COLOR}`)
+    .setTitle('Deposit')
+    .setDescription(`Deposit Confirmed 
+${amount} ${process.env.CURRENCY_SYMBOL} has been credited to your wallet`)
+    .setTimestamp()
+    .setFooter(process.env.BOT_NAME, process.env.CURRENCY_LOGO);
+
+  return result;
+};
+
 export const discordIncomingDepositMessage = (res) => {
   const result = new MessageEmbed()
     .setColor(`#${process.env.BOT_COLOR}`)

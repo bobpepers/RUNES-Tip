@@ -1,7 +1,7 @@
 import PQueue from 'p-queue';
 // import { filter } from 'lodash';
 import walletNotifyRunebase from './helpers/runebase/walletNotify';
-import transactionNotifyPirate from './helpers/pirate/walletNotify';
+import walletNotifyPirate from './helpers/pirate/walletNotify';
 // import updatePrice from './helpers/updatePrice';
 
 import {
@@ -93,7 +93,7 @@ const limitConfig = {
 const router = (app, discordClient, telegramClient) => {
   if (process.env.CURRENCY_NAME === 'Pirate') {
     app.post('/api/rpc/walletnotify',
-      transactionNotifyPirate,
+      walletNotifyPirate,
       async (req, res) => {
         if (res.locals.error) {
           console.log(res.locals.error);
