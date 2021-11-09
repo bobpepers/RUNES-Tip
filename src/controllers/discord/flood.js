@@ -10,9 +10,9 @@ import {
 
 const BigNumber = require('bignumber.js');
 const { Transaction, Op } = require('sequelize');
+const logger = require('../../helpers/logger');
 
 export const discordFlood = async (client, message, filteredMessage) => {
-  // console.log(message);
   const guild = await client.guilds.cache.get(message.guildId);
   const members = guild.presences.cache;
   // const onlineMembers = members.filter((member) => member.status === 'online');
@@ -50,23 +50,17 @@ export const discordFlood = async (client, message, filteredMessage) => {
       }
     }
   }
-  console.log(withoutBots);
-  console.log('withoutBots');
 
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
-    console.log('rain amount');
-    console.log(amount);
     if (amount < Number(process.env.MINIMUM_FLOOD)) { // smaller then 2 RUNES
       await message.channel.send({ embeds: [minimumFloodMessage(message)] });
     }
     if (amount % 1 !== 0) {
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Flood')] });
     } else {
-      console.log('rain 1');
-      // const userToTip = runesTipSplit[2].substring(1);
       const user = await db.user.findOne({
         where: {
           user_id: `discord-${message.author.id}`,
@@ -108,7 +102,7 @@ export const discordFlood = async (client, message, filteredMessage) => {
               transaction: t,
             });
             const amountPerUser = (((amount / withoutBots.length).toFixed(0)));
-            const rainRecord = await db.rain.create({
+            const rainRecord = await db.flood.create({
               amount,
               userCount: withoutBots.length,
               userId: user.id,
@@ -119,11 +113,6 @@ export const discordFlood = async (client, message, filteredMessage) => {
             const listOfUsersRained = [];
             // eslint-disable-next-line no-restricted-syntax
             for (const rainee of withoutBots) {
-              console.log('raineee');
-              console.log(rainee);
-              console.log(amountPerUser);
-              console.log(rainee.id);
-              console.log(rainRecord.id);
               // eslint-disable-next-line no-await-in-loop
               await rainee.wallet.update({
                 available: rainee.wallet.available + Number(amountPerUser),
@@ -131,12 +120,8 @@ export const discordFlood = async (client, message, filteredMessage) => {
                 lock: t.LOCK.UPDATE,
                 transaction: t,
               });
-              console.log('afterrainee update');
-              console.log(amountPerUser);
-              console.log(rainee.id);
-              console.log(rainRecord.id);
               // eslint-disable-next-line no-await-in-loop
-              await db.raintip.create({
+              await db.floodtip.create({
                 amount: amountPerUser,
                 userId: rainee.id,
                 rainId: rainRecord.id,
@@ -144,15 +129,11 @@ export const discordFlood = async (client, message, filteredMessage) => {
                 lock: t.LOCK.UPDATE,
                 transaction: t,
               });
-              console.log('after raintip create');
               const userIdReceivedRain = rainee.user_id.replace('discord-', '');
               listOfUsersRained.push(`<@${userIdReceivedRain}>`);
             }
 
-            // await ctx.reply(`Raining ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} on ${usersToRain.length} active users -- ${amountPerUser / 1e8} ${process.env.CURRENCY_SYMBOL} each`);
-
             const newStringListUsers = listOfUsersRained.join(", ");
-            console.log(newStringListUsers);
             const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
             // eslint-disable-next-line no-restricted-syntax
             for (const element of cutStringListUsers) {
@@ -162,7 +143,6 @@ export const discordFlood = async (client, message, filteredMessage) => {
 
             await message.channel.send({ embeds: [AfterFloodSuccessMessage(message, amount, withoutBots, amountPerUser)] });
             logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
-            // cutStringListUsers.forEach((element) => ctx.reply(element));
           }
         }
       }

@@ -71,7 +71,6 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      console.log('2');
       if (!findUserToTip) {
         await message.channel.send({ embeds: [unableToFindUserTipMessage] });
       }
@@ -105,7 +104,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
               transaction: t,
               lock: t.LOCK.UPDATE,
             });
-            console.log('4');
+
             const updatedFindUserToTip = findUserToTip.wallet.update({
               available: findUserToTip.wallet.available + amount,
             }, {
@@ -120,8 +119,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
               transaction: t,
               lock: t.LOCK.UPDATE,
             });
-            console.log(tipTransaction);
-            console.log('6');
+
             const userId = user.user_id.replace('discord-', '');
             const userIdTipped = findUserToTip.user_id.replace('discord-', '');
 
@@ -136,6 +134,6 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
       console.log('done');
     });
   }).catch((err) => {
-    ctx.reply('Something went wrong with tipping');
+    message.channel.send("Somethign went wrong.");
   });
 };
