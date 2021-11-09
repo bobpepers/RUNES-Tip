@@ -116,12 +116,20 @@ export const withdrawTelegramAdminAccept = async (bot, ctx, adminTelegramId, wit
       if (process.env.CURRENCY_NAME === 'Runebase') {
         response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
       } else if (process.env.CURRENCY_NAME === 'Pirate') {
-        response = await getInstance().zSendMany(
+        const preResponse = await getInstance().zSendMany(
           process.env.PIRATE_MAIN_ADDRESS,
           [{ address: transaction.to_from, amount: amount.toFixed(8) }],
           1,
           0.0001,
         );
+        let opStatus = await getInstance().zGetOperationStatus([preResponse]);
+        while (!opStatus || opStatus[0].status === 'executing') {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          opStatus = await getInstance().zGetOperationStatus([preResponse]);
+        }
+        console.log('opStatus');
+        console.log(opStatus);
+        response = opStatus[0].result.txid;
       } else {
         response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
       }
