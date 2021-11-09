@@ -29,7 +29,7 @@ export const discordWithdrawalAcceptedMessage = (updatedTrans) => {
     .setColor(`#${process.env.BOT_COLOR}`)
     .setTitle('Withdraw')
     .setDescription(`Your withdrawal has been accepted
-https://explorer.runebase.io/tx/${updatedTrans.txid}`)
+${process.env.EXPLORER_URL}/tx/${updatedTrans.txid}`)
     .setTimestamp()
     .setFooter(process.env.BOT_NAME, process.env.CURRENCY_LOGO);
 

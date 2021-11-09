@@ -2,13 +2,13 @@
 
 export const withdrawalAcceptedAdminMessage = (updatedTrans) => {
   const result = `Withdrawal Accepted
-https://explorer.runebase.io/tx/${updatedTrans.txid}`;
+${process.env.EXPLORER_URL}/tx/${updatedTrans.txid}`;
   return result;
 };
 
 export const withdrawalAcceptedMessage = (transaction, updatedTrans) => {
   const result = `${transaction.address.wallet.user.username}'s withdrawal has been accepted
-https://explorer.runebase.io/tx/${updatedTrans.txid}`;
+  ${process.env.EXPLORER_URL}/tx/${updatedTrans.txid}`;
   return result;
 };
 
@@ -164,8 +164,8 @@ ${process.env.TELEGRAM_BOT_COMMAND} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 
 /withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
 <code>Note: Minimal amount to withdraw: 2 ${process.env.CURRENCY_SYMBOL}. A withdrawal fee of 0.1 ${process.env.CURRENCY_SYMBOL} will be automatically deducted from the amount.</code>
       
-    
-${process.env.TELEGRAM_BOT_COMMAND} referral
+${process.env.CURRENCY_NAME === 'Runebase'
+&& `${process.env.TELEGRAM_BOT_COMMAND} referral
 /referral
 <code>Displays your referral count</code>
 <code>Note: We reward members for every 10 new members they add. current reward = 20 ${process.env.CURRENCY_SYMBOL}</code>
@@ -173,7 +173,8 @@ ${process.env.TELEGRAM_BOT_COMMAND} referral
     
 ${process.env.TELEGRAM_BOT_COMMAND} referral top
 /top
-<code>Displays referral top 10</code>`;
+<code>Displays referral top 10</code>`}     
+`;
 
   return result;
 };
