@@ -75,15 +75,26 @@ export const withdrawDiscordCreate = async (message, filteredMessage) => {
     if (amount < Number(process.env.MINIMUM_WITHDRAWAL)) { // smaller then 2 RUNES
       await message.author.send({ embeds: [minimumWithdrawalMessage(message)] });
     }
+
     if (amount % 1 !== 0) {
       await message.author.send({ embeds: [invalidAmountMessage(message, 'Withdraw')] });
     }
-    const isRunebaseAddress = await getInstance().utils.isRunebaseAddress(filteredMessage[2]);
-    if (!isRunebaseAddress) {
+
+    // Add new currencies here (default fallback Runebase)
+    let isValidAddress = false;
+    if (process.env.CURRENCY_NAME === 'Runebase') {
+      isValidAddress = await getInstance().utils.isRunebaseAddress(filteredMessage[2]);
+    } else if (process.env.CURRENCY_NAME === 'Pirate') {
+      isValidAddress = await getInstance().utils.isPirateAddress(filteredMessage[2]);
+    } else {
+      isValidAddress = await getInstance().utils.isRunebaseAddress(filteredMessage[2]);
+    }
+    //
+
+    if (!isValidAddress) {
       await message.author.send({ embeds: [invalidAddressMessage(message)] });
     }
-
-    if (amount >= (2 * 1e8) && amount % 1 === 0 && isRunebaseAddress) {
+    if (amount >= Number(process.env.MINIMUM_WITHDRAWAL) && amount % 1 === 0 && isValidAddress) {
       const user = await db.user.findOne({
         where: {
           user_id: `discord-${message.author.id}`,
@@ -106,6 +117,7 @@ export const withdrawDiscordCreate = async (message, filteredMessage) => {
       if (!user) {
         await message.author.send({ embeds: [userNotFoundMessage(message, 'Withdraw')] });
       }
+      console.log('5');
       if (user) {
         if (amount > user.wallet.available) {
           await message.author.send({ embeds: [insufficientBalanceMessage(message, 'Withdraw')] });
@@ -118,6 +130,7 @@ export const withdrawDiscordCreate = async (message, filteredMessage) => {
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
+          console.log('6');
           const transaction = await db.transaction.create({
             addressId: wallet.addresses[0].id,
             phase: 'review',

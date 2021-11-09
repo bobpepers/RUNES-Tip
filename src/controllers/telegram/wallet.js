@@ -280,12 +280,22 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
     if (amount % 1 !== 0) {
       ctx.reply(invalidAmountMessage());
     }
-    const isRunebaseAddress = await getInstance().utils.isRunebaseAddress(withdrawalAddress);
-    if (!isRunebaseAddress) {
+
+    // Add new currencies here (default fallback Runebase)
+    let isValidAddress = false;
+    if (process.env.CURRENCY_NAME === 'Runebase') {
+      isValidAddress = await getInstance().utils.isRunebaseAddress(withdrawalAddress);
+    } else if (process.env.CURRENCY_NAME === 'Pirate') {
+      isValidAddress = await getInstance().utils.isPirateAddress(withdrawalAddress);
+    } else {
+      isValidAddress = await getInstance().utils.isRunebaseAddress(withdrawalAddress);
+    }
+    //
+    if (!isValidAddress) {
       ctx.reply(invalidAddressMessage());
     }
 
-    if (amount >= Number(process.env.MINIMUM_WITHDRAWAL) && amount % 1 === 0 && isRunebaseAddress) {
+    if (amount >= Number(process.env.MINIMUM_WITHDRAWAL) && amount % 1 === 0 && isValidAddress) {
       const user = await db.user.findOne({
         where: {
           user_id: `telegram-${ctx.update.message.from.id}`,

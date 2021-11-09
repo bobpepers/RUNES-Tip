@@ -8,6 +8,7 @@ Pirate (UnTested)
 - add currency to index.js/router.js/rclient.js
 - create & edit service/sync.js file
 - create helpers/patch.js file
+- add currency to discord & telegram wallet controllers (./controllers/discord/wallet.js / ./controllers/telegram/wallet.js)
 
 # SETUP
 
