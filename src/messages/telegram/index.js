@@ -114,64 +114,64 @@ Type "${process.env.TELEGRAM_BOT_COMMAND} help" for usage info`;
 export const helpMessage = () => {
   const result = `<b>Tipbot Help</b>
       
-${process.env.TELEGRAM_BOT_COMMAND}
+/${process.env.TELEGRAM_BOT_COMMAND}
 <code>Display this message</code>
     
       
-${process.env.TELEGRAM_BOT_COMMAND} help
+/${process.env.TELEGRAM_BOT_COMMAND} help
 /help
 <code>Display this message</code>
     
       
-${process.env.TELEGRAM_BOT_COMMAND} price
+/${process.env.TELEGRAM_BOT_COMMAND} price
 /price
 <code>Display current ${process.env.CURRENCY_SYMBOL} price</code>
     
       
-${process.env.TELEGRAM_BOT_COMMAND} exchanges
+/${process.env.TELEGRAM_BOT_COMMAND} exchanges
 /exchanges
 <code>Display list of exchanges to trade ${process.env.CURRENCY_SYMBOL}</code>
     
     
-${process.env.TELEGRAM_BOT_COMMAND} balance
+/${process.env.TELEGRAM_BOT_COMMAND} balance
 /balance
 <code>Display wallet balance</code>
     
       
-${process.env.TELEGRAM_BOT_COMMAND} tip [@user] [amount]
+/${process.env.TELEGRAM_BOT_COMMAND} tip [@user] [amount]
 /tip [@user] [amount]
 <code>Tips the @ mentioned user with the desired amount, e.g.</code>
-${process.env.TELEGRAM_BOT_COMMAND} tip @Bagosan 1.00
+/${process.env.TELEGRAM_BOT_COMMAND} tip @Bagosan 1.00
 /tip @Bagosan 1.00
     
       
-${process.env.TELEGRAM_BOT_COMMAND} rain [amount]
+/${process.env.TELEGRAM_BOT_COMMAND} rain [amount]
 /rain [amount]
 <code>Rains the desired amount onto all active users (active time 3 hours), e.g.</code>
-${process.env.TELEGRAM_BOT_COMMAND} rain 1.00
+/${process.env.TELEGRAM_BOT_COMMAND} rain 1.00
 /rain 1.00
     
       
-${process.env.TELEGRAM_BOT_COMMAND} deposit
+/${process.env.TELEGRAM_BOT_COMMAND} deposit
 /deposit
 <code>Displays your deposit address</code>
     
       
-${process.env.TELEGRAM_BOT_COMMAND} withdraw [address] [amount]
+/${process.env.TELEGRAM_BOT_COMMAND} withdraw [address] [amount]
 /withdraw [address] [amount]
 <code>Withdraws the entered amount to a ${process.env.CURRENCY_SYMBOL} address of your choice, e.g.</code>
-${process.env.TELEGRAM_BOT_COMMAND} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
+/${process.env.TELEGRAM_BOT_COMMAND} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
 /withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
 <code>Note: Minimal amount to withdraw: 2 ${process.env.CURRENCY_SYMBOL}. A withdrawal fee of 0.1 ${process.env.CURRENCY_SYMBOL} will be automatically deducted from the amount.</code>
       
 ${process.env.CURRENCY_NAME === 'Runebase'
-&& `${process.env.TELEGRAM_BOT_COMMAND} referral
+&& `/${process.env.TELEGRAM_BOT_COMMAND} referral
 /referral
 <code>Displays your referral count</code>
 <code>Note: We reward members for every 10 new members they add. current reward = 20 ${process.env.CURRENCY_SYMBOL}</code>
       
     
-${process.env.TELEGRAM_BOT_COMMAND} referral top
+/${process.env.TELEGRAM_BOT_COMMAND} referral top
 /top
 <code>Displays referral top 10</code>`}     
 `;
