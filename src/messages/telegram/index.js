@@ -1,5 +1,12 @@
 /* eslint-disable import/prefer-default-export */
 
+export const telegramIncomingDepositMessage = (res) => {
+  const result = `incoming deposit detected for ${res.locals.amount} ${process.env.CURRENCY_SYMBOL}
+Balance will be reflected in your wallet in ~${process.env.MINIMUM_TRANSACTION_CONFIRMATIONS}+ confirmations
+${process.env.EXPLORER_URL}/tx/${res.locals.transaction[0].txid}`;
+  return result;
+};
+
 export const withdrawalAcceptedAdminMessage = (updatedTrans) => {
   const result = `Withdrawal Accepted
 ${process.env.EXPLORER_URL}/tx/${updatedTrans.txid}`;

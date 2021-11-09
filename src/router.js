@@ -60,6 +60,9 @@ import {
   fetchReferralTopTen,
 } from './controllers/telegram/referral';
 
+import { telegramIncomingDepositMessage } from './messages/telegram';
+import { discordIncomingDepositMessage } from './messages/discord';
+
 import fetchPriceInfo from './controllers/telegram/price';
 
 import {
@@ -113,35 +116,32 @@ const router = (app) => {
   if (process.env.CURRENCY_NAME === 'Pirate') {
     app.post('/api/rpc/walletnotify',
       transactionNotifyPirate,
-      (req, res) => {
+      async (req, res) => {
         if (res.locals.error) {
           console.log(res.locals.error);
-        } else if (!res.locals.error && res.locals.transaction && res.locals.userId && res.locals.platform) {
+        } else if (!res.locals.error && res.locals.transaction && res.locals.userId && res.locals.platform && res.locals.amount) {
           if (res.locals.platform === 'telegram') {
-            telegramClient.telegram.sendMessage(runesGroup, `incoming deposit detected
-Balance will be reflected on the user wallet in ${process.env.MINIMUM_TRANSACTION_CONFIRMATIONS} confirmations
-https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}`);
+            telegramClient.telegram.sendMessage(res.locals.userId, telegramIncomingDepositMessage(res));
           }
           if (res.locals.platform === 'discord') {
-            console.log('discord message here');
+            const myClient = await discordClient.users.fetch(res.locals.userId, false);
+            await myClient.send({ embeds: [discordIncomingDepositMessage(res)] });
           }
         }
       });
   } else {
     app.post('/api/rpc/walletnotify',
       walletNotifyRunebase,
-      (req, res) => {
-        console.log('afterWalletNotify');
+      async (req, res) => {
         if (res.locals.error) {
           console.log(res.locals.error);
-        } else if (!res.locals.error && res.locals.transaction && res.locals.userId && res.locals.platform) {
+        } else if (!res.locals.error && res.locals.transaction && res.locals.userId && res.locals.platform && res.locals.amount) {
           if (res.locals.platform === 'telegram') {
-            telegramClient.telegram.sendMessage(runesGroup, `incoming deposit detected
-Balance will be reflected on the user wallet in ${process.env.MINIMUM_TRANSACTION_CONFIRMATIONS} confirmations
-https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}`);
+            telegramClient.telegram.sendMessage(res.locals.userId, telegramIncomingDepositMessage(res));
           }
           if (res.locals.platform === 'discord') {
-            console.log('discord message here');
+            const myClient = await discordClient.users.fetch(res.locals.userId, false);
+            await myClient.send({ embeds: [discordIncomingDepositMessage(res)] });
           }
         }
       });

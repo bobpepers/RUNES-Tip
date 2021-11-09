@@ -1,6 +1,19 @@
 require('dotenv').config();
 const { MessageEmbed } = require('discord.js');
 
+export const discordIncomingDepositMessage = (res) => {
+  const result = new MessageEmbed()
+    .setColor(`#${process.env.BOT_COLOR}`)
+    .setTitle('Deposit')
+    .setDescription(`incoming deposit detected for ${res.locals.amount} ${process.env.CURRENCY_SYMBOL}
+Balance will be reflected in your wallet in ~${process.env.MINIMUM_TRANSACTION_CONFIRMATIONS}+ confirmations
+${process.env.EXPLORER_URL}/tx/${res.locals.transaction[0].txid}`)
+    .setTimestamp()
+    .setFooter(process.env.BOT_NAME, process.env.CURRENCY_LOGO);
+
+  return result;
+};
+
 export const discordUserWithdrawalRejectMessage = (title) => {
   const result = new MessageEmbed()
     .setColor(`#${process.env.BOT_COLOR}`)

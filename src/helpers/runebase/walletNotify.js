@@ -83,6 +83,7 @@ const walletNotifyRunebase = async (req, res, next) => {
               lock: t.LOCK.UPDATE,
             });
           }
+          res.locals.amount = detail.amount;
           logger.info(`deposit detected for addressid: ${res.locals.transaction[0].addressId} and txid: ${res.locals.transaction[0].txid}`);
         }
       }

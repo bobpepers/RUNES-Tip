@@ -79,6 +79,7 @@ const walletNotifyPirate = async (req, res, next) => {
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
+          res.locals.amount = transaction.received[0].value;
         }
         logger.info(`deposit detected for addressid: ${res.locals.transaction[0].addressId} and txid: ${res.locals.transaction[0].txid}`);
       }
