@@ -1,3 +1,14 @@
+## SUPPORTED .ENV CURRENCY_NAME LIST (Case sensitive, default fallback is Runebase config)
+Runebase (Tested)
+Pirate (UnTested)
+
+### ADDING UNSUPPORTED CURRENCIES
+- fork & modify rweb3.js 
+- install package
+- add currency to index.js/router.js/rclient.js
+- create & edit service/sync.js file
+- create helpers/patch.js file
+
 # SETUP
 
 ##Create .env
