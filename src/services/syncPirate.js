@@ -245,7 +245,6 @@ const sync = async () => {
 
       // await syncTransactions(startBlock, endBlock);
       await queue.add(() => syncTransactions(startBlock, endBlock));
-      console.log('Synced syncTrade');
 
       const { insertBlockPromises } = await getInsertBlockPromises(startBlock, endBlock);
       await queue.add(() => Promise.all(insertBlockPromises));
@@ -272,18 +271,9 @@ const sync = async () => {
 };
 
 async function startPirateSync() {
-  // const transactions = await getInstance().listTransactions(1000);
-  // console.log(transactions);
-
-  // TransactionModel.findAll
-  // MetaData = await getContractMetadata();
-  // senderAddress = isMainnet() ? 'RKBLGRvYqunBtpueEPuXzQQmoVsQQTvd3a' : '5VMGo2gGHhkW5TvRRtcKM1RkyUgrnNP7dn';
-  // console.log('startSync');
   sync();
 }
 
 module.exports = {
   startPirateSync,
-  // calculateSyncPercent,
-  // getAddressBalances,
 };
