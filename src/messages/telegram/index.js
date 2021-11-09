@@ -107,7 +107,7 @@ export const depositAddressMessage = (telegramUserName, user) => {
 
 export const welcomeMessage = (ctx) => {
   const result = `Welcome ${ctx.update.message.from.username}, we created a wallet for you.
-Type "${process.env.TELEGRAM_BOT_COMMAND} help" for usage info`;
+Type "/${process.env.TELEGRAM_BOT_COMMAND} help" for usage info`;
   return result;
 };
 
@@ -162,7 +162,7 @@ export const helpMessage = () => {
 <code>Withdraws the entered amount to a ${process.env.CURRENCY_SYMBOL} address of your choice, e.g.</code>
 /${process.env.TELEGRAM_BOT_COMMAND} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
 /withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
-<code>Note: Minimal amount to withdraw: 2 ${process.env.CURRENCY_SYMBOL}. A withdrawal fee of 0.1 ${process.env.CURRENCY_SYMBOL} will be automatically deducted from the amount.</code>
+<code>Note: Minimal amount to withdraw: ${process.env.MINIMUM_WITHDRAWAL / 1e8} ${process.env.CURRENCY_SYMBOL}. A withdrawal fee of ${process.env.WITHDRAWAL_FEE / 1e8} ${process.env.CURRENCY_SYMBOL} will be automatically deducted from the amount.</code>
       
 ${process.env.CURRENCY_NAME === 'Runebase'
 && `/${process.env.TELEGRAM_BOT_COMMAND} referral

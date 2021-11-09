@@ -94,7 +94,7 @@ const syncTransactions = async (startBlock, endBlock) => {
       let updatedTransaction;
       let updatedWallet;
       console.log(transaction.confirmations);
-      if (transaction.confirmations < 5) {
+      if (transaction.confirmations < Number(process.env.MINIMUM_TRANSACTION_CONFIRMATIONS)) {
         updatedTransaction = await trans.update({
           confirmations: transaction.confirmations,
         }, {
@@ -102,14 +102,23 @@ const syncTransactions = async (startBlock, endBlock) => {
           lock: t.LOCK.UPDATE,
         });
       }
-      if (transaction.confirmations >= 5) {
+      if (transaction.confirmations >= Number(process.env.MINIMUM_TRANSACTION_CONFIRMATIONS)) {
         // transaction.details.forEach(async (detail) => {
 
         if (transaction.sent.length > 0 && trans.type === 'send') {
           console.log(transaction.sent[0].value);
           console.log(((transaction.sent[0].value * 1e8)));
-          const prepareLockedAmount = ((transaction.sent[0].value * 1e8) - 1e7);
+          const prepareLockedAmount = ((transaction.sent[0].value * 1e8) - Number(process.env.MINIMUM_WITHDRAWAL));
           const removeLockedAmount = Math.abs(prepareLockedAmount);
+          console.log('removeLockedAmount');
+          console.log('removeLockedAmount');
+          console.log('removeLockedAmount');
+          console.log('removeLockedAmount');
+          console.log('removeLockedAmount');
+          console.log('removeLockedAmount');
+          console.log('removeLockedAmount');
+          console.log('removeLockedAmount');
+          console.log('removeLockedAmount');
 
           console.log(removeLockedAmount);
           updatedWallet = await wallet.update({
