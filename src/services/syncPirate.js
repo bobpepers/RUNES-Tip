@@ -74,100 +74,100 @@ const syncTransactions = async (startBlock, endBlock) => {
   // eslint-disable-next-line no-restricted-syntax
   for await (const trans of transactions) {
     const transaction = await getInstance().getTransaction(trans.txid);
-
     // eslint-disable-next-line no-restricted-syntax
-    for await (const detail of transaction.details) {
-      // eslint-disable-next-line no-await-in-loop
-      await db.sequelize.transaction({
-        isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-      }, async (t) => {
-        const wallet = await db.wallet.findOne({
-          where: {
-            userId: trans.address.wallet.userId,
-          },
+    // for await (const detail of transaction.details) {
+    // eslint-disable-next-line no-await-in-loop
+    await db.sequelize.transaction({
+      isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+    // eslint-disable-next-line no-loop-func
+    }, async (t) => {
+      const wallet = await db.wallet.findOne({
+        where: {
+          userId: trans.address.wallet.userId,
+        },
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      });
+
+      console.log('update transaction');
+      console.log(transaction);
+      let updatedTransaction;
+      let updatedWallet;
+      console.log(transaction.confirmations);
+      if (transaction.confirmations < 5) {
+        updatedTransaction = await trans.update({
+          confirmations: transaction.confirmations,
+        }, {
           transaction: t,
           lock: t.LOCK.UPDATE,
         });
+      }
+      if (transaction.confirmations >= 5) {
+        // transaction.details.forEach(async (detail) => {
 
-        console.log('update transaction');
-        console.log(transaction);
-        let updatedTransaction;
-        let updatedWallet;
-        console.log(transaction.confirmations);
-        if (transaction.confirmations < 5) {
+        if (transaction.sent.length > 0 && trans.type === 'send') {
+          console.log(transaction.sent[0].value);
+          console.log(((transaction.sent[0].value * 1e8)));
+          const prepareLockedAmount = ((transaction.sent[0].value * 1e8) - 1e7);
+          const removeLockedAmount = Math.abs(prepareLockedAmount);
+
+          console.log(removeLockedAmount);
+          updatedWallet = await wallet.update({
+            locked: wallet.locked - removeLockedAmount,
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
           updatedTransaction = await trans.update({
-            confirmations: transaction.confirmations,
+            confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
+            phase: 'confirmed',
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          const createActivity = await db.activity.create({
+            spenderId: updatedWallet.userId,
+            type: 'withdrawComplete',
+            amount: transaction.sent[0].value * 1e8,
+            spender_balance: updatedWallet.available + updatedWallet.locked,
+            transactionId: updatedTransaction.id,
           }, {
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
         }
-        if (transaction.confirmations >= 5) {
-          // transaction.details.forEach(async (detail) => {
-
-          if (detail.category === 'send' && trans.type === 'send') {
-            console.log(detail.amount);
-            console.log(((detail.amount * 1e8)));
-            const prepareLockedAmount = ((detail.amount * 1e8) - 1e7);
-            const removeLockedAmount = Math.abs(prepareLockedAmount);
-
-            console.log(removeLockedAmount);
-            updatedWallet = await wallet.update({
-              locked: wallet.locked - removeLockedAmount,
-            }, {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            });
-            updatedTransaction = await trans.update({
-              confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
-              phase: 'confirmed',
-            }, {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            });
-            const createActivity = await db.activity.create({
-              spenderId: updatedWallet.userId,
-              type: 'withdrawComplete',
-              amount: detail.amount * 1e8,
-              spender_balance: updatedWallet.available + updatedWallet.locked,
-              transactionId: updatedTransaction.id,
-            }, {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            });
-          }
-          if (detail.category === 'receive' && trans.type === 'receive') {
-            console.log('updating balance');
-            updatedWallet = await wallet.update({
-              available: wallet.available + (detail.amount * 1e8),
-            }, {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            });
-            updatedTransaction = await trans.update({
-              confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
-              phase: 'confirmed',
-            }, {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            });
-            const createActivity = await db.activity.create({
-              earnerId: updatedWallet.userId,
-              type: 'depositComplete',
-              amount: detail.amount * 1e8,
-              earner_balance: updatedWallet.available + updatedWallet.locked,
-              transactionId: updatedTransaction.id,
-            }, {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            });
-          }
+        if (transaction.received.length > 0 && trans.type === 'receive') {
+          console.log('updating balance');
+          updatedWallet = await wallet.update({
+            available: wallet.available + (transaction.received[0].value * 1e8),
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          updatedTransaction = await trans.update({
+            confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
+            phase: 'confirmed',
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          const createActivity = await db.activity.create({
+            earnerId: updatedWallet.userId,
+            type: 'depositComplete',
+            amount: transaction.received[0].value * 1e8,
+            earner_balance: updatedWallet.available + updatedWallet.locked,
+            transactionId: updatedTransaction.id,
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
         }
-        t.afterCommit(() => {
-          console.log('done');
-        });
+      }
+      t.afterCommit(() => {
+        console.log('done');
       });
-    }
+    });
+    // }
   }
   console.log(transactions.length);
   return true;
