@@ -1,6 +1,29 @@
 require('dotenv').config();
 const { MessageEmbed } = require('discord.js');
 
+export const discordUserWithdrawalRejectMessage = (title) => {
+  const result = new MessageEmbed()
+    .setColor(`#${process.env.BOT_COLOR}`)
+    .setTitle('Withdraw')
+    .setDescription(`Your withdrawal has been rejected`)
+    .setTimestamp()
+    .setFooter(process.env.BOT_NAME, process.env.CURRENCY_LOGO);
+
+  return result;
+};
+
+// transactionNotFoundMessage
+export const transactionNotFoundMessage = (title) => {
+  const result = new MessageEmbed()
+    .setColor(`#${process.env.BOT_COLOR}`)
+    .setTitle(title)
+    .setDescription(`Transaction not found`)
+    .setTimestamp()
+    .setFooter(process.env.BOT_NAME, process.env.CURRENCY_LOGO);
+
+  return result;
+};
+
 export const discordWithdrawalAcceptedMessage = (updatedTrans) => {
   const result = new MessageEmbed()
     .setColor(`#${process.env.BOT_COLOR}`)

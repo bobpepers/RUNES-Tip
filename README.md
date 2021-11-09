@@ -1,6 +1,6 @@
 ## SUPPORTED .ENV CURRENCY_NAME LIST (Case sensitive, default fallback is Runebase config)
-Runebase (Tested)
-Pirate (UnTested)
+- Runebase (Tested)
+- Pirate (UnTested)
 
 ### ADDING UNSUPPORTED CURRENCIES
 - fork & modify rweb3.js 

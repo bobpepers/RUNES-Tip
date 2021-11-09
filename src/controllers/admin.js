@@ -4,7 +4,7 @@ const { MessageEmbed, MessageAttachment } = require('discord.js');
 
 const { Sequelize, Transaction, Op } = require('sequelize');
 const { getInstance } = require('../services/rclient');
-const { discordWithdrawalAcceptedMessage } = require('../messages/discord');
+const { discordWithdrawalAcceptedMessage, discordUserWithdrawalRejectMessage } = require('../messages/discord');
 const { withdrawalAcceptedAdminMessage, withdrawalAcceptedMessage } = require('../messages/telegram');
 
 require('dotenv').config();
@@ -209,14 +209,8 @@ export const withdrawTelegramAdminDecline = async (bot, ctx, adminTelegramId, wi
     const myClient = await discordClient.users.fetch(newUserId, false);
 
     if (!transaction) {
-      // ctx.reply('Transaction not found');
-      const walletnotfoundmessagne = new MessageEmbed()
-        .setColor('#0099ff')
-        .setTitle('Withdraw')
-        .setDescription(`Transaction not found`)
-        .setTimestamp()
-        .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-      await myClient.send({ embeds: [walletnotfoundmessagne] });
+      ctx.reply('Transaction not found');
+      // await myClient.send({ embeds: [transactionNotFoundMessage('Withdraw')] });
     }
 
     if (transaction) {
@@ -229,13 +223,7 @@ export const withdrawTelegramAdminDecline = async (bot, ctx, adminTelegramId, wi
       });
 
       if (!wallet) {
-        const walletnotfoundmessagne = new MessageEmbed()
-          .setColor('#0099ff')
-          .setTitle('Withdraw')
-          .setDescription(`Wallet not found`)
-          .setTimestamp()
-          .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-        await myClient.send({ embeds: [walletnotfoundmessagne] });
+        ctx.reply('Wallet not found');
       }
       if (wallet) {
         const updatedWallet = await wallet.update({
@@ -266,13 +254,7 @@ export const withdrawTelegramAdminDecline = async (bot, ctx, adminTelegramId, wi
           },
         );
         if (transaction.address.wallet.user.user_id.startsWith('discord-')) {
-          const userNotFoundMessage = new MessageEmbed()
-            .setColor('#0099ff')
-            .setTitle('Withdraw')
-            .setDescription(`Your withdrawal has been rejected`)
-            .setTimestamp()
-            .setFooter('RunesTipBot', 'https://downloads.runebase.io/logo-512x512.png');
-          await myClient.send({ embeds: [userNotFoundMessage] });
+          await myClient.send({ embeds: [discordUserWithdrawalRejectMessage()] });
         }
         if (transaction.address.wallet.user.user_id.startsWith('telegram-')) {
           bot.telegram.sendMessage(runesGroup, `${transaction.address.wallet.user.username}'s withdrawal has been rejected`);
