@@ -1,11 +1,15 @@
 module.exports = {
   up: async (queryInterface, DataTypes) => {
-    await queryInterface.createTable('referralReward', {
+    await queryInterface.createTable('sleettip', {
       id: {
         type: DataTypes.BIGINT,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
+      },
+      amount: {
+        type: DataTypes.BIGINT,
+        allowNull: false,
       },
       userId: {
         type: DataTypes.BIGINT,
@@ -15,13 +19,13 @@ module.exports = {
           key: 'id',
         },
       },
-      amount: {
+      rainId: {
         type: DataTypes.BIGINT,
         allowNull: false,
-      },
-      count: {
-        type: DataTypes.BIGINT,
-        allowNull: false,
+        references: {
+          model: 'rain',
+          key: 'id',
+        },
       },
       createdAt: {
         allowNull: false,
@@ -34,6 +38,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, DataTypes) => {
-    await queryInterface.dropTable('referralReward');
+    await queryInterface.dropTable('sleettip');
   },
 };

@@ -6,7 +6,7 @@ module.exports = {
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
-      },      
+      },
       userId: {
         type: DataTypes.BIGINT,
         allowNull: false,
