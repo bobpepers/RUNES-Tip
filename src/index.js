@@ -56,7 +56,7 @@ server.listen(port);
       patchRunebaseDeposits();
     });
   } else if (process.env.CURRENCY_NAME === 'Pirate') {
-    await startPirateSync();
+    // await startPirateSync();
     await patchPirateDeposits();
 
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
