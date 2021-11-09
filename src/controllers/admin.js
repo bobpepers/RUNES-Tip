@@ -80,8 +80,6 @@ export const withdrawTelegramAdminAccept = async (bot, ctx, adminTelegramId, wit
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    console.log('1');
-
     const transaction = await db.transaction.findOne({
       where: {
         id: withdrawalId,
@@ -106,15 +104,24 @@ export const withdrawTelegramAdminAccept = async (bot, ctx, adminTelegramId, wit
       transaction: t,
       lock: t.LOCK.UPDATE,
     });
-    console.log('2');
     if (!transaction) {
       ctx.reply('Transaction not found');
     }
     if (transaction) {
       console.log('3');
       const amount = ((transaction.amount - (1 * 1e7)) / 1e8);
-      console.log('4');
-      const response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
+      let response;
+
+      // Add New Currency here (default fallback is Runebase)
+      if (process.env.CURRENCY_NAME === 'Runebase') {
+        response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
+      } else if (process.env.CURRENCY_NAME === 'Pirate') {
+        response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)));
+      } else {
+        response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
+      }
+
+      console.log(5);
       const updatedTrans = await transaction.update(
         {
           txid: response,
@@ -137,6 +144,9 @@ export const withdrawTelegramAdminAccept = async (bot, ctx, adminTelegramId, wit
           lock: t.LOCK.UPDATE,
         },
       );
+    }
+
+    t.afterCommit(async () => {
       console.log('startswith crap');
       console.log(transaction.address.wallet.user.user_id.startsWith('discord-'));
       if (transaction.address.wallet.user.user_id.startsWith('discord-')) {
@@ -160,9 +170,6 @@ https://explorer.runebase.io/tx/${updatedTrans.txid}`);
       }
       bot.telegram.sendMessage(adminTelegramId, `Withdrawal Accepted
 https://explorer.runebase.io/tx/${updatedTrans.txid}`);
-    }
-
-    t.afterCommit(() => {
       withdrawTelegramAdminFetch(bot, ctx, adminTelegramId);
     });
   }).catch((err) => {

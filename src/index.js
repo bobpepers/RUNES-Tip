@@ -11,13 +11,16 @@ import router from './router';
 import updatePrice from './helpers/updatePrice';
 // import db from './models';
 import logger from './helpers/logger';
-import { patchRunebaseDeposits } from './helpers/runebasePatcher';
-import { patchPirateDeposits } from './helpers/piratePatcher';
+
+import { patchRunebaseDeposits } from './helpers/runebase/patcher';
+import { patchPirateDeposits } from './helpers/pirate/patcher';
 
 logger.info('logger loader');
 const schedule = require('node-schedule');
 const { startRunebaseSync } = require('./services/syncRunebase');
 const { startPirateSync } = require('./services/syncPirate');
+const { consolidatePirate } = require('./helpers/pirate/consolidate');
+
 // const {
 //  setblockchainNodeEnv,
 // } = require('./services/runebaseConfig');
@@ -58,9 +61,13 @@ server.listen(port);
   } else if (process.env.CURRENCY_NAME === 'Pirate') {
     await startPirateSync();
     await patchPirateDeposits();
+    await consolidatePirate();
 
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
       patchPirateDeposits();
+    });
+    const consolidatePirateCoins = schedule.scheduleJob('10 */1 * * *', () => {
+      consolidatePirate();
     });
   } else {
     await startRunebaseSync();

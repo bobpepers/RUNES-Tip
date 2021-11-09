@@ -1,6 +1,7 @@
 import PQueue from 'p-queue';
 // import { filter } from 'lodash';
-import walletNotify from './controllers/walletNotify';
+import walletNotifyRunebase from './helpers/runebase/walletNotify';
+import transactionNotifyPirate from './helpers/pirate/walletNotify';
 // import updatePrice from './helpers/updatePrice';
 
 import {
@@ -109,6 +110,43 @@ const discordClient = new Client({
 });
 
 const router = (app) => {
+  if (process.env.CURRENCY_NAME === 'Pirate') {
+    app.post('/api/rpc/walletnotify',
+      transactionNotifyPirate,
+      (req, res) => {
+        if (res.locals.error) {
+          console.log(res.locals.error);
+        } else if (!res.locals.error && res.locals.transaction && res.locals.userId && res.locals.platform) {
+          if (res.locals.platform === 'telegram') {
+            telegramClient.telegram.sendMessage(runesGroup, `incoming deposit detected
+Balance will be reflected on the user wallet in ${process.env.MINIMUM_TRANSACTION_CONFIRMATIONS} confirmations
+https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}`);
+          }
+          if (res.locals.platform === 'discord') {
+            console.log('discord message here');
+          }
+        }
+      });
+  } else {
+    app.post('/api/rpc/walletnotify',
+      walletNotifyRunebase,
+      (req, res) => {
+        console.log('afterWalletNotify');
+        if (res.locals.error) {
+          console.log(res.locals.error);
+        } else if (!res.locals.error && res.locals.transaction && res.locals.userId && res.locals.platform) {
+          if (res.locals.platform === 'telegram') {
+            telegramClient.telegram.sendMessage(runesGroup, `incoming deposit detected
+Balance will be reflected on the user wallet in ${process.env.MINIMUM_TRANSACTION_CONFIRMATIONS} confirmations
+https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}`);
+          }
+          if (res.locals.platform === 'discord') {
+            console.log('discord message here');
+          }
+        }
+      });
+  }
+
   discordClient.on('ready', () => {
     console.log(`Logged in as ${discordClient.user.tag}!`);
   });
@@ -195,26 +233,6 @@ const router = (app) => {
         startPirateSync();
       } else {
         startRunebaseSync();
-      }
-    });
-
-  app.post('/api/rpc/walletnotify',
-    walletNotify,
-    (req, res) => {
-      console.log('afterWalletNotify');
-      if (res.locals.error) {
-        console.log('walletnotify...');
-        console.log(res.locals.error);
-      } else if (!res.locals.error && res.locals.transaction) {
-        console.log('walletnotify...');
-
-        console.log(res.locals.transaction);
-        console.log(runesGroup);
-
-        telegramClient.telegram.sendMessage(runesGroup, `incoming deposit detected
-Balance will be reflected on the user wallet in 5 confirmations
-https://explorer.runebase.io/tx/${res.locals.transaction[0].txid} 
-        `);
       }
     });
 

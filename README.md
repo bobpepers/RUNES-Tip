@@ -65,6 +65,9 @@ MINIMUM_SLEET=1e7
 #MINUMUM_FLOOD (VALUE SATOSHIS)
 MINIMUM_FLOOD=1e7
 
+#PIRATE ONLY (replace with address from current pirate wallet)
+PIRATE_MAIN_ADDRESS=zs1gk4gus9ya7f4rr3jr2v2rjsqrh8n67534u5dtnu3cjvcqw867ft3ewfeqg6fsakeh8vyqe2xyrg
+
 ```
 ## Create database mysql terminal
 ```
