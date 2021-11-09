@@ -87,12 +87,42 @@ GRANT ALL ON runestip.* TO 'newuser'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
-## Init database
+## Migrations
 
-```
+run migrations
+````
 npx sequelize-cli db:migrate
+````
 
-```
+generate a new empty migration file
+````
+npx sequelize-cli migration:generate --name Sleet-table
+
+````
+
+
+undo single migration
+````
+npx sequelize-cli db:migrate:undo --name 20210416015813-add-countryid-to-user.js
+
+````
+
+undo migration
+````
+npx sequelize-cli db:migrate:undo
+````
+
+deploy demo seeds (development only)
+````
+npx sequelize-cli db:seed:all
+````
+
+generte empty seed file
+````
+npx sequelize-cli seed:generate --name demo-jackpot
+````
+
+
 
 ## Node Config
 ```
