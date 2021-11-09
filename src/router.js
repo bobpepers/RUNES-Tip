@@ -21,12 +21,12 @@ import {
 import {
   fetchDiscordWalletBalance,
   fetchDiscordWalletDepositAddress,
-  tipRunesToDiscordUser,
-  discordRain,
-  discordFlood,
-  discordSleet,
-  withdrawDiscordCreate,
 } from './controllers/discord/wallet';
+import { withdrawDiscordCreate } from './controllers/discord/withdraw';
+import { discordRain } from './controllers/discord/rain';
+import { discordSleet } from './controllers/discord/sleet';
+import { discordFlood } from './controllers/discord/flood';
+import { tipRunesToDiscordUser } from './controllers/discord/tip';
 
 import {
   updateLastSeen,

@@ -22,7 +22,7 @@ module.exports = (sequelize, DataTypes) => {
   };
 
   // 3: Define the Wallet model.
-  const FloodModel = sequelize.define('floodtip', modelDefinition, modelOptions);
+  const FloodModel = sequelize.define('flood', modelDefinition, modelOptions);
 
   // 4: Wallet belongs to User
 
