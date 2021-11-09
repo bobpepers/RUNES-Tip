@@ -11,11 +11,13 @@ import router from './router';
 import updatePrice from './helpers/updatePrice';
 // import db from './models';
 import logger from './helpers/logger';
-import { patchDeposits } from './helpers/patcher';
+import { patchRunebaseDeposits } from './helpers/runebasePatcher';
+import { patchPirateDeposits } from './helpers/piratePatcher';
 
 logger.info('logger loader');
 const schedule = require('node-schedule');
-const { startSync } = require('./services/sync');
+const { startRunebaseSync } = require('./services/syncRunebase');
+const { startPirateSync } = require('./services/syncPirate');
 // const {
 //  setblockchainNodeEnv,
 // } = require('./services/runebaseConfig');
@@ -46,18 +48,31 @@ server.listen(port);
 // setRunebaseEnv('Mainnet', process.env.RUNEBASE_ENV_PATH);
 
 (async function () {
-  await startSync();
-  await patchDeposits();
-}());
-// startSync();
+  if (process.env.CURRENCY_NAME === 'Runebase') {
+    await startRunebaseSync();
+    await patchRunebaseDeposits();
 
-// patchDeposits();
-const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
-  patchDeposits();
-});
+    const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
+      patchRunebaseDeposits();
+    });
+  } else if (process.env.CURRENCY_NAME === 'Pirate') {
+    await startPirateSync();
+    await patchPirateDeposits();
+
+    const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
+      patchPirateDeposits();
+    });
+  } else {
+    await startRunebaseSync();
+    await patchRunebaseDeposits();
+
+    const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
+      patchRunebaseDeposits();
+    });
+  }
+}());
 
 updatePrice();
-// Update Price every 5 minutes
 const schedulePriceUpdate = schedule.scheduleJob('*/10 * * * *', () => {
   updatePrice();
 });

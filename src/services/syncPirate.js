@@ -224,7 +224,7 @@ const sync = async () => {
   const currentBlockCount = Math.max(0, await getInstance().getBlockCount());
   const currentBlockHash = await getInstance().getBlockHash(currentBlockCount);
   const currentBlockTime = (await getInstance().getBlock(currentBlockHash)).time;
-  let startBlock = 230000;
+  let startBlock = Number(process.env.START_SYNC_HEIGHT);
 
   // const blocks = await db.Blocks.cfind({}).sort({ blockNum: -1 }).limit(1).exec();
   const blocks = await db.block.findAll({
@@ -271,7 +271,7 @@ const sync = async () => {
   );
 };
 
-async function startSync() {
+async function startPirateSync() {
   // const transactions = await getInstance().listTransactions(1000);
   // console.log(transactions);
 
@@ -283,7 +283,7 @@ async function startSync() {
 }
 
 module.exports = {
-  startSync,
+  startPirateSync,
   // calculateSyncPercent,
   // getAddressBalances,
 };

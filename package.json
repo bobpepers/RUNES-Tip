@@ -45,7 +45,7 @@
     "sequelize-cli": "^6.3.0"
   },
   "dependencies": {
-    "arrrweb3": "github:The-ARRRmy/ARRRweb3.js#0.0.1",
+    "arrrweb3": "github:The-ARRRmy/ARRRweb3.js#0.0.4",
     "bignumber.js": "^9.0.1",
     "body-parser": "^1.15.1",
     "compression": "^1.6.2",

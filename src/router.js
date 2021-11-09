@@ -79,7 +79,8 @@ const runesGroup = process.env.TELEGRAM_RUNES_GROUP;
 
 const { Telegraf } = require('telegraf');
 const rateLimit = require('telegraf-ratelimit');
-const { startSync } = require('./services/sync');
+const { startRunebaseSync } = require('./services/syncRunebase');
+const { startPirateSync } = require('./services/syncPirate');
 
 // Set limit to 1 message per 3 seconds
 const limitConfig = {
@@ -188,7 +189,13 @@ const router = (app) => {
   app.post('/api/chaininfo/block',
     (req, res) => {
       console.log('new block found');
-      startSync();
+      if (process.env.CURRENCY_NAME === 'Runebase') {
+        startRunebaseSync();
+      } else if (process.env.CURRENCY_NAME === 'Pirate') {
+        startPirateSync();
+      } else {
+        startRunebaseSync();
+      }
     });
 
   app.post('/api/rpc/walletnotify',
@@ -671,7 +678,7 @@ https://explorer.runebase.io/tx/${res.locals.transaction[0].txid}
     })();
   });
   telegramClient.launch();
-  discordClient.login(process.env.CLIENT_TOKEN);
+  discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
 };
 
 export default router;

@@ -1,10 +1,12 @@
 import db from '../models';
 
-const { Sequelize, Transaction, Op } = require('sequelize');
+const { Transaction, Op } = require('sequelize');
 const { getInstance } = require('../services/rclient');
 
-async function patchDeposits() {
+async function patchPirateDeposits() {
+  console.log('start patch deposits');
   const transactions = await getInstance().listTransactions(1000);
+  console.log('after await instance listtransactions');
   console.log(transactions);
   // transactions.forEach(async (trans) => {
   // eslint-disable-next-line no-restricted-syntax
@@ -66,5 +68,5 @@ async function patchDeposits() {
 }
 
 module.exports = {
-  patchDeposits,
+  patchPirateDeposits,
 };

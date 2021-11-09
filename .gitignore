@@ -5,6 +5,7 @@
 .DS_Store
 npm-debug.log
 .env
+.env_backup
 /uploads
 logs
 logs/app.log
