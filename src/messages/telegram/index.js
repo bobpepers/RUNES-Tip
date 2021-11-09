@@ -1,5 +1,17 @@
 /* eslint-disable import/prefer-default-export */
 
+export const withdrawalAcceptedAdminMessage = (updatedTrans) => {
+  const result = `Withdrawal Accepted
+https://explorer.runebase.io/tx/${updatedTrans.txid}`;
+  return result;
+};
+
+export const withdrawalAcceptedMessage = (transaction, updatedTrans) => {
+  const result = `${transaction.address.wallet.user.username}'s withdrawal has been accepted
+https://explorer.runebase.io/tx/${updatedTrans.txid}`;
+  return result;
+};
+
 export const balanceMessage = (telegramUserName, user, priceInfo) => {
   const result = `${telegramUserName}'s current available balance: ${user.wallet.available / 1e8} ${process.env.CURRENCY_SYMBOL}
 ${telegramUserName}'s current locked balance: ${user.wallet.locked / 1e8} ${process.env.CURRENCY_SYMBOL}
