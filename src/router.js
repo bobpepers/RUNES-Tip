@@ -206,11 +206,11 @@ const router = (app, discordClient, telegramClient) => {
     (req, res) => {
       console.log('new block found');
       if (process.env.CURRENCY_NAME === 'Runebase') {
-        startRunebaseSync();
+        startRunebaseSync(discordClient, telegramClient);
       } else if (process.env.CURRENCY_NAME === 'Pirate') {
-        startPirateSync();
+        startPirateSync(discordClient, telegramClient);
       } else {
-        startRunebaseSync();
+        startRunebaseSync(discordClient, telegramClient);
       }
     });
 
