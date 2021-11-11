@@ -10,6 +10,7 @@ import {
   minimumTimeReactDropMessage,
   invalidTimeMessage,
   ReactdropCaptchaMessage,
+  AfterReactDropSuccessMessage,
 } from '../../messages/discord';
 
 const svgCaptcha = require('svg-captcha');
@@ -59,7 +60,7 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
           mathMax: 9,
           mathOperator: '+-',
           background: '#cc9966',
-          noise: 35,
+          noise: 28,
           color: true,
         });
         console.log(captcha);
@@ -91,9 +92,6 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
           });
           const Ccollector = await awaitCaptchaMessage.channel.createMessageCollector({ filter, time: 60000, max: 1 });
           Ccollector.on('collect', async (m) => {
-            console.log('12333');
-            console.log(m);
-            console.log(findReactTip.solution);
             if (m.content === findReactTip.solution) {
               await findReactTip.update({
                 status: 'success',
@@ -127,6 +125,9 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
         {
           model: db.reactdroptip,
           as: 'reactdroptips',
+          where: {
+            status: 'success',
+          },
           include: [
             {
               model: db.user,
@@ -161,16 +162,32 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
         });
         reactMessage.channel.send('Nobody claimed, returning funds to reactdrop initiator');
       } else {
-        const amountEach = (endReactDrop.amount / endReactDrop.reactdroptips.length).toFixed(0);
+        const amountEach = (Number(endReactDrop.amount) / Number(endReactDrop.reactdroptips.length)).toFixed(0);
+
+        console.log("amountEach");
+        console.log(amountEach);
         await endReactDrop.update({
           ended: true,
+          userCount: Number(endReactDrop.reactdroptips.length),
         });
+
+        const listOfUsersRained = [];
         for (const receiver of endReactDrop.reactdroptips) {
           await receiver.user.wallet.update({
-            available: receiver.user.wallet.available + amountEach,
+            available: receiver.user.wallet.available + Number(amountEach),
           });
+          const userIdReceivedRain = receiver.user.user_id.replace('discord-', '');
+          listOfUsersRained.push(`<@${userIdReceivedRain}>`);
         }
-        reactMessage.channel.send(`${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${process.env.CURRENCY_SYMBOL} (${amountEach / 1e8} each)`);
+        const newStringListUsers = listOfUsersRained.join(", ");
+        console.log(newStringListUsers);
+        const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
+        for (const element of cutStringListUsers) {
+          // eslint-disable-next-line no-await-in-loop
+          await reactMessage.channel.send(element);
+        }
+        reactMessage.channel.send({ embeds: [AfterReactDropSuccessMessage(endReactDrop, amountEach)] });
+        // reactMessage.channel.send(`${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${process.env.CURRENCY_SYMBOL} (${amountEach / 1e8} each)`);
       }
     }
     // message.channel.send(`collected ${collected.size} reactions`);
@@ -312,7 +329,25 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
               if (!findGroup) {
                 console.log('group not found');
               } else {
-                console.log(message);
+                console.log('666666666666666666');
+                console.log('666666666666666666');
+                console.log('666666666666666666');
+                console.log('666666666666666666');
+                console.log('666666666666666666');
+                console.log('666666666666666666');
+                console.log('666666666666666666');
+                console.log('666666666666666666');
+
+                console.log(user.wallet.available);
+                console.log(amount);
+                const newAmount = user.wallet.available - amount;
+                const wallet = await user.wallet.update({
+                  available: user.wallet.available - amount,
+                }, {
+                  transaction: t,
+                  lock: t.LOCK.UPDATE,
+                });
+                // console.log(message);
                 const sendReactDropMessage = await message.channel.send({ embeds: [reactDropMessage(distance, message, filteredMessage[4])] });
                 const group = await db.group.findOne({
                   where: {
@@ -363,13 +398,6 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
                 }, 5000);
                 logger.info(`Success started reactdrop Requested by: ${user.user_id}-${user.username} with ${amount / 1e8} ${process.env.CURRENCY_SYMBOL}`);
               }
-
-              // const wallet = await user.wallet.update({
-              //  available: user.wallet.available - amount,
-              // }, {
-              //  transaction: t,
-              //  lock: t.LOCK.UPDATE,
-              // });
             }
           }
         }
