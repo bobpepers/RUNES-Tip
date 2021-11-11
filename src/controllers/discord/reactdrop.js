@@ -113,23 +113,66 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
               });
               collector.send('Out of time');
             }
-            // m.react('❌');
-            console.log(`Collected ${collected.size} items`);
           });
         }
       }
     }
   });
-  collector.on('end', (collected) => {
-    console.log(`collected ${collected.size} reactions`);
-    console.log(`collected ${collected.size} reactions`);
-    console.log(`collected ${collected.size} reactions`);
-    console.log(`collected ${collected.size} reactions`);
-    console.log(`collected ${collected.size} reactions`);
-    console.log(`collected ${collected.size} reactions`);
-    console.log(`collected ${collected.size} reactions`);
-    console.log(`collected ${collected.size} reactions`);
-
+  collector.on('end', async () => {
+    const endReactDrop = await db.reactdrop.findOne({
+      where: {
+        id: reactDrop.id,
+      },
+      include: [
+        {
+          model: db.reactdroptip,
+          as: 'reactdroptips',
+          include: [
+            {
+              model: db.user,
+              as: 'user',
+              include: [
+                {
+                  model: db.wallet,
+                  as: 'wallet',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          model: db.user,
+          as: 'user',
+        },
+      ],
+    });
+    if (endReactDrop) {
+      if (endReactDrop.reactdroptips.length <= 0) {
+        const returnWallet = await db.wallet.findOne({
+          where: {
+            userId: endReactDrop.userId,
+          },
+        });
+        const updatedWallet = await returnWallet.update({
+          available: returnWallet.available + endReactDrop.amount,
+        });
+        await endReactDrop.update({
+          ended: true,
+        });
+        reactMessage.channel.send('Nobody claimed, returning funds to reactdrop initiator');
+      } else {
+        const amountEach = (endReactDrop.amount / endReactDrop.reactdroptips.length).toFixed(0);
+        await endReactDrop.update({
+          ended: true,
+        });
+        for (const receiver of endReactDrop.reactdroptips) {
+          await receiver.user.wallet.update({
+            available: receiver.user.wallet.available + amountEach,
+          });
+        }
+        reactMessage.channel.send(`${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${process.env.CURRENCY_SYMBOL} (${amountEach / 1e8} each)`);
+      }
+    }
     // message.channel.send(`collected ${collected.size} reactions`);
   });
 };
@@ -204,8 +247,7 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
           const cutLastTimeLetter = textTime.substring(textTime.length - 1, textTime.length).toLowerCase();
           const cutNumberTime = textTime.substring(0, textTime.length - 1);
           const isnum = /^\d+$/.test(cutNumberTime);
-          console.log('cut last letter');
-          console.log(cutLastTimeLetter);
+
           if (
             !isnum
             // && Number(cutNumberTime) < 0
@@ -293,6 +335,7 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
                   ends: dateObj,
                   emoji: filteredMessage[4],
                   discordMessageId: sendReactDropMessage.id,
+                  userId: user.id,
                 }, {
                   transaction: t,
                   lock: t.LOCK.UPDATE,
@@ -327,22 +370,6 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
               //  transaction: t,
               //  lock: t.LOCK.UPDATE,
               // });
-
-              // console.log('sendReactDropMessage');
-              // console.log(sendReactDropMessage);
-
-              // const guild = await client.guilds.cache.get(sendReactDropMessage.guildId);
-
-              // console.log(guild.emojis.cache);
-              // const emojiList = message.guild.emojis.cache.map((emoji) => emoji.toString());
-
-              // console.log(reactMessage.guild.emojis.cache);
-              // const charactersPerMessage = 2000;
-              // we're going to go with 2000 instead of 2048 for breathing room
-              // await message.guild.emojis.cache.get();
-              // console.log(message.guild.emojis.cache);
-
-              // await reactMessage.react(shuffeledEmojisArray[1]);
             }
           }
         }

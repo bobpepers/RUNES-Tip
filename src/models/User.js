@@ -72,6 +72,7 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'active',
     });
+    UserModel.hasMany(model.reactdrop);
   };
 
   return UserModel;
