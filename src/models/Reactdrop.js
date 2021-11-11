@@ -24,13 +24,13 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: '❤️',
     },
-    discordMessageId: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     userCount: {
       type: DataTypes.BIGINT,
       allowNull: true,
+    },
+    discordMessageId: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
   };
 
@@ -48,6 +48,7 @@ module.exports = (sequelize, DataTypes) => {
     ReactdropModel.belongsTo(model.user);
     ReactdropModel.hasMany(model.reactdroptip);
     ReactdropModel.belongsTo(model.group);
+    ReactdropModel.belongsTo(model.channel);
   };
 
   // 5: Wallet has many addresses

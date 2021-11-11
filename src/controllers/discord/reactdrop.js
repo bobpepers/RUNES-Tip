@@ -170,23 +170,39 @@ export const discordReactDrop = async (client, message, filteredMessage) => {
                 console.log('group not found');
               } else {
                 console.log(message);
+                const sendReactDropMessage = await message.channel.send({ embeds: [reactDropMessage(distance, message, filteredMessage[4])] });
+                const group = await db.group.findOne({
+                  where: {
+                    groupId: `discord-${message.guildId}`,
+                  },
+                  transaction: t,
+                  lock: t.LOCK.UPDATE,
+                });
+                const channel = await db.channel.findOne({
+                  where: {
+                    channelId: `discord-${message.channelId}`,
+                  },
+                  transaction: t,
+                  lock: t.LOCK.UPDATE,
+                });
                 const newReactDrop = await db.reactdrop.create({
                   amount,
-                  groupId: findGroup.id,
+                  groupId: group.id,
+                  channelId: channel.id,
                   ends: dateObj,
                   emoji: filteredMessage[4],
-                  discordMessageId: message.id,
+                  discordMessageId: sendReactDropMessage.id,
                 }, {
                   transaction: t,
                   lock: t.LOCK.UPDATE,
                 });
-                const sendReactDropMessage = await message.channel.send({ embeds: [reactDropMessage(distance, message, filteredMessage[4])] });
                 const reactMessage = await client.guilds.cache.get(sendReactDropMessage.guildId)
                   .channels.cache.get(sendReactDropMessage.channelId)
                   .messages.fetch(sendReactDropMessage.id);
                 for (const shufEmoji of shuffeledEmojisArray) {
                   await reactMessage.react(shufEmoji);
                 }
+
                 const updateMessage = setInterval(async () => {
                   now = new Date().getTime();
                   distance = countDownDate - now;

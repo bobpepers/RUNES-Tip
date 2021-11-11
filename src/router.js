@@ -41,6 +41,7 @@ import {
 import {
   updateGroup,
 } from './controllers/telegram/group';
+import { updateDiscordChannel } from './controllers/discord/channel';
 
 import {
   updateDiscordGroup,
@@ -140,6 +141,8 @@ const router = (app, discordClient, telegramClient) => {
       await queue.add(() => walletExists);
       const groupTask = await updateDiscordGroup(discordClient, message);
       await queue.add(() => groupTask);
+      const channelTask = await updateDiscordChannel(discordClient, message);
+      await queue.add(() => channelTask);
       const lastSeenDiscordTask = await updateDiscordLastSeen(discordClient, message);
       await queue.add(() => lastSeenDiscordTask);
     }

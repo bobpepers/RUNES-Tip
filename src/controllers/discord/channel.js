@@ -1,0 +1,53 @@
+/* eslint-disable import/prefer-default-export */
+import db from '../../models';
+
+const { Transaction, Op } = require('sequelize');
+
+export const updateDiscordChannel = async (client, message) => {
+  console.log(message);
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    // const guild = await client.guilds.cache.get(message.guildId);
+    const channel = await client.guilds.cache.get(message.guildId).channels.cache.get(message.channelId);
+    console.log('channel');
+    console.log(channel);
+    let channelRecord = await db.channel.findOne(
+      {
+        where: {
+          channelId: `${message.channelId}`,
+        },
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      },
+    );
+    if (!channelRecord) {
+      channelRecord = await db.channel.create({
+        channelId: `discord-${message.channelId}`,
+        // groupName: guild.name,
+        lastActive: Date.now(),
+      }, {
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      });
+    }
+    if (channelRecord) {
+      channelRecord = await channelRecord.update(
+        {
+          // groupName: guild.name,
+          lastActive: Date.now(),
+        },
+        {
+          transaction: t,
+          lock: t.LOCK.UPDATE,
+        },
+      );
+    }
+
+    t.afterCommit(() => {
+      console.log('done');
+    });
+  }).catch((err) => {
+    console.log(err.message);
+  });
+};
