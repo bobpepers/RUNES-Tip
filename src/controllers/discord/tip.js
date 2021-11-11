@@ -94,7 +94,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
         }
         if (user) {
           if (amount > user.wallet.available) {
-            await message.channel.send({ embeds: [insufficientBalanceMessage(message)] });
+            await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'Tip')] });
             // ctx.reply('Insufficient funds');
           }
           if (amount <= user.wallet.available) {

@@ -1,6 +1,39 @@
 require('dotenv').config();
 const { MessageEmbed } = require('discord.js');
 
+export const reactDropMessage = (distance, message, emoji) => {
+  // Time calculations for days, hours, minutes and seconds
+  const days = Math.floor((distance % (1000 * 60 * 60 * 24 * 60)) / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+  const result = new MessageEmbed()
+    .setColor(`#${process.env.BOT_COLOR}`)
+    .setTitle('Reactdrop')
+    .setDescription(`:tada: <@${message.author.id}> has started a react airdrop! :tada:
+
+:information_source: React to this message ONLY with ${emoji} to win a share in 0.3 ARRR! You will also be presented with a simple math question in your direct messages which you need to solve to be eligible.
+
+${seconds > 0 ? `:clock9: Time remaining ${days > 0 ? `${days} days` : ''}  ${hours > 0 ? `${hours} hours` : ''} ${minutes > 0 ? `${minutes} minutes` : ''} ${seconds > 0 ? `${seconds} seconds` : ''}` : `Ended`}
+`)
+    .setTimestamp()
+    .setFooter(process.env.BOT_NAME, process.env.CURRENCY_LOGO);
+
+  return result;
+};
+
+export const minimumTimeReactDropMessage = (message) => {
+  const result = new MessageEmbed()
+    .setColor(`#${process.env.BOT_COLOR}`)
+    .setTitle('Reactdrop')
+    .setDescription(`Minimum time for reactdrop is 60 seconds (60s)`)
+    .setTimestamp()
+    .setFooter(process.env.BOT_NAME, process.env.CURRENCY_LOGO);
+
+  return result;
+};
+
 export const discordDepositConfirmedMessage = (amount) => {
   const result = new MessageEmbed()
     .setColor(`#${process.env.BOT_COLOR}`)
@@ -212,6 +245,17 @@ export const reviewMessage = (message) => {
     .setColor(`#${process.env.BOT_COLOR}`)
     .setTitle('Withdraw')
     .setDescription(`<@${message.author.id}>, Your withdrawal is being reviewed`)
+    .setTimestamp()
+    .setFooter(process.env.BOT_NAME, process.env.CURRENCY_LOGO);
+
+  return result;
+};
+
+export const invalidTimeMessage = (message, title) => {
+  const result = new MessageEmbed()
+    .setColor(`#${process.env.BOT_COLOR}`)
+    .setTitle(title)
+    .setDescription(`<@${message.author.id}>, Invalid time`)
     .setTimestamp()
     .setFooter(process.env.BOT_NAME, process.env.CURRENCY_LOGO);
 

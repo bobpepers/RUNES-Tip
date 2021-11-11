@@ -55,6 +55,10 @@ import {
 } from './controllers/discord/help';
 
 import {
+  discordReactDrop,
+} from './controllers/discord/reactdrop';
+
+import {
   fetchReferralCount,
   createReferral,
   fetchReferralTopTen,
@@ -187,6 +191,11 @@ const router = (app, discordClient, telegramClient) => {
 
     if (filteredMessageDiscord[1].toLowerCase() === 'sleet') {
       const task = await discordSleet(discordClient, message, filteredMessageDiscord);
+      await queue.add(() => task);
+    }
+
+    if (filteredMessageDiscord[1].toLowerCase() === 'reactdrop') {
+      const task = await discordReactDrop(discordClient, message, filteredMessageDiscord);
       await queue.add(() => task);
     }
 

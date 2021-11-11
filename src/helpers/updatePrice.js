@@ -23,7 +23,7 @@ const updatePrice = async () => {
     }
 
     // Get data from coinpaprika
-    const data = await axios.get("https://api.coinpaprika.com/v1/tickers/runes-runebase");
+    const data = await axios.get(`https://api.coinpaprika.com/v1/tickers/${process.env.CURRENCY_SYMBOL.toLowerCase()}-${process.env.CURRENCY_NAME.toLowerCase()}`);
 
     if (data.data) {
       const priceInfo = await db.priceInfo.findOne({
@@ -74,7 +74,7 @@ const updatePrice = async () => {
 
       const openExchangeOptions = {
         method: 'GET',
-        url: 'https://openexchangerates.org/api/latest.json?app_id=7fe614bf9a0f4d8cb7dd72a468a9ef59&show_alternative=1',
+        url: `https://openexchangerates.org/api/latest.json?app_id=${process.env.OPEN_EXCHANGE_RATES_KEY}&show_alternative=1`,
       };
 
       axios.request(openExchangeOptions).then(async (response) => {

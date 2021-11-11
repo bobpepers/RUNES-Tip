@@ -31,6 +31,7 @@ module.exports = (sequelize, DataTypes) => {
 
   GroupModel.associate = (model) => {
     GroupModel.hasMany(model.active);
+    GroupModel.hasMany(model.reactdrop);
   };
 
   return GroupModel;

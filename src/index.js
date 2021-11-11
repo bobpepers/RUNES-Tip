@@ -49,6 +49,7 @@ const {
   Client,
   Intents,
   GuildMemberManager,
+  Options,
 } = require('discord.js');
 const { Telegraf } = require('telegraf');
 
@@ -59,8 +60,18 @@ const discordClient = new Client({
     Intents.FLAGS.GUILD_PRESENCES,
     Intents.FLAGS.GUILD_MESSAGES,
     Intents.FLAGS.DIRECT_MESSAGES,
+    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+    Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+    Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
   ],
-  partials: ['MESSAGE', 'CHANNEL'],
+  partials: [
+    'MESSAGE',
+    'CHANNEL',
+    'REACTION',
+  ],
+  // makeCache: Options.cacheWithLimits({
+  //  GuildEmoji: 5000, // This is default
+  // }),
 });
 
 const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
