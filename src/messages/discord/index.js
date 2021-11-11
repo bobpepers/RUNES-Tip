@@ -23,6 +23,19 @@ ${seconds > 0 ? `:clock9: Time remaining ${days > 0 ? `${days} days` : ''}  ${ho
   return result;
 };
 
+export const AfterReactDropSuccessMessage = (endReactDrop, amountEach) => {
+  const result = new MessageEmbed()
+    .setColor(`#${process.env.BOT_COLOR}`)
+    .setTitle('Reactdrop')
+    .setDescription(`:tada:React airdrop started by user has finished!:tada:
+    
+:money_with_wings:${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${process.env.CURRENCY_SYMBOL} (${amountEach / 1e8} each)!:money_with_wings:`)
+    .setTimestamp()
+    .setFooter(process.env.BOT_NAME, process.env.CURRENCY_LOGO);
+
+  return result;
+};
+
 export const minimumTimeReactDropMessage = (message) => {
   const result = new MessageEmbed()
     .setColor(`#${process.env.BOT_COLOR}`)
