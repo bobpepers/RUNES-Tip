@@ -14,6 +14,10 @@ import logger from './helpers/logger';
 
 import { patchRunebaseDeposits } from './helpers/runebase/patcher';
 import { patchPirateDeposits } from './helpers/pirate/patcher';
+import { reactDropMessage } from './messages/discord';
+import { listenReactDrop } from './controllers/discord/reactdrop';
+
+import db from './models';
 
 logger.info('logger loader');
 const schedule = require('node-schedule');
@@ -78,13 +82,12 @@ const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
 router(app, discordClient, telegramClient);
 
-telegramClient.launch();
-discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
-
 server.listen(port);
 // setRunebaseEnv('Mainnet', process.env.RUNEBASE_ENV_PATH);
 
 (async function () {
+  await telegramClient.launch();
+  await discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
   if (process.env.CURRENCY_NAME === 'Runebase') {
     await startRunebaseSync(discordClient, telegramClient);
     await patchRunebaseDeposits();
@@ -112,6 +115,51 @@ server.listen(port);
     });
   }
   // recover reactdrops here listenReactDrop = async (reactMessage, distance, reactDrop)
+  const allRunningReactDrops = await db.reactdrop.findAll({
+    where: {
+      ended: false,
+    },
+    include: [
+      {
+        model: db.group,
+        as: 'group',
+      },
+      {
+        model: db.channel,
+        as: 'channel',
+      },
+      {
+        model: db.user,
+        as: 'user',
+      },
+    ],
+  });
+  // eslint-disable-next-line no-restricted-syntax
+  for (const runningReactDrop of allRunningReactDrops) {
+    const actualChannelId = runningReactDrop.channel.channelId.replace('discord-', '');
+    const actualGroupId = runningReactDrop.group.groupId.replace('discord-', '');
+    const actualUserId = runningReactDrop.user.user_id.replace('discord-', '');
+
+    // eslint-disable-next-line no-await-in-loop
+    const reactMessage = await discordClient.guilds.cache.get(actualGroupId)
+      .channels.cache.get(actualChannelId)
+      .messages.fetch(runningReactDrop.discordMessageId);
+    // eslint-disable-next-line no-await-in-loop
+    const countDownDate = await runningReactDrop.ends.getTime();
+    let now = new Date().getTime();
+    let distance = countDownDate - now;
+    // eslint-disable-next-line no-await-in-loop
+    await listenReactDrop(reactMessage, distance, runningReactDrop);
+    // eslint-disable-next-line no-loop-func
+    const updateMessage = setInterval(async () => {
+      now = new Date().getTime();
+      distance = countDownDate - now;
+      await reactMessage.edit({ embeds: [reactDropMessage(distance, actualUserId, runningReactDrop.emoji)] });
+      if (distance < 0) {
+        clearInterval(updateMessage);
+      }
+    }, 5000);
+  }
 }());
 
 updatePrice();

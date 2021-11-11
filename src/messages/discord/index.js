@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { MessageEmbed } = require('discord.js');
 
-export const reactDropMessage = (distance, message, emoji) => {
+export const reactDropMessage = (distance, author, emoji) => {
   // Time calculations for days, hours, minutes and seconds
   const days = Math.floor((distance % (1000 * 60 * 60 * 24 * 60)) / (1000 * 60 * 60 * 24));
   const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -11,7 +11,7 @@ export const reactDropMessage = (distance, message, emoji) => {
   const result = new MessageEmbed()
     .setColor(`#${process.env.BOT_COLOR}`)
     .setTitle('Reactdrop')
-    .setDescription(`:tada: <@${message.author.id}> has started a react airdrop! :tada:
+    .setDescription(`:tada: <@${author}> has started a react airdrop! :tada:
 
 :information_source: React to this message ONLY with ${emoji} to win a share in 0.3 ARRR! You will also be presented with a simple math question in your direct messages which you need to solve to be eligible.
 

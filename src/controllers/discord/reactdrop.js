@@ -125,6 +125,7 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
         {
           model: db.reactdroptip,
           as: 'reactdroptips',
+          required: false,
           where: {
             status: 'success',
           },
@@ -190,7 +191,6 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
         // reactMessage.channel.send(`${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${process.env.CURRENCY_SYMBOL} (${amountEach / 1e8} each)`);
       }
     }
-    // message.channel.send(`collected ${collected.size} reactions`);
   });
 };
 
@@ -329,17 +329,6 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
               if (!findGroup) {
                 console.log('group not found');
               } else {
-                console.log('666666666666666666');
-                console.log('666666666666666666');
-                console.log('666666666666666666');
-                console.log('666666666666666666');
-                console.log('666666666666666666');
-                console.log('666666666666666666');
-                console.log('666666666666666666');
-                console.log('666666666666666666');
-
-                console.log(user.wallet.available);
-                console.log(amount);
                 const newAmount = user.wallet.available - amount;
                 const wallet = await user.wallet.update({
                   available: user.wallet.available - amount,
@@ -348,7 +337,7 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
                   lock: t.LOCK.UPDATE,
                 });
                 // console.log(message);
-                const sendReactDropMessage = await message.channel.send({ embeds: [reactDropMessage(distance, message, filteredMessage[4])] });
+                const sendReactDropMessage = await message.channel.send({ embeds: [reactDropMessage(distance, message.author.id, filteredMessage[4])] });
                 const group = await db.group.findOne({
                   where: {
                     groupId: `discord-${message.guildId}`,
@@ -391,7 +380,7 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
                 const updateMessage = setInterval(async () => {
                   now = new Date().getTime();
                   distance = countDownDate - now;
-                  await reactMessage.edit({ embeds: [reactDropMessage(distance, message, filteredMessage[4])] });
+                  await reactMessage.edit({ embeds: [reactDropMessage(distance, message.author.id, filteredMessage[4])] });
                   if (distance < 0) {
                     clearInterval(updateMessage);
                   }
@@ -405,15 +394,6 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
     }
 
     t.afterCommit(() => {
-      console.log('done');
-      console.log('done');
-      console.log('done');
-      console.log('done');
-      console.log('done');
-      console.log('done');
-      console.log('done');
-      console.log('done');
-      console.log('done');
       console.log('done');
     });
   }).catch((err) => {
