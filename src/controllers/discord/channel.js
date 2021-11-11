@@ -8,40 +8,40 @@ export const updateDiscordChannel = async (client, message) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    // const guild = await client.guilds.cache.get(message.guildId);
-    const channel = await client.guilds.cache.get(message.guildId).channels.cache.get(message.channelId);
-    console.log('channel');
-    console.log(channel);
-    let channelRecord = await db.channel.findOne(
-      {
-        where: {
-          channelId: `${message.channelId}`,
-        },
-        transaction: t,
-        lock: t.LOCK.UPDATE,
-      },
-    );
-    if (!channelRecord) {
-      channelRecord = await db.channel.create({
-        channelId: `discord-${message.channelId}`,
-        // groupName: guild.name,
-        lastActive: Date.now(),
-      }, {
-        transaction: t,
-        lock: t.LOCK.UPDATE,
-      });
-    }
-    if (channelRecord) {
-      channelRecord = await channelRecord.update(
+    if (message.channelId) {
+      // const guild = await client.guilds.cache.get(message.guildId);
+    // const channel = await client.guilds.cache.get(message.guildId).channels.cache.get(message.channelId);
+      let channelRecord = await db.channel.findOne(
         {
-          // groupName: guild.name,
-          lastActive: Date.now(),
-        },
-        {
+          where: {
+            channelId: `${message.channelId}`,
+          },
           transaction: t,
           lock: t.LOCK.UPDATE,
         },
       );
+      if (!channelRecord) {
+        channelRecord = await db.channel.create({
+          channelId: `discord-${message.channelId}`,
+          // groupName: guild.name,
+          lastActive: Date.now(),
+        }, {
+          transaction: t,
+          lock: t.LOCK.UPDATE,
+        });
+      }
+      if (channelRecord) {
+        channelRecord = await channelRecord.update(
+          {
+          // groupName: guild.name,
+            lastActive: Date.now(),
+          },
+          {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          },
+        );
+      }
     }
 
     t.afterCommit(() => {

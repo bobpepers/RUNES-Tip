@@ -1,4 +1,5 @@
 /* eslint-disable import/prefer-default-export */
+import { svg2png } from 'svg-png-converter';
 import db from '../../models';
 import {
   reactDropMessage,
@@ -8,10 +9,13 @@ import {
   insufficientBalanceMessage,
   minimumTimeReactDropMessage,
   invalidTimeMessage,
+  ReactdropCaptchaMessage,
 } from '../../messages/discord';
 
+const svgCaptcha = require('svg-captcha');
 const BigNumber = require('bignumber.js');
 const { Transaction, Op } = require('sequelize');
+const { MessageAttachment, MessageCollector } = require('discord.js');
 const emojiCompact = require('../../config/emoji.json');
 const logger = require('../../helpers/logger');
 
@@ -33,7 +37,104 @@ function shuffle(array) {
   return array;
 }
 
-export const discordReactDrop = async (client, message, filteredMessage) => {
+export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
+  const filter = () => true;
+  const collector = reactMessage.createReactionCollector({ filter, time: distance });
+  collector.on('collect', async (reaction, collector) => {
+    if (!collector.bot) {
+      const findReactUser = await db.user.findOne({
+        where: {
+          user_id: `discord-${collector.id}`,
+        },
+      });
+      const findReactTip = await db.reactdroptip.findOne({
+        where: {
+          userId: findReactUser.id,
+          reactdropId: reactDrop.id,
+        },
+      });
+      if (!findReactTip) {
+        const captcha = svgCaptcha.createMathExpr({
+          mathMin: 0,
+          mathMax: 9,
+          mathOperator: '+-',
+          background: '#cc9966',
+          noise: 35,
+          color: true,
+        });
+        console.log(captcha);
+        const captchaPng = await svg2png({
+          input: `${captcha.data}`.trim(),
+          encoding: 'dataURL',
+          format: 'png',
+          width: 150,
+          height: 50,
+          multiplier: 3,
+          quality: 1,
+        });
+        const findReactTip = await db.reactdroptip.create({
+          status: 'waiting',
+          captchaType: 'svg',
+          solution: captcha.text,
+          userId: findReactUser.id,
+          reactdropId: reactDrop.id,
+        });
+        const constructEmoji = reaction._emoji.id ? `<:${reaction._emoji.name}:${reaction._emoji.id}>` : reaction._emoji.name;
+        if (reactDrop.emoji !== constructEmoji) {
+          collector.send('Failed, pressed wrong emoji');
+          await findReactTip.update({ status: 'failed' });
+        } else {
+          const captchaPngFixed = captchaPng.replace('data:image/png;base64,', '');
+          const awaitCaptchaMessage = await collector.send({
+            embeds: [ReactdropCaptchaMessage(collector.id)],
+            files: [new MessageAttachment(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')],
+          });
+          const Ccollector = await awaitCaptchaMessage.channel.createMessageCollector({ filter, time: 60000, max: 1 });
+          Ccollector.on('collect', async (m) => {
+            console.log('12333');
+            console.log(m);
+            console.log(findReactTip.solution);
+            if (m.content === findReactTip.solution) {
+              await findReactTip.update({
+                status: 'success',
+              });
+              m.react('✔️');
+            } else {
+              await findReactTip.update({
+                status: 'failed',
+              });
+              m.react('❌');
+            }
+          });
+          Ccollector.on('end', async (collected) => {
+            if (findReactTip.status === 'waiting') {
+              await findReactTip.update({
+                status: 'failed',
+              });
+              collector.send('Out of time');
+            }
+            // m.react('❌');
+            console.log(`Collected ${collected.size} items`);
+          });
+        }
+      }
+    }
+  });
+  collector.on('end', (collected) => {
+    console.log(`collected ${collected.size} reactions`);
+    console.log(`collected ${collected.size} reactions`);
+    console.log(`collected ${collected.size} reactions`);
+    console.log(`collected ${collected.size} reactions`);
+    console.log(`collected ${collected.size} reactions`);
+    console.log(`collected ${collected.size} reactions`);
+    console.log(`collected ${collected.size} reactions`);
+    console.log(`collected ${collected.size} reactions`);
+
+    // message.channel.send(`collected ${collected.size} reactions`);
+  });
+};
+
+export const discordReactDrop = async (discordClient, message, filteredMessage) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -196,9 +297,15 @@ export const discordReactDrop = async (client, message, filteredMessage) => {
                   transaction: t,
                   lock: t.LOCK.UPDATE,
                 });
-                const reactMessage = await client.guilds.cache.get(sendReactDropMessage.guildId)
+                const reactMessage = await discordClient.guilds.cache.get(sendReactDropMessage.guildId)
                   .channels.cache.get(sendReactDropMessage.channelId)
                   .messages.fetch(sendReactDropMessage.id);
+                  /// /
+                console.log(distance);
+
+                listenReactDrop(reactMessage, distance, newReactDrop);
+
+                /// /
                 for (const shufEmoji of shuffeledEmojisArray) {
                   await reactMessage.react(shufEmoji);
                 }
@@ -243,6 +350,15 @@ export const discordReactDrop = async (client, message, filteredMessage) => {
     }
 
     t.afterCommit(() => {
+      console.log('done');
+      console.log('done');
+      console.log('done');
+      console.log('done');
+      console.log('done');
+      console.log('done');
+      console.log('done');
+      console.log('done');
+      console.log('done');
       console.log('done');
     });
   }).catch((err) => {

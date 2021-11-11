@@ -108,6 +108,18 @@ Estimated value of <@${userId}>'s balance: $${(((user.wallet.available + user.wa
   return result;
 };
 
+export const ReactdropCaptchaMessage = (userId) => {
+  const result = new MessageEmbed()
+    .setColor(`#${process.env.BOT_COLOR}`)
+    .setTitle('Reactdrop')
+    .setDescription(`<@${userId}>'s you have 1 minute to guess`)
+    .setImage("attachment://captcha.png")
+    .setTimestamp()
+    .setFooter(process.env.BOT_NAME, process.env.CURRENCY_LOGO);
+
+  return result;
+};
+
 export const depositAddressMessage = (userId, user) => {
   const result = new MessageEmbed()
     .setColor(`#${process.env.BOT_COLOR}`)
