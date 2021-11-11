@@ -337,7 +337,7 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
                   lock: t.LOCK.UPDATE,
                 });
                 // console.log(message);
-                const sendReactDropMessage = await message.channel.send({ embeds: [reactDropMessage(distance, message.author.id, filteredMessage[4])] });
+                const sendReactDropMessage = await message.channel.send({ embeds: [reactDropMessage(distance, message.author.id, filteredMessage[4], amount)] });
                 const group = await db.group.findOne({
                   where: {
                     groupId: `discord-${message.guildId}`,
@@ -380,7 +380,7 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
                 const updateMessage = setInterval(async () => {
                   now = new Date().getTime();
                   distance = countDownDate - now;
-                  await reactMessage.edit({ embeds: [reactDropMessage(distance, message.author.id, filteredMessage[4])] });
+                  await reactMessage.edit({ embeds: [reactDropMessage(distance, message.author.id, filteredMessage[4], amount)] });
                   if (distance < 0) {
                     clearInterval(updateMessage);
                   }

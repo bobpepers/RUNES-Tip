@@ -154,7 +154,7 @@ server.listen(port);
     const updateMessage = setInterval(async () => {
       now = new Date().getTime();
       distance = countDownDate - now;
-      await reactMessage.edit({ embeds: [reactDropMessage(distance, actualUserId, runningReactDrop.emoji)] });
+      await reactMessage.edit({ embeds: [reactDropMessage(distance, actualUserId, runningReactDrop.emoji, runningReactDrop.amount)] });
       if (distance < 0) {
         clearInterval(updateMessage);
       }
