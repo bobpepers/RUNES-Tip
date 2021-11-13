@@ -45,6 +45,7 @@
     "sequelize-cli": "^6.3.0"
   },
   "dependencies": {
+    "algebraic-captcha": "^1.0.1",
     "arrrweb3": "github:The-ARRRmy/ARRRweb3.js#0.1.0",
     "bignumber.js": "^9.0.1",
     "body-parser": "^1.15.1",

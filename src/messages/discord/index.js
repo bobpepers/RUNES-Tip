@@ -7,6 +7,7 @@ export const reactDropMessage = (distance, author, emoji, amount) => {
   const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  const ended = days < 1 && hours < 1 && minutes < 1 && seconds < 1;
 
   const result = new MessageEmbed()
     .setColor(`#${process.env.BOT_COLOR}`)
@@ -15,7 +16,7 @@ export const reactDropMessage = (distance, author, emoji, amount) => {
 
 :information_source: React to this message ONLY with ${emoji} to win a share in ${amount / 1e8} ${process.env.CURRENCY_SYMBOL}! You will also be presented with a simple math question in your direct messages which you need to solve to be eligible.
 
-${seconds > 0 ? `:clock9: Time remaining ${days > 0 ? `${days} days` : ''}  ${hours > 0 ? `${hours} hours` : ''} ${minutes > 0 ? `${minutes} minutes` : ''} ${seconds > 0 ? `${seconds} seconds` : ''}` : `Ended`}
+${!ended ? `:clock9: Time remaining ${days > 0 ? `${days} days` : ''}  ${hours > 0 ? `${hours} hours` : ''} ${minutes > 0 ? `${minutes} minutes` : ''} ${seconds > 0 ? `${seconds} seconds` : ''}` : `Ended`}
 `)
     .setTimestamp()
     .setFooter(process.env.BOT_NAME, process.env.CURRENCY_LOGO);

@@ -17,6 +17,7 @@ const svgCaptcha = require('svg-captcha');
 const BigNumber = require('bignumber.js');
 const { Transaction, Op } = require('sequelize');
 const { MessageAttachment, MessageCollector } = require('discord.js');
+const { AlgebraicCaptcha } = require('algebraic-captcha');
 const emojiCompact = require('../../config/emoji.json');
 const logger = require('../../helpers/logger');
 
@@ -55,31 +56,89 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
         },
       });
       if (!findReactTip) {
-        const captcha = svgCaptcha.createMathExpr({
-          mathMin: 0,
-          mathMax: 9,
-          mathOperator: '+-',
-          background: '#cc9966',
-          noise: 28,
-          color: true,
-        });
-        console.log(captcha);
-        const captchaPng = await svg2png({
-          input: `${captcha.data}`.trim(),
-          encoding: 'dataURL',
-          format: 'png',
-          width: 150,
-          height: 50,
-          multiplier: 3,
-          quality: 1,
-        });
-        const findReactTip = await db.reactdroptip.create({
-          status: 'waiting',
-          captchaType: 'svg',
-          solution: captcha.text,
-          userId: findReactUser.id,
-          reactdropId: reactDrop.id,
-        });
+        let captcha;
+        let captchaPng;
+        let findReactTip;
+        const backgroundArray = [
+          '#cc9966',
+          '#ffffff',
+          "#FF5733",
+          "#33FFE6",
+          "#272F92 ",
+          "#882792",
+          "#922759",
+        ];
+        const captchaTypeArray = [
+          // 'svg',
+          'algebraic',
+        ];
+        const randomFunc = captchaTypeArray[Math.floor(Math.random() * captchaTypeArray.length)];
+        const randomBackground = backgroundArray[Math.floor(Math.random() * backgroundArray.length)];
+        if (randomFunc === 'svg') {
+          captcha = svgCaptcha.createMathExpr({
+            mathMin: 0,
+            mathMax: 9,
+            mathOperator: '+-',
+            background: randomBackground,
+            noise: 28,
+            color: true,
+          });
+          console.log(captcha);
+          captchaPng = await svg2png({
+            input: `${captcha.data}`.trim(),
+            encoding: 'dataURL',
+            format: 'png',
+            width: 150,
+            height: 50,
+            multiplier: 3,
+            quality: 1,
+          });
+          findReactTip = await db.reactdroptip.create({
+            status: 'waiting',
+            captchaType: 'svg',
+            solution: captcha.text,
+            userId: findReactUser.id,
+            reactdropId: reactDrop.id,
+          });
+        }
+        if (randomFunc === 'algebraic') {
+          const modes = [
+            'formula',
+            'equation',
+          ];
+          captcha = new AlgebraicCaptcha({
+            width: 150,
+            height: 50,
+            background: randomBackground,
+            noise: Math.floor((Math.random() * 9) + 5),
+            minValue: 1,
+            maxValue: 20,
+            operandAmount: Math.floor((Math.random() * 2) + 1),
+            operandTypes: ['+', '-'],
+            mode: modes[Math.round(Math.random())],
+            targetSymbol: '?',
+          });
+          const { image, answer } = await captcha.generateCaptcha();
+          console.log(image);
+          console.log(answer);
+          captchaPng = await svg2png({
+            input: `${image}`.trim(),
+            encoding: 'dataURL',
+            format: 'png',
+            width: 150,
+            height: 50,
+            multiplier: 3,
+            quality: 1,
+          });
+          findReactTip = await db.reactdroptip.create({
+            status: 'waiting',
+            captchaType: 'algebraic',
+            solution: answer.toString(),
+            userId: findReactUser.id,
+            reactdropId: reactDrop.id,
+          });
+        }
+
         // eslint-disable-next-line no-underscore-dangle
         const constructEmoji = reaction._emoji.id ? `<:${reaction._emoji.name}:${reaction._emoji.id}>` : reaction._emoji.name;
         if (reactDrop.emoji !== constructEmoji) {
@@ -96,6 +155,8 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
             await db.sequelize.transaction({
               isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
             }, async (t) => {
+              console.log(m.content);
+              console.log(findReactTip.solution);
               if (m.content === findReactTip.solution) {
                 await findReactTip.update({
                   status: 'success',
@@ -372,7 +433,7 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
                 const randomX = Math.floor(Math.random() * allEmojis.length);
                 useEmojis.push(allEmojis[randomX]);
               }
-              useEmojis.push(filteredMessage[4]);
+              await useEmojis.push(filteredMessage[4]);
 
               const shuffeledEmojisArray = await shuffle(useEmojis);
 
@@ -387,14 +448,14 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
               if (!findGroup) {
                 console.log('group not found');
               } else {
-                const newAmount = user.wallet.available - amount;
                 const wallet = await user.wallet.update({
                   available: user.wallet.available - amount,
                 }, {
                   transaction: t,
                   lock: t.LOCK.UPDATE,
                 });
-                // console.log(message);
+                console.log(distance);
+                console.log('distance');
                 const sendReactDropMessage = await message.channel.send({ embeds: [reactDropMessage(distance, message.author.id, filteredMessage[4], amount)] });
                 const group = await db.group.findOne({
                   where: {
