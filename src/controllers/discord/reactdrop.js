@@ -329,6 +329,7 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
             // && Number(cutNumberTime) < 0
             || (
               cutLastTimeLetter !== 'd'
+              && cutLastTimeLetter !== 'h'
           && cutLastTimeLetter !== 'm'
           && cutLastTimeLetter !== 's')
           ) {
@@ -349,7 +350,10 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
             } else {
               let dateObj = await new Date().getTime();
               if (cutLastTimeLetter === 'd') {
-                dateObj += Number(cutNumberTime) * 24 * 60 * 1000;
+                dateObj += Number(cutNumberTime) * 24 * 60 * 60 * 1000;
+              }
+              if (cutLastTimeLetter === 'h') {
+                dateObj += Number(cutNumberTime) * 60 * 60 * 1000;
               }
               if (cutLastTimeLetter === 'm') {
                 dateObj += Number(cutNumberTime) * 60 * 1000;
