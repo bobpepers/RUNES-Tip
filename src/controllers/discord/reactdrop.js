@@ -69,7 +69,7 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
           "#922759",
         ];
         const captchaTypeArray = [
-          // 'svg',
+          'svg',
           'algebraic',
         ];
         const randomFunc = captchaTypeArray[Math.floor(Math.random() * captchaTypeArray.length)];
