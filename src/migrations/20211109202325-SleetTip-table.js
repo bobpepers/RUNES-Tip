@@ -19,11 +19,11 @@ module.exports = {
           key: 'id',
         },
       },
-      rainId: {
+      sleetId: {
         type: DataTypes.BIGINT,
         allowNull: false,
         references: {
-          model: 'rain',
+          model: 'sleet',
           key: 'id',
         },
       },

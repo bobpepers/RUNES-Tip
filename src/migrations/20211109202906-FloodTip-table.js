@@ -19,11 +19,11 @@ module.exports = {
           key: 'id',
         },
       },
-      rainId: {
+      floodId: {
         type: DataTypes.BIGINT,
         allowNull: false,
         references: {
-          model: 'rain',
+          model: 'flood',
           key: 'id',
         },
       },

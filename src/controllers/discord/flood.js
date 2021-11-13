@@ -104,7 +104,7 @@ export const discordFlood = async (discordClient, message, filteredMessage) => {
               transaction: t,
             });
             const amountPerUser = (((amount / withoutBots.length).toFixed(0)));
-            const rainRecord = await db.flood.create({
+            const floodRecord = await db.flood.create({
               amount,
               userCount: withoutBots.length,
               userId: user.id,
@@ -114,10 +114,11 @@ export const discordFlood = async (discordClient, message, filteredMessage) => {
             });
             const listOfUsersRained = [];
             // eslint-disable-next-line no-restricted-syntax
-            for (const rainee of withoutBots) {
+            for (const floodee of withoutBots) {
+              console.log('add flood tip');
               // eslint-disable-next-line no-await-in-loop
-              await rainee.wallet.update({
-                available: rainee.wallet.available + Number(amountPerUser),
+              await floodee.wallet.update({
+                available: floodee.wallet.available + Number(amountPerUser),
               }, {
                 lock: t.LOCK.UPDATE,
                 transaction: t,
@@ -125,13 +126,13 @@ export const discordFlood = async (discordClient, message, filteredMessage) => {
               // eslint-disable-next-line no-await-in-loop
               await db.floodtip.create({
                 amount: amountPerUser,
-                userId: rainee.id,
-                rainId: rainRecord.id,
+                userId: floodee.id,
+                floodId: floodRecord.id,
               }, {
                 lock: t.LOCK.UPDATE,
                 transaction: t,
               });
-              const userIdReceivedRain = rainee.user_id.replace('discord-', '');
+              const userIdReceivedRain = floodee.user_id.replace('discord-', '');
               listOfUsersRained.push(`<@${userIdReceivedRain}>`);
             }
 
@@ -154,6 +155,7 @@ export const discordFlood = async (discordClient, message, filteredMessage) => {
       console.log('done');
     });
   }).catch((err) => {
+    console.log(err);
     message.channel.send('something went wrong');
   });
 };
