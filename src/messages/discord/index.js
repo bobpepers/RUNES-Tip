@@ -236,7 +236,7 @@ export const minimumSleetMessage = (message) => {
   const result = new MessageEmbed()
     .setColor(`#${process.env.BOT_COLOR}`)
     .setTitle('Sleet')
-    .setDescription(`<@${message.author.id}>, Minimum Rain is ${Number(process.env.MINIMUM_SLEET) / 1e8} ${process.env.CURRENCY_SYMBOL}`)
+    .setDescription(`<@${message.author.id}>, Minimum Sleet is ${Number(process.env.MINIMUM_SLEET) / 1e8} ${process.env.CURRENCY_SYMBOL}`)
     .setTimestamp()
     .setFooter(process.env.BOT_NAME, process.env.CURRENCY_LOGO);
 

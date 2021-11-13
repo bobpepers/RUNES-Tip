@@ -59,8 +59,7 @@ export const discordFlood = async (discordClient, message, filteredMessage) => {
     const amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
     if (amount < Number(process.env.MINIMUM_FLOOD)) {
       await message.channel.send({ embeds: [minimumFloodMessage(message)] });
-    }
-    if (amount % 1 !== 0) {
+    } else if (amount % 1 !== 0) {
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Flood')] });
     } else {
       const user = await db.user.findOne({

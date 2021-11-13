@@ -56,10 +56,9 @@ export const discordRain = async (discordClient, message, filteredMessage) => {
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
-    if (amount < Number(process.env.MINIMUM_RAIN)) { // smaller then 2 RUNES
+    if (amount < Number(process.env.MINIMUM_RAIN)) {
       await message.channel.send({ embeds: [minimumRainMessage(message)] });
-    }
-    if (amount % 1 !== 0) {
+    } else if (amount % 1 !== 0) {
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Rain')] });
     } else {
       const user = await db.user.findOne({
