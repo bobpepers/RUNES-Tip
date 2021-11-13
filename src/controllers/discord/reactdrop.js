@@ -75,14 +75,17 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
         const randomFunc = captchaTypeArray[Math.floor(Math.random() * captchaTypeArray.length)];
         const randomBackground = backgroundArray[Math.floor(Math.random() * backgroundArray.length)];
         if (randomFunc === 'svg') {
-          captcha = svgCaptcha.createMathExpr({
-            mathMin: 0,
-            mathMax: 9,
-            mathOperator: '+-',
-            background: randomBackground,
-            noise: 28,
-            color: true,
-          });
+          while (!captcha || Number(captcha.text) < 0) {
+            captcha = svgCaptcha.createMathExpr({
+              mathMin: 0,
+              mathMax: 9,
+              mathOperator: '+-',
+              background: randomBackground,
+              noise: 15,
+              color: true,
+            });
+          }
+
           console.log(captcha);
           captchaPng = await svg2png({
             input: `${captcha.data}`.trim(),
@@ -106,23 +109,27 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
             'formula',
             'equation',
           ];
-          captcha = new AlgebraicCaptcha({
-            width: 150,
-            height: 50,
-            background: randomBackground,
-            noise: Math.floor((Math.random() * 9) + 5),
-            minValue: 1,
-            maxValue: 20,
-            operandAmount: Math.floor((Math.random() * 2) + 1),
-            operandTypes: ['+', '-'],
-            mode: modes[Math.round(Math.random())],
-            targetSymbol: '?',
-          });
-          const { image, answer } = await captcha.generateCaptcha();
-          console.log(image);
-          console.log(answer);
+          while (!captcha || Number(captcha.answer) < 0) {
+            const preCaptcha = new AlgebraicCaptcha({
+              width: 150,
+              height: 50,
+              background: randomBackground,
+              noise: Math.floor((Math.random() * 8) + 4),
+              minValue: 1,
+              maxValue: 20,
+              operandAmount: Math.floor((Math.random() * 2) + 1),
+              operandTypes: ['+', '-'],
+              mode: modes[Math.round(Math.random())],
+              targetSymbol: '?',
+            });
+            // eslint-disable-next-line no-await-in-loop
+            captcha = await preCaptcha.generateCaptcha();
+            console.log(captcha);
+          }
+
+          console.log(captcha);
           captchaPng = await svg2png({
-            input: `${image}`.trim(),
+            input: `${captcha.image}`.trim(),
             encoding: 'dataURL',
             format: 'png',
             width: 150,
@@ -133,7 +140,7 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
           findReactTip = await db.reactdroptip.create({
             status: 'waiting',
             captchaType: 'algebraic',
-            solution: answer.toString(),
+            solution: captcha.answer.toString(),
             userId: findReactUser.id,
             reactdropId: reactDrop.id,
           });
@@ -497,6 +504,7 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
 
                 const updateMessage = setInterval(async () => {
                   now = new Date().getTime();
+                  console.log('listen');
                   distance = countDownDate - now;
                   await reactMessage.edit({ embeds: [reactDropMessage(distance, message.author.id, filteredMessage[4], amount)] });
                   if (distance < 0) {
