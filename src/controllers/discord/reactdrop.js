@@ -80,6 +80,7 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
           userId: findReactUser.id,
           reactdropId: reactDrop.id,
         });
+        // eslint-disable-next-line no-underscore-dangle
         const constructEmoji = reaction._emoji.id ? `<:${reaction._emoji.name}:${reaction._emoji.id}>` : reaction._emoji.name;
         if (reactDrop.emoji !== constructEmoji) {
           collector.send('Failed, pressed wrong emoji');
@@ -92,105 +93,163 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
           });
           const Ccollector = await awaitCaptchaMessage.channel.createMessageCollector({ filter, time: 60000, max: 1 });
           Ccollector.on('collect', async (m) => {
-            if (m.content === findReactTip.solution) {
-              await findReactTip.update({
-                status: 'success',
+            await db.sequelize.transaction({
+              isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+            }, async (t) => {
+              if (m.content === findReactTip.solution) {
+                await findReactTip.update({
+                  status: 'success',
+                },
+                {
+                  lock: t.LOCK.UPDATE,
+                  transaction: t,
+                });
+                m.react('✔️');
+              } else {
+                await findReactTip.update({
+                  status: 'failed',
+                }, {
+                  lock: t.LOCK.UPDATE,
+                  transaction: t,
+                });
+                m.react('❌');
+              }
+              t.afterCommit(() => {
+                console.log('done');
               });
-              m.react('✔️');
-            } else {
-              await findReactTip.update({
-                status: 'failed',
-              });
-              m.react('❌');
-            }
+            }).catch((err) => {
+              console.log('failed');
+            });
           });
           Ccollector.on('end', async (collected) => {
-            if (findReactTip.status === 'waiting') {
-              await findReactTip.update({
-                status: 'failed',
+            await db.sequelize.transaction({
+              isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+            }, async (t) => {
+              const findReactUserTwo = await db.user.findOne({
+                where: {
+                  user_id: `discord-${collector.id}`,
+                },
+                lock: t.LOCK.UPDATE,
+                transaction: t,
               });
-              collector.send('Out of time');
-            }
+              const findReactTipTwo = await db.reactdroptip.findOne({
+                where: {
+                  userId: findReactUserTwo.id,
+                  reactdropId: reactDrop.id,
+                },
+                lock: t.LOCK.UPDATE,
+                transaction: t,
+              });
+              if (findReactTipTwo.status === 'waiting') {
+                await findReactTipTwo.update({
+                  status: 'failed',
+                }, {
+                  lock: t.LOCK.UPDATE,
+                  transaction: t,
+                });
+                collector.send('Out of time');
+              }
+              t.afterCommit(() => {
+                console.log('done');
+                // collector.send('Out of time');
+              });
+            }).catch((err) => {
+              console.log(err);
+              collector.send('Something went wrong');
+            });
           });
         }
       }
     }
   });
   collector.on('end', async () => {
-    const endReactDrop = await db.reactdrop.findOne({
-      where: {
-        id: reactDrop.id,
-      },
-      include: [
-        {
-          model: db.reactdroptip,
-          as: 'reactdroptips',
-          required: false,
-          where: {
-            status: 'success',
-          },
-          include: [
-            {
-              model: db.user,
-              as: 'user',
-              include: [
-                {
-                  model: db.wallet,
-                  as: 'wallet',
-                },
-              ],
+    await db.sequelize.transaction({
+      isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+    }, async (t) => {
+      const endReactDrop = await db.reactdrop.findOne({
+        where: {
+          id: reactDrop.id,
+        },
+        include: [
+          {
+            model: db.reactdroptip,
+            as: 'reactdroptips',
+            required: false,
+            where: {
+              status: 'success',
             },
-          ],
-        },
-        {
-          model: db.user,
-          as: 'user',
-        },
-      ],
-    });
-    if (endReactDrop) {
-      if (endReactDrop.reactdroptips.length <= 0) {
-        const returnWallet = await db.wallet.findOne({
-          where: {
-            userId: endReactDrop.userId,
+            include: [
+              {
+                model: db.user,
+                as: 'user',
+                include: [
+                  {
+                    model: db.wallet,
+                    as: 'wallet',
+                  },
+                ],
+              },
+            ],
           },
-        });
-        const updatedWallet = await returnWallet.update({
-          available: returnWallet.available + endReactDrop.amount,
-        });
-        await endReactDrop.update({
-          ended: true,
-        });
-        reactMessage.channel.send('Nobody claimed, returning funds to reactdrop initiator');
-      } else {
-        const amountEach = (Number(endReactDrop.amount) / Number(endReactDrop.reactdroptips.length)).toFixed(0);
-
-        console.log("amountEach");
-        console.log(amountEach);
-        await endReactDrop.update({
-          ended: true,
-          userCount: Number(endReactDrop.reactdroptips.length),
-        });
-
-        const listOfUsersRained = [];
-        for (const receiver of endReactDrop.reactdroptips) {
-          await receiver.user.wallet.update({
-            available: receiver.user.wallet.available + Number(amountEach),
+          {
+            model: db.user,
+            as: 'user',
+          },
+        ],
+      });
+      if (endReactDrop) {
+        if (endReactDrop.reactdroptips.length <= 0) {
+          const returnWallet = await db.wallet.findOne({
+            where: {
+              userId: endReactDrop.userId,
+            },
           });
-          const userIdReceivedRain = receiver.user.user_id.replace('discord-', '');
-          listOfUsersRained.push(`<@${userIdReceivedRain}>`);
+          const updatedWallet = await returnWallet.update({
+            available: returnWallet.available + endReactDrop.amount,
+          });
+          await endReactDrop.update({
+            ended: true,
+          });
+          reactMessage.channel.send('Nobody claimed, returning funds to reactdrop initiator');
+        } else {
+          const amountEach = (Number(endReactDrop.amount) / Number(endReactDrop.reactdroptips.length)).toFixed(0);
+
+          console.log("amountEach");
+          console.log(amountEach);
+          await endReactDrop.update({
+            ended: true,
+            userCount: Number(endReactDrop.reactdroptips.length),
+          });
+
+          const listOfUsersRained = [];
+          // eslint-disable-next-line no-restricted-syntax
+          for (const receiver of endReactDrop.reactdroptips) {
+            // eslint-disable-next-line no-await-in-loop
+            await receiver.user.wallet.update({
+              available: receiver.user.wallet.available + Number(amountEach),
+            });
+            const userIdReceivedRain = receiver.user.user_id.replace('discord-', '');
+            listOfUsersRained.push(`<@${userIdReceivedRain}>`);
+          }
+          const newStringListUsers = listOfUsersRained.join(", ");
+          console.log(newStringListUsers);
+          const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
+          // eslint-disable-next-line no-restricted-syntax
+          for (const element of cutStringListUsers) {
+            // eslint-disable-next-line no-await-in-loop
+            await reactMessage.channel.send(element);
+          }
+          reactMessage.channel.send({ embeds: [AfterReactDropSuccessMessage(endReactDrop, amountEach)] });
+          // reactMessage.channel.send(`${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${process.env.CURRENCY_SYMBOL} (${amountEach / 1e8} each)`);
         }
-        const newStringListUsers = listOfUsersRained.join(", ");
-        console.log(newStringListUsers);
-        const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
-        for (const element of cutStringListUsers) {
-          // eslint-disable-next-line no-await-in-loop
-          await reactMessage.channel.send(element);
-        }
-        reactMessage.channel.send({ embeds: [AfterReactDropSuccessMessage(endReactDrop, amountEach)] });
-        // reactMessage.channel.send(`${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${process.env.CURRENCY_SYMBOL} (${amountEach / 1e8} each)`);
       }
-    }
+
+      t.afterCommit(() => {
+        console.log('done');
+      });
+    }).catch((err) => {
+      console.log('error');
+    });
   });
 };
 
@@ -281,7 +340,6 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
             await message.guild.emojis.cache.forEach((customEmoji) => {
               allEmojis.push(`<:${customEmoji.name}:${customEmoji.id}>`);
             });
-            console.log(allEmojis);
             if (!filteredMessage[4]) {
               filteredMessage[4] = '❤️';
             }
@@ -311,10 +369,6 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
                 useEmojis.push(allEmojis[randomX]);
               }
               useEmojis.push(filteredMessage[4]);
-
-              console.log('useEmojis');
-              console.log(useEmojis);
-              console.log(message.guildId);
 
               const shuffeledEmojisArray = await shuffle(useEmojis);
 
@@ -367,13 +421,12 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
                 const reactMessage = await discordClient.guilds.cache.get(sendReactDropMessage.guildId)
                   .channels.cache.get(sendReactDropMessage.channelId)
                   .messages.fetch(sendReactDropMessage.id);
-                  /// /
-                console.log(distance);
 
                 listenReactDrop(reactMessage, distance, newReactDrop);
 
-                /// /
+                // eslint-disable-next-line no-restricted-syntax
                 for (const shufEmoji of shuffeledEmojisArray) {
+                  // eslint-disable-next-line no-await-in-loop
                   await reactMessage.react(shufEmoji);
                 }
 

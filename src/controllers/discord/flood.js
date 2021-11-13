@@ -12,8 +12,8 @@ const BigNumber = require('bignumber.js');
 const { Transaction, Op } = require('sequelize');
 const logger = require('../../helpers/logger');
 
-export const discordFlood = async (client, message, filteredMessage) => {
-  const guild = await client.guilds.cache.get(message.guildId);
+export const discordFlood = async (discordClient, message, filteredMessage) => {
+  const guild = await discordClient.guilds.cache.get(message.guildId);
   const members = guild.presences.cache;
   // const onlineMembers = members.filter((member) => member.status === 'online');
   const onlineMembersIds = members.map((a) => a.userId);
@@ -21,8 +21,10 @@ export const discordFlood = async (client, message, filteredMessage) => {
   const withoutBots = [];
   // eslint-disable-next-line no-restricted-syntax
   for (const onlineId of onlineMembersIds) {
-    const thanos = await client.users.fetch(onlineId);
-    if (thanos.bot === false) {
+    // eslint-disable-next-line no-await-in-loop
+    const fetchUserDiscordClient = await discordClient.users.fetch(onlineId);
+    if (fetchUserDiscordClient.bot === false) {
+      // eslint-disable-next-line no-await-in-loop
       const userExist = await db.user.findOne({
         where: {
           user_id: `discord-${onlineId}`,
@@ -55,7 +57,7 @@ export const discordFlood = async (client, message, filteredMessage) => {
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
-    if (amount < Number(process.env.MINIMUM_FLOOD)) { // smaller then 2 RUNES
+    if (amount < Number(process.env.MINIMUM_FLOOD)) {
       await message.channel.send({ embeds: [minimumFloodMessage(message)] });
     }
     if (amount % 1 !== 0) {
@@ -92,7 +94,7 @@ export const discordFlood = async (client, message, filteredMessage) => {
         }
         if (user.wallet.available >= amount) {
           if (withoutBots.length < 2) {
-            await message.channel.send('not enough online users');
+            await message.channel.send('Not enough online users');
           }
           if (withoutBots.length >= 2) {
             const updatedBalance = await user.wallet.update({

@@ -131,7 +131,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
     }
 
     t.afterCommit(() => {
-      console.log('done');
+      console.log('Done');
     });
   }).catch((err) => {
     message.channel.send("Somethign went wrong.");

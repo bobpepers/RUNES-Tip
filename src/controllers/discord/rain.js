@@ -12,16 +12,18 @@ const BigNumber = require('bignumber.js');
 const { Transaction, Op } = require('sequelize');
 const logger = require('../../helpers/logger');
 
-export const discordRain = async (client, message, filteredMessage) => {
-  const guild = await client.guilds.cache.get(message.guildId);
+export const discordRain = async (discordClient, message, filteredMessage) => {
+  const guild = await discordClient.guilds.cache.get(message.guildId);
   const members = guild.presences.cache;
   const onlineMembers = members.filter((member) => member.status === 'online');
   const onlineMembersIds = onlineMembers.map((a) => a.userId);
   const withoutBots = [];
   // eslint-disable-next-line no-restricted-syntax
   for (const onlineId of onlineMembersIds) {
-    const thanos = await client.users.fetch(onlineId);
-    if (thanos.bot === false) {
+    // eslint-disable-next-line no-await-in-loop
+    const fetchUserDiscordClient = await discordClient.users.fetch(onlineId);
+    if (fetchUserDiscordClient.bot === false) {
+      // eslint-disable-next-line no-await-in-loop
       const userExist = await db.user.findOne({
         where: {
           user_id: `discord-${onlineId}`,
@@ -81,7 +83,6 @@ export const discordRain = async (client, message, filteredMessage) => {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      console.log(user);
       if (!user) {
         await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Rain')] });
       }

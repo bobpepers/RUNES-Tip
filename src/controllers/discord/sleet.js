@@ -37,7 +37,6 @@ export const discordSleet = async (client, message, filteredMessage) => {
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    console.log(user);
     if (!user) {
       await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Sleet')] });
     }
