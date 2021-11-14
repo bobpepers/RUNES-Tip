@@ -58,7 +58,7 @@ export const discordSoak = async (discordClient, message, filteredMessage) => {
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
-    if (amount < Number(settings.min.discord.rain)) {
+    if (amount < Number(settings.min.discord.soak)) {
       await message.channel.send({ embeds: [minimumMessage(message, 'Soak')] });
     } else if (amount % 1 !== 0) {
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Soak')] });
@@ -125,7 +125,7 @@ export const discordSoak = async (discordClient, message, filteredMessage) => {
               await db.soaktip.create({
                 amount: amountPerUser,
                 userId: soakee.id,
-                rainId: soakRecord.id,
+                soakId: soakRecord.id,
               }, {
                 lock: t.LOCK.UPDATE,
                 transaction: t,

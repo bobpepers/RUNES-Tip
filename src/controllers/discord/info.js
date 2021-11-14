@@ -12,14 +12,10 @@ export const discordCoinInfo = async (message) => {
   const priceInfo = await db.priceInfo.findOne({
     order: [ [ 'id', 'ASC' ]],
   });
-    console.log('blockheight');
-    console.log(blockHeight);
   if (message.channel.type === 'DM') {
     message.author.send({ embeds: [coinInfoMessage(blockHeight.id, priceInfo)] });
   }
-  if (message.channel.type === 'GUILD_TEXT') {
-    
-    
+  if (message.channel.type === 'GUILD_TEXT') {   
     message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Coin Info')] });
     message.author.send({ embeds: [coinInfoMessage(blockHeight.id, priceInfo)] });
   }

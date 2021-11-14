@@ -46,6 +46,7 @@ module.exports = {
       flood: 1e7,
       sleet: 1e7,
       reactdrop: 1e7,
+      soak: 1e7,
     },
     telegram: {
       tip: 1e7,

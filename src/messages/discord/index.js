@@ -245,6 +245,12 @@ export const minimumMessage = (message, type) => {
   if (type === 'Tip') {
     minAmount = settings.min.discord.tip;
   }
+  if (type === 'Soak') {
+    minAmount = settings.min.discord.soak;
+  }
+  if (type === 'ReactDrop') {
+    minAmount = settings.min.discord.reactdrop;
+  }
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle(type)
@@ -254,6 +260,18 @@ export const minimumMessage = (message, type) => {
 
   return result;
 };
+
+export const AfterThunderSuccess = (message, amount, userThunder) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Thunder')
+    .setDescription(`⛈ ${userThunder} has been thunderstruck with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
+    .setTimestamp()
+    .setFooter(settings.bot.name, settings.coin.logo);
+
+  return result;
+};
+
 
 export const reviewMessage = (message) => {
   const result = new MessageEmbed()

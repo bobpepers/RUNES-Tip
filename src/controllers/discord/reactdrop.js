@@ -4,7 +4,7 @@ import db from '../../models';
 import {
   reactDropMessage,
   invalidAmountMessage,
-  minimumTipMessage,
+  minimumMessage,
   userNotFoundMessage,
   insufficientBalanceMessage,
   minimumTimeReactDropMessage,
@@ -359,7 +359,7 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
     if (amount % 1 !== 0) {
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'ReactDrop')] });
     } else if (amount < Number(settings.min.discord.reactdrop)) {
-      await message.channel.send({ embeds: [minimumTipMessage(message)] });
+      await message.channel.send({ embeds: [minimumMessage(message, 'ReactDrop')] });
     } else if (amount >= Number(settings.min.discord.reactdrop) && amount % 1 === 0) {
       const user = await db.user.findOne({
         where: {
