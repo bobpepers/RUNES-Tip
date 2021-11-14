@@ -19,13 +19,8 @@ export const discordThunder = async (discordClient, message, filteredMessage) =>
   const members = guild.presences.cache;
   const onlineMembers = members.filter((member) => member.status === 'online');
   const onlineMembersIds = onlineMembers.map((a) => a.userId)
-
-  //const onlineMembersIds = _.sampleSize(onlineMembersIds, 1);
-  
-  console.log(onlineMembersIds);
-  
-  console.log('herererer');
   const preWithoutBots = [];
+  
   // eslint-disable-next-line no-restricted-syntax
   for (const onlineId of onlineMembersIds) {
     // eslint-disable-next-line no-await-in-loop
@@ -131,10 +126,6 @@ export const discordThunder = async (discordClient, message, filteredMessage) =>
                 transaction: t,
               });
               // eslint-disable-next-line no-await-in-loop
-              console.log(amountPerUser);
-              console.log(thunderee.id);
-              console.log(thunderRecord.id);
-              console.log('1231');
               await db.thundertip.create({
                 amount: amountPerUser,
                 userId: thunderee.id,
@@ -143,16 +134,12 @@ export const discordThunder = async (discordClient, message, filteredMessage) =>
                 lock: t.LOCK.UPDATE,
                 transaction: t,
               });
-              console.log('af');
               const userIdReceivedRain = thunderee.user_id.replace('discord-', '');
               listOfUsersRained.push(`<@${userIdReceivedRain}>`);
             }
             for (const userThunder of listOfUsersRained) {
                 // eslint-disable-next-line no-await-in-loop
-                console.log('waa');
-                console.log(userThunder);
                 await message.channel.send({ embeds: [AfterThunderSuccess(message, amount, userThunder)] });
-                console.log("pfft");
               }
             
             logger.info(`Success Thunder Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
