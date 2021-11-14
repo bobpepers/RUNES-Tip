@@ -458,8 +458,22 @@ Tips the @ mentioned user with the desired amount
 \`${settings.bot.command.discord} rain <amount|all>\`
 Rains the desired amount onto all online users (optionally, within specified role)
 
+\`${settings.bot.command.discord} soak <amount|all>\`
+Soaks the desired amount onto all online and idle users (optionally, within specified role)
+
 \`${settings.bot.command.discord} flood <amount|all>\`
 Floods the desired amount onto all users (including offline users) (optionally, within specified role)
+
+\`${settings.bot.command.discord} sleet <amount|all>\`
+Makes a sleet storm with the desired amount onto all users that have been active in the channel in the last 15 minutes (optionally, within specified role
+
+\`${settings.bot.command.discord} thunder <amount|all>\`
+Tips a random lucky online user with the amount (optionally, within specified role), e.g.
+\`${settings.bot.command.discord} thunder 5\`
+
+\`${settings.bot.command.discord} thunderstorm <numberOfUsers> <amount|all>\`
+Tips a specified number (max: 50) random lucky online users with part of the amount (optionally, within specified role), e.g.
+\`${settings.bot.command.discord} thunderstorm 10 5.00\`
 
 \`${settings.bot.command.discord} reactdrop <amount> [<time>] [<emoji>]\`
 Performs a react airdrop with the amount, optionally within custom time, optionally using a custom-supplied emoji. <time> parameter accepts time interval expressions in the form of:\`60s\`, \`5m\`, \`1h\`. Default time interval is \`5m\`(5minutes), e.g. \`!arrrtip reactdrop 10 20m\`, \`!arrrtip reactdrop 10 3h 😃\`
