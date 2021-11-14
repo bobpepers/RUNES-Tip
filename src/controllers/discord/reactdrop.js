@@ -11,6 +11,7 @@ import {
   invalidTimeMessage,
   ReactdropCaptchaMessage,
   AfterReactDropSuccessMessage,
+  invalidEmojiMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
 
@@ -415,7 +416,7 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
             }
 
             if (!allEmojis.includes(filteredMessage[4])) {
-              await message.channel.send({ embeds: [invalidTimeMessage(message, 'Reactdrop')] });
+              await message.channel.send({ embeds: [invalidEmojiMessage(message, 'Reactdrop')] });
             } else {
               let dateObj = await new Date().getTime();
               if (cutLastTimeLetter === 'd') {

@@ -196,33 +196,13 @@ export const unableToFindUserTipMessage = (message, amount) => {
   return result;
 };
 
-export const AfterRainSuccessMessage = (message, amount, withoutBots, amountPerUser) => {
+
+
+export const AfterSuccessMessage = (message, amount, withoutBots, amountPerUser, type, typeH) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle('Rain')
-    .setDescription(`<@${message.author.id}> rained ${amount / 1e8} ${settings.coin.ticker} on ${withoutBots.length} users -- ${amountPerUser / 1e8} ${settings.coin.ticker} each`)
-    .setTimestamp()
-    .setFooter(settings.bot.name, settings.coin.logo);
-
-  return result;
-};
-
-export const AfterFloodSuccessMessage = (message, amount, withoutBots, amountPerUser) => {
-  const result = new MessageEmbed()
-    .setColor(settings.bot.color)
-    .setTitle('Rain')
-    .setDescription(`<@${message.author.id}> Flooded ${amount / 1e8} ${settings.coin.ticker} on ${withoutBots.length} users -- ${amountPerUser / 1e8} ${settings.coin.ticker} each`)
-    .setTimestamp()
-    .setFooter(settings.bot.name, settings.coin.logo);
-
-  return result;
-};
-
-export const AfterSleetSuccessMessage = (message, amount, usersToRain, amountPerUser) => {
-  const result = new MessageEmbed()
-    .setColor(settings.bot.color)
-    .setTitle('Sleet')
-    .setDescription(`<@${message.author.id}> Sleeted ${amount / 1e8} ${settings.coin.ticker} on ${usersToRain.length} active users -- ${amountPerUser / 1e8} ${settings.coin.ticker} each`)
+    .setTitle(type)
+    .setDescription(`<@${message.author.id}> ${typeH} ${amount / 1e8} ${settings.coin.ticker} on ${withoutBots.length} users -- ${amountPerUser / 1e8} ${settings.coin.ticker} each`)
     .setTimestamp()
     .setFooter(settings.bot.name, settings.coin.logo);
 
@@ -251,44 +231,24 @@ export const walletNotFoundMessage = (message, title) => {
   return result;
 };
 
-export const minimumRainMessage = (message) => {
+export const minimumMessage = (message, type) => {
+  let minAmount;
+  if (type === 'Sleet') {
+    minAmount = settings.min.discord.sleet;
+  }
+  if (type === 'Rain') {
+    minAmount = settings.min.discord.rain;
+  }
+  if (type === 'Flood') {
+    minAmount = settings.min.discord.flood;
+  }
+  if (type === 'Tip') {
+    minAmount = settings.min.discord.tip;
+  }
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle('Rain')
-    .setDescription(`<@${message.author.id}>, Minimum Rain is ${Number(settings.min.discord.rain) / 1e8} ${settings.coin.ticker}`)
-    .setTimestamp()
-    .setFooter(settings.bot.name, settings.coin.logo);
-
-  return result;
-};
-
-export const minimumSleetMessage = (message) => {
-  const result = new MessageEmbed()
-    .setColor(settings.bot.color)
-    .setTitle('Sleet')
-    .setDescription(`<@${message.author.id}>, Minimum Sleet is ${Number(settings.min.discord.sleet) / 1e8} ${settings.coin.ticker}`)
-    .setTimestamp()
-    .setFooter(settings.bot.name, settings.coin.logo);
-
-  return result;
-};
-
-export const minimumFloodMessage = (message) => {
-  const result = new MessageEmbed()
-    .setColor(settings.bot.color)
-    .setTitle('Flood')
-    .setDescription(`<@${message.author.id}>, Minimum Flood is ${Number(settings.min.discord.flood) / 1e8} ${settings.coin.ticker}`)
-    .setTimestamp()
-    .setFooter(settings.bot.name, settings.coin.logo);
-
-  return result;
-};
-
-export const minimumTipMessage = (message) => {
-  const result = new MessageEmbed()
-    .setColor(settings.bot.color)
-    .setTitle('Tip')
-    .setDescription(`<@${message.author.id}>, Minimum Tip is ${Number(settings.min.discord.tip) / 1e8} ${settings.coin.ticker}`)
+    .setTitle(type)
+    .setDescription(`<@${message.author.id}>, Minimum ${type} is ${Number(minAmount) / 1e8} ${settings.coin.ticker}`)
     .setTimestamp()
     .setFooter(settings.bot.name, settings.coin.logo);
 
@@ -311,6 +271,17 @@ export const invalidTimeMessage = (message, title) => {
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, Invalid time`)
+    .setTimestamp()
+    .setFooter(settings.bot.name, settings.coin.logo);
+
+  return result;
+};
+
+export const invalidEmojiMessage = (message, title) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(title)
+    .setDescription(`<@${message.author.id}>, You used an invalid emoji`)
     .setTimestamp()
     .setFooter(settings.bot.name, settings.coin.logo);
 

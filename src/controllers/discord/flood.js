@@ -3,9 +3,9 @@ import db from '../../models';
 import {
   invalidAmountMessage,
   insufficientBalanceMessage,
-  minimumFloodMessage,
+  minimumMessage,
   walletNotFoundMessage,
-  AfterFloodSuccessMessage,
+  AfterSuccessMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
 
@@ -59,7 +59,7 @@ export const discordFlood = async (discordClient, message, filteredMessage) => {
   }, async (t) => {
     const amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
     if (amount < Number(settings.min.discord.flood)) {
-      await message.channel.send({ embeds: [minimumFloodMessage(message)] });
+      await message.channel.send({ embeds: [minimumMessage(message, 'Flood')] });
     } else if (amount % 1 !== 0) {
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Flood')] });
     } else {
@@ -144,7 +144,7 @@ export const discordFlood = async (discordClient, message, filteredMessage) => {
               await message.channel.send(element);
             }
 
-            await message.channel.send({ embeds: [AfterFloodSuccessMessage(message, amount, withoutBots, amountPerUser)] });
+            await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, 'Flood', 'flooded')] });
             logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
           }
         }

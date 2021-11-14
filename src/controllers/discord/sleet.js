@@ -5,8 +5,8 @@ import {
   insufficientBalanceMessage,
   notEnoughActiveUsersMessage,
   walletNotFoundMessage,
-  minimumSleetMessage,
-  AfterSleetSuccessMessage,
+  minimumMessage,
+  AfterSuccessMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
 
@@ -20,7 +20,7 @@ export const discordSleet = async (client, message, filteredMessage) => {
   }, async (t) => {
     const amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
     if (amount < Number(settings.min.discord.sleet)) {
-      await message.channel.send({ embeds: [minimumSleetMessage(message)] });
+      await message.channel.send({ embeds: [minimumMessage(message, 'Sleet')] });
     } else
     if (amount % 1 !== 0) {
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Sleet')] });
@@ -137,7 +137,7 @@ export const discordSleet = async (client, message, filteredMessage) => {
                 await message.channel.send(element);
               }
 
-              await message.channel.send({ embeds: [AfterSleetSuccessMessage(message, amount, usersToRain, amountPerUser)] });
+              await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, usersToRain, amountPerUser, 'Sleet', 'sleeted')] });
               logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
             }
           }

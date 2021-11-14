@@ -4,8 +4,8 @@ import {
   invalidAmountMessage,
   insufficientBalanceMessage,
   walletNotFoundMessage,
-  minimumRainMessage,
-  AfterRainSuccessMessage,
+  minimumMessage,
+  AfterSuccessMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
 
@@ -16,7 +16,8 @@ const logger = require('../../helpers/logger');
 export const discordSoak = async (discordClient, message, filteredMessage) => {
   const guild = await discordClient.guilds.cache.get(message.guildId);
   const members = guild.presences.cache;
-  const onlineMembers = members.filter((member) => member.status === 'online');
+  console.log(members);
+  const onlineMembers = members.filter((member) => member.status === 'online' || member.status === 'idle' || member.status === 'dnd');
   const onlineMembersIds = onlineMembers.map((a) => a.userId);
   const withoutBots = [];
   // eslint-disable-next-line no-restricted-syntax
@@ -58,9 +59,9 @@ export const discordSoak = async (discordClient, message, filteredMessage) => {
   }, async (t) => {
     const amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
     if (amount < Number(settings.min.discord.rain)) {
-      await message.channel.send({ embeds: [minimumRainMessage(message)] });
+      await message.channel.send({ embeds: [minimumMessage(message, 'Soak')] });
     } else if (amount % 1 !== 0) {
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'Rain')] });
+      await message.channel.send({ embeds: [invalidAmountMessage(message, 'Soak')] });
     } else {
       const user = await db.user.findOne({
         where: {
@@ -84,11 +85,11 @@ export const discordSoak = async (discordClient, message, filteredMessage) => {
         transaction: t,
       });
       if (!user) {
-        await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Rain')] });
+        await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Soak')] });
       }
       if (user) {
         if (user.wallet.available < amount) {
-          await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'Rain')] });
+          await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'Soak')] });
         }
         if (user.wallet.available >= amount) {
           if (withoutBots.length < 2) {
@@ -102,7 +103,7 @@ export const discordSoak = async (discordClient, message, filteredMessage) => {
               transaction: t,
             });
             const amountPerUser = (((amount / withoutBots.length).toFixed(0)));
-            const rainRecord = await db.rain.create({
+            const soakRecord = await db.soak.create({
               amount,
               userCount: withoutBots.length,
               userId: user.id,
@@ -112,24 +113,24 @@ export const discordSoak = async (discordClient, message, filteredMessage) => {
             });
             const listOfUsersRained = [];
             // eslint-disable-next-line no-restricted-syntax
-            for (const rainee of withoutBots) {
+            for (const soakee of withoutBots) {
               // eslint-disable-next-line no-await-in-loop
-              await rainee.wallet.update({
-                available: rainee.wallet.available + Number(amountPerUser),
+              await soakee.wallet.update({
+                available: soakee.wallet.available + Number(amountPerUser),
               }, {
                 lock: t.LOCK.UPDATE,
                 transaction: t,
               });
               // eslint-disable-next-line no-await-in-loop
-              await db.raintip.create({
+              await db.soaktip.create({
                 amount: amountPerUser,
-                userId: rainee.id,
-                rainId: rainRecord.id,
+                userId: soakee.id,
+                rainId: soakRecord.id,
               }, {
                 lock: t.LOCK.UPDATE,
                 transaction: t,
               });
-              const userIdReceivedRain = rainee.user_id.replace('discord-', '');
+              const userIdReceivedRain = soakee.user_id.replace('discord-', '');
               listOfUsersRained.push(`<@${userIdReceivedRain}>`);
             }
 
@@ -142,8 +143,8 @@ export const discordSoak = async (discordClient, message, filteredMessage) => {
               await message.channel.send(element);
             }
 
-            await message.channel.send({ embeds: [AfterRainSuccessMessage(message, amount, withoutBots, amountPerUser)] });
-            logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+            await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, 'Soak', 'soaked')] });
+            logger.info(`Success Soak Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
           }
         }
       }

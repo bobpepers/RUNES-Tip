@@ -4,8 +4,8 @@ import {
   invalidAmountMessage,
   insufficientBalanceMessage,
   walletNotFoundMessage,
-  minimumRainMessage,
-  AfterRainSuccessMessage,
+  minimumMessage,
+  AfterSuccessMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
 
@@ -58,7 +58,7 @@ export const discordRain = async (discordClient, message, filteredMessage) => {
   }, async (t) => {
     const amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
     if (amount < Number(settings.min.discord.rain)) {
-      await message.channel.send({ embeds: [minimumRainMessage(message)] });
+      await message.channel.send({ embeds: [minimumMessage(message, 'Rain')] });
     } else if (amount % 1 !== 0) {
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Rain')] });
     } else {
@@ -142,7 +142,7 @@ export const discordRain = async (discordClient, message, filteredMessage) => {
               await message.channel.send(element);
             }
 
-            await message.channel.send({ embeds: [AfterRainSuccessMessage(message, amount, withoutBots, amountPerUser)] });
+            await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, 'Rain', 'rained')] });
             logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
           }
         }
