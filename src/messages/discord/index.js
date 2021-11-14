@@ -252,6 +252,12 @@ export const minimumMessage = (message, type) => {
   if (type === 'ReactDrop') {
     minAmount = settings.min.discord.reactdrop;
   }
+  if (type === 'Thunder') {
+    minAmount = settings.min.discord.thunder;
+  }
+  if (type === 'ThunderStorm') {
+    minAmount = settings.min.discord.thunderstorm;
+  }
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle(type)
@@ -261,6 +267,57 @@ export const minimumMessage = (message, type) => {
 
   return result;
 };
+
+
+  export const thunderstormMaxUserAmountMessage = (message) => {
+    const result = new MessageEmbed()
+      .setColor(settings.bot.color)
+      .setTitle('ThunderStorm')
+      .setDescription(`<@${message.author.id}>, Maximum user amount is 50`)
+      .setTimestamp()
+      .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+  
+    return result;
+  };
+
+  export const thunderstormInvalidUserAmount = (message) => {
+    const result = new MessageEmbed()
+      .setColor(settings.bot.color)
+      .setTitle('ThunderStorm')
+      .setDescription(`<@${message.author.id}>, Invalid amount of users`)
+      .setTimestamp()
+      .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+  
+    return result;
+  };
+
+  export const thunderstormUserZeroAmountMessage = (message) => {
+    const result = new MessageEmbed()
+      .setColor(settings.bot.color)
+      .setTitle('ThunderStorm')
+      .setDescription(`<@${message.author.id}>, minimum amount of users to thunderstorm is 1`)
+      .setTimestamp()
+      .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+  
+    return result;
+  };
+
+export const AfterThunderStormSuccess = (message, amount, amountPerUser, listOfUsersRained) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('ThunderStorm')
+    .setDescription(`${listOfUsersRained.map(function (user) {
+      console.log('user');
+      console.log(user);
+      return `⛈ ${user} has been thunderstruck with ${amountPerUser / 1e8} ${settings.coin.ticker} ⛈`           
+    }).join("\n")}`)
+   // .setDescription(`⛈ ${userThunder} has been thunderstruck with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
 
 export const AfterThunderSuccess = (message, amount, userThunder) => {
   const result = new MessageEmbed()

@@ -61,6 +61,8 @@ export const discordRain = async (discordClient, message, filteredMessage) => {
       await message.channel.send({ embeds: [minimumMessage(message, 'Rain')] });
     } else if (amount % 1 !== 0) {
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Rain')] });
+    } else if (amount <= 0) {
+      await message.channel.send({ embeds: [invalidAmountMessage(message, 'Rain')] });
     } else {
       const user = await db.user.findOne({
         where: {

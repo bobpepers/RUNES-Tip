@@ -57,10 +57,40 @@ export const discordSoak = async (discordClient, message, filteredMessage) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
+    let amount = 0;
+    if (filteredMessage[2].toLowerCase() === 'all') {
+      const tipper = await db.user.findOne({
+        where: {
+          user_id: `discord-${message.author.id}`,
+        },
+        include: [
+          {
+            model: db.wallet,
+            as: 'wallet',
+            include: [
+              {
+                model: db.address,
+                as: 'addresses',
+              },
+            ],
+          },
+        ],
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      if (tipper) {
+        amount = tipper.wallet.available;
+      } else {
+        amount = 0;
+      }
+    } else {
+      amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
+    }
     if (amount < Number(settings.min.discord.soak)) {
       await message.channel.send({ embeds: [minimumMessage(message, 'Soak')] });
     } else if (amount % 1 !== 0) {
+      await message.channel.send({ embeds: [invalidAmountMessage(message, 'Soak')] });
+    } else if (amount <= 0) {
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Soak')] });
     } else {
       const user = await db.user.findOne({
