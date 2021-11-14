@@ -51,6 +51,17 @@ import {
   discordCoinInfo,
 } from './controllers/discord/info';
 
+import {
+  discordSoak,
+} from './controllers/discord/soak';
+
+import {
+  discordThunder,
+} from './controllers/discord/thunder';
+
+import {
+  discordThunderStorm,
+} from './controllers/discord/thunderstorm';
 
 import {
   fetchHelp,
@@ -199,6 +210,21 @@ const router = (app, discordClient, telegramClient) => {
 
     if (filteredMessageDiscord[1].toLowerCase() === 'flood') {
       const task = await discordFlood(discordClient, message, filteredMessageDiscord);
+      await queue.add(() => task);
+    }
+
+    if (filteredMessageDiscord[1].toLowerCase() === 'thunder') {
+      const task = await discordThunder(discordClient, message, filteredMessageDiscord);
+      await queue.add(() => task);
+    }
+
+    if (filteredMessageDiscord[1].toLowerCase() === 'thunderstorm') {
+      const task = await discordThunderStorm(discordClient, message, filteredMessageDiscord);
+      await queue.add(() => task);
+    }
+
+    if (filteredMessageDiscord[1].toLowerCase() === 'soak') {
+      const task = await discordSoak(discordClient, message, filteredMessageDiscord);
       await queue.add(() => task);
     }
 
