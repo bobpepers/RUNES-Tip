@@ -415,7 +415,7 @@ Rains the desired amount onto all online users (optionally, within specified rol
 Floods the desired amount onto all users (including offline users) (optionally, within specified role)
 
 \`${settings.bot.command.discord} reactdrop <amount> [<time>] [<emoji>]\`
-Performs a react airdrop with the amount, optionally within custom time, optionally using a custom-supplied emoji. <time> parameter accepts time interval expressions in the form of:\`60s\`, \`5m\`, \`1h\`. Default time interval is \`5m\`(5minutes), e.g. \`!arrrtip reactdrop 10 20m\`, \` !arrrtip reactdrop 10 3h :gem:\`
+Performs a react airdrop with the amount, optionally within custom time, optionally using a custom-supplied emoji. <time> parameter accepts time interval expressions in the form of:\`60s\`, \`5m\`, \`1h\`. Default time interval is \`5m\`(5minutes), e.g. \`!arrrtip reactdrop 10 20m\`, \`!arrrtip reactdrop 10 3h 😃\`
   `)
   .setTimestamp()
   .setFooter(settings.bot.name, settings.coin.logo);
