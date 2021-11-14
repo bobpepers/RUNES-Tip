@@ -1,4 +1,5 @@
 /* eslint-disable import/prefer-default-export */
+import settings from '../../config/settings';
 
 export const telegramDepositConfirmedMessage = (amount) => {
   const result = `Deposit Confirmed 
