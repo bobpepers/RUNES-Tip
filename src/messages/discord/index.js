@@ -1,9 +1,5 @@
-require('dotenv').config();
 const { MessageEmbed } = require('discord.js');
-import settings from '../../config/settings';
-//import setting from '../../config/settings'
-
-
+const settings = require('../../config/settings');
 
 export const coinInfoMessage = (blockHeight, priceInfo) => {
   const result = new MessageEmbed()
@@ -391,45 +387,35 @@ export const warnDirectMessage = (userId, title) => {
 export const helpMessage = new MessageEmbed()
   .setColor(settings.bot.color)
   .setTitle(`${settings.bot.name} Help`)
-  .setDescription(`\`\`\`
-${settings.bot.command.discord}
-\`\`\`
+  .setDescription(`\`${settings.bot.command.discord}\`
 Displays this message
 
-\`\`\`
-${settings.bot.command.discord} help
-\`\`\`
+\`${settings.bot.command.discord} help\`
 Displays this message
 
-\`\`\`
-${settings.bot.command.discord} balance
-\`\`\`
+\`${settings.bot.command.discord} info\`
+Displays coin info
+
+\`${settings.bot.command.discord} balance\`
 Displays your balance
 
-\`\`\`
-${settings.bot.command.discord} deposit
-\`\`\`
+\`${settings.bot.command.discord} deposit\`
 Displays your deposit address
 
-\`\`\`
-${settings.bot.command.discord} withdraw <address> <amount|all> 
-\`\`\`
+\`${settings.bot.command.discord} withdraw <address> <amount|all> \`
 Withdraws the entered amount to a ${settings.coin.name} address of your choice
 
-\`\`\`
-${settings.bot.command.discord} <@user> <amount|all>
-\`\`\`
+\`${settings.bot.command.discord} <@user> <amount|all>\`
 Tips the @ mentioned user with the desired amount
 
-\`\`\`
-${settings.bot.command.discord} rain <amount|all> [<@role>]
-\`\`\`
+\`${settings.bot.command.discord} rain <amount|all>\`
 Rains the desired amount onto all online users (optionally, within specified role)
 
-\`\`\`
-${settings.bot.command.discord} flood <amount|all> [<@role>]
-\`\`\`
+\`${settings.bot.command.discord} flood <amount|all>\`
 Floods the desired amount onto all users (including offline users) (optionally, within specified role)
+
+\`${settings.bot.command.discord} reactdrop <amount> [<time>] [<emoji>]\`
+Performs a react airdrop with the amount, optionally within custom time, optionally using a custom-supplied emoji. <time> parameter accepts time interval expressions in the form of:\`60s\`, \`5m\`, \`1h\`. Default time interval is \`5m\`(5minutes), e.g. \`!arrrtip reactdrop 10 20m\`, \` !arrrtip reactdrop 10 3h :gem:\`
   `)
   .setTimestamp()
   .setFooter(settings.bot.name, settings.coin.logo);

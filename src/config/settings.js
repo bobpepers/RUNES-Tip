@@ -6,7 +6,7 @@ module.exports = {
     command: {
       discord: "!runestip",
       telegram: "runestip",
-    }
+    },
   }, 
   coin: {
     name: "Runebase", // Supported names for setting (Runebase, Pirate) // default fallback settings are Runebase
@@ -32,7 +32,7 @@ module.exports = {
       "https://stakecenter.co/client/exchange/DOGE/RUNES",
       "https://stakecenter.co/client/exchange/RDD/RUNES",
       "https://www.localrunes.com",
-    ]
+    ],
   },
   fee: {
     withdrawal: 1e7,  
