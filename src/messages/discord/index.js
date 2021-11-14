@@ -477,6 +477,8 @@ Tips a specified number (max: 50) random lucky online users with part of the amo
 
 \`${settings.bot.command.discord} reactdrop <amount> [<time>] [<emoji>]\`
 Performs a react airdrop with the amount, optionally within custom time, optionally using a custom-supplied emoji. <time> parameter accepts time interval expressions in the form of:\`60s\`, \`5m\`, \`1h\`. Default time interval is \`5m\`(5minutes), e.g. \`!arrrtip reactdrop 10 20m\`, \`!arrrtip reactdrop 10 3h 😃\`
-  `)
+
+**Like the bot?**
+[Invite it to your server](${settings.bot.url.discord})`)
   .setTimestamp()
   .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);

@@ -3,7 +3,7 @@ import db from '../../models';
 import {
   invalidAmountMessage,
   insufficientBalanceMessage,
-  minimumTipMessage,
+  minimumMessage,
   unableToFindUserTipMessage,
   userNotFoundMessage,
   tipSuccessMessage,
@@ -51,7 +51,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
     if (amount % 1 !== 0) {
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Tip')] });
     } else if (amount < Number(settings.min.discord.tip)) {
-      await message.channel.send({ embeds: [minimumTipMessage(message)] });
+      await message.channel.send({ embeds: [minimumMessage(message, 'Tip')] });
     } else {
       const findUserToTip = await db.user.findOne({
         where: {

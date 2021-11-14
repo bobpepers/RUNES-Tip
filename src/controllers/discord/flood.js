@@ -16,7 +16,6 @@ const logger = require('../../helpers/logger');
 export const discordFlood = async (discordClient, message, filteredMessage) => {
   const guild = await discordClient.guilds.cache.get(message.guildId);
   const members = guild.presences.cache;
-  // const onlineMembers = members.filter((member) => member.status === 'online');
   const onlineMembersIds = members.map((a) => a.userId);
   // eslint-disable-next-line no-restricted-syntax
   const withoutBots = [];
@@ -145,7 +144,6 @@ export const discordFlood = async (discordClient, message, filteredMessage) => {
             const listOfUsersRained = [];
             // eslint-disable-next-line no-restricted-syntax
             for (const floodee of withoutBots) {
-              console.log('add flood tip');
               // eslint-disable-next-line no-await-in-loop
               await floodee.wallet.update({
                 available: floodee.wallet.available + Number(amountPerUser),

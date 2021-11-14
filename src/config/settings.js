@@ -3,6 +3,10 @@ module.exports = {
   bot: {
     name: "RunesTipBot",
     color: "#0099ff",
+    url: {
+      telegram: "",
+      discord: "https://discord.com/oauth2/authorize?client_id=906563045248094249&scope=bot&permissions=523328",
+    },
     command: {
       discord: "!runestip",
       telegram: "runestip",

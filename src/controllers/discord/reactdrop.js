@@ -18,7 +18,7 @@ import settings from '../../config/settings';
 const svgCaptcha = require('svg-captcha');
 const BigNumber = require('bignumber.js');
 const { Transaction, Op } = require('sequelize');
-const { MessageAttachment, MessageCollector } = require('discord.js');
+const { MessageAttachment, MessageCollector, MessageActionRow, MessageButton } = require('discord.js');
 const { AlgebraicCaptcha } = require('algebraic-captcha');
 const emojiCompact = require('../../config/emoji.json');
 const logger = require('../../helpers/logger');
@@ -174,7 +174,33 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
                   lock: t.LOCK.UPDATE,
                   transaction: t,
                 });
-                m.react('✔️');
+                const reactDropRecord = await db.reactdrop.findOne({
+                  where: {
+                    id: findReactTip.reactdropId,
+                  },
+                  include: [
+                    {
+                      model: db.group,
+                      as: 'group',
+                    },
+                    {
+                      model: db.channel,
+                      as: 'channel',
+                    },
+                  ],
+                  lock: t.LOCK.UPDATE,
+                  transaction: t,
+                })
+                
+                const row = new MessageActionRow().addComponents(
+                    new MessageButton()
+                      .setLabel('Back to ReactDrop')
+                      .setStyle('LINK')
+                      .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`)
+                  ); 
+
+                await m.react('✅');
+                await collector.send({ content: '\u200b', components: [row] });
               } else {
                 await findReactTip.update({
                   status: 'failed',
@@ -182,7 +208,31 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
                   lock: t.LOCK.UPDATE,
                   transaction: t,
                 });
+                const reactDropRecord = await db.reactdrop.findOne({
+                  where: {
+                    id: findReactTip.reactdropId,
+                  },
+                  include: [
+                    {
+                      model: db.group,
+                      as: 'group',
+                    },
+                    {
+                      model: db.channel,
+                      as: 'channel',
+                    },
+                  ],
+                  lock: t.LOCK.UPDATE,
+                  transaction: t,
+                })
+                const row = new MessageActionRow().addComponents(
+                    new MessageButton()
+                      .setLabel('Back to ReactDrop')
+                      .setStyle('LINK')
+                      .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`)
+                  ); 
                 m.react('❌');
+                await collector.send({ content: '\u200b', components: [row] });
               }
               t.afterCommit(() => {
                 console.log('done');

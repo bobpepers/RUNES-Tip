@@ -5,7 +5,7 @@ import {
   invalidAmountMessage,
   insufficientBalanceMessage,
   walletNotFoundMessage,
-  minimumRainMessage,
+  minimumMessage,
   AfterThunderSuccess,
 } from '../../messages/discord';
 import settings from '../../config/settings';
