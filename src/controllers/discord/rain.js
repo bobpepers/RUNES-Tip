@@ -7,6 +7,7 @@ import {
   minimumRainMessage,
   AfterRainSuccessMessage,
 } from '../../messages/discord';
+import settings from '../../config/settings';
 
 const BigNumber = require('bignumber.js');
 const { Transaction, Op } = require('sequelize');
@@ -56,7 +57,7 @@ export const discordRain = async (discordClient, message, filteredMessage) => {
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
-    if (amount < Number(process.env.MINIMUM_RAIN)) {
+    if (amount < Number(settings.min.discord.rain)) {
       await message.channel.send({ embeds: [minimumRainMessage(message)] });
     } else if (amount % 1 !== 0) {
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Rain')] });

@@ -1,13 +1,11 @@
 /* eslint-disable import/prefer-default-export */
 import { helpMessage } from '../../messages/telegram';
-
-require('dotenv').config();
-
+import settings from '../../config/settings';
 const { Markup } = require('telegraf');
 
 export const fetchHelp = async (ctx) => {
   ctx.replyWithHTML(helpMessage(), Markup.inlineKeyboard(
-    process.env.CURRENCY_NAME === 'Runebase'
+    settings.coin.name === 'Runebase'
       ? [
         [Markup.button.callback('Balance', 'Balance'),
           Markup.button.callback('Price', 'Price')],

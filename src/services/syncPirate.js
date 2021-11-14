@@ -9,6 +9,7 @@ import {
 import {
   discordDepositConfirmedMessage,
 } from '../messages/discord';
+import settings from '../config/settings';
 
 const _ = require('lodash');
 const { Transaction, Op } = require('sequelize');
@@ -100,7 +101,7 @@ const syncTransactions = async (discordClient, telegramClient) => {
       let updatedTransaction;
       let updatedWallet;
       console.log(transaction.confirmations);
-      if (transaction.confirmations < Number(process.env.MINIMUM_TRANSACTION_CONFIRMATIONS)) {
+      if (transaction.confirmations < Number(settings.min.confirmations)) {
         updatedTransaction = await trans.update({
           confirmations: transaction.confirmations,
         }, {
@@ -108,13 +109,13 @@ const syncTransactions = async (discordClient, telegramClient) => {
           lock: t.LOCK.UPDATE,
         });
       }
-      if (transaction.confirmations >= Number(process.env.MINIMUM_TRANSACTION_CONFIRMATIONS)) {
+      if (transaction.confirmations >= Number(settings.min.confirmations)) {
         // transaction.details.forEach(async (detail) => {
 
         if (transaction.sent.length > 0 && trans.type === 'send') {
           console.log(transaction.sent[0].value);
           console.log(((transaction.sent[0].value * 1e8)));
-          const prepareLockedAmount = ((transaction.sent[0].value * 1e8) - Number(process.env.MINIMUM_WITHDRAWAL));
+          const prepareLockedAmount = ((transaction.sent[0].value * 1e8) - Number(settings.fee.withdrawal));
           const removeLockedAmount = Math.abs(prepareLockedAmount);
           console.log('removeLockedAmount');
           console.log('removeLockedAmount');

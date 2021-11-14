@@ -7,6 +7,8 @@ const { getInstance } = require('../services/rclient');
 const { discordWithdrawalAcceptedMessage, discordUserWithdrawalRejectMessage } = require('../messages/discord');
 const { withdrawalAcceptedAdminMessage, withdrawalAcceptedMessage } = require('../messages/telegram');
 
+import settings from '../config/settings';
+
 require('dotenv').config();
 
 /**
@@ -109,13 +111,13 @@ export const withdrawTelegramAdminAccept = async (bot, ctx, adminTelegramId, wit
       ctx.reply('Transaction not found');
     }
     if (transaction) {
-      const amount = ((transaction.amount - Number(process.env.WITHDRAWAL_FEE)) / 1e8);
+      const amount = ((transaction.amount - Number(settings.fee.withdrawal)) / 1e8);
       let response;
 
       // Add New Currency here (default fallback is Runebase)
-      if (process.env.CURRENCY_NAME === 'Runebase') {
+      if (settings.coin.name === 'Runebase') {
         response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
-      } else if (process.env.CURRENCY_NAME === 'Pirate') {
+      } else if (settings.coin.name === 'Pirate') {
         const preResponse = await getInstance().zSendMany(
           process.env.PIRATE_MAIN_ADDRESS,
           [{ address: transaction.to_from, amount: amount.toFixed(8) }],

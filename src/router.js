@@ -48,6 +48,11 @@ import {
 } from './controllers/discord/group';
 
 import {
+  discordCoinInfo,
+} from './controllers/discord/info';
+
+
+import {
   fetchHelp,
 } from './controllers/telegram/help';
 
@@ -73,6 +78,7 @@ import fetchPriceInfo from './controllers/telegram/price';
 import {
   fetchExchangeList,
 } from './controllers/telegram/exchanges';
+import settings from './config/settings';
 
 require('dotenv').config();
 
@@ -96,7 +102,7 @@ const limitConfig = {
 };
 
 const router = (app, discordClient, telegramClient) => {
-  if (process.env.CURRENCY_NAME === 'Pirate') {
+  if (settings.coin.name === 'Pirate') {
     app.post('/api/rpc/walletnotify',
       walletNotifyPirate,
       async (req, res) => {
@@ -147,7 +153,7 @@ const router = (app, discordClient, telegramClient) => {
       await queue.add(() => lastSeenDiscordTask);
     }
 
-    if (!message.content.startsWith(process.env.DISCORD_BOT_COMMAND) || message.author.bot) return;
+    if (!message.content.startsWith(settings.bot.command.discord) || message.author.bot) return;
     const filteredMessageTelegram = message.content.split(' ');
     const filteredMessageDiscord = filteredMessageTelegram.filter((el) => el !== '');
 
@@ -164,6 +170,10 @@ const router = (app, discordClient, telegramClient) => {
 
     if (filteredMessageDiscord[1].toLowerCase() === 'help') {
       const task = await discordHelp(message);
+      await queue.add(() => task);
+    }
+    if (filteredMessageDiscord[1].toLowerCase() === 'info') {
+      const task = await discordCoinInfo(message);
       await queue.add(() => task);
     }
     console.log(filteredMessageDiscord);
@@ -217,9 +227,9 @@ const router = (app, discordClient, telegramClient) => {
   app.post('/api/chaininfo/block',
     (req, res) => {
       console.log('new block found');
-      if (process.env.CURRENCY_NAME === 'Runebase') {
+      if (settings.coin.name === 'Runebase') {
         startRunebaseSync(discordClient, telegramClient);
-      } else if (process.env.CURRENCY_NAME === 'Pirate') {
+      } else if (settings.coin.name === 'Pirate') {
         startPirateSync(discordClient, telegramClient);
       } else {
         startRunebaseSync(discordClient, telegramClient);
@@ -438,7 +448,7 @@ const router = (app, discordClient, telegramClient) => {
     })();
   });
 
-  telegramClient.command(process.env.TELEGRAM_BOT_COMMAND, (ctx) => {
+  telegramClient.command(settings.bot.command.telegram, (ctx) => {
     const filteredMessageTelegram = ctx.update.message.text.split(' ');
     console.log(filteredMessageTelegram);
 
@@ -576,7 +586,7 @@ const router = (app, discordClient, telegramClient) => {
       await queue.add(() => groupTask);
       const task = await createUpdateUser(ctx);
       await queue.add(() => task);
-      if (process.env.CURRENCY_NAME === 'Runebase') {
+      if (settings.coin.name === 'Runebase') {
         if (ctx.update.message.chat.id === Number(runesGroup)) {
           const taskReferred = await createReferral(ctx, telegramClient, runesGroup);
           await queue.add(() => taskReferred);

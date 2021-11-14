@@ -9,6 +9,7 @@ import {
   insufficientBalanceMessage,
   reviewMessage,
 } from '../../messages/discord';
+import settings from '../../config/settings';
 
 require('dotenv').config();
 
@@ -54,7 +55,7 @@ export const withdrawDiscordCreate = async (message, filteredMessage) => {
       amount = new BigNumber(filteredMessage[3]).times(1e8).toNumber();
     }
 
-    if (amount < Number(process.env.MINIMUM_WITHDRAWAL)) { // smaller then 2 RUNES
+    if (amount < Number(settings.min.withdrawal)) { // smaller then 2 RUNES
       await message.author.send({ embeds: [minimumWithdrawalMessage(message)] });
     }
 
@@ -64,9 +65,9 @@ export const withdrawDiscordCreate = async (message, filteredMessage) => {
 
     // Add new currencies here (default fallback Runebase)
     let isValidAddress = false;
-    if (process.env.CURRENCY_NAME === 'Runebase') {
+    if (settings.coin.name === 'Runebase') {
       isValidAddress = await getInstance().utils.isRunebaseAddress(filteredMessage[2]);
-    } else if (process.env.CURRENCY_NAME === 'Pirate') {
+    } else if (settings.coin.name === 'Pirate') {
       isValidAddress = await getInstance().utils.isPirateAddress(filteredMessage[2]);
     } else {
       isValidAddress = await getInstance().utils.isRunebaseAddress(filteredMessage[2]);
@@ -76,7 +77,7 @@ export const withdrawDiscordCreate = async (message, filteredMessage) => {
     if (!isValidAddress) {
       await message.author.send({ embeds: [invalidAddressMessage(message)] });
     }
-    if (amount >= Number(process.env.MINIMUM_WITHDRAWAL) && amount % 1 === 0 && isValidAddress) {
+    if (amount >= Number(settings.min.withdrawal) && amount % 1 === 0 && isValidAddress) {
       const user = await db.user.findOne({
         where: {
           user_id: `discord-${message.author.id}`,

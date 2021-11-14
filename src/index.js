@@ -18,6 +18,7 @@ import { reactDropMessage } from './messages/discord';
 import { listenReactDrop } from './controllers/discord/reactdrop';
 
 import db from './models';
+import settings from './config/settings'
 
 logger.info('logger loader');
 const schedule = require('node-schedule');
@@ -25,16 +26,11 @@ const { startRunebaseSync } = require('./services/syncRunebase');
 const { startPirateSync } = require('./services/syncPirate');
 const { consolidatePirate } = require('./helpers/pirate/consolidate');
 
-// const {
-//  setblockchainNodeEnv,
-// } = require('./services/runebaseConfig');
-
 // const cookieParser = require('cookie-parser');
 
 const port = process.env.PORT || 8080;
 
 const app = express();
-// setblockchainNodeEnv('Mainnet', process.env.RUNEBASE_ENV_PATH);
 
 const server = http.createServer(app);
 
@@ -83,19 +79,18 @@ const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 router(app, discordClient, telegramClient);
 
 server.listen(port);
-// setRunebaseEnv('Mainnet', process.env.RUNEBASE_ENV_PATH);
 
 (async function () {
   await telegramClient.launch();
   await discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
-  if (process.env.CURRENCY_NAME === 'Runebase') {
+  if (settings.coin.name === 'Runebase') {
     await startRunebaseSync(discordClient, telegramClient);
     await patchRunebaseDeposits();
 
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
       patchRunebaseDeposits();
     });
-  } else if (process.env.CURRENCY_NAME === 'Pirate') {
+  } else if (settings.coin.name === 'Pirate') {
     await startPirateSync(discordClient, telegramClient);
     await patchPirateDeposits();
     await consolidatePirate();

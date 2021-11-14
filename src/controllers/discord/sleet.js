@@ -8,6 +8,7 @@ import {
   minimumSleetMessage,
   AfterSleetSuccessMessage,
 } from '../../messages/discord';
+import settings from '../../config/settings';
 
 const BigNumber = require('bignumber.js');
 const { Transaction, Op } = require('sequelize');
@@ -18,7 +19,7 @@ export const discordSleet = async (client, message, filteredMessage) => {
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
-    if (amount < Number(process.env.MINIMUM_SLEET)) {
+    if (amount < Number(settings.min.discord.sleet)) {
       await message.channel.send({ embeds: [minimumSleetMessage(message)] });
     } else
     if (amount % 1 !== 0) {

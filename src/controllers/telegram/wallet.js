@@ -20,8 +20,8 @@ import {
   depositAddressNotFoundMessage,
   balanceMessage,
 } from '../../messages/telegram';
+import settings from '../../config/settings';
 
-require('dotenv').config();
 
 const { Transaction, Op } = require('sequelize');
 const BigNumber = require('bignumber.js');
@@ -34,7 +34,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
   }, async (t) => {
     const amount = new BigNumber(rainAmount).times(1e8).toNumber();
 
-    if (amount < Number(process.env.MINIMUM_RAIN)) { // smaller then 2 RUNES
+    if (amount < Number(settings.min.telegram.rain)) {
       ctx.reply(minimumRainMessage());
     }
     if (amount % 1 !== 0) {
@@ -177,7 +177,7 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const amount = new BigNumber(tipAmount).times(1e8).toNumber();
-    if (amount < Number(process.env.MINIMUM_TIP)) { // smaller then 2 RUNES
+    if (amount < Number(settings.min.telegram.tip)) {
       ctx.reply(minimumTipMessage());
     }
     if (amount % 1 !== 0) {
@@ -208,7 +208,7 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
       ctx.reply(unableToFindUserMessage());
     }
 
-    if (amount >= Number(process.env.MINIMUM_TIP) && amount % 1 === 0 && findUserToTip) {
+    if (amount >= Number(settings.min.telegram.tip) && amount % 1 === 0 && findUserToTip) {
       const user = await db.user.findOne({
         where: {
           user_id: `telegram-${ctx.update.message.from.id}`,
@@ -253,7 +253,7 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
           });
 
           ctx.reply(tipSuccessMessage(user, amount, findUserToTip));
-          logger.info(`Success tip Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} to ${findUserToTip.username} with ${amount / 1e8} ${process.env.CURRENCY_SYMBOL}`);
+          logger.info(`Success tip Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} to ${findUserToTip.username} with ${amount / 1e8} ${settings.coin.ticker}`);
         }
       }
     }
@@ -274,7 +274,7 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const amount = new BigNumber(withdrawalAmount).times(1e8).toNumber();
-    if (amount < Number(process.env.MINIMUM_WITHDRAWAL)) { // smaller then 2 RUNES
+    if (amount < Number(settings.min.withdrawal)) {
       ctx.reply(minimumWithdrawalMessage());
     }
     if (amount % 1 !== 0) {
@@ -283,9 +283,9 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
 
     // Add new currencies here (default fallback Runebase)
     let isValidAddress = false;
-    if (process.env.CURRENCY_NAME === 'Runebase') {
+    if (settings.coin.name === 'Runebase') {
       isValidAddress = await getInstance().utils.isRunebaseAddress(withdrawalAddress);
-    } else if (process.env.CURRENCY_NAME === 'Pirate') {
+    } else if (settings.coin.name === 'Pirate') {
       isValidAddress = await getInstance().utils.isPirateAddress(withdrawalAddress);
     } else {
       isValidAddress = await getInstance().utils.isRunebaseAddress(withdrawalAddress);
@@ -295,7 +295,7 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
       ctx.reply(invalidAddressMessage());
     }
 
-    if (amount >= Number(process.env.MINIMUM_WITHDRAWAL) && amount % 1 === 0 && isValidAddress) {
+    if (amount >= Number(settings.min.withdrawal) && amount % 1 === 0 && isValidAddress) {
       const user = await db.user.findOne({
         where: {
           user_id: `telegram-${ctx.update.message.from.id}`,

@@ -8,6 +8,7 @@ import {
   userNotFoundMessage,
   tipSuccessMessage,
 } from '../../messages/discord';
+import settings from '../../config/settings';
 
 const BigNumber = require('bignumber.js');
 const { Transaction, Op } = require('sequelize');
@@ -49,7 +50,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
 
     if (amount % 1 !== 0) {
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Tip')] });
-    } else if (amount < Number(process.env.MINIMUM_TIP)) { // smaller then 0.01 RUNES
+    } else if (amount < Number(settings.min.discord.tip)) {
       await message.channel.send({ embeds: [minimumTipMessage(message)] });
     } else {
       const findUserToTip = await db.user.findOne({
@@ -75,7 +76,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
         await message.channel.send({ embeds: [unableToFindUserTipMessage] });
       }
 
-      if (amount >= Number(process.env.MINIMUM_TIP) && amount % 1 === 0 && findUserToTip) {
+      if (amount >= Number(settings.min.discord.tip) && amount % 1 === 0 && findUserToTip) {
         const user = await db.user.findOne({
           where: {
             user_id: `discord-${message.author.id}`,
@@ -124,7 +125,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
             const userIdTipped = findUserToTip.user_id.replace('discord-', '');
 
             await message.channel.send({ embeds: [tipSuccessMessage(userId, userIdTipped, amount)] });
-            logger.info(`Success tip Requested by: ${user.user_id}-${user.username} to ${findUserToTip.user_id}-${findUserToTip.username} with ${amount / 1e8} ${process.env.CURRENCY_SYMBOL}`);
+            logger.info(`Success tip Requested by: ${user.user_id}-${user.username} to ${findUserToTip.user_id}-${findUserToTip.username} with ${amount / 1e8} ${settings.coin.ticker}`);
           }
         }
       }

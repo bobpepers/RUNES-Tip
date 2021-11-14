@@ -2,6 +2,7 @@ import db from '../../models';
 
 const { Sequelize, Transaction, Op } = require('sequelize');
 const { getInstance } = require('../../services/rclient');
+import settings from '../../config/settings';
 /**
  * Fetch Wallet
  */
@@ -83,7 +84,7 @@ export const createUpdateDiscordUser = async (message) => {
           lock: t.LOCK.UPDATE,
         });
         message.author.send(`Welcome ${message.author.username}, we created a wallet for you.
-Type "${process.env.DISCORD_BOT_COMMAND} help" for usage info`);
+Type "${settings.bot.command.discord} help" for usage info`);
         // ctx.reply(``);
       }
     }

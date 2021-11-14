@@ -2,32 +2,32 @@
 
 export const telegramDepositConfirmedMessage = (amount) => {
   const result = `Deposit Confirmed 
-${amount} ${process.env.CURRENCY_SYMBOL} has been credited to your wallet`;
+${amount} ${settings.coin.ticker} has been credited to your wallet`;
   return result;
 };
 
 export const telegramIncomingDepositMessage = (res) => {
-  const result = `incoming deposit detected for ${res.locals.amount} ${process.env.CURRENCY_SYMBOL}
-Balance will be reflected in your wallet in ~${process.env.MINIMUM_TRANSACTION_CONFIRMATIONS}+ confirmations
-${process.env.EXPLORER_URL}/tx/${res.locals.transaction[0].txid}`;
+  const result = `incoming deposit detected for ${res.locals.amount} ${settings.coin.ticker}
+Balance will be reflected in your wallet in ~${settings.min.confirmations}+ confirmations
+${settings.coin.explorer}/tx/${res.locals.transaction[0].txid}`;
   return result;
 };
 
 export const withdrawalAcceptedAdminMessage = (updatedTrans) => {
   const result = `Withdrawal Accepted
-${process.env.EXPLORER_URL}/tx/${updatedTrans.txid}`;
+${settings.coin.explorer}/tx/${updatedTrans.txid}`;
   return result;
 };
 
 export const withdrawalAcceptedMessage = (transaction, updatedTrans) => {
   const result = `${transaction.address.wallet.user.username}'s withdrawal has been accepted
-  ${process.env.EXPLORER_URL}/tx/${updatedTrans.txid}`;
+  ${settings.coin.explorer}/tx/${updatedTrans.txid}`;
   return result;
 };
 
 export const balanceMessage = (telegramUserName, user, priceInfo) => {
-  const result = `${telegramUserName}'s current available balance: ${user.wallet.available / 1e8} ${process.env.CURRENCY_SYMBOL}
-${telegramUserName}'s current locked balance: ${user.wallet.locked / 1e8} ${process.env.CURRENCY_SYMBOL}
+  const result = `${telegramUserName}'s current available balance: ${user.wallet.available / 1e8} ${settings.coin.ticker}
+${telegramUserName}'s current locked balance: ${user.wallet.locked / 1e8} ${settings.coin.ticker}
 Estimated value of ${telegramUserName}'s balance: $${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(2)}`;
   return result;
 };
@@ -48,12 +48,12 @@ export const somethingWentWrongMessage = () => {
 };
 
 export const tipSuccessMessage = (user, amount, findUserToTip) => {
-  const result = `@${user.username} tipped ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} to @${findUserToTip.username}`;
+  const result = `@${user.username} tipped ${amount / 1e8} ${settings.coin.ticker} to @${findUserToTip.username}`;
   return result;
 };
 
 export const minimumTipMessage = () => {
-  const result = `Minimum Tip is ${Number(process.env.MINIMUM_TIP) / 1e8} ${process.env.CURRENCY_SYMBOL}`;
+  const result = `Minimum Tip is ${Number(settings.min.telegram.tip) / 1e8} ${settings.coin.ticker}`;
   return result;
 };
 
@@ -68,12 +68,12 @@ export const rainErrorMessage = () => {
 };
 
 export const rainSuccessMessage = (amount, usersToRain, amountPerUser) => {
-  const result = `Raining ${amount / 1e8} ${process.env.CURRENCY_SYMBOL} on ${usersToRain.length} active users -- ${amountPerUser / 1e8} ${process.env.CURRENCY_SYMBOL} each`;
+  const result = `Raining ${amount / 1e8} ${settings.coin.ticker} on ${usersToRain.length} active users -- ${amountPerUser / 1e8} ${settings.coin.ticker} each`;
   return result;
 };
 
 export const minimumRainMessage = () => {
-  const result = `Minimum Rain is ${Number(process.env.MINIMUM_RAIN) / 1e8} ${process.env.CURRENCY_SYMBOL}`;
+  const result = `Minimum Rain is ${Number(settings.min.telegram.rain) / 1e8} ${settings.coin.ticker}`;
   return result;
 };
 
@@ -108,7 +108,7 @@ export const invalidAmountMessage = () => {
 };
 
 export const minimumWithdrawalMessage = () => {
-  const result = `Minimum ${process.env.CURRENCY_SYMBOL} is ${Number(process.env.MINIMUM_WITHDRAWAL) / 1e8} ${process.env.CURRENCY_SYMBOL}`;
+  const result = `Minimum ${settings.coin.ticker} is ${Number(settings.min.withdrawal) / 1e8} ${settings.coin.ticker}`;
   return result;
 };
 
@@ -120,71 +120,71 @@ export const depositAddressMessage = (telegramUserName, user) => {
 
 export const welcomeMessage = (ctx) => {
   const result = `Welcome ${ctx.update.message.from.username}, we created a wallet for you.
-Type "/${process.env.TELEGRAM_BOT_COMMAND} help" for usage info`;
+Type "/${setting.bot.command.telegram} help" for usage info`;
   return result;
 };
 
 export const helpMessage = () => {
   const result = `<b>Tipbot Help</b>
       
-/${process.env.TELEGRAM_BOT_COMMAND}
+/${setting.bot.command.telegram}
 <code>Display this message</code>
     
       
-/${process.env.TELEGRAM_BOT_COMMAND} help
+/${setting.bot.command.telegram} help
 /help
 <code>Display this message</code>
     
       
-/${process.env.TELEGRAM_BOT_COMMAND} price
+/${setting.bot.command.telegram} price
 /price
-<code>Display current ${process.env.CURRENCY_SYMBOL} price</code>
+<code>Display current ${settings.coin.ticker} price</code>
     
       
-/${process.env.TELEGRAM_BOT_COMMAND} exchanges
+/${setting.bot.command.telegram} exchanges
 /exchanges
-<code>Display list of exchanges to trade ${process.env.CURRENCY_SYMBOL}</code>
+<code>Display list of exchanges to trade ${settings.coin.ticker}</code>
     
     
-/${process.env.TELEGRAM_BOT_COMMAND} balance
+/${setting.bot.command.telegram} balance
 /balance
 <code>Display wallet balance</code>
     
       
-/${process.env.TELEGRAM_BOT_COMMAND} tip [@user] [amount]
+/${setting.bot.command.telegram} tip [@user] [amount]
 /tip [@user] [amount]
 <code>Tips the @ mentioned user with the desired amount, e.g.</code>
-/${process.env.TELEGRAM_BOT_COMMAND} tip @Bagosan 1.00
+/${setting.bot.command.telegram} tip @Bagosan 1.00
 /tip @Bagosan 1.00
     
       
-/${process.env.TELEGRAM_BOT_COMMAND} rain [amount]
+/${setting.bot.command.telegram} rain [amount]
 /rain [amount]
 <code>Rains the desired amount onto all active users (active time 3 hours), e.g.</code>
-/${process.env.TELEGRAM_BOT_COMMAND} rain 1.00
+/${setting.bot.command.telegram} rain 1.00
 /rain 1.00
     
       
-/${process.env.TELEGRAM_BOT_COMMAND} deposit
+/${setting.bot.command.telegram} deposit
 /deposit
 <code>Displays your deposit address</code>
     
       
-/${process.env.TELEGRAM_BOT_COMMAND} withdraw [address] [amount]
+/${setting.bot.command.telegram} withdraw [address] [amount]
 /withdraw [address] [amount]
-<code>Withdraws the entered amount to a ${process.env.CURRENCY_SYMBOL} address of your choice, e.g.</code>
-/${process.env.TELEGRAM_BOT_COMMAND} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
+<code>Withdraws the entered amount to a ${settings.coin.ticker} address of your choice, e.g.</code>
+/${setting.bot.command.telegram} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
 /withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
-<code>Note: Minimal amount to withdraw: ${process.env.MINIMUM_WITHDRAWAL / 1e8} ${process.env.CURRENCY_SYMBOL}. A withdrawal fee of ${process.env.WITHDRAWAL_FEE / 1e8} ${process.env.CURRENCY_SYMBOL} will be automatically deducted from the amount.</code>
+<code>Note: Minimal amount to withdraw: ${settings.min.withdrawal / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${settings.fee.withdrawal / 1e8} ${settings.coin.ticker} will be automatically deducted from the amount.</code>
       
-${process.env.CURRENCY_NAME === 'Runebase'
-&& `/${process.env.TELEGRAM_BOT_COMMAND} referral
+${settings.coin.name === 'Runebase'
+&& `/${setting.bot.command.telegram} referral
 /referral
 <code>Displays your referral count</code>
-<code>Note: We reward members for every 10 new members they add. current reward = 20 ${process.env.CURRENCY_SYMBOL}</code>
+<code>Note: We reward members for every 10 new members they add. current reward = 20 ${settings.coin.ticker}</code>
       
     
-/${process.env.TELEGRAM_BOT_COMMAND} referral top
+/${setting.bot.command.telegram} referral top
 /top
 <code>Displays referral top 10</code>`}     
 `;
@@ -194,7 +194,7 @@ ${process.env.CURRENCY_NAME === 'Runebase'
 
 export const exchangeListMessage = () => {
   const result = `
-<b><u>Exchanges with ${process.env.CURRENCY_SYMBOL} listed</u></b>
+<b><u>Exchanges with ${settings.coin.ticker} listed</u></b>
   
 <b>Bololex</b>
     

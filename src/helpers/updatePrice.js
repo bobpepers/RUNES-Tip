@@ -1,6 +1,6 @@
 import axios from 'axios';
 import db from '../models';
-
+import settings from '../config/settings';
 const { Sequelize, Transaction, Op } = require('sequelize');
 
 const updatePrice = async () => {
@@ -23,7 +23,7 @@ const updatePrice = async () => {
     }
 
     // Get data from coinpaprika
-    const data = await axios.get(`https://api.coinpaprika.com/v1/tickers/${process.env.CURRENCY_SYMBOL.toLowerCase()}-${process.env.CURRENCY_NAME.toLowerCase()}`);
+    const data = await axios.get(`https://api.coinpaprika.com/v1/tickers/${settings.coin.ticker.toLowerCase()}-${settings.coin.name.toLowerCase()}`);
 
     if (data.data) {
       const priceInfo = await db.priceInfo.findOne({

@@ -12,6 +12,7 @@ import {
   ReactdropCaptchaMessage,
   AfterReactDropSuccessMessage,
 } from '../../messages/discord';
+import settings from '../../config/settings';
 
 const svgCaptcha = require('svg-captcha');
 const BigNumber = require('bignumber.js');
@@ -356,9 +357,9 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
     }
     if (amount % 1 !== 0) {
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'ReactDrop')] });
-    } else if (amount < Number(process.env.MINMUM_REACTDROP)) {
+    } else if (amount < Number(settings.min.discord.reactdrop)) {
       await message.channel.send({ embeds: [minimumTipMessage(message)] });
-    } else if (amount >= Number(process.env.MINMUM_REACTDROP) && amount % 1 === 0) {
+    } else if (amount >= Number(settings.min.discord.reactdrop) && amount % 1 === 0) {
       const user = await db.user.findOne({
         where: {
           user_id: `discord-${message.author.id}`,
@@ -511,7 +512,7 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
                     clearInterval(updateMessage);
                   }
                 }, 5000);
-                logger.info(`Success started reactdrop Requested by: ${user.user_id}-${user.username} with ${amount / 1e8} ${process.env.CURRENCY_SYMBOL}`);
+                logger.info(`Success started reactdrop Requested by: ${user.user_id}-${user.username} with ${amount / 1e8} ${settings.coin.ticker}`);
               }
             }
           }
