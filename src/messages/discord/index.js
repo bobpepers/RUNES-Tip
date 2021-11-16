@@ -78,6 +78,30 @@ export const minimumTimeReactDropMessage = (message) => {
   return result;
 };
 
+export const ignoreMeMessage = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Ignore me')
+    .setDescription(`<@${message.author.id}>, you will no longer be @mentioned while receiving rains, soaks and other mass operations, but will continue to receive coins from them.
+If you wish to be @mentioned, please issue this command again.`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
+export const unIngoreMeMessage = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Ignore me')
+    .setDescription(`<@${message.author.id}>, you will again be @mentioned while receiving rains, soaks and other mass operations.
+If you do not wish to be @mentioned, please issue this command again.`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
 export const discordDepositConfirmedMessage = (amount) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)

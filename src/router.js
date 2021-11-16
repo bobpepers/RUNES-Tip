@@ -67,6 +67,10 @@ import {
 } from './controllers/telegram/help';
 
 import {
+  setIgnoreMe,
+} from './controllers/discord/ignore';
+
+import {
   discordHelp,
 } from './controllers/discord/help';
 
@@ -185,6 +189,10 @@ export const router = (app, discordClient, telegramClient) => {
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'info') {
       const task = await discordCoinInfo(message);
+      await queue.add(() => task);
+    }
+    if (filteredMessageDiscord[1].toLowerCase() === 'ignoreme') {
+      const task = await setIgnoreMe(message);
       await queue.add(() => task);
     }
     console.log(filteredMessageDiscord);
