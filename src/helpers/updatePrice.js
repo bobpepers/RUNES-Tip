@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { config } from "dotenv";
 import db from '../models';
 import settings from '../config/settings';
 // import { Sequelize, Transaction, Op } from "sequelize";
-
+config();
 export const updatePrice = async () => {
   try {
     const createFirstRecord = await db.priceInfo.findOrCreate({

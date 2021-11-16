@@ -2,7 +2,7 @@
 
 import PQueue from 'p-queue';
 import _ from "lodash";
-import { Transaction, Op } from "sequelize";
+import { Transaction } from "sequelize";
 import db from '../models';
 // const { isMainnet } = require('./runebaseConfig');
 import {
@@ -256,7 +256,7 @@ const sync = async (discordClient, telegramClient) => {
   const currentBlockCount = Math.max(0, await getInstance().getBlockCount());
   const currentBlockHash = await getInstance().getBlockHash(currentBlockCount);
   const currentBlockTime = (await getInstance().getBlock(currentBlockHash)).time;
-  let startBlock = Number(process.env.START_SYNC_HEIGHT);
+  let startBlock = Number(settings.startSyncBlock);
 
   // const blocks = await db.Blocks.cfind({}).sort({ blockNum: -1 }).limit(1).exec();
   const blocks = await db.block.findAll({

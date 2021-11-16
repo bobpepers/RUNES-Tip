@@ -1,6 +1,7 @@
 import PQueue from 'p-queue';
-import schedule from "node-schedule";
-import rateLimit from "telegraf-ratelimit";
+// import schedule from "node-schedule";
+// import rateLimit from "telegraf-ratelimit";
+import { config } from "dotenv";
 import walletNotifyRunebase from './helpers/runebase/walletNotify';
 import walletNotifyPirate from './helpers/pirate/walletNotify';
 import {
@@ -8,7 +9,6 @@ import {
   withdrawTelegramAdminAccept,
   withdrawTelegramAdminDecline,
 } from './controllers/admin';
-
 import {
   fetchWalletBalance,
   fetchWalletDepositAddress,
@@ -94,6 +94,8 @@ import logger from "./helpers/logger";
 
 import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";
+
+config();
 
 const queue = new PQueue({ concurrency: 1 });
 

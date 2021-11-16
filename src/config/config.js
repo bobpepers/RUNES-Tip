@@ -1,6 +1,7 @@
 import { config } from "dotenv";
-config();
 import fs from "fs";
+
+config();
 
 module.exports = {
   development: {

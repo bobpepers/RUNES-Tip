@@ -1,7 +1,9 @@
 import { Rweb3 } from "rweb3";
 import { ARRRweb3 } from "arrrweb3";
+import { config } from "dotenv";
 import settings from '../config/settings';
 
+config();
 let instance;
 
 export function createInstance() {

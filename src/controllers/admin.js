@@ -1,12 +1,14 @@
-import { MessageEmbed, MessageAttachment } from "discord.js";
-import { Sequelize, Transaction, Op } from "sequelize";
+// import { MessageEmbed, MessageAttachment } from "discord.js";
+import { Transaction } from "sequelize";
+import { config } from "dotenv";
 import db from '../models';
-
 import { getInstance } from "../services/rclient";
 import { discordWithdrawalAcceptedMessage, discordUserWithdrawalRejectMessage } from "../messages/discord";
 import { withdrawalAcceptedAdminMessage, withdrawalAcceptedMessage } from "../messages/telegram";
 
 import settings from '../config/settings';
+
+config();
 
 /**
  * Create Withdrawal

@@ -3,7 +3,8 @@ import mysql2 from "mysql2";
 import fs from "fs";
 import path from "path";
 import Sequelize from "sequelize";
-import { default as PQueue } from "p-queue";
+import PQueue from "p-queue";
+
 import { config } from "dotenv";
 
 const basename = path.basename(__filename);
@@ -53,4 +54,5 @@ db.queueTransaction = (iso, fn) => sequelize.queue.add(
   () => sequelize.transaction((iso, fn)),
 );
 
-module.exports = db;
+// module.exports = db;
+export default db;

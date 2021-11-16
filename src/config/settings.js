@@ -1,4 +1,5 @@
 module.exports = {
+  startSyncBlock: 500000,
   bot: {
     name: "RunesTipBot",
     color: "#0099ff",

@@ -13,6 +13,7 @@ import cors from "cors";
 import compression from "compression";
 import schedule from "node-schedule";
 
+import { config } from "dotenv";
 import { router } from "./router";
 
 import { updatePrice } from "./helpers/updatePrice";
@@ -29,6 +30,7 @@ import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";
 import { consolidatePirate } from "./helpers/pirate/consolidate";
 
+config();
 // const cookieParser = require('cookie-parser');
 
 const port = process.env.PORT || 8080;

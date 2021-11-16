@@ -1,4 +1,7 @@
+import { config } from "dotenv";
 import { getInstance } from "../../services/rclient";
+
+config();
 
 export async function consolidatePirate() {
   const balances = await getInstance().zGetBalances();

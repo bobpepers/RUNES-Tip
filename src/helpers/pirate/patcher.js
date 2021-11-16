@@ -1,7 +1,9 @@
 import { Transaction } from "sequelize";
+import { config } from "dotenv";
 import db from '../../models';
-
 import { getInstance } from "../../services/rclient";
+
+config();
 
 export async function patchPirateDeposits() {
   const transactions = await getInstance().listTransactions(1000);
