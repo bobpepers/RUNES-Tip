@@ -1,6 +1,6 @@
 import { getInstance } from "../../services/rclient";
 
-async function consolidatePirate() {
+export async function consolidatePirate() {
   const balances = await getInstance().zGetBalances();
   // eslint-disable-next-line no-restricted-syntax
   for (const balance of balances) {
@@ -18,7 +18,3 @@ async function consolidatePirate() {
     }
   }
 }
-
-module.exports = {
-  consolidatePirate,
-};

@@ -295,7 +295,7 @@ const sync = async (discordClient, telegramClient) => {
   );
 };
 
-async function startRunebaseSync(discordClient, telegramClient) {
+export async function startRunebaseSync(discordClient, telegramClient) {
   // const transactions = await getInstance().listTransactions(1000);
   // console.log(transactions);
 
@@ -305,9 +305,3 @@ async function startRunebaseSync(discordClient, telegramClient) {
   // console.log('startSync');
   sync(discordClient, telegramClient);
 }
-
-module.exports = {
-  startRunebaseSync,
-  // calculateSyncPercent,
-  // getAddressBalances,
-};

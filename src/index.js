@@ -16,7 +16,7 @@ import schedule from "node-schedule";
 import { router } from "./router";
 
 import { updatePrice } from "./helpers/updatePrice";
-import logger from "./helpers/logger";
+// import logger from "./helpers/logger";
 
 import { patchRunebaseDeposits } from "./helpers/runebase/patcher";
 import { patchPirateDeposits } from "./helpers/pirate/patcher";

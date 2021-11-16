@@ -302,10 +302,6 @@ const sync = async (discordClient, telegramClient) => {
   );
 };
 
-async function startPirateSync(discordClient, telegramClient) {
+export async function startPirateSync(discordClient, telegramClient) {
   sync(discordClient, telegramClient);
 }
-
-module.exports = {
-  startPirateSync,
-};
