@@ -1,8 +1,8 @@
 import db from '../../models';
 import { welcomeMessage } from '../../messages/telegram';
 
-const { Transaction, Op } = require('sequelize');
-const { getInstance } = require('../../services/rclient');
+import { Transaction, Op } from "sequelize";
+import { getInstance } from "../../services/rclient";
 
 export const createUpdateUser = async (ctx) => {
   if (!ctx.update.message.from.is_bot) {
