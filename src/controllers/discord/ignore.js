@@ -47,6 +47,6 @@ export const setIgnoreMe = async (message) => {
       console.log('done');
     });
   }).catch((err) => {
-    console.log(err.message);
+    console.log(err);
   });
 };

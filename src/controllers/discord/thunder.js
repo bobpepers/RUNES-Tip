@@ -150,8 +150,13 @@ export const discordThunder = async (discordClient, message, filteredMessage) =>
           lock: t.LOCK.UPDATE,
           transaction: t,
         });
-        const userIdReceivedRain = thunderee.user_id.replace('discord-', '');
-        listOfUsersRained.push(`<@${userIdReceivedRain}>`);
+        
+        if (thunderee.ignoreMe) {
+          listOfUsersRained.push(`${thunderee.username}`);
+        } else {
+          const userIdReceivedRain = thunderee.user_id.replace('discord-', '');
+          listOfUsersRained.push(`<@${userIdReceivedRain}>`);
+        }
       }
       for (const userThunder of listOfUsersRained) {
         // eslint-disable-next-line no-await-in-loop

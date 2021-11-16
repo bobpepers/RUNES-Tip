@@ -144,8 +144,13 @@ export const discordFlood = async (discordClient, message, filteredMessage) => {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      const userIdReceivedRain = floodee.user_id.replace('discord-', '');
-      listOfUsersRained.push(`<@${userIdReceivedRain}>`);
+      if (floodee.ignoreMe) {
+        listOfUsersRained.push(`${floodee.username}`);
+      } else {
+        const userIdReceivedRain = floodee.user_id.replace('discord-', '');
+        listOfUsersRained.push(`<@${userIdReceivedRain}>`);
+      }
+      
     }
 
     const newStringListUsers = listOfUsersRained.join(", ");

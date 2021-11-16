@@ -165,8 +165,13 @@ export const discordThunderStorm = async (discordClient, message, filteredMessag
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      const userIdReceivedRain = thunderee.user_id.replace('discord-', '');
-      listOfUsersRained.push(`<@${userIdReceivedRain}>`);
+      
+      if (thunderee.ignoreMe) {
+        listOfUsersRained.push(`${thunderee.username}`);
+      } else {
+        const userIdReceivedRain = thunderee.user_id.replace('discord-', '');
+        listOfUsersRained.push(`<@${userIdReceivedRain}>`);;
+      }
     }
     await message.channel.send({ embeds: [AfterThunderStormSuccess(message, amount, amountPerUser, listOfUsersRained)] });
 

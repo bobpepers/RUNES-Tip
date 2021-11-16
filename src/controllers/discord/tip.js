@@ -1,4 +1,6 @@
 /* eslint-disable import/prefer-default-export */
+import BigNumber from "bignumber.js";
+import { Transaction, Op } from "sequelize";
 import db from '../../models';
 import {
   invalidAmountMessage,
@@ -10,8 +12,6 @@ import {
 } from '../../messages/discord';
 import settings from '../../config/settings';
 
-import BigNumber from "bignumber.js";
-import { Transaction, Op } from "sequelize";
 import logger from "../../helpers/logger";
 
 export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTip) => {
@@ -107,9 +107,16 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
     });
 
     const userId = user.user_id.replace('discord-', '');
-    const userIdTipped = findUserToTip.user_id.replace('discord-', '');
 
-    await message.channel.send({ embeds: [tipSuccessMessage(userId, userIdTipped, amount)] });
+    let tempUserName;
+    if (findUserToTip.ignoreMe) {
+      tempUserName = findUserToTip.username;
+    } else {
+      const userIdTipped = findUserToTip.user_id.replace('discord-', '');
+      tempUserName = `<@${userIdTipped}>`;
+    }
+
+    await message.channel.send({ embeds: [tipSuccessMessage(userId, tempUserName, amount)] });
     logger.info(`Success tip Requested by: ${user.user_id}-${user.username} to ${findUserToTip.user_id}-${findUserToTip.username} with ${amount / 1e8} ${settings.coin.ticker}`);
 
     t.afterCommit(() => {

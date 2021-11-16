@@ -143,8 +143,13 @@ export const discordSoak = async (discordClient, message, filteredMessage) => {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      const userIdReceivedRain = soakee.user_id.replace('discord-', '');
-      listOfUsersRained.push(`<@${userIdReceivedRain}>`);
+      if (soakee.ignoreMe) {
+        listOfUsersRained.push(`${soakee.username}`);
+      } else {
+        const userIdReceivedRain = soakee.user_id.replace('discord-', '');
+        listOfUsersRained.push(`<@${userIdReceivedRain}>`);
+      }
+      
     }
 
     const newStringListUsers = listOfUsersRained.join(", ");

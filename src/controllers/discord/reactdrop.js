@@ -121,7 +121,7 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
               width: 150,
               height: 50,
               background: randomBackground,
-              noise: Math.floor((Math.random() * 8) + 4),
+              noise: Math.floor(Math.random() * (8 - 4 + 1)) + 4,
               minValue: 1,
               maxValue: 20,
               operandAmount: Math.floor((Math.random() * 2) + 1),
@@ -355,18 +355,24 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
             await receiver.user.wallet.update({
               available: receiver.user.wallet.available + Number(amountEach),
             });
-            const userIdReceivedRain = receiver.user.user_id.replace('discord-', '');
-            listOfUsersRained.push(`<@${userIdReceivedRain}>`);
+
+            if (receiver.user.ignoreMe) {
+              listOfUsersRained.push(`${receiver.user.username}`);
+            } else {
+              const userIdReceivedRain = receiver.user.user_id.replace('discord-', '');
+              listOfUsersRained.push(`<@${userIdReceivedRain}>`);
+            }
           }
           const newStringListUsers = listOfUsersRained.join(", ");
-          console.log(newStringListUsers);
+          // console.log(newStringListUsers);
           const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
           // eslint-disable-next-line no-restricted-syntax
           for (const element of cutStringListUsers) {
             // eslint-disable-next-line no-await-in-loop
             await reactMessage.channel.send(element);
           }
-          reactMessage.channel.send({ embeds: [AfterReactDropSuccessMessage(endReactDrop, amountEach)] });
+          const initiator = endReactDrop.user.user_id.replace('discord-', '');
+          reactMessage.channel.send({ embeds: [AfterReactDropSuccessMessage(endReactDrop, amountEach, initiator)] });
           // reactMessage.channel.send(`${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${process.env.CURRENCY_SYMBOL} (${amountEach / 1e8} each)`);
         }
       }

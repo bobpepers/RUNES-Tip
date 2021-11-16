@@ -148,8 +148,12 @@ export const discordSleet = async (client, message, filteredMessage) => {
           lock: t.LOCK.UPDATE,
           transaction: t,
         });
-        const userIdTest = sleetee.user_id.replace('discord-', '');
-        listOfUsersRained.push(`<@${userIdTest}>`);
+        if (sleetee.ignoreMe) {
+          listOfUsersRained.push(`${sleetee.username}`);
+        } else {
+          const userIdTest = sleetee.user_id.replace('discord-', '');
+          listOfUsersRained.push(`<@${userIdTest}>`);
+        }
       }
       const newStringListUsers = listOfUsersRained.join(", ");
       const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);

@@ -54,11 +54,11 @@ ${!ended ? `:clock9: Time remaining ${days > 0 ? `${days} days` : ''}  ${hours >
   return result;
 };
 
-export const AfterReactDropSuccessMessage = (endReactDrop, amountEach) => {
+export const AfterReactDropSuccessMessage = (endReactDrop, amountEach, initiator) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Reactdrop')
-    .setDescription(`:tada:React airdrop started by user has finished!:tada:
+    .setDescription(`:tada:React airdrop started by <@${initiator}> has finished!:tada:
     
 :money_with_wings:${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)!:money_with_wings:`)
     .setTimestamp()
@@ -200,11 +200,11 @@ export const depositAddressMessage = (userId, user) => {
 
   return result;
 };
-export const tipSuccessMessage = (userId, userIdTipped, amount) => {
+export const tipSuccessMessage = (userId, tempUsername, amount) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Tip')
-    .setDescription(`<@${userId}> tipped ${amount / 1e8} ${settings.coin.ticker} to <@${userIdTipped}>`)
+    .setDescription(`<@${userId}> tipped ${amount / 1e8} ${settings.coin.ticker} to ${tempUsername}`)
     .setTimestamp()
     .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
 
