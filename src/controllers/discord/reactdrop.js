@@ -131,7 +131,6 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
             });
             // eslint-disable-next-line no-await-in-loop
             captcha = await preCaptcha.generateCaptcha();
-            console.log(captcha);
           }
 
           console.log(captcha);
