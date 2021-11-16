@@ -1,4 +1,6 @@
 /* eslint-disable import/prefer-default-export */
+import BigNumber from "bignumber.js";
+import { Transaction, Op } from "sequelize";
 import db from '../../models';
 import {
   invalidAmountMessage,
@@ -10,8 +12,6 @@ import {
 } from '../../messages/discord';
 import settings from '../../config/settings';
 
-import BigNumber from "bignumber.js";
-import { Transaction, Op } from "sequelize";
 import logger from "../../helpers/logger";
 
 export const discordSleet = async (client, message, filteredMessage) => {

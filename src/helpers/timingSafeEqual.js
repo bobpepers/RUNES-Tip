@@ -1,6 +1,5 @@
-import { generateHash } from './generate';
-
 import crypto from "crypto";
+import { generateHash } from './generate';
 
 const timingSafeEqual = (a, b) => {
   let valid = false;

@@ -1,6 +1,5 @@
-import db from '../models';
-
 import { Sequelize, Transaction, Op } from "sequelize";
+import db from '../models';
 
 /**
  * Fetch PriceInfo

@@ -32,6 +32,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.TINYINT,
       defaultValue: 0,
     },
+    ignoreMe: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     banned: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,

@@ -1,8 +1,8 @@
+import { Transaction } from "sequelize";
 import { getInstance } from '../../services/rclient';
 
 import db from '../../models';
 
-import { Transaction } from "sequelize";
 import logger from "../logger";
 
 /**

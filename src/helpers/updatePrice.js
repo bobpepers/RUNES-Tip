@@ -1,9 +1,9 @@
 import axios from 'axios';
 import db from '../models';
 import settings from '../config/settings';
-//import { Sequelize, Transaction, Op } from "sequelize";
+// import { Sequelize, Transaction, Op } from "sequelize";
 
-const updatePrice = async () => {
+export const updatePrice = async () => {
   try {
     const createFirstRecord = await db.priceInfo.findOrCreate({
       where: {
@@ -110,5 +110,3 @@ const updatePrice = async () => {
     console.error(error);
   }
 };
-
-export default updatePrice;

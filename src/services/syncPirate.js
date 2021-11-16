@@ -1,6 +1,8 @@
 /* eslint no-underscore-dangle: [2, { "allow": ["_eventName", "_address", "_time", "_orderId"] }] */
 
 import PQueue from 'p-queue';
+import _ from "lodash";
+import { Transaction, Op } from "sequelize";
 import db from '../models';
 // const { isMainnet } = require('./runebaseConfig');
 import {
@@ -10,9 +12,6 @@ import {
   discordDepositConfirmedMessage,
 } from '../messages/discord';
 import settings from '../config/settings';
-
-import _ from "lodash";
-import { Transaction, Op } from "sequelize";
 
 import { getInstance } from "./rclient";
 

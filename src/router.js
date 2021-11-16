@@ -1,4 +1,6 @@
 import PQueue from 'p-queue';
+import schedule from "node-schedule";
+import rateLimit from "telegraf-ratelimit";
 import walletNotifyRunebase from './helpers/runebase/walletNotify';
 import walletNotifyPirate from './helpers/pirate/walletNotify';
 import {
@@ -90,14 +92,12 @@ import settings from './config/settings';
 
 import logger from "./helpers/logger";
 
-const queue = new PQueue({ concurrency: 1 });
-import schedule from "node-schedule";
-
-const runesGroup = process.env.TELEGRAM_RUNES_GROUP;
-
-import rateLimit from "telegraf-ratelimit";
 import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";
+
+const queue = new PQueue({ concurrency: 1 });
+
+const runesGroup = process.env.TELEGRAM_RUNES_GROUP;
 
 // Set limit to 1 message per 3 seconds
 const limitConfig = {
@@ -106,9 +106,10 @@ const limitConfig = {
   onLimitExceeded: (ctx, next) => ctx.reply('Rate limit exceeded - please wait 10 seconds'),
 };
 
-const router = (app, discordClient, telegramClient) => {
+export const router = (app, discordClient, telegramClient) => {
   if (settings.coin.name === 'Pirate') {
-    app.post('/api/rpc/walletnotify',
+    app.post(
+      '/api/rpc/walletnotify',
       walletNotifyPirate,
       async (req, res) => {
         if (res.locals.error) {
@@ -122,9 +123,11 @@ const router = (app, discordClient, telegramClient) => {
             await myClient.send({ embeds: [discordIncomingDepositMessage(res)] });
           }
         }
-      });
+      },
+    );
   } else {
-    app.post('/api/rpc/walletnotify',
+    app.post(
+      '/api/rpc/walletnotify',
       walletNotifyRunebase,
       async (req, res) => {
         if (res.locals.error) {
@@ -138,7 +141,8 @@ const router = (app, discordClient, telegramClient) => {
             await myClient.send({ embeds: [discordIncomingDepositMessage(res)] });
           }
         }
-      });
+      },
+    );
   }
 
   discordClient.on('ready', () => {
@@ -244,7 +248,8 @@ const router = (app, discordClient, telegramClient) => {
     //    }
   });
 
-  app.post('/api/chaininfo/block',
+  app.post(
+    '/api/chaininfo/block',
     (req, res) => {
       console.log('new block found');
       if (settings.coin.name === 'Runebase') {
@@ -254,7 +259,8 @@ const router = (app, discordClient, telegramClient) => {
       } else {
         startRunebaseSync(discordClient, telegramClient);
       }
-    });
+    },
+  );
 
   telegramClient.hears('adminwithdrawals', (ctx) => {
     if (ctx.update.message.from.id === Number(process.env.TELEGRAM_ADMIN_ID)) {
@@ -644,5 +650,3 @@ const router = (app, discordClient, telegramClient) => {
     })();
   });
 };
-
-export default router;

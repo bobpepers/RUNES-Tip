@@ -1,6 +1,17 @@
 /* eslint-disable import/prefer-default-export */
 import { svg2png } from 'svg-png-converter';
-import db from '../../models';
+
+import svgCaptcha from "svg-captcha";
+import BigNumber from "bignumber.js";
+import { Transaction, Op } from "sequelize";
+import {
+  MessageAttachment,
+  // MessageCollector,
+  MessageActionRow,
+  MessageButton,
+} from "discord.js";
+import { AlgebraicCaptcha } from "algebraic-captcha";
+import settings from '../../config/settings';
 import {
   reactDropMessage,
   invalidAmountMessage,
@@ -13,18 +24,7 @@ import {
   AfterReactDropSuccessMessage,
   invalidEmojiMessage,
 } from '../../messages/discord';
-import settings from '../../config/settings';
-
-import svgCaptcha from "svg-captcha";
-import BigNumber from "bignumber.js";
-import { Transaction, Op } from "sequelize";
-import { 
-  MessageAttachment, 
-  //MessageCollector, 
-  MessageActionRow, 
-  MessageButton 
-} from "discord.js";
-import { AlgebraicCaptcha } from "algebraic-captcha";
+import db from '../../models';
 import emojiCompact from "../../config/emoji.json";
 import logger from "../../helpers/logger";
 
@@ -172,13 +172,15 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
               console.log(m.content);
               console.log(findReactTip.solution);
               if (m.content === findReactTip.solution) {
-                await findReactTip.update({
-                  status: 'success',
-                },
-                {
-                  lock: t.LOCK.UPDATE,
-                  transaction: t,
-                });
+                await findReactTip.update(
+                  {
+                    status: 'success',
+                  },
+                  {
+                    lock: t.LOCK.UPDATE,
+                    transaction: t,
+                  },
+                );
                 const reactDropRecord = await db.reactdrop.findOne({
                   where: {
                     id: findReactTip.reactdropId,
@@ -195,14 +197,14 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
                   ],
                   lock: t.LOCK.UPDATE,
                   transaction: t,
-                })
-                
+                });
+
                 const row = new MessageActionRow().addComponents(
-                    new MessageButton()
-                      .setLabel('Back to ReactDrop')
-                      .setStyle('LINK')
-                      .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`)
-                  ); 
+                  new MessageButton()
+                    .setLabel('Back to ReactDrop')
+                    .setStyle('LINK')
+                    .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`),
+                );
 
                 await m.react('✅');
                 await collector.send({ content: '\u200b', components: [row] });
@@ -229,13 +231,13 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
                   ],
                   lock: t.LOCK.UPDATE,
                   transaction: t,
-                })
+                });
                 const row = new MessageActionRow().addComponents(
-                    new MessageButton()
-                      .setLabel('Back to ReactDrop')
-                      .setStyle('LINK')
-                      .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`)
-                  ); 
+                  new MessageButton()
+                    .setLabel('Back to ReactDrop')
+                    .setStyle('LINK')
+                    .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`),
+                );
                 m.react('❌');
                 await collector.send({ content: '\u200b', components: [row] });
               }

@@ -11,5 +11,6 @@
     "func-names": 0,
     "max-len": 0,
     "quotes": 0,
+    "import/prefer-default-export": "off"
   }
 }

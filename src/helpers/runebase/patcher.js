@@ -1,9 +1,9 @@
+import { Transaction, Op } from "sequelize";
 import db from '../../models';
 
-import { Transaction, Op } from "sequelize";
 import { getInstance } from "../../services/rclient";
 
-async function patchRunebaseDeposits() {
+export async function patchRunebaseDeposits() {
   console.log('start patch deposits');
   const transactions = await getInstance().listTransactions(1000);
   console.log('after await instance listtransactions');
@@ -66,7 +66,3 @@ async function patchRunebaseDeposits() {
   // });
   }
 }
-
-module.exports = {
-  patchRunebaseDeposits,
-};

@@ -1,7 +1,7 @@
 /* eslint-disable import/first */
-import { 
-  Client, 
-  Intents, 
+import {
+  Client,
+  Intents,
 } from "discord.js";
 import { Telegraf } from "telegraf";
 
@@ -11,19 +11,20 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import cors from "cors";
 import compression from "compression";
-import { default as router } from "./router";
+import schedule from "node-schedule";
 
-import { default as updatePrice } from "./helpers/updatePrice";
+import { router } from "./router";
+
+import { updatePrice } from "./helpers/updatePrice";
 import logger from "./helpers/logger";
 
-import { patchRunebaseDeposits as patchRunebaseDeposits } from "./helpers/runebase/patcher";
-import { patchPirateDeposits as patchPirateDeposits } from "./helpers/pirate/patcher";
-import { reactDropMessage as reactDropMessage } from "./messages/discord";
-import { listenReactDrop as listenReactDrop } from "./controllers/discord/reactdrop";
+import { patchRunebaseDeposits } from "./helpers/runebase/patcher";
+import { patchPirateDeposits } from "./helpers/pirate/patcher";
+import { reactDropMessage } from "./messages/discord";
+import { listenReactDrop } from "./controllers/discord/reactdrop";
 import db from "./models";
 import settings from "./config/settings";
 
-import schedule from "node-schedule";
 import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";
 import { consolidatePirate } from "./helpers/pirate/consolidate";
@@ -46,8 +47,6 @@ app.use(bodyParser.urlencoded({
   limit: '5mb',
 }));
 app.use(bodyParser.json());
-
-
 
 const discordClient = new Client({
   intents: [

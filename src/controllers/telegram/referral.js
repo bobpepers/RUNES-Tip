@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
+import { Transaction } from "sequelize";
 import db from '../../models';
 import settings from '../../config/settings';
-import { Transaction } from "sequelize";
 
 const referralRunesReward = 20 * 1e8;
 

@@ -1,7 +1,8 @@
-import db from '../models';
 import { config } from "dotenv";
-config();
 import metaget from "metaget";
+import db from '../models';
+
+config();
 
 /**
  * Fetch Currencies

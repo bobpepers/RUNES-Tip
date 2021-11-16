@@ -4,10 +4,11 @@ import fs from "fs";
 import path from "path";
 import Sequelize from "sequelize";
 import { default as PQueue } from "p-queue";
+import { config } from "dotenv";
 
 const basename = path.basename(__filename);
 const db = {};
-import { config } from "dotenv";
+
 config();
 
 const sequelize = new Sequelize(

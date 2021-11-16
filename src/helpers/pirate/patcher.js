@@ -1,9 +1,9 @@
+import { Transaction } from "sequelize";
 import db from '../../models';
 
-import { Transaction } from "sequelize";
 import { getInstance } from "../../services/rclient";
 
-async function patchPirateDeposits() {
+export async function patchPirateDeposits() {
   const transactions = await getInstance().listTransactions(1000);
   // transactions.forEach(async (trans) => {
   // eslint-disable-next-line no-restricted-syntax
@@ -69,7 +69,3 @@ async function patchPirateDeposits() {
   // });
   }
 }
-
-module.exports = {
-  patchPirateDeposits,
-};

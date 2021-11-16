@@ -1,4 +1,6 @@
 /* eslint-disable import/prefer-default-export */
+import { Transaction } from "sequelize";
+import BigNumber from "bignumber.js";
 import db from '../../models';
 import { getInstance } from '../../services/rclient';
 import {
@@ -10,8 +12,6 @@ import {
   reviewMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
-import { Transaction, Op } from "sequelize";
-import BigNumber from "bignumber.js";
 import logger from "../../helpers/logger";
 /**
  * Create Withdrawal

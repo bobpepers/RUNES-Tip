@@ -1,3 +1,6 @@
+import { Transaction, Op } from "sequelize";
+import BigNumber from "bignumber.js";
+import QRCode from "qrcode";
 import db from '../../models';
 import { getInstance } from '../../services/rclient';
 import {
@@ -22,10 +25,6 @@ import {
 } from '../../messages/telegram';
 import settings from '../../config/settings';
 
-
-import { Transaction, Op } from "sequelize";
-import BigNumber from "bignumber.js";
-import QRCode from "qrcode";
 import logger from "../../helpers/logger";
 
 export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
@@ -443,17 +442,17 @@ export const fetchWalletDepositAddress = async (ctx, telegramUserId, telegramUse
     if (user && user.wallet && user.wallet.addresses) {
       const depositQr = await QRCode.toDataURL(user.wallet.addresses[0].address);
       const depositQrFixed = depositQr.replace('data:image/png;base64,', '');
-      await ctx.replyWithPhoto(
-        {
-          source: Buffer.from(depositQrFixed, 'base64'),
-        }, {
-          caption: depositAddressMessage(telegramUserName, user),
-          parse_mode: 'MarkdownV2',
-        },
-      );
+      await ctx.replyWithPhoto({
+        source: Buffer.from(depositQrFixed, 'base64'),
+      }, {
+        caption: depositAddressMessage(telegramUserName, user),
+        parse_mode: 'MarkdownV2',
+      });
 
-      await ctx.reply(depositAddressMessage(telegramUserName, user),
-        { parse_mode: 'MarkdownV2' });
+      await ctx.reply(
+        depositAddressMessage(telegramUserName, user),
+        { parse_mode: 'MarkdownV2' },
+      );
     }
 
     t.afterCommit(() => {

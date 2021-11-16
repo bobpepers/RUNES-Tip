@@ -1,16 +1,16 @@
-import db from '../../models';
-//import { getInstance } from '../../services/rclient';
+// import { getInstance } from '../../services/rclient';
+import { MessageAttachment } from "discord.js";
+
+import { Transaction } from "sequelize";
+// import BigNumber from "bignumber.js";
+// const qr = require('qr-image');
+import QRCode from "qrcode";
 import {
   warnDirectMessage,
   depositAddressMessage,
   balanceMessage,
 } from '../../messages/discord';
-import { MessageAttachment } from "discord.js";
-
-import { Transaction } from "sequelize";
-//import BigNumber from "bignumber.js";
-// const qr = require('qr-image');
-import QRCode from "qrcode";
+import db from '../../models';
 import logger from "../../helpers/logger";
 
 export const fetchDiscordWalletBalance = async (message) => {
