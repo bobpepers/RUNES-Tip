@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
-import { 
-  warnDirectMessage, 
-  helpMessage 
+import {
+  warnDirectMessage,
+  helpMessage,
 } from '../../messages/discord';
 
 export const discordHelp = (message) => {

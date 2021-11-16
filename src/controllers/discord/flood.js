@@ -15,10 +15,10 @@ import logger from "../../helpers/logger";
 export const discordFlood = async (discordClient, message, filteredMessage) => {
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
   const onlineMembers = members.filter((member) => 
-  member.presence?.status === "online"
-  || member.presence?.status === "idle"
-  || member.presence?.status === "dnd"
-  || member.presence?.status === "offline"
+    member.presence?.status === "online"
+    || member.presence?.status === "idle"
+    || member.presence?.status === "dnd"
+    || member.presence?.status === "offline"
   );
   const mappedMembersArray = onlineMembers.map((a) => {
     return a.user;

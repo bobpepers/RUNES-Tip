@@ -197,8 +197,6 @@ export const unableToFindUserTipMessage = (message, amount) => {
   return result;
 };
 
-
-
 export const AfterSuccessMessage = (message, amount, withoutBots, amountPerUser, type, typeH) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
@@ -268,56 +266,54 @@ export const minimumMessage = (message, type) => {
   return result;
 };
 
-
-  export const thunderstormMaxUserAmountMessage = (message) => {
-    const result = new MessageEmbed()
-      .setColor(settings.bot.color)
-      .setTitle('ThunderStorm')
-      .setDescription(`<@${message.author.id}>, Maximum user amount is 50`)
-      .setTimestamp()
-      .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
-  
-    return result;
-  };
-
-  export const thunderstormInvalidUserAmount = (message) => {
-    const result = new MessageEmbed()
-      .setColor(settings.bot.color)
-      .setTitle('ThunderStorm')
-      .setDescription(`<@${message.author.id}>, Invalid amount of users`)
-      .setTimestamp()
-      .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
-  
-    return result;
-  };
-
-  export const thunderstormUserZeroAmountMessage = (message) => {
-    const result = new MessageEmbed()
-      .setColor(settings.bot.color)
-      .setTitle('ThunderStorm')
-      .setDescription(`<@${message.author.id}>, minimum amount of users to thunderstorm is 1`)
-      .setTimestamp()
-      .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
-  
-    return result;
-  };
-
-export const AfterThunderStormSuccess = (message, amount, amountPerUser, listOfUsersRained) => {
+export const thunderstormMaxUserAmountMessage = (message) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('ThunderStorm')
-    .setDescription(`${listOfUsersRained.map(function (user) {
-      console.log('user');
-      console.log(user);
-      return `⛈ ${user} has been thunderstruck with ${amountPerUser / 1e8} ${settings.coin.ticker} ⛈`           
-    }).join("\n")}`)
-   // .setDescription(`⛈ ${userThunder} has been thunderstruck with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
+    .setDescription(`<@${message.author.id}>, Maximum user amount is 50`)
     .setTimestamp()
     .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
 
   return result;
 };
 
+export const thunderstormInvalidUserAmount = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('ThunderStorm')
+    .setDescription(`<@${message.author.id}>, Invalid amount of users`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
+export const thunderstormUserZeroAmountMessage = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('ThunderStorm')
+    .setDescription(`<@${message.author.id}>, minimum amount of users to thunderstorm is 1`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
+export const AfterThunderStormSuccess = (message, amount, amountPerUser, listOfUsersRained) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('ThunderStorm')
+    .setDescription(`${listOfUsersRained.map((user) => {
+      console.log('user');
+      console.log(user);
+      return `⛈ ${user} has been thunderstruck with ${amountPerUser / 1e8} ${settings.coin.ticker} ⛈`;
+    }).join("\n")}`)
+  // .setDescription(`⛈ ${userThunder} has been thunderstruck with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
 
 export const AfterThunderSuccess = (message, amount, userThunder) => {
   const result = new MessageEmbed()
@@ -329,7 +325,6 @@ export const AfterThunderSuccess = (message, amount, userThunder) => {
 
   return result;
 };
-
 
 export const reviewMessage = (message) => {
   const result = new MessageEmbed()
@@ -451,32 +446,41 @@ Displays your deposit address
 
 \`${settings.bot.command.discord} withdraw <address> <amount|all> \`
 Withdraws the entered amount to a ${settings.coin.name} address of your choice
+example: \`${settings.bot.command.discord} withdraw ${settings.coin.exampleAddress} 5.20 \`
+Note: Minimal amount to withdraw: ${settings.min.withdrawal / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${settings.fee.withdrawal / 1e8} ${settings.coin.ticker} will be automatically deducted from the amount and will be donated to the common faucet pot.
 
 \`${settings.bot.command.discord} <@user> <amount|all>\`
 Tips the @ mentioned user with the desired amount
+example: \`${settings.bot.command.discord} @test123456#7890 1.00\`
 
 \`${settings.bot.command.discord} rain <amount|all>\`
 Rains the desired amount onto all online users (optionally, within specified role)
+example: \`${settings.bot.command.discord} rain 10\`
 
 \`${settings.bot.command.discord} soak <amount|all>\`
 Soaks the desired amount onto all online and idle users (optionally, within specified role)
+example: \`${settings.bot.command.discord} soak 3.00\`
 
 \`${settings.bot.command.discord} flood <amount|all>\`
 Floods the desired amount onto all users (including offline users) (optionally, within specified role)
+example: \`${settings.bot.command.discord} flood 5.00\`
 
 \`${settings.bot.command.discord} sleet <amount|all>\`
 Makes a sleet storm with the desired amount onto all users that have been active in the channel in the last 15 minutes (optionally, within specified role
 
 \`${settings.bot.command.discord} thunder <amount|all>\`
-Tips a random lucky online user with the amount (optionally, within specified role), e.g.
-\`${settings.bot.command.discord} thunder 5\`
+Tips a random lucky online user with the amount (optionally, within specified role)
+example: \`${settings.bot.command.discord} thunder 5\`
 
 \`${settings.bot.command.discord} thunderstorm <numberOfUsers> <amount|all>\`
-Tips a specified number (max: 50) random lucky online users with part of the amount (optionally, within specified role), e.g.
-\`${settings.bot.command.discord} thunderstorm 10 5.00\`
+Tips a specified number (max: 50) random lucky online users with part of the amount (optionally, within specified role)
+example: \`${settings.bot.command.discord} thunderstorm 10 5.00\`
 
 \`${settings.bot.command.discord} reactdrop <amount> [<time>] [<emoji>]\`
 Performs a react airdrop with the amount, optionally within custom time, optionally using a custom-supplied emoji. <time> parameter accepts time interval expressions in the form of:\`60s\`, \`5m\`, \`1h\`. Default time interval is \`5m\`(5minutes), e.g. \`!arrrtip reactdrop 10 20m\`, \`!arrrtip reactdrop 10 3h 😃\`
+
+\`${settings.bot.command.discord} ignoreme\`
+Turns @mentioning you during mass operations on/off
 
 **Like the bot?**
 [Invite it to your server](${settings.bot.url.discord})`)

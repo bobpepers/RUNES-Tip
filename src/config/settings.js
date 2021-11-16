@@ -10,7 +10,7 @@ module.exports = {
       discord: "!runestip",
       telegram: "runestip",
     },
-  }, 
+  },
   coin: {
     name: "Runebase", // Supported names for setting (Runebase, Pirate) // default fallback settings are Runebase
     ticker: "RUNES",
@@ -36,11 +36,12 @@ module.exports = {
       "https://stakecenter.co/client/exchange/RDD/RUNES",
       "https://www.localrunes.com",
     ],
+    exampleAddress: '123',
   },
   fee: {
-    withdrawal: 1e7,  
+    withdrawal: 1e7,
   },
-  min: { 
+  min: {
     withdrawal: 2e8,
     confirmations: 6,
     discord: {
@@ -56,7 +57,6 @@ module.exports = {
     telegram: {
       tip: 1e7,
       rain: 1e7,
-    },    
+    },
   },
 };
-
