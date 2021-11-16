@@ -31,6 +31,15 @@ export const fetchWalletBalance = async (ctx, telegramUserId, telegramUserName) 
       transaction: t,
     });
 
+    if (!user) {
+      ctx.reply(`User not found`);
+      return;
+    }
+    if (!user.wallet) {
+      ctx.reply(`Wallet not found`);
+      return;
+    }
+
     const priceInfo = await db.priceInfo.findOne({
       where: {
         currency: 'USD',
@@ -39,18 +48,13 @@ export const fetchWalletBalance = async (ctx, telegramUserId, telegramUserName) 
       transaction: t,
     });
 
-    if (!user && !user.wallet) {
-      ctx.reply(`Wallet not found`);
-    }
-
-    if (user && user.wallet) {
-      await ctx.reply(balanceMessage(telegramUserName, user, priceInfo));
-    }
+    await ctx.reply(balanceMessage(telegramUserName, user, priceInfo));
 
     t.afterCommit(() => {
       logger.info(`Success Balance Requested by: ${telegramUserId}-${telegramUserName}`);
     });
   }).catch((err) => {
+    console.log(err);
     logger.error(`Error Balance Requested by: ${telegramUserId}-${telegramUserName} - ${err}`);
   });
 };

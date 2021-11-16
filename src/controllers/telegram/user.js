@@ -111,7 +111,7 @@ export const createUpdateUser = async (ctx) => {
         console.log('done');
       });
     }).catch((err) => {
-      console.log(err.message);
+      console.log(err);
     });
   }
 };
@@ -193,6 +193,6 @@ export const updateLastSeen = async (ctx) => {
       console.log('done');
     });
   }).catch((err) => {
-    console.log(err.message);
+    console.log(err);
   });
 };
