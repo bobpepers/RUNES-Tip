@@ -19,8 +19,10 @@ import {
 
 import {
   fetchDiscordWalletBalance,
+} from './controllers/discord/balance';
+import {
   fetchDiscordWalletDepositAddress,
-} from './controllers/discord/wallet';
+} from './controllers/discord/deposit';
 import { withdrawDiscordCreate } from './controllers/discord/withdraw';
 import { discordRain } from './controllers/discord/rain';
 import { discordSleet } from './controllers/discord/sleet';
