@@ -5,12 +5,10 @@ import path from "path";
 import Sequelize from "sequelize";
 import PQueue from "p-queue";
 
-import { config } from "dotenv";
+require('dotenv').config();
 
 const basename = path.basename(__filename);
 const db = {};
-
-config();
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
