@@ -9,20 +9,14 @@ import {
   withdrawTelegramAdminAccept,
   withdrawTelegramAdminDecline,
 } from './controllers/admin';
-import {
-  fetchWalletBalance,
-  fetchWalletDepositAddress,
-  withdrawTelegramCreate,
-  tipRunesToUser,
-  rainRunesToUsers,
-} from './controllers/telegram/wallet';
 
-import {
-  fetchDiscordWalletBalance,
-} from './controllers/discord/balance';
-import {
-  fetchDiscordWalletDepositAddress,
-} from './controllers/discord/deposit';
+import { fetchWalletBalance } from './controllers/telegram/balance';
+import { fetchWalletDepositAddress } from './controllers/telegram/deposit';
+import { withdrawTelegramCreate } from './controllers/telegram/withdraw';
+import { tipRunesToUser } from './controllers/telegram/tip';
+import { rainRunesToUsers } from './controllers/telegram/rain';
+import { fetchDiscordWalletBalance } from './controllers/discord/balance';
+import { fetchDiscordWalletDepositAddress } from './controllers/discord/deposit';
 import { withdrawDiscordCreate } from './controllers/discord/withdraw';
 import { discordRain } from './controllers/discord/rain';
 import { discordSleet } from './controllers/discord/sleet';
