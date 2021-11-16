@@ -10,9 +10,6 @@ import {
   reviewMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
-import { config } from "dotenv";
-config();
-
 import { Transaction, Op } from "sequelize";
 import BigNumber from "bignumber.js";
 import logger from "../../helpers/logger";

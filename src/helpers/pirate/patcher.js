@@ -1,6 +1,6 @@
 import db from '../../models';
 
-import { Transaction, Op } from "sequelize";
+import { Transaction } from "sequelize";
 import { getInstance } from "../../services/rclient";
 
 async function patchPirateDeposits() {

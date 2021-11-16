@@ -10,7 +10,7 @@ import {
 import settings from '../../config/settings';
 
 import BigNumber from "bignumber.js";
-import { Transaction, Op } from "sequelize";
+import { Transaction } from "sequelize";
 import logger from "../../helpers/logger";
 
 export const discordSoak = async (discordClient, message, filteredMessage) => {

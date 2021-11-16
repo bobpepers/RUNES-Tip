@@ -1,7 +1,6 @@
 import db from '../../models';
 
 import settings from '../../config/settings';
-import { Sequelize, Transaction, Op } from "sequelize";
 
 const fetchPriceInfo = async (ctx) => {
   try {

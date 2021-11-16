@@ -1,34 +1,14 @@
 import db from '../../models';
-import { getInstance } from '../../services/rclient';
+//import { getInstance } from '../../services/rclient';
 import {
-  minimumWithdrawalMessage,
-  invalidAmountMessage,
-  invalidAddressMessage,
-  userNotFoundMessage,
-  insufficientBalanceMessage,
-  reviewMessage,
-  minimumTipMessage,
-  minimumFloodMessage,
-  minimumSleetMessage,
-  minimumRainMessage,
-  walletNotFoundMessage,
-  notEnoughActiveUsersMessage,
-  AfterSleetSuccessMessage,
-  AfterFloodSuccessMessage,
-  AfterRainSuccessMessage,
-  unableToFindUserTipMessage,
-  tipSuccessMessage,
   warnDirectMessage,
   depositAddressMessage,
   balanceMessage,
 } from '../../messages/discord';
-import { config } from "dotenv";
-config();
-
 import { MessageAttachment } from "discord.js";
 
-import { Transaction, Op } from "sequelize";
-import BigNumber from "bignumber.js";
+import { Transaction } from "sequelize";
+//import BigNumber from "bignumber.js";
 // const qr = require('qr-image');
 import QRCode from "qrcode";
 import logger from "../../helpers/logger";

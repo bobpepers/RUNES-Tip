@@ -1,9 +1,6 @@
 import PQueue from 'p-queue';
-// import { filter } from 'lodash';
 import walletNotifyRunebase from './helpers/runebase/walletNotify';
 import walletNotifyPirate from './helpers/pirate/walletNotify';
-// import updatePrice from './helpers/updatePrice';
-
 import {
   withdrawTelegramAdminFetch,
   withdrawTelegramAdminAccept,
@@ -90,10 +87,7 @@ import {
   fetchExchangeList,
 } from './controllers/telegram/exchanges';
 import settings from './config/settings';
-//import { config } from "dotenv";
-//config();
 
-// const PQueue = require('p-queue');
 import logger from "./helpers/logger";
 
 const queue = new PQueue({ concurrency: 1 });

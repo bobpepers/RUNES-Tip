@@ -20,7 +20,7 @@ import BigNumber from "bignumber.js";
 import { Transaction, Op } from "sequelize";
 import { 
   MessageAttachment, 
-  MessageCollector, 
+  //MessageCollector, 
   MessageActionRow, 
   MessageButton 
 } from "discord.js";

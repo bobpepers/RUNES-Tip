@@ -1,13 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import db from '../../models';
-import { getInstance } from '../../services/rclient';
-
 import settings from '../../config/settings';
-
-import { Sequelize, Transaction, Op } from "sequelize";
-import BigNumber from "bignumber.js";
-import qr from "qr-image";
-import logger from "../../helpers/logger";
+import { Transaction } from "sequelize";
 
 const referralRunesReward = 20 * 1e8;
 

@@ -1,6 +1,9 @@
 /* eslint-disable import/first */
-import { config } from "dotenv";
-config();
+import { 
+  Client, 
+  Intents, 
+} from "discord.js";
+import { Telegraf } from "telegraf";
 
 import express from "express";
 import http from "http";
@@ -44,8 +47,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-import { Client, Intents, GuildMemberManager, Options } from "discord.js";
-import { Telegraf } from "telegraf";
+
 
 const discordClient = new Client({
   intents: [

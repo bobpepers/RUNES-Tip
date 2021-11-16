@@ -2,7 +2,7 @@ import { getInstance } from '../../services/rclient';
 
 import db from '../../models';
 
-import { Sequelize, Transaction, Op } from "sequelize";
+import { Transaction } from "sequelize";
 import logger from "../logger";
 
 /**

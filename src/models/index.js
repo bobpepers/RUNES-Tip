@@ -1,13 +1,14 @@
 // import mysql2 from 'mysql2';
-const mysql2 = require('mysql2');
-const fs = require('fs');
-const path = require('path');
-const Sequelize = require('sequelize');
-const { default: PQueue } = require('p-queue');
+import mysql2 from "mysql2";
+import fs from "fs";
+import path from "path";
+import Sequelize from "sequelize";
+import { default as PQueue } from "p-queue";
 
 const basename = path.basename(__filename);
 const db = {};
-require('dotenv').config();
+import { config } from "dotenv";
+config();
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,

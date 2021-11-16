@@ -1,6 +1,6 @@
-const { MessageEmbed } = require('discord.js');
-const settings = require('../../config/settings');
-var pjson = require('../../../package.json');
+import { MessageEmbed } from "discord.js";
+import settings from "../../config/settings";
+import pjson from "../../../package.json";
 
 export const coinInfoMessage = (blockHeight, priceInfo) => {
   const result = new MessageEmbed()
