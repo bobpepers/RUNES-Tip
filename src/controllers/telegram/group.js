@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import db from '../../models';
 
-const { Transaction, Op } = require('sequelize');
+import { Transaction, Op } from "sequelize";
 
 export const updateGroup = async (ctx) => {
   await db.sequelize.transaction({

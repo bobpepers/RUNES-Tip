@@ -1,7 +1,7 @@
 import db from '../models';
-
-require('dotenv').config();
-const metaget = require('metaget');
+import { config } from "dotenv";
+config();
+import metaget from "metaget";
 
 /**
  * Fetch Currencies

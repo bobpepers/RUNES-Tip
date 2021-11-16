@@ -15,13 +15,18 @@ import {
 } from '../../messages/discord';
 import settings from '../../config/settings';
 
-const svgCaptcha = require('svg-captcha');
-const BigNumber = require('bignumber.js');
-const { Transaction, Op } = require('sequelize');
-const { MessageAttachment, MessageCollector, MessageActionRow, MessageButton } = require('discord.js');
-const { AlgebraicCaptcha } = require('algebraic-captcha');
-const emojiCompact = require('../../config/emoji.json');
-const logger = require('../../helpers/logger');
+import svgCaptcha from "svg-captcha";
+import BigNumber from "bignumber.js";
+import { Transaction, Op } from "sequelize";
+import { 
+  MessageAttachment, 
+  MessageCollector, 
+  MessageActionRow, 
+  MessageButton 
+} from "discord.js";
+import { AlgebraicCaptcha } from "algebraic-captcha";
+import emojiCompact from "../../config/emoji.json";
+import logger from "../../helpers/logger";
 
 function shuffle(array) {
   let currentIndex = array.length; let

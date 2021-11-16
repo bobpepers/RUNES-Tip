@@ -23,10 +23,10 @@ import {
 import settings from '../../config/settings';
 
 
-const { Transaction, Op } = require('sequelize');
-const BigNumber = require('bignumber.js');
-const QRCode = require('qrcode');
-const logger = require('../../helpers/logger');
+import { Transaction, Op } from "sequelize";
+import BigNumber from "bignumber.js";
+import QRCode from "qrcode";
+import logger from "../../helpers/logger";
 
 export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
   await db.sequelize.transaction({

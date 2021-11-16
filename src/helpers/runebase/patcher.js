@@ -1,7 +1,7 @@
 import db from '../../models';
 
-const { Transaction, Op } = require('sequelize');
-const { getInstance } = require('../../services/rclient');
+import { Transaction, Op } from "sequelize";
+import { getInstance } from "../../services/rclient";
 
 async function patchRunebaseDeposits() {
   console.log('start patch deposits');

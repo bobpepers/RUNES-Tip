@@ -11,10 +11,10 @@ import {
 } from '../messages/discord';
 import settings from '../config/settings';
 
-const _ = require('lodash');
-const { Transaction, Op } = require('sequelize');
+import _ from "lodash";
+import { Transaction, Op } from "sequelize";
 
-const { getInstance } = require('./rclient');
+import { getInstance } from "./rclient";
 
 const queue = new PQueue({ concurrency: 1 });
 

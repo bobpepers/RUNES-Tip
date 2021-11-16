@@ -1,6 +1,7 @@
-const { Rweb3 } = require('rweb3');
-const { ARRRweb3 } = require('arrrweb3');
-require('dotenv').config();
+import { Rweb3 } from "rweb3";
+import { ARRRweb3 } from "arrrweb3";
+import { config } from "dotenv";
+config();
 import settings from '../config/settings';
 
 const RClient = (() => {

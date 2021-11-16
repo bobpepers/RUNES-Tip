@@ -90,20 +90,20 @@ import {
   fetchExchangeList,
 } from './controllers/telegram/exchanges';
 import settings from './config/settings';
-
-require('dotenv').config();
+//import { config } from "dotenv";
+//config();
 
 // const PQueue = require('p-queue');
-const logger = require('./helpers/logger');
+import logger from "./helpers/logger";
 
 const queue = new PQueue({ concurrency: 1 });
-const schedule = require('node-schedule');
+import schedule from "node-schedule";
 
 const runesGroup = process.env.TELEGRAM_RUNES_GROUP;
 
-const rateLimit = require('telegraf-ratelimit');
-const { startRunebaseSync } = require('./services/syncRunebase');
-const { startPirateSync } = require('./services/syncPirate');
+import rateLimit from "telegraf-ratelimit";
+import { startRunebaseSync } from "./services/syncRunebase";
+import { startPirateSync } from "./services/syncPirate";
 
 // Set limit to 1 message per 3 seconds
 const limitConfig = {

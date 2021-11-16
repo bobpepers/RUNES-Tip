@@ -4,10 +4,10 @@ import { getInstance } from '../../services/rclient';
 
 import settings from '../../config/settings';
 
-const { Sequelize, Transaction, Op } = require('sequelize');
-const BigNumber = require('bignumber.js');
-const qr = require('qr-image');
-const logger = require('../../helpers/logger');
+import { Sequelize, Transaction, Op } from "sequelize";
+import BigNumber from "bignumber.js";
+import qr from "qr-image";
+import logger from "../../helpers/logger";
 
 const referralRunesReward = 20 * 1e8;
 

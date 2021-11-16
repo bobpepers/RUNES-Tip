@@ -1,7 +1,7 @@
 import db from '../../models';
 
-const { Sequelize, Transaction, Op } = require('sequelize');
-const { getInstance } = require('../../services/rclient');
+import { Transaction } from "sequelize";
+import { getInstance } from "../../services/rclient";
 import settings from '../../config/settings';
 /**
  * Fetch Wallet

@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import { helpMessage } from '../../messages/telegram';
 import settings from '../../config/settings';
-const { Markup } = require('telegraf');
+import { Markup } from "telegraf";
 
 export const fetchHelp = async (ctx) => {
   ctx.replyWithHTML(helpMessage(), Markup.inlineKeyboard(

@@ -10,12 +10,12 @@ import {
   reviewMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
+import { config } from "dotenv";
+config();
 
-require('dotenv').config();
-
-const { Transaction, Op } = require('sequelize');
-const BigNumber = require('bignumber.js');
-const logger = require('../../helpers/logger');
+import { Transaction, Op } from "sequelize";
+import BigNumber from "bignumber.js";
+import logger from "../../helpers/logger";
 /**
  * Create Withdrawal
  */

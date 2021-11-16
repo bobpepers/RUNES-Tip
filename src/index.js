@@ -1,30 +1,29 @@
 /* eslint-disable import/first */
-require('dotenv').config();
+import { config } from "dotenv";
+config();
 
-import express from 'express';
-import http from 'http';
-import bodyParser from 'body-parser';
-import morgan from 'morgan';
-import cors from 'cors';
-import compression from 'compression';
-import router from './router';
-import updatePrice from './helpers/updatePrice';
-// import db from './models';
-import logger from './helpers/logger';
+import express from "express";
+import http from "http";
+import bodyParser from "body-parser";
+import morgan from "morgan";
+import cors from "cors";
+import compression from "compression";
+import { default as router } from "./router";
 
-import { patchRunebaseDeposits } from './helpers/runebase/patcher';
-import { patchPirateDeposits } from './helpers/pirate/patcher';
-import { reactDropMessage } from './messages/discord';
-import { listenReactDrop } from './controllers/discord/reactdrop';
+import { default as updatePrice } from "./helpers/updatePrice";
+import logger from "./helpers/logger";
 
-import db from './models';
-import settings from './config/settings'
+import { patchRunebaseDeposits as patchRunebaseDeposits } from "./helpers/runebase/patcher";
+import { patchPirateDeposits as patchPirateDeposits } from "./helpers/pirate/patcher";
+import { reactDropMessage as reactDropMessage } from "./messages/discord";
+import { listenReactDrop as listenReactDrop } from "./controllers/discord/reactdrop";
+import db from "./models";
+import settings from "./config/settings";
 
-logger.info('logger loader');
-const schedule = require('node-schedule');
-const { startRunebaseSync } = require('./services/syncRunebase');
-const { startPirateSync } = require('./services/syncPirate');
-const { consolidatePirate } = require('./helpers/pirate/consolidate');
+import schedule from "node-schedule";
+import { startRunebaseSync } from "./services/syncRunebase";
+import { startPirateSync } from "./services/syncPirate";
+import { consolidatePirate } from "./helpers/pirate/consolidate";
 
 // const cookieParser = require('cookie-parser');
 
@@ -45,13 +44,8 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-const {
-  Client,
-  Intents,
-  GuildMemberManager,
-  Options,
-} = require('discord.js');
-const { Telegraf } = require('telegraf');
+import { Client, Intents, GuildMemberManager, Options } from "discord.js";
+import { Telegraf } from "telegraf";
 
 const discordClient = new Client({
   intents: [

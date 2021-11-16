@@ -1,5 +1,8 @@
 /* eslint-disable import/prefer-default-export */
-import { warnDirectMessage, helpMessage } from '../../messages/discord';
+import { 
+  warnDirectMessage, 
+  helpMessage 
+} from '../../messages/discord';
 
 export const discordHelp = (message) => {
   if (message.channel.type === 'DM') {

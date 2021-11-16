@@ -1,4 +1,4 @@
-const { getInstance } = require('../../services/rclient');
+import { getInstance } from "../../services/rclient";
 
 async function consolidatePirate() {
   const balances = await getInstance().zGetBalances();

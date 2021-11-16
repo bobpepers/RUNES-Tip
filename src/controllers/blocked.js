@@ -1,6 +1,6 @@
 import db from '../models';
 
-const { Sequelize, Transaction, Op } = require('sequelize');
+import { Sequelize, Transaction, Op } from "sequelize";
 
 /**
  * Fetch PriceInfo

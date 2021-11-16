@@ -22,16 +22,16 @@ import {
   depositAddressMessage,
   balanceMessage,
 } from '../../messages/discord';
+import { config } from "dotenv";
+config();
 
-require('dotenv').config();
+import { MessageAttachment } from "discord.js";
 
-const { MessageAttachment } = require('discord.js');
-
-const { Transaction, Op } = require('sequelize');
-const BigNumber = require('bignumber.js');
+import { Transaction, Op } from "sequelize";
+import BigNumber from "bignumber.js";
 // const qr = require('qr-image');
-const QRCode = require('qrcode');
-const logger = require('../../helpers/logger');
+import QRCode from "qrcode";
+import logger from "../../helpers/logger";
 
 export const fetchDiscordWalletBalance = async (message) => {
   await db.sequelize.transaction({

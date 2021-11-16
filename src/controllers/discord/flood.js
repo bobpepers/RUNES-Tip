@@ -1,4 +1,6 @@
 /* eslint-disable import/prefer-default-export */
+import BigNumber from "bignumber.js";
+import { Transaction } from "sequelize";
 import db from '../../models';
 import {
   invalidAmountMessage,
@@ -8,26 +10,28 @@ import {
   AfterSuccessMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
-
-const BigNumber = require('bignumber.js');
-const { Transaction, Op } = require('sequelize');
-const logger = require('../../helpers/logger');
+import logger from "../../helpers/logger";
 
 export const discordFlood = async (discordClient, message, filteredMessage) => {
-  const guild = await discordClient.guilds.cache.get(message.guildId);
-  const members = guild.presences.cache;
-  const onlineMembersIds = members.map((a) => a.userId);
-  // eslint-disable-next-line no-restricted-syntax
+  const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
+  const onlineMembers = members.filter((member) => 
+  member.presence?.status === "online"
+  || member.presence?.status === "idle"
+  || member.presence?.status === "dnd"
+  || member.presence?.status === "offline"
+  );
+  const mappedMembersArray = onlineMembers.map((a) => {
+    return a.user;
+  });
   const withoutBots = [];
   // eslint-disable-next-line no-restricted-syntax
-  for (const onlineId of onlineMembersIds) {
+  for (const discordUser of mappedMembersArray) {
     // eslint-disable-next-line no-await-in-loop
-    const fetchUserDiscordClient = await discordClient.users.fetch(onlineId);
-    if (fetchUserDiscordClient.bot === false) {
+    if (discordUser.bot === false) {
       // eslint-disable-next-line no-await-in-loop
       const userExist = await db.user.findOne({
         where: {
-          user_id: `discord-${onlineId}`,
+          user_id: `discord-${discordUser.id}`,
         },
         include: [
           {

@@ -2,9 +2,9 @@ import { rest } from 'lodash';
 import db from '../models';
 import logger from './logger';
 
-const schedule = require('node-schedule');
+import schedule from "node-schedule";
 
-const { Sequelize, Transaction, Op } = require('sequelize');
+import { Sequelize, Transaction, Op } from "sequelize";
 
 function sortObject(obj) {
   const arr = [];

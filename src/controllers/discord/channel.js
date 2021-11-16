@@ -1,7 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import db from '../../models';
-
-const { Transaction, Op } = require('sequelize');
+import { Transaction } from "sequelize";
 
 export const updateDiscordChannel = async (client, message) => {
   console.log(message);

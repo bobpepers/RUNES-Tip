@@ -10,9 +10,9 @@ import {
 } from '../../messages/discord';
 import settings from '../../config/settings';
 
-const BigNumber = require('bignumber.js');
-const { Transaction, Op } = require('sequelize');
-const logger = require('../../helpers/logger');
+import BigNumber from "bignumber.js";
+import { Transaction, Op } from "sequelize";
+import logger from "../../helpers/logger";
 
 export const discordSleet = async (client, message, filteredMessage) => {
   await db.sequelize.transaction({

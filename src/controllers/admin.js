@@ -1,15 +1,15 @@
 import db from '../models';
 
-const { MessageEmbed, MessageAttachment } = require('discord.js');
+import { MessageEmbed, MessageAttachment } from "discord.js";
 
-const { Sequelize, Transaction, Op } = require('sequelize');
-const { getInstance } = require('../services/rclient');
-const { discordWithdrawalAcceptedMessage, discordUserWithdrawalRejectMessage } = require('../messages/discord');
-const { withdrawalAcceptedAdminMessage, withdrawalAcceptedMessage } = require('../messages/telegram');
+import { Sequelize, Transaction, Op } from "sequelize";
+import { getInstance } from "../services/rclient";
+import { discordWithdrawalAcceptedMessage, discordUserWithdrawalRejectMessage } from "../messages/discord";
+import { withdrawalAcceptedAdminMessage, withdrawalAcceptedMessage } from "../messages/telegram";
 
 import settings from '../config/settings';
-
-require('dotenv').config();
+import { config } from "dotenv";
+config();
 
 /**
  * Create Withdrawal

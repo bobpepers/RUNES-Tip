@@ -1,7 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import db from '../../models';
 
-const { Transaction, Op } = require('sequelize');
+import { Transaction } from "sequelize";
 
 export const updateDiscordGroup = async (client, message) => {
   await db.sequelize.transaction({

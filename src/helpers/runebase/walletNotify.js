@@ -2,8 +2,8 @@ import { getInstance } from '../../services/rclient';
 
 import db from '../../models';
 
-const { Sequelize, Transaction, Op } = require('sequelize');
-const logger = require('../logger');
+import { Sequelize, Transaction, Op } from "sequelize";
+import logger from "../logger";
 
 /**
  * Notify New Transaction From Runebase Node

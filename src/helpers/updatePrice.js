@@ -1,7 +1,7 @@
 import axios from 'axios';
 import db from '../models';
 import settings from '../config/settings';
-const { Sequelize, Transaction, Op } = require('sequelize');
+import { Sequelize, Transaction, Op } from "sequelize";
 
 const updatePrice = async () => {
   try {
