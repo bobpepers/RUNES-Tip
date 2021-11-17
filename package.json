@@ -24,7 +24,7 @@
     "type": "git",
     "url": "git+https://github.com/bobpepers/RUNES-tip"
   },
-  "author": "Dimtiri Mikadze",
+  "author": "Bago",
   "license": "MIT",
   "devDependencies": {
     "@babel/cli": "^7.16.0",
