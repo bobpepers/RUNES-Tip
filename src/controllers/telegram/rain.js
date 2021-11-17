@@ -8,7 +8,7 @@ import {
   notEnoughActiveUsersMessage,
   minimumRainMessage,
   rainSuccessMessage,
-  rainErrorMessage,
+  generalErrorMessage,
   groupNotFoundMessage,
 } from '../../messages/telegram';
 import settings from '../../config/settings';
@@ -160,6 +160,6 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
       console.log('done');
     });
   }).catch((err) => {
-    ctx.reply(rainErrorMessage());
+    ctx.reply(generalErrorMessage());
   });
 };

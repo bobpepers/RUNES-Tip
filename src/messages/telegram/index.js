@@ -43,7 +43,7 @@ export const withdrawalReviewMessage = () => {
   return result;
 };
 
-export const somethingWentWrongMessage = () => {
+export const generalErrorMessage = () => {
   const result = `Something went wrong`;
   return result;
 };

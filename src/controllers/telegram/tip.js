@@ -8,7 +8,7 @@ import {
   insufficientBalanceMessage,
   minimumTipMessage,
   tipSuccessMessage,
-  somethingWentWrongMessage,
+  generalErrorMessage,
 } from '../../messages/telegram';
 import settings from '../../config/settings';
 
@@ -103,6 +103,6 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => 
       console.log('done');
     });
   }).catch((err) => {
-    ctx.reply(somethingWentWrongMessage());
+    ctx.reply(generalErrorMessage());
   });
 };

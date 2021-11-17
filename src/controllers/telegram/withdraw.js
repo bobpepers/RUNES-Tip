@@ -8,7 +8,7 @@ import {
   invalidAddressMessage,
   userNotFoundMessage,
   insufficientBalanceMessage,
-  somethingWentWrongMessage,
+  generalErrorMessage,
   withdrawalReviewMessage,
 } from '../../messages/telegram';
 import settings from '../../config/settings';
@@ -112,6 +112,6 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
       console.log('done');
     });
   }).catch((err) => {
-    ctx.reply(somethingWentWrongMessage());
+    ctx.reply(generalErrorMessage());
   });
 };
