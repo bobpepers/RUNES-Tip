@@ -17,7 +17,6 @@ export const withdrawTelegramAdminFetch = async (bot, ctx, adminTelegramId) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    console.log('start the widtdddd');
     const withdrawal = await db.transaction.findOne({
       order: [['createdAt', 'DESC']],
       include: [{
