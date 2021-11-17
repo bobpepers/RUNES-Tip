@@ -33,7 +33,7 @@ import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";
 import { consolidatePirate } from "./helpers/pirate/consolidate";
 
-// const cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
 
 const port = process.env.PORT || 8080;
 
@@ -61,7 +61,7 @@ app.use(compression());
 app.use(morgan('combined'));
 app.use(cors());
 app.set('trust proxy', 1);
-// app.use(cookieParser());
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({
   extended: false,
   limit: '5mb',
