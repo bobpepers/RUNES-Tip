@@ -1,12 +1,12 @@
 import { sendVerificationEmail } from '../helpers/email';
-import db from '../models';
+import db from '../../models';
 import { generateVerificationToken, generateHash } from '../helpers/generate';
 import timingSafeEqual from '../helpers/timingSafeEqual';
 
 const crypto = require('crypto');
 
 const { Sequelize, Transaction, Op } = require('sequelize');
-const { getInstance } = require('../services/rclient');
+const { getInstance } = require('../../services/rclient');
 
 /**
  *

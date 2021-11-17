@@ -9,6 +9,11 @@ import {
 } from './controllers/auth';
 
 import {
+  isAdmin,
+  fetchAdminLiability,
+} from './controllers/admin';
+
+import {
   insertIp,
 } from './controllers/ip';
 
@@ -46,7 +51,7 @@ const IsAuthenticated = (req, res, next) => {
   }
 };
 
-const dashboardRouter = (app, io, pub, sub, expired_subKey, volumeInfo, onlineUsers) => {
+export const dashboardRouter = (app) => {
   app.get(
     '/api/authenticated',
     (req, res, next) => {
@@ -180,7 +185,7 @@ const dashboardRouter = (app, io, pub, sub, expired_subKey, volumeInfo, onlineUs
     isUserBanned,
     // storeIp,
     ensuretfa,
-    updateLastSeen,
+    // updateLastSeen,
     enabletfa,
   );
 
@@ -189,7 +194,7 @@ const dashboardRouter = (app, io, pub, sub, expired_subKey, volumeInfo, onlineUs
     IsAuthenticated,
     // storeIp,
     ensuretfa,
-    updateLastSeen,
+    // updateLastSeen,
     disabletfa,
   );
 
@@ -212,5 +217,3 @@ const dashboardRouter = (app, io, pub, sub, expired_subKey, volumeInfo, onlineUs
     },
   );
 };
-
-export default dashboardRouter;

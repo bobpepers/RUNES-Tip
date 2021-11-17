@@ -16,6 +16,7 @@ import schedule from "node-schedule";
 require('dotenv').config();
 
 import { router } from "./router";
+import { dashboardRouter } from "./dashboard/router";
 
 import { updatePrice } from "./helpers/updatePrice";
 // import logger from "./helpers/logger";
@@ -74,6 +75,7 @@ const discordClient = new Client({
 const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
 router(app, discordClient, telegramClient);
+dashboardRouter(app);
 
 server.listen(port);
 
