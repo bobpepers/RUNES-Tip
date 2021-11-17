@@ -15,6 +15,7 @@ import schedule from "node-schedule";
 
 require('dotenv').config();
 
+import passport from 'passport';
 import { router } from "./router";
 import { dashboardRouter } from "./dashboard/router";
 
@@ -39,6 +40,22 @@ const port = process.env.PORT || 8080;
 const app = express();
 
 const server = http.createServer(app);
+const session = require('express-session');
+
+const sessionMiddleware = session({
+  secret: process.env.SESSION_SECRET,
+  key: "connect.sid",
+  resave: false,
+  proxy: true,
+  saveUninitialized: false,
+  ephemeral: false,
+  // store: sessionStore,
+  cookie: {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+  },
+});
 
 app.use(compression());
 app.use(morgan('combined'));
@@ -50,6 +67,9 @@ app.use(bodyParser.urlencoded({
   limit: '5mb',
 }));
 app.use(bodyParser.json());
+app.use(sessionMiddleware);
+app.use(passport.initialize());
+app.use(passport.session());
 
 const discordClient = new Client({
   intents: [
