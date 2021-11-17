@@ -122,4 +122,3 @@ module.exports = (sequelize, DataTypes) => {
 
   return DashboardUserModel;
 };
-// module.exports = UserModel;
