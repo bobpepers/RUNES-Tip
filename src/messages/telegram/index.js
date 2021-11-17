@@ -155,7 +155,7 @@ export const helpMessage = () => {
 /${settings.bot.command.telegram} tip [@user] [amount]
 /tip [@user] [amount]
 <code>Tips the @ mentioned user with the desired amount, e.g.</code>
-/${setting.bot.command.telegram} tip @Bagosan 1.00
+/${settings.bot.command.telegram} tip @Bagosan 1.00
 /tip @Bagosan 1.00
     
       

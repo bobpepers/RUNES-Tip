@@ -17,6 +17,11 @@ import logger from "../../helpers/logger";
 
 export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalAmount) => {
   logger.info(`Start Withdrawal Request: ${ctx.update.message.from.id}-${ctx.update.message.from.username}`);
+  if (ctx.update.message.chat.type !== 'private') {
+    await ctx.reply("i have send you a direct message");
+  }
+
+  // await ctx.telegram.sendMessage(ctx.update.message.from.id, balanceMessage(telegramUserName, user, priceInfo));
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -39,7 +44,7 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
     }
     //
     if (!isValidAddress) {
-      ctx.reply(invalidAddressMessage());
+      ctx.telegram.sendMessage(ctx.update.message.from.id, invalidAddressMessage());
     }
 
     if (amount >= Number(settings.min.withdrawal) && amount % 1 === 0 && isValidAddress) {
@@ -63,11 +68,11 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
         transaction: t,
       });
       if (!user) {
-        ctx.reply(userNotFoundMessage());
+        ctx.telegram.sendMessage(ctx.update.message.from.id, userNotFoundMessage());
       }
       if (user) {
         if (amount > user.wallet.available) {
-          ctx.reply(insufficientBalanceMessage());
+          ctx.telegram.sendMessage(ctx.update.message.from.id, insufficientBalanceMessage());
         }
         if (amount <= user.wallet.available) {
           const wallet = await user.wallet.update({
@@ -99,7 +104,7 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
               lock: t.LOCK.UPDATE,
             },
           );
-          ctx.reply(withdrawalReviewMessage());
+          ctx.telegram.sendMessage(ctx.update.message.from.id, withdrawalReviewMessage());
         }
       }
     }

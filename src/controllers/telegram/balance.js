@@ -8,6 +8,9 @@ import {
 import logger from "../../helpers/logger";
 
 export const fetchWalletBalance = async (ctx, telegramUserId, telegramUserName) => {
+  console.log(ctx.update.message);
+  console.log(ctx.update.message.chat.type);
+
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -48,7 +51,11 @@ export const fetchWalletBalance = async (ctx, telegramUserId, telegramUserName) 
       transaction: t,
     });
 
-    await ctx.reply(balanceMessage(telegramUserName, user, priceInfo));
+    if (ctx.update.message.chat.type !== 'private') {
+      await ctx.reply("i have send you a direct message");
+    }
+
+    await ctx.telegram.sendMessage(ctx.update.message.from.id, balanceMessage(telegramUserName, user, priceInfo));
 
     t.afterCommit(() => {
       logger.info(`Success Balance Requested by: ${telegramUserId}-${telegramUserName}`);
