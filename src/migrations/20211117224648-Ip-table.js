@@ -27,7 +27,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, DataTypes) => {
-    // await queryInterface.removeConstraint('activity', 'activity_ipId_foreign_idx');
     await queryInterface.dropTable('ip');
   },
 };

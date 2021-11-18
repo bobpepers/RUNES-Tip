@@ -127,6 +127,16 @@ export const dashboardRouter = (app) => {
   );
 
   app.post(
+    '/api/resend-verify-code',
+    // IsAuthenticated,
+    insertIp,
+    // rateLimiterMiddlewarePhone,
+    // ensuretfa,
+    // updateLastSeen,
+    resendVerification,
+  );
+
+  app.post(
     '/api/signin',
     (req, res, next) => {
       console.log('Click Login');

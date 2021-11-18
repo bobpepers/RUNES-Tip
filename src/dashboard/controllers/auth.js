@@ -62,7 +62,7 @@ export const signin = async (req, res, next) => {
           email,
           authtoken,
         } = updatedUser;
-        sendVerificationEmail(email, firstname, authtoken);
+        sendVerificationEmail(email, authtoken);
         console.log('EMAIL_SENT');
         return next(req.authErr, false);
       }).catch((err) => next(err, false));
@@ -156,10 +156,12 @@ export const destroySession = async (req, res, next) => {
  */
 export const signup = async (req, res, next) => {
   const {
-    firstname, lastname, email, password, username, referredby,
+    email,
+    password,
+    username,
   } = req.body.props;
 
-  if (!firstname || !lastname || !email || !password || !username) {
+  if (!email || !password || !username) {
     return res.status(422).send({ error: "all fields are required" });
   }
 
@@ -170,7 +172,7 @@ export const signup = async (req, res, next) => {
     });
   }
 
-  const User = await db.user.findOne({
+  const User = await db.dashboardUser.findOne({
     where: {
       [Op.or]: [
         {
@@ -200,63 +202,21 @@ export const signup = async (req, res, next) => {
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const verificationToken = await generateVerificationToken(24);
-    console.log('verificationToken');
-    console.log(verificationToken);
-    console.log('verificationToken');
-    const newUser = await db.user.create({
+    const newUser = await db.dashboardUser.create({
       username,
       password,
       email: email.toLowerCase(),
-      firstname,
-      lastname,
       authused: false,
       authexpires: verificationToken.expires,
       authtoken: verificationToken.token,
-      bio: ' ',
-    }, {
-      transaction: t,
-      lock: t.LOCK.UPDATE,
-    });
-
-    const referred = await db.user.findOne({
-      where: {
-        username: referredby,
-      },
-    });
-
-    if (referred) {
-      console.log(referred);
-      const referral = await db.Referrals.create({
-        referrerID: newUser.id,
-        referredById: referred.id,
-      }, {
-        transaction: t,
-        lock: t.LOCK.UPDATE,
-      });
-    }
-
-    const newWallet = await db.wallet.create({
-      userId: newUser.id,
-    }, {
-      transaction: t,
-      lock: t.LOCK.UPDATE,
-    });
-
-    const activity = await db.activity.create({
-      earnerId: newUser.id,
-      type: 'register',
-      ipId: res.locals.ip[0].id,
     }, {
       transaction: t,
       lock: t.LOCK.UPDATE,
     });
 
     t.afterCommit(() => {
-      sendVerificationEmail(email.toLowerCase(), firstname, newUser.authtoken);
-      console.log('commited');
+      sendVerificationEmail(email.toLowerCase(), newUser.authtoken);
       return res.json({
-        firstname,
-        lastname,
         email: email.toLowerCase(),
       });
       // next();
@@ -267,10 +227,10 @@ export const signup = async (req, res, next) => {
 /**
  * Resend verification code
  */
-export const resendVerification = (req, res, next) => {
+export const resendVerification = async (req, res, next) => {
   console.log('resend verification');
   const { email } = req.body;
-  db.user.findOne({
+  db.dashboardUser.findOne({
     where: {
       [Op.or]: [
         {
@@ -289,13 +249,8 @@ export const resendVerification = (req, res, next) => {
       authexpires: verificationToken.expires,
       authtoken: verificationToken.token,
     }).then((updatedUser) => {
-      const { firstname, email, authtoken } = updatedUser;
-      sendVerificationEmail(email.toLowerCase(), firstname, authtoken);
-      console.log('RESEND THE FRKN EMAIL');
-      console.log('RESEND THE FRKN EMAIL');
-      console.log('RESEND THE FRKN EMAIL');
-      console.log('RESEND THE FRKN EMAIL');
-      console.log('RESEND THE FRKN EMAIL');
+      const { email, authtoken } = updatedUser;
+      sendVerificationEmail(email.toLowerCase(), authtoken);
       res.json({ success: true });
     }).catch((err) => {
       next(err);
@@ -311,7 +266,7 @@ export const resendVerification = (req, res, next) => {
 export const verifyEmail = (req, res, next) => {
   const { email, token } = req.body;
 
-  db.user.findOne({
+  db.dashboardUser.findOne({
     where: {
       [Op.or]: [
         {
@@ -337,12 +292,6 @@ export const verifyEmail = (req, res, next) => {
       role: 1,
     }).then(async (updatedUser) => {
       res.locals.user = updatedUser;
-      const activity = await db.activity.create({
-        earnerId: updatedUser.id,
-        type: 'registerVerified',
-        ipId: res.locals.ip[0].id,
-      });
-
       next();
     }).catch((err) => {
       res.locals.error = err.message;
