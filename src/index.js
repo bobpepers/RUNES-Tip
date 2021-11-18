@@ -33,6 +33,8 @@ import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";
 import { consolidatePirate } from "./helpers/pirate/consolidate";
 
+const redis = require('redis');
+
 const cookieParser = require('cookie-parser');
 
 const port = process.env.PORT || 8080;
@@ -47,6 +49,16 @@ app.use(morgan('combined'));
 app.use(cors());
 app.set('trust proxy', 1);
 
+const connectRedis = require('connect-redis');
+
+const RedisStore = connectRedis(session);
+const CONF = { db: 3 };
+const pub = redis.createClient(CONF);
+
+const sessionStore = new RedisStore({
+  client: pub,
+});
+
 const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET,
   key: "connect.sid",
@@ -54,7 +66,7 @@ const sessionMiddleware = session({
   proxy: true,
   saveUninitialized: false,
   ephemeral: false,
-  // store: sessionStore,
+  store: sessionStore,
   cookie: {
     httpOnly: true,
     secure: true,

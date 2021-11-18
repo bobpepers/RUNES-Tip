@@ -121,7 +121,9 @@ export const fetchAdminNodeBalance = async (req, res, next) => {
  * isAdmin
  */
 export const isAdmin = async (req, res, next) => {
-  if (req.user.role !== 4) {
+  console.log('req.user.role');
+  console.log(req.user.role);
+  if (req.user.role !== 4 && req.user.role !== 8) {
     console.log('unauthorized');
     res.status(401).send({
       error: 'Unauthorized',

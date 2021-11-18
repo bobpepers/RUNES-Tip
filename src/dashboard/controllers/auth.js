@@ -30,11 +30,12 @@ export const isUserBanned = async (req, res, next) => {
  * Sign in
  */
 export const signin = async (req, res, next) => {
+  console.log('start signin');
   const ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   if (req.authErr === 'USER_NOT_EXIST') {
     return next('USER_NOT_EXIST', false);
   }
-  console.log(req.authErr);
+  // console.log(req.authErr);
   if (req.authErr === 'EMAIL_NOT_VERIFIED') {
     console.log('EMAIL_NOT_VERIFIED');
     const email = req.user_email;
@@ -88,9 +89,31 @@ export const signin = async (req, res, next) => {
     //   },
     // ],
     // });
+    console.log('before send');
+    if (req.authErr === 'EMAIL_NOT_VERIFIED') {
+      console.log('EMAIL_NOT_VERIFIED');
+      req.session.destroy();
+      res.status(401).send({
+        error: req.authErr,
+        email: res.locals.email,
+      });
+    } else if (req.authErr) {
+      console.log(req.authErr);
+      console.log('LOGIN_ERROR');
+      req.session.destroy();
+      res.status(401).send({
+        error: 'LOGIN_ERROR',
+      });
+    } else {
+      // console.log(req);
+      // console.log('Login Successfuls');
+      // console.log(req.user.username);
+      res.json({
+        username: req.user.username,
+      });
+    }
 
-    console.log('Login Successful');
-    next();
+    // next();
   }
 };
 

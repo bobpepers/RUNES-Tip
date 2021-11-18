@@ -58,11 +58,9 @@ const localLogin = new LocalStrategy(localOptions, (req, email, password, done) 
             if (user.role < 1) {
                 console.log('email is not verified');
                 req.authErr = 'EMAIL_NOT_VERIFIED';
-                console.log('123');
                 return done('EMAIL_NOT_VERIFIED', false);
             }
             console.log('end locallogin');
-            console.log('services/passport req.session.tfa called to true');
             req.session.tfa = user.tfa;
             done(null, user);
         });

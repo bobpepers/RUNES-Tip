@@ -18,6 +18,14 @@ import {
 } from './controllers/ip';
 
 import {
+  fetchServers,
+} from './controllers/servers';
+
+import {
+  fetchNodeStatus,
+} from './controllers/status';
+
+import {
   resetPassword,
   verifyResetPassword,
   resetPasswordNew,
@@ -37,7 +45,7 @@ import {
 
 // import storeIp from './helpers/storeIp';
 
-const requireAuth = passport.authenticate('jwt', { session: true, failWithError: true });
+// const requireAuth = passport.authenticate('jwt', { session: true, failWithError: true });
 const requireSignin = passport.authenticate('local', { session: true, failWithError: true });
 
 const IsAuthenticated = (req, res, next) => {
@@ -71,10 +79,53 @@ export const dashboardRouter = (app) => {
     signup,
   );
 
+  app.post(
+    '/api/servers',
+    IsAuthenticated,
+    isAdmin,
+    insertIp,
+    fetchServers,
+    (req, res) => {
+      if (res.locals.servers) {
+        res.json({
+          servers: res.locals.servers,
+        });
+      } else {
+        res.status(401).send({
+          error: {
+            message: "Error",
+          },
+        });
+      }
+    },
+  );
+
+  app.get(
+    '/api/status',
+    IsAuthenticated,
+    isAdmin,
+    insertIp,
+    fetchNodeStatus,
+    (req, res) => {
+      if (res.locals.status && res.locals.peers) {
+        res.json({
+          status: res.locals.status,
+          peers: res.locals.peers,
+        });
+      } else {
+        res.status(401).send({
+          error: {
+            message: "Error",
+          },
+        });
+      }
+    },
+  );
+
   app.get(
     '/api/admin/liability',
     IsAuthenticated,
-    isAdmin,
+    // isAdmin,
     ensuretfa,
     fetchAdminLiability,
     (req, res) => {
@@ -141,11 +192,9 @@ export const dashboardRouter = (app) => {
     verifyMyCaptcha,
     // insertIp,
     requireSignin,
-    // isUserBanned,
+    isUserBanned,
     signin,
     (err, req, res, next) => {
-      console.log('123');
-      console.log(req);
       if (req.authErr === 'EMAIL_NOT_VERIFIED') {
         console.log('EMAIL_NOT_VERIFIED');
         req.session.destroy();
@@ -161,9 +210,11 @@ export const dashboardRouter = (app) => {
           error: 'LOGIN_ERROR',
         });
       }
-      console.log('Login Successful');
+      // console.log(req);
+      // console.log('Login Successful');
+      // console.log(req.user.username);
       res.json({
-        username: req.username,
+        username: req.user.username,
       });
     },
   );
