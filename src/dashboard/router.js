@@ -26,7 +26,7 @@ import {
 import {
   verifyMyCaptcha,
 } from './controllers/recaptcha';
-
+import passportService from './services/passport';
 import {
   disabletfa,
   enabletfa,
@@ -37,7 +37,7 @@ import {
 
 // import storeIp from './helpers/storeIp';
 
-// const requireAuth = passport.authenticate('jwt', { session: true, failWithError: true });
+const requireAuth = passport.authenticate('jwt', { session: true, failWithError: true });
 const requireSignin = passport.authenticate('local', { session: true, failWithError: true });
 
 const IsAuthenticated = (req, res, next) => {
@@ -138,34 +138,29 @@ export const dashboardRouter = (app) => {
 
   app.post(
     '/api/signin',
-    (req, res, next) => {
-      console.log('Click Login');
-      next();
-    },
     verifyMyCaptcha,
-    insertIp,
+    // insertIp,
     requireSignin,
-    isUserBanned,
+    // isUserBanned,
     signin,
     (err, req, res, next) => {
+      console.log('123');
+      console.log(req);
       if (req.authErr === 'EMAIL_NOT_VERIFIED') {
+        console.log('EMAIL_NOT_VERIFIED');
         req.session.destroy();
         res.status(401).send({
           error: req.authErr,
           email: res.locals.email,
         });
       } else if (req.authErr) {
+        console.log(req.authErr);
+        console.log('LOGIN_ERROR');
         req.session.destroy();
         res.status(401).send({
           error: 'LOGIN_ERROR',
         });
       }
-    },
-    (req, res, next) => {
-      if (res.locals.activity) {
-        io.emit('Activity', res.locals.activity);
-      }
-
       console.log('Login Successful');
       res.json({
         username: req.username,

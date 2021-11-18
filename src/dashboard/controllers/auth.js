@@ -39,7 +39,7 @@ export const signin = async (req, res, next) => {
     console.log('EMAIL_NOT_VERIFIED');
     const email = req.user_email;
     res.locals.email = req.user_email;
-    db.user.findOne({
+    db.dashboardUser.findOne({
       where: {
         [Op.or]: [
           {
@@ -56,9 +56,7 @@ export const signin = async (req, res, next) => {
         authexpires: verificationToken.tomorrow,
         authtoken: verificationToken.authtoken,
       }).then((updatedUser) => {
-        console.log('55555');
         const {
-          firstname,
           email,
           authtoken,
         } = updatedUser;
@@ -68,56 +66,30 @@ export const signin = async (req, res, next) => {
       }).catch((err) => next(err, false));
     }).catch((err) => next(err, false));
   } else {
-    const { firstname, lastname, email } = req;
-    console.log('get wallet');
-    db.wallet.findOne({
-      where: {
-        userId: req.user.id,
-      },
-      include: [{
-        model: db.address,
-      }],
-    }).then(async (wallet) => {
-      if (!wallet.addresses.length) {
-        const address = await getInstance().getNewAddress();
-        await db.address.create({
-          address,
-          walletId: wallet.id,
-          type: 'deposit',
-          confirmed: true,
-        });
-      }
-    }).catch((err) => {
-      console.log(err);
-    });
-
-    console.log(req.user.id);
-
-    const activity = await db.activity.create({
-      earnerId: req.user.id,
-      type: 'login',
-      ipId: res.locals.ip[0].id,
-    });
-    res.locals.activity = await db.activity.findOne({
-      where: {
-        id: activity.id,
-      },
-      attributes: [
-        'createdAt',
-        'type',
-      ],
-      include: [
-        {
-          model: db.user,
-          as: 'earner',
-          required: false,
-          attributes: ['username'],
-        },
-      ],
-    });
+    // const activity = await db.activity.create({
+    //  earnerId: req.user.id,
+    //  type: 'login',
+    //  ipId: res.locals.ip[0].id,
+    // });
+    // res.locals.activity = await db.activity.findOne({
+    //  where: {
+    //    id: activity.id,
+    //  },
+    //  attributes: [
+    //    'createdAt',
+    //    'type',
+    //  ],
+    // include: [
+    //   {
+    //     model: db.user,
+    //    as: 'earner',
+    //      required: false,
+    //     attributes: ['username'],
+    //   },
+    // ],
+    // });
 
     console.log('Login Successful');
-
     next();
   }
 };

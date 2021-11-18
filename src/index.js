@@ -42,6 +42,11 @@ const app = express();
 const server = http.createServer(app);
 const session = require('express-session');
 
+app.use(compression());
+app.use(morgan('combined'));
+app.use(cors());
+app.set('trust proxy', 1);
+
 const sessionMiddleware = session({
   secret: process.env.SESSION_SECRET,
   key: "connect.sid",
@@ -57,16 +62,13 @@ const sessionMiddleware = session({
   },
 });
 
-app.use(compression());
-app.use(morgan('combined'));
-app.use(cors());
-app.set('trust proxy', 1);
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({
   extended: false,
   limit: '5mb',
 }));
 app.use(bodyParser.json());
+
 app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
