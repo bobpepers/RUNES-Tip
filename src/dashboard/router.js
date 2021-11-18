@@ -30,6 +30,10 @@ import {
 } from './controllers/withdrawals';
 
 import {
+  fetchActivity,
+} from './controllers/activity';
+
+import {
   resetPassword,
   verifyResetPassword,
   resetPasswordNew,
@@ -92,6 +96,27 @@ export const dashboardRouter = (app) => {
     verifyMyCaptcha,
     insertIp,
     signup,
+  );
+
+  app.post(
+    '/api/activity',
+    IsAuthenticated,
+    isAdmin,
+    insertIp,
+    fetchActivity,
+    (req, res) => {
+      if (res.locals.activity) {
+        res.json({
+          activity: res.locals.activity,
+        });
+      } else {
+        res.status(401).send({
+          error: {
+            message: "Error",
+          },
+        });
+      }
+    },
   );
 
   app.post(
