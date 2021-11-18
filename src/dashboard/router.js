@@ -34,6 +34,14 @@ import {
 import {
   verifyMyCaptcha,
 } from './controllers/recaptcha';
+
+import {
+  fetchDashboardUsers,
+} from './controllers/dashboardUsers';
+
+import {
+  fetchUsers,
+} from './controllers/users';
 import passportService from './services/passport';
 import {
   disabletfa,
@@ -77,6 +85,47 @@ export const dashboardRouter = (app) => {
     verifyMyCaptcha,
     insertIp,
     signup,
+  );
+
+  app.post(
+    '/api/users',
+    IsAuthenticated,
+    isAdmin,
+    insertIp,
+    fetchUsers,
+    (req, res) => {
+      if (res.locals.users) {
+        res.json({
+          users: res.locals.users,
+        });
+      } else {
+        res.status(401).send({
+          error: {
+            message: "Error",
+          },
+        });
+      }
+    },
+  );
+  app.post(
+    '/api/dashboardusers',
+    IsAuthenticated,
+    isAdmin,
+    insertIp,
+    fetchDashboardUsers,
+    (req, res) => {
+      if (res.locals.dashboardusers) {
+        res.json({
+          dashboardusers: res.locals.dashboardusers,
+        });
+      } else {
+        res.status(401).send({
+          error: {
+            message: "Error",
+          },
+        });
+      }
+    },
   );
 
   app.post(
