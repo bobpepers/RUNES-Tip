@@ -26,6 +26,10 @@ import {
 } from './controllers/status';
 
 import {
+  fetchWithdrawals,
+} from './controllers/withdrawals';
+
+import {
   resetPassword,
   verifyResetPassword,
   resetPasswordNew,
@@ -38,6 +42,9 @@ import {
 import {
   fetchDashboardUsers,
 } from './controllers/dashboardUsers';
+import {
+  fetchDeposits,
+} from './controllers/deposits';
 
 import {
   fetchUsers,
@@ -85,6 +92,48 @@ export const dashboardRouter = (app) => {
     verifyMyCaptcha,
     insertIp,
     signup,
+  );
+
+  app.post(
+    '/api/withdrawals',
+    IsAuthenticated,
+    isAdmin,
+    insertIp,
+    fetchWithdrawals,
+    (req, res) => {
+      if (res.locals.withdrawals) {
+        res.json({
+          withdrawals: res.locals.withdrawals,
+        });
+      } else {
+        res.status(401).send({
+          error: {
+            message: "Error",
+          },
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/deposits',
+    IsAuthenticated,
+    isAdmin,
+    insertIp,
+    fetchDeposits,
+    (req, res) => {
+      if (res.locals.deposits) {
+        res.json({
+          deposits: res.locals.deposits,
+        });
+      } else {
+        res.status(401).send({
+          error: {
+            message: "Error",
+          },
+        });
+      }
+    },
   );
 
   app.post(
