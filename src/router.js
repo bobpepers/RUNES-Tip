@@ -152,7 +152,6 @@ export const router = (app, discordClient, telegramClient, io) => {
   });
 
   discordClient.on("messageCreate", async (message) => {
-    console.log(message);
     if (!message.author.bot) {
       const walletExists = await createUpdateDiscordUser(message);
       await queue.add(() => walletExists);
@@ -193,7 +192,7 @@ export const router = (app, discordClient, telegramClient, io) => {
     }
     console.log(filteredMessageDiscord);
     if (filteredMessageDiscord[1].toLowerCase() === 'balance') {
-      const task = await fetchDiscordWalletBalance(message);
+      const task = await fetchDiscordWalletBalance(message, io);
       await queue.add(() => task);
     }
 

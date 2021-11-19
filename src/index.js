@@ -103,6 +103,7 @@ io.on("connection", async (socket) => {
     socket.request.user.role === 4
     || socket.request.user.role === 8
   ) {
+    console.log('joined admin socket');
     socket.join('admin');
     sockets[userId] = socket;
   }

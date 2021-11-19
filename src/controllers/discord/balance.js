@@ -6,7 +6,7 @@ import {
 import db from '../../models';
 import logger from "../../helpers/logger";
 
-export const fetchDiscordWalletBalance = async (message) => {
+export const fetchDiscordWalletBalance = async (message, io) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -55,9 +55,18 @@ export const fetchDiscordWalletBalance = async (message) => {
         await message.author.send({ embeds: [balanceMessage(userId, user, priceInfo)] });
       }
 
-      await db.activity.create({
+      console.log(user.id);
+      console.log("user.id");
+      const activity = await db.activity.create({
         type: 'balance',
         earnerId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+
+      io.to('admin').emit('updateActivity', {
+        activity,
       });
     }
 
