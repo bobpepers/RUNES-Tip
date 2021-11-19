@@ -14,6 +14,13 @@ import {
 } from './controllers/admin';
 
 import {
+  fetchLiability,
+} from './controllers/liability';
+import {
+  fetchBalance,
+} from './controllers/balance';
+
+import {
   insertIp,
 } from './controllers/ip';
 
@@ -246,11 +253,35 @@ export const dashboardRouter = (app) => {
   );
 
   app.get(
-    '/api/admin/liability',
+    '/api/balance',
     IsAuthenticated,
-    // isAdmin,
+    isAdmin,
     ensuretfa,
-    fetchAdminLiability,
+    fetchBalance,
+    (req, res) => {
+      if (res.locals.error) {
+        res.status(401).send({
+          error: {
+            message: res.locals.error,
+            resend: false,
+          },
+        });
+      }
+      if (res.locals.balance) {
+        console.log(res.locals.balance);
+        res.json({
+          balance: res.locals.balance,
+        });
+      }
+    },
+  );
+
+  app.get(
+    '/api/liability',
+    IsAuthenticated,
+    isAdmin,
+    ensuretfa,
+    fetchLiability,
     (req, res) => {
       if (res.locals.error) {
         res.status(401).send({

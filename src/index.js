@@ -33,6 +33,7 @@ import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";
 import { consolidatePirate } from "./helpers/pirate/consolidate";
 
+const socketIo = require("socket.io");
 const redis = require('redis');
 
 const cookieParser = require('cookie-parser');
@@ -42,6 +43,7 @@ const port = process.env.PORT || 8080;
 const app = express();
 
 const server = http.createServer(app);
+const io = socketIo(server, { cookie: false });
 const session = require('express-session');
 
 app.use(compression());
@@ -84,6 +86,38 @@ app.use(bodyParser.json());
 app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
+const wrap = (middleware) => (socket, next) => middleware(socket.request, {}, next);
+
+io.use(wrap(sessionMiddleware));
+io.use(wrap(passport.initialize()));
+io.use(wrap(passport.session()));
+
+const onlineUsers = {};
+
+io.on("connection", async (socket) => {
+  const userId = socket.request.session.passport ? socket.request.session.passport.user : '';
+
+  // console.log(userId);
+  // console.log(onlineUsers);
+  // console.log(socket.request.user);
+  if (socket.request.user.role === 4) {
+    socket.join('admin');
+  }
+  if (userId !== '') {
+    onlineUsers[userId] = socket;;
+    // onlineUsers.reduce((a, b) => { if (a.indexOf(b) < 0)a.push(b); return a; }, []);
+  }
+  io.emit('Online', Object.keys(onlineUsers).length);
+  // onlineUsers[userId].emit('Private', { msg: "private message" });
+  console.log(Object.keys(onlineUsers).length);
+  socket.on("disconnect", () => {
+    // onlineUsers = onlineUsers.filter((item) => item !== userId);
+    delete onlineUsers[userId];
+    io.emit("Online", Object.keys(onlineUsers).length);
+    console.log(Object.keys(onlineUsers).length);
+    console.log("Client disconnected");
+  });
+});
 
 const discordClient = new Client({
   intents: [
