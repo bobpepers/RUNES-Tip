@@ -140,7 +140,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
       lock: t.LOCK.UPDATE,
     });
 
-    const updatedFindUserToTip = findUserToTip.wallet.update({
+    const updatedFindUserToTip = await findUserToTip.wallet.update({
       available: findUserToTip.wallet.available + amount,
     }, {
       transaction: t,
@@ -154,7 +154,10 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
       transaction: t,
       lock: t.LOCK.UPDATE,
     });
+    console.log(updatedFindUserToTip);
+    console.log("updatedFindUserToTip");
     activity = await db.activity.create({
+      amount,
       type: 'tip_s',
       earnerId: findUserToTip.id,
       spenderId: user.id,
@@ -192,6 +195,10 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
       {
         model: db.user,
         as: 'earner',
+      },
+      {
+        model: db.user,
+        as: 'spender',
       },
     ],
   });
