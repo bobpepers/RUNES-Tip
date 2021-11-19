@@ -7,7 +7,7 @@ import {
 } from '../../messages/discord';
 import db from '../../models';
 
-export const setIgnoreMe = async (message) => {
+export const setIgnoreMe = async (message, io) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {

@@ -13,7 +13,7 @@ import BigNumber from "bignumber.js";
 import { Transaction } from "sequelize";
 import logger from "../../helpers/logger";
 
-export const discordSoak = async (discordClient, message, filteredMessage) => {
+export const discordSoak = async (discordClient, message, filteredMessage, io) => {
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
   const onlineMembers = members.filter((member) => 
   member.presence?.status === "online"

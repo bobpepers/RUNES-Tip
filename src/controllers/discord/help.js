@@ -4,7 +4,7 @@ import {
   helpMessage,
 } from '../../messages/discord';
 
-export const discordHelp = (message) => {
+export const discordHelp = (message, io) => {
   if (message.channel.type === 'DM') {
     message.author.send({ embeds: [helpMessage] });
   }

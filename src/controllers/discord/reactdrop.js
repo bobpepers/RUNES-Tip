@@ -385,7 +385,7 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
   });
 };
 
-export const discordReactDrop = async (discordClient, message, filteredMessage) => {
+export const discordReactDrop = async (discordClient, message, filteredMessage, io) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -464,8 +464,8 @@ export const discordReactDrop = async (discordClient, message, filteredMessage) 
             || (
               cutLastTimeLetter !== 'd'
               && cutLastTimeLetter !== 'h'
-          && cutLastTimeLetter !== 'm'
-          && cutLastTimeLetter !== 's')
+              && cutLastTimeLetter !== 'm'
+              && cutLastTimeLetter !== 's')
           ) {
             await message.channel.send({ embeds: [invalidTimeMessage(message, 'Reactdrop')] });
           } else if (cutLastTimeLetter === 's' && Number(cutNumberTime) < 60) {

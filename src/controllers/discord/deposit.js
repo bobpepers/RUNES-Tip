@@ -8,7 +8,7 @@ import {
 } from '../../messages/discord';
 import logger from "../../helpers/logger";
 
-export const fetchDiscordWalletDepositAddress = async (message) => {
+export const fetchDiscordWalletDepositAddress = async (message, io) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {

@@ -174,20 +174,20 @@ export const router = (app, discordClient, telegramClient, io) => {
     }
 
     if (filteredMessageDiscord[1] === undefined) {
-      const task = await discordHelp(message);
+      const task = await discordHelp(message, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'help') {
-      const task = await discordHelp(message);
+      const task = await discordHelp(message, io);
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'info') {
-      const task = await discordCoinInfo(message);
+      const task = await discordCoinInfo(message, io);
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'ignoreme') {
-      const task = await setIgnoreMe(message);
+      const task = await setIgnoreMe(message, io);
       await queue.add(() => task);
     }
     console.log(filteredMessageDiscord);
@@ -197,47 +197,47 @@ export const router = (app, discordClient, telegramClient, io) => {
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'deposit') {
-      const task = await fetchDiscordWalletDepositAddress(message);
+      const task = await fetchDiscordWalletDepositAddress(message, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'withdraw') {
-      const task = await withdrawDiscordCreate(message, filteredMessageDiscord);
+      const task = await withdrawDiscordCreate(message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'rain') {
-      const task = await discordRain(discordClient, message, filteredMessageDiscord);
+      const task = await discordRain(discordClient, message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'flood') {
-      const task = await discordFlood(discordClient, message, filteredMessageDiscord);
+      const task = await discordFlood(discordClient, message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'thunder') {
-      const task = await discordThunder(discordClient, message, filteredMessageDiscord);
+      const task = await discordThunder(discordClient, message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'thunderstorm') {
-      const task = await discordThunderStorm(discordClient, message, filteredMessageDiscord);
+      const task = await discordThunderStorm(discordClient, message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'soak') {
-      const task = await discordSoak(discordClient, message, filteredMessageDiscord);
+      const task = await discordSoak(discordClient, message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'sleet') {
-      const task = await discordSleet(discordClient, message, filteredMessageDiscord);
+      const task = await discordSleet(discordClient, message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'reactdrop') {
-      const task = await discordReactDrop(discordClient, message, filteredMessageDiscord);
+      const task = await discordReactDrop(discordClient, message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
 

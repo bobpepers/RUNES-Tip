@@ -18,7 +18,7 @@ import BigNumber from "bignumber.js";
 import { Transaction, Op } from "sequelize";
 import logger from "../../helpers/logger";
 
-export const discordThunderStorm = async (discordClient, message, filteredMessage) => {
+export const discordThunderStorm = async (discordClient, message, filteredMessage, io) => {
   if (Number(filteredMessage[2]) > 50) {
     await message.channel.send({ embeds: [thunderstormMaxUserAmountMessage(message)] });
     return;
@@ -32,7 +32,7 @@ export const discordThunderStorm = async (discordClient, message, filteredMessag
     return;
   }
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  const onlineMembers = members.filter((member) => 
+  const onlineMembers = members.filter((member) =>
     member.presence?.status === "online"
   );
   const mappedMembersArray = onlineMembers.map((a) => {
@@ -165,7 +165,7 @@ export const discordThunderStorm = async (discordClient, message, filteredMessag
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      
+
       if (thunderee.ignoreMe) {
         listOfUsersRained.push(`${thunderee.username}`);
       } else {

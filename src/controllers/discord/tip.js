@@ -14,7 +14,7 @@ import settings from '../../config/settings';
 
 import logger from "../../helpers/logger";
 
-export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTip) => {
+export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTip, io) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {

@@ -5,7 +5,7 @@ import {
 } from '../../messages/discord';
 import db from '../../models';
 
-export const discordCoinInfo = async (message) => {
+export const discordCoinInfo = async (message, io) => {
   const blockHeight = await db.block.findOne({
     order: [['id', 'DESC']],
   });
@@ -19,5 +19,30 @@ export const discordCoinInfo = async (message) => {
     message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Coin Info')] });
     message.author.send({ embeds: [coinInfoMessage(blockHeight.id, priceInfo)] });
   }
+  let activity;
+  const user = await db.user.findOne({
+    where: {
+      user_id: `discord-${message.author.id}`,
+    },
+  });
+  activity = await db.activity.create({
+    type: 'info',
+    earnerId: user.id,
+  });
+
+  activity = await db.activity.findOne({
+    where: {
+      id: activity.id,
+    },
+    include: [
+      {
+        model: db.user,
+        as: 'earner',
+      },
+    ],
+  });
+  io.to('admin').emit('updateActivity', {
+    activity,
+  });
   return true;
 };

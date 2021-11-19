@@ -12,9 +12,9 @@ import {
 import settings from '../../config/settings';
 import logger from "../../helpers/logger";
 
-export const discordFlood = async (discordClient, message, filteredMessage) => {
+export const discordFlood = async (discordClient, message, filteredMessage, io) => {
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  const onlineMembers = members.filter((member) => 
+  const onlineMembers = members.filter((member) =>
     member.presence?.status === "online"
     || member.presence?.status === "idle"
     || member.presence?.status === "dnd"
@@ -150,7 +150,7 @@ export const discordFlood = async (discordClient, message, filteredMessage) => {
         const userIdReceivedRain = floodee.user_id.replace('discord-', '');
         listOfUsersRained.push(`<@${userIdReceivedRain}>`);
       }
-      
+
     }
 
     const newStringListUsers = listOfUsersRained.join(", ");

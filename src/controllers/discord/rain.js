@@ -13,9 +13,9 @@ import BigNumber from "bignumber.js";
 import { Transaction, Op } from "sequelize";
 import logger from "../../helpers/logger";
 
-export const discordRain = async (discordClient, message, filteredMessage) => {
+export const discordRain = async (discordClient, message, filteredMessage, io) => {
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  const onlineMembers = members.filter((member) => 
+  const onlineMembers = members.filter((member) =>
     member.presence?.status === "online"
   );
   const mappedMembersArray = onlineMembers.map((a) => {
@@ -151,7 +151,7 @@ export const discordRain = async (discordClient, message, filteredMessage) => {
         const userIdReceivedRain = rainee.user_id.replace('discord-', '');
         listOfUsersRained.push(`<@${userIdReceivedRain}>`);
       }
-      
+
     }
 
     const newStringListUsers = listOfUsersRained.join(", ");

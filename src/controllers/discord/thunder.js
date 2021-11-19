@@ -15,10 +15,10 @@ import BigNumber from "bignumber.js";
 import { Transaction, Op } from "sequelize";
 import logger from "../../helpers/logger";
 
-export const discordThunder = async (discordClient, message, filteredMessage) => {
+export const discordThunder = async (discordClient, message, filteredMessage, io) => {
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  const onlineMembers = members.filter((member) => 
-  member.presence?.status === "online"
+  const onlineMembers = members.filter((member) =>
+    member.presence?.status === "online"
   );
   const mappedMembersArray = onlineMembers.map((a) => {
     return a.user;
@@ -150,7 +150,7 @@ export const discordThunder = async (discordClient, message, filteredMessage) =>
           lock: t.LOCK.UPDATE,
           transaction: t,
         });
-        
+
         if (thunderee.ignoreMe) {
           listOfUsersRained.push(`${thunderee.username}`);
         } else {

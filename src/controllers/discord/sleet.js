@@ -14,7 +14,7 @@ import settings from '../../config/settings';
 
 import logger from "../../helpers/logger";
 
-export const discordSleet = async (client, message, filteredMessage) => {
+export const discordSleet = async (client, message, filteredMessage, io) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
