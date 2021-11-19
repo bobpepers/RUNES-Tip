@@ -85,7 +85,7 @@ const IsAuthenticated = (req, res, next) => {
   }
 };
 
-export const dashboardRouter = (app) => {
+export const dashboardRouter = (app, io) => {
   app.get(
     '/api/authenticated',
     (req, res, next) => {

@@ -99,35 +99,6 @@ const sockets = {};
 
 io.on("connection", async (socket) => {
   const userId = socket.request.session.passport ? socket.request.session.passport.user : '';
-
-  // console.log(userId);
-  // console.log(onlineUsers);
-  // console.log(socket.request.user);
-  console.log(socket.request.user);
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-  console.log('socket.request.user');
-
   if (
     socket.request.user.role === 4
     || socket.request.user.role === 8
@@ -135,17 +106,9 @@ io.on("connection", async (socket) => {
     socket.join('admin');
     sockets[userId] = socket;
   }
-  // if (userId !== '') {
-  //  onlineUsers[userId] = socket;
-  // onlineUsers.reduce((a, b) => { if (a.indexOf(b) < 0)a.push(b); return a; }, []);
-  // }
-  // io.emit('Online', Object.keys(onlineUsers).length);
-  // onlineUsers[userId].emit('Private', { msg: "private message" });
   console.log(Object.keys(sockets).length);
   socket.on("disconnect", () => {
-    // onlineUsers = onlineUsers.filter((item) => item !== userId);
     delete sockets[userId];
-    // io.emit("Online", Object.keys(onlineUsers).length);
     console.log("Client disconnected");
   });
 });
@@ -173,8 +136,8 @@ const discordClient = new Client({
 
 const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
-router(app, discordClient, telegramClient);
-dashboardRouter(app);
+router(app, discordClient, telegramClient, io);
+dashboardRouter(app, io);
 
 server.listen(port);
 

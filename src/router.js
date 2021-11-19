@@ -108,7 +108,7 @@ const limitConfig = {
   onLimitExceeded: (ctx, next) => ctx.reply('Rate limit exceeded - please wait 10 seconds'),
 };
 
-export const router = (app, discordClient, telegramClient) => {
+export const router = (app, discordClient, telegramClient, io) => {
   if (settings.coin.name === 'Pirate') {
     app.post(
       '/api/rpc/walletnotify',
