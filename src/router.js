@@ -169,7 +169,7 @@ export const router = (app, discordClient, telegramClient, io) => {
 
     if (filteredMessageDiscord.length > 1 && filteredMessageDiscord[1].startsWith('<@!')) {
       const userToTipId = filteredMessageDiscord[1].substring(0, filteredMessageDiscord[1].length - 1).substring(3);
-      const task = await tipRunesToDiscordUser(message, filteredMessageDiscord, userToTipId);
+      const task = await tipRunesToDiscordUser(message, filteredMessageDiscord, userToTipId, io);
       await queue.add(() => task);
     }
 
