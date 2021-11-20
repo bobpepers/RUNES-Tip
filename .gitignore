@@ -14,3 +14,4 @@ logs/error.log
 /logs/app.log
 /logs/error.log
 logs/app.log
+/src/config/settings.js
