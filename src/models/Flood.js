@@ -29,7 +29,9 @@ module.exports = (sequelize, DataTypes) => {
   FloodModel.associate = (model) => {
     FloodModel.belongsTo(model.user);
     FloodModel.hasMany(model.floodtip);
-    FloodModel.hasMany(model.activity, { as: 'flood' });
+    FloodModel.hasMany(model.activity, {
+      as: 'flood',
+    });
   };
 
   // 5: Wallet has many addresses

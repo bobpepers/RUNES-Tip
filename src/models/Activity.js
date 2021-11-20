@@ -98,59 +98,59 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'transactionId',
     });
 
-    ActivityModel.belongsTo(model.transaction, {
+    ActivityModel.belongsTo(model.rain, {
       as: 'rain',
       foreignKey: 'rainId',
     });
-    ActivityModel.belongsTo(model.transaction, {
+    ActivityModel.belongsTo(model.raintip, {
       as: 'raintip',
       foreignKey: 'raintipId',
     });
-    ActivityModel.belongsTo(model.transaction, {
+    ActivityModel.belongsTo(model.soak, {
       as: 'soak',
       foreignKey: 'soakId',
     });
-    ActivityModel.belongsTo(model.transaction, {
+    ActivityModel.belongsTo(model.soaktip, {
       as: 'soaktip',
       foreignKey: 'soaktipId',
     });
-    ActivityModel.belongsTo(model.transaction, {
+    ActivityModel.belongsTo(model.flood, {
       as: 'flood',
       foreignKey: 'floodId',
     });
-    ActivityModel.belongsTo(model.transaction, {
+    ActivityModel.belongsTo(model.floodtip, {
       as: 'floodtip',
       foreignKey: 'floodtipId',
     });
-    ActivityModel.belongsTo(model.transaction, {
+    ActivityModel.belongsTo(model.sleet, {
       as: 'sleet',
       foreignKey: 'sleetId',
     });
-    ActivityModel.belongsTo(model.transaction, {
+    ActivityModel.belongsTo(model.sleettip, {
       as: 'sleettip',
       foreignKey: 'sleettipId',
     });
-    ActivityModel.belongsTo(model.transaction, {
+    ActivityModel.belongsTo(model.thunder, {
       as: 'thunder',
       foreignKey: 'thunderId',
     });
-    ActivityModel.belongsTo(model.transaction, {
+    ActivityModel.belongsTo(model.thundertip, {
       as: 'thundertip',
       foreignKey: 'thundertipId',
     });
-    ActivityModel.belongsTo(model.transaction, {
+    ActivityModel.belongsTo(model.thunderstorm, {
       as: 'thunderstorm',
       foreignKey: 'thunderstormId',
     });
-    ActivityModel.belongsTo(model.transaction, {
+    ActivityModel.belongsTo(model.thunderstormtip, {
       as: 'thunderstormtip',
       foreignKey: 'thunderstormtipId',
     });
-    ActivityModel.belongsTo(model.transaction, {
+    ActivityModel.belongsTo(model.reactdrop, {
       as: 'reactdrop',
       foreignKey: 'reactdropId',
     });
-    ActivityModel.belongsTo(model.transaction, {
+    ActivityModel.belongsTo(model.reactdroptip, {
       as: 'reactdroptip',
       foreignKey: 'reactdroptipId',
     });

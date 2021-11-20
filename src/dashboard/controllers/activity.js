@@ -66,6 +66,76 @@ export const fetchActivity = async (req, res, next) => {
         where: earnerOptions,
         required: false,
       },
+      {
+        model: db.flood,
+        as: 'flood',
+        required: false,
+      },
+      {
+        model: db.floodtip,
+        as: 'floodtip',
+        required: false,
+      },
+      {
+        model: db.rain,
+        as: 'rain',
+        required: false,
+      },
+      {
+        model: db.raintip,
+        as: 'raintip',
+        required: false,
+      },
+      {
+        model: db.soak,
+        as: 'soak',
+        required: false,
+      },
+      {
+        model: db.soaktip,
+        as: 'soaktip',
+        required: false,
+      },
+      {
+        model: db.sleet,
+        as: 'sleet',
+        required: false,
+      },
+      {
+        model: db.sleettip,
+        as: 'sleettip',
+        required: false,
+      },
+      {
+        model: db.reactdrop,
+        as: 'reactdrop',
+        required: false,
+      },
+      {
+        model: db.reactdroptip,
+        as: 'reactdroptip',
+        required: false,
+      },
+      {
+        model: db.thunder,
+        as: 'thunder',
+        required: false,
+      },
+      {
+        model: db.thundertip,
+        as: 'thundertip',
+        required: false,
+      },
+      {
+        model: db.thunderstorm,
+        as: 'thunderstorm',
+        required: false,
+      },
+      {
+        model: db.thunderstormtip,
+        as: 'thunderstormtip',
+        required: false,
+      },
     ],
   };
   res.locals.activity = await db.activity.findAll(options);

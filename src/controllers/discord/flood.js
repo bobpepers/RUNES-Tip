@@ -56,11 +56,12 @@ export const discordFlood = async (discordClient, message, filteredMessage, io) 
       }
     }
   }
-
+  let activity;
+  let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const user = await db.user.findOne({
+    user = await db.user.findOne({
       where: {
         user_id: `discord-${message.author.id}`,
       },
@@ -82,6 +83,12 @@ export const discordFlood = async (discordClient, message, filteredMessage, io) 
       transaction: t,
     });
     if (!user) {
+      activity = await db.activity.create({
+        type: 'flood_f',
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Flood')] });
       return;
     }
@@ -92,21 +99,56 @@ export const discordFlood = async (discordClient, message, filteredMessage, io) 
       amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
     }
     if (amount < Number(settings.min.discord.flood)) {
+      activity = await db.activity.create({
+        type: 'flood_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [minimumMessage(message, 'Flood')] });
       return;
     } if (amount % 1 !== 0) {
+      activity = await db.activity.create({
+        type: 'flood_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Flood')] });
       return;
     } if (amount <= 0) {
+      activity = await db.activity.create({
+        type: 'flood_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Flood')] });
       return;
     }
 
     if (user.wallet.available < amount) {
+      activity = await db.activity.create({
+        type: 'flood_i',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'Flood')] });
       return;
     }
     if (withoutBots.length < 2) {
+      activity = await db.activity.create({
+        type: 'flood_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send('Not enough online users');
       return;
     }
@@ -125,11 +167,39 @@ export const discordFlood = async (discordClient, message, filteredMessage, io) 
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+    activity = await db.activity.create({
+      amount,
+      type: 'flood_s',
+      spenderId: user.id,
+      floodId: floodRecord.id,
+      spender_balance: updatedBalance.available + updatedBalance.locked,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    activity = await db.activity.findOne({
+      where: {
+        id: activity.id,
+      },
+      include: [
+        {
+          model: db.flood,
+          as: 'flood'
+        },
+        {
+          model: db.user,
+          as: 'spender'
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+
+    });
     const listOfUsersRained = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const floodee of withoutBots) {
       // eslint-disable-next-line no-await-in-loop
-      await floodee.wallet.update({
+      const floodeeWallet = await floodee.wallet.update({
         available: floodee.wallet.available + Number(amountPerUser),
       }, {
         lock: t.LOCK.UPDATE,
@@ -150,6 +220,40 @@ export const discordFlood = async (discordClient, message, filteredMessage, io) 
         const userIdReceivedRain = floodee.user_id.replace('discord-', '');
         listOfUsersRained.push(`<@${userIdReceivedRain}>`);
       }
+      let tipActivity;
+      tipActivity = await db.activity.create({
+        amount: Number(amountPerUser),
+        type: 'floodtip_s',
+        spenderId: user.id,
+        floodId: floodRecord.id,
+        floodtipId: floodRecord.id,
+        earner_balance: floodeeWallet.available + floodeeWallet.locked,
+        spender_balance: updatedBalance.available + updatedBalance.locked,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      tipActivity = await db.activity.findOne({
+        where: {
+          id: tipActivity.id,
+        },
+        include: [
+          {
+            model: db.flood,
+            as: 'flood'
+          },
+          {
+            model: db.floodtip,
+            as: 'floodtip'
+          },
+        ],
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      console.log(tipActivity);
+      io.to('admin').emit('updateActivity', {
+        activity: tipActivity,
+      });
 
     }
 
@@ -165,10 +269,14 @@ export const discordFlood = async (discordClient, message, filteredMessage, io) 
     logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 
     t.afterCommit(() => {
+      io.to('admin').emit('updateActivity', {
+        activity,
+      });
       console.log('done');
     });
   }).catch((err) => {
     console.log(err);
     message.channel.send('something went wrong');
   });
+
 };
