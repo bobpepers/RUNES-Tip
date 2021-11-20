@@ -15,15 +15,55 @@ import settings from '../../config/settings';
 import logger from "../../helpers/logger";
 
 export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io) => {
+  let activity;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    const user = await db.user.findOne({
+      where: {
+        user_id: `telegram-${ctx.update.message.from.id}`,
+      },
+      include: [
+        {
+          model: db.wallet,
+          as: 'wallet',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    if (!user) {
+      activity = await db.activity.create({
+        type: 'tip_f',
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      ctx.reply(userNotFoundMessage());
+      return;
+    }
     const amount = new BigNumber(tipAmount).times(1e8).toNumber();
     if (amount < Number(settings.min.telegram.tip)) {
+      activity = await db.activity.create({
+        type: 'tip_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       ctx.reply(minimumTipMessage());
+      return;
     }
     if (amount % 1 !== 0) {
+      activity = await db.activity.create({
+        type: 'tip_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       ctx.reply(invalidAmountMessage());
+      return;
     }
 
     const userToTip = tipTo.substring(1);
@@ -47,28 +87,28 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io)
       transaction: t,
     });
     if (!findUserToTip) {
-      ctx.reply(unableToFindUserMessage());
-    }
-
-    if (amount >= Number(settings.min.telegram.tip) && amount % 1 === 0 && findUserToTip) {
-      const user = await db.user.findOne({
-        where: {
-          user_id: `telegram-${ctx.update.message.from.id}`,
-        },
-        include: [
-          {
-            model: db.wallet,
-            as: 'wallet',
-          },
-        ],
+      activity = await db.activity.create({
+        type: 'tip_f',
+        spenderId: user.id,
+      }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      if (!user) {
-        ctx.reply(userNotFoundMessage());
-      }
+      ctx.reply(unableToFindUserMessage());
+      return;
+    }
+
+    if (amount >= Number(settings.min.telegram.tip) && amount % 1 === 0 && findUserToTip) {
       if (user) {
         if (amount > user.wallet.available) {
+          activity = await db.activity.create({
+            type: 'tip_i',
+            spenderId: user.id,
+            amount,
+          }, {
+            lock: t.LOCK.UPDATE,
+            transaction: t,
+          });
           ctx.reply(insufficientBalanceMessage());
         }
         if (amount <= user.wallet.available) {
@@ -94,6 +134,18 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io)
             lock: t.LOCK.UPDATE,
           });
 
+          activity = await db.activity.create({
+            amount,
+            type: 'tip_s',
+            earnerId: findUserToTip.id,
+            spenderId: user.id,
+            earner_balance: updatedFindUserToTip.available + updatedFindUserToTip.locked,
+            spender_balance: wallet.available + wallet.locked,
+          }, {
+            lock: t.LOCK.UPDATE,
+            transaction: t,
+          });
+
           ctx.reply(tipSuccessMessage(user, amount, findUserToTip));
           logger.info(`Success tip Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} to ${findUserToTip.username} with ${amount / 1e8} ${settings.coin.ticker}`);
         }
@@ -104,5 +156,23 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io)
     });
   }).catch((err) => {
     ctx.reply(generalErrorMessage());
+  });
+  activity = await db.activity.findOne({
+    where: {
+      id: activity.id,
+    },
+    include: [
+      {
+        model: db.user,
+        as: 'earner',
+      },
+      {
+        model: db.user,
+        as: 'spender',
+      },
+    ],
+  });
+  io.to('admin').emit('updateActivity', {
+    activity,
   });
 };

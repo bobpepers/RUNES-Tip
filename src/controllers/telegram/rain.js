@@ -16,20 +16,10 @@ import settings from '../../config/settings';
 import logger from "../../helpers/logger";
 
 export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => {
+  let activity;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const amount = new BigNumber(rainAmount).times(1e8).toNumber();
-
-    if (Number(amount) < Number(settings.min.telegram.rain)) {
-      ctx.reply(minimumRainMessage());
-      return;
-    }
-    if (Number(amount) % 1 !== 0) {
-      ctx.reply(invalidAmountMessage());
-      return;
-    }
-
     const user = await db.user.findOne({
       where: {
         user_id: `telegram-${ctx.update.message.from.id}`,
@@ -45,12 +35,60 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => 
     });
 
     if (!user) {
-      ctx.reply(userNotFoundMessage());
+      activity = await db.activity.create({
+        type: 'rain_f',
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      await ctx.reply(userNotFoundMessage());
+      return;
+    }
+    console.log('123');
+    console.log(rainAmount);
+    const amount = new BigNumber(rainAmount)
+      .times(1e8)
+      .toFixed(0)
+      .toString();
+    console.log(amount);
+    if (Number(amount) < Number(settings.min.telegram.rain)) {
+      activity = await db.activity.create({
+        type: 'rain_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      await ctx.reply(minimumRainMessage());
+      return;
+    }
+    if (Number(amount) % 1 !== 0) {
+      console.log(3);
+      activity = await db.activity.create({
+        type: 'rain_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      await ctx.reply(invalidAmountMessage());
       return;
     }
 
-    if (user.wallet.available < amount) {
-      ctx.reply(insufficientBalanceMessage());
+    if (user.wallet.available < Number(amount)) {
+      console.log(user.id);
+      console.log(amount);
+      console.log('aaaa');
+      activity = await db.activity.create({
+        type: 'rain_i',
+        spenderId: user.id,
+        // amount: Number(amount), // fix this? fails with big numbers
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      console.log('after sned');
+      await ctx.reply(insufficientBalanceMessage());
       return;
     }
     if (user.wallet.available >= amount) {
@@ -62,6 +100,13 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => 
         transaction: t,
       });
       if (!group) {
+        activity = await db.activity.create({
+          type: 'rain_f',
+          spenderId: user.id,
+        }, {
+          lock: t.LOCK.UPDATE,
+          transaction: t,
+        });
         await ctx.reply(groupNotFoundMessage());
         return;
       }
@@ -100,11 +145,18 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => 
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      if (usersToRain.length < 2) {
-        ctx.reply(notEnoughActiveUsersMessage());
+      if (usersToRain.length < 1) {
+        activity = await db.activity.create({
+          type: 'rain_f',
+          spenderId: user.id,
+        }, {
+          lock: t.LOCK.UPDATE,
+          transaction: t,
+        });
+        await ctx.reply(notEnoughActiveUsersMessage());
         return;
       }
-      if (usersToRain.length >= 2) {
+      if (usersToRain.length >= 1) {
         const updatedBalance = await user.wallet.update({
           available: user.wallet.available - amount,
         }, {
@@ -120,18 +172,46 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => 
           lock: t.LOCK.UPDATE,
           transaction: t,
         });
+        activity = await db.activity.create({
+          amount,
+          type: 'rain_s',
+          spenderId: user.id,
+          rainId: rainRecord.id,
+          spender_balance: updatedBalance.available + updatedBalance.locked,
+        }, {
+          lock: t.LOCK.UPDATE,
+          transaction: t,
+        });
+        activity = await db.activity.findOne({
+          where: {
+            id: activity.id,
+          },
+          include: [
+            {
+              model: db.rain,
+              as: 'rain',
+            },
+            {
+              model: db.user,
+              as: 'spender',
+            },
+          ],
+          lock: t.LOCK.UPDATE,
+          transaction: t,
+
+        });
         const listOfUsersRained = [];
         // eslint-disable-next-line no-restricted-syntax
         for (const rainee of usersToRain) {
           // eslint-disable-next-line no-await-in-loop
-          await rainee.wallet.update({
+          const raineeWallet = await rainee.wallet.update({
             available: rainee.wallet.available + Number(amountPerUser),
           }, {
             lock: t.LOCK.UPDATE,
             transaction: t,
           });
           // eslint-disable-next-line no-await-in-loop
-          await db.raintip.create({
+          const raintipRecord = await db.raintip.create({
             amount: amountPerUser,
             userId: rainee.id,
             rainId: rainRecord.id,
@@ -140,6 +220,49 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => 
             transaction: t,
           });
           listOfUsersRained.push(`@${rainee.username}`);
+          let tipActivity;
+          tipActivity = await db.activity.create({
+            amount: Number(amountPerUser),
+            type: 'raintip_s',
+            spenderId: user.id,
+            earnerId: rainee.id,
+            rainId: rainRecord.id,
+            raintipId: raintipRecord.id,
+            earner_balance: raineeWallet.available + raineeWallet.locked,
+            spender_balance: updatedBalance.available + updatedBalance.locked,
+          }, {
+            lock: t.LOCK.UPDATE,
+            transaction: t,
+          });
+          tipActivity = await db.activity.findOne({
+            where: {
+              id: tipActivity.id,
+            },
+            include: [
+              {
+                model: db.user,
+                as: 'earner',
+              },
+              {
+                model: db.user,
+                as: 'spender',
+              },
+              {
+                model: db.rain,
+                as: 'rain',
+              },
+              {
+                model: db.raintip,
+                as: 'raintip',
+              },
+            ],
+            lock: t.LOCK.UPDATE,
+            transaction: t,
+          });
+          console.log(tipActivity);
+          io.to('admin').emit('updateActivity', {
+            activity: tipActivity,
+          });
         }
 
         await ctx.reply(rainSuccessMessage(amount, usersToRain, amountPerUser));
@@ -161,5 +284,8 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => 
     });
   }).catch((err) => {
     ctx.reply(generalErrorMessage());
+  });
+  io.to('admin').emit('updateActivity', {
+    activity,
   });
 };

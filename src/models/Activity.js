@@ -63,6 +63,7 @@ module.exports = (sequelize, DataTypes) => {
         'thunderstormtip_s',
         'thunderstormtip_f',
         'ignore',
+        'price',
       ],
     },
     amount: {

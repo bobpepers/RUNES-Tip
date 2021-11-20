@@ -11,6 +11,36 @@ const fetchPriceInfo = async (ctx, io) => {
   } catch (error) {
     console.log(error);
   }
+  let activity;
+  const user = await db.user.findOne({
+    where: {
+      user_id: `telegram-${ctx.update.message.from.id}`,
+    },
+  });
+
+  if (!user) {
+    return;
+  }
+
+  activity = await db.activity.create({
+    type: 'price',
+    earnerId: user.id,
+  });
+
+  activity = await db.activity.findOne({
+    where: {
+      id: activity.id,
+    },
+    include: [
+      {
+        model: db.user,
+        as: 'earner',
+      },
+    ],
+  });
+  io.to('admin').emit('updateActivity', {
+    activity,
+  });
 };
 
 export default fetchPriceInfo;
