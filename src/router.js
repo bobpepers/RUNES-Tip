@@ -107,11 +107,36 @@ const limitConfig = {
   limit: 4,
   onLimitExceeded: (ctx, next) => ctx.reply('Rate limit exceeded - please wait 10 seconds'),
 };
+const localhostOnly = (req, res, next) => {
+  const hostmachine = req.headers.host.split(':')[0];
+  if (
+    hostmachine !== 'localhost'
+    && hostmachine !== '127.0.0.1'
+  ) {
+    return res.sendStatus(401);
+  }
+  next();
+};
 
 export const router = (app, discordClient, telegramClient, io) => {
+  app.post(
+    '/api/chaininfo/block',
+    localhostOnly,
+    (req, res) => {
+      console.log('new block found');
+      if (settings.coin.name === 'Runebase') {
+        startRunebaseSync(discordClient, telegramClient);
+      } else if (settings.coin.name === 'Pirate') {
+        startPirateSync(discordClient, telegramClient);
+      } else {
+        startRunebaseSync(discordClient, telegramClient);
+      }
+    },
+  );
   if (settings.coin.name === 'Pirate') {
     app.post(
       '/api/rpc/walletnotify',
+      localhostOnly,
       walletNotifyPirate,
       async (req, res) => {
         if (res.locals.error) {
@@ -130,6 +155,7 @@ export const router = (app, discordClient, telegramClient, io) => {
   } else {
     app.post(
       '/api/rpc/walletnotify',
+      localhostOnly,
       walletNotifyRunebase,
       async (req, res) => {
         if (res.locals.error) {
@@ -252,20 +278,6 @@ export const router = (app, discordClient, telegramClient, io) => {
     //      `);
     //    }
   });
-
-  app.post(
-    '/api/chaininfo/block',
-    (req, res) => {
-      console.log('new block found');
-      if (settings.coin.name === 'Runebase') {
-        startRunebaseSync(discordClient, telegramClient);
-      } else if (settings.coin.name === 'Pirate') {
-        startPirateSync(discordClient, telegramClient);
-      } else {
-        startRunebaseSync(discordClient, telegramClient);
-      }
-    },
-  );
 
   telegramClient.hears('adminwithdrawals', (ctx) => {
     if (ctx.update.message.from.id === Number(process.env.TELEGRAM_ADMIN_ID)) {

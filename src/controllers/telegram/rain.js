@@ -17,6 +17,7 @@ import logger from "../../helpers/logger";
 
 export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => {
   let activity;
+
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -44,8 +45,16 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => 
       await ctx.reply(userNotFoundMessage());
       return;
     }
-    console.log('123');
-    console.log(rainAmount);
+    if (ctx.update.message.chat.id === ctx.update.message.from.id) {
+      activity = await db.activity.create({
+        type: 'rain_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      return;
+    }
     const amount = new BigNumber(rainAmount)
       .times(1e8)
       .toFixed(0)
@@ -76,9 +85,6 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => 
     }
 
     if (user.wallet.available < Number(amount)) {
-      console.log(user.id);
-      console.log(amount);
-      console.log('aaaa');
       activity = await db.activity.create({
         type: 'rain_i',
         spenderId: user.id,
@@ -87,7 +93,6 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => 
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      console.log('after sned');
       await ctx.reply(insufficientBalanceMessage());
       return;
     }
@@ -145,7 +150,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => 
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      if (usersToRain.length < 1) {
+      if (usersToRain.length < 2) {
         activity = await db.activity.create({
           type: 'rain_f',
           spenderId: user.id,
@@ -156,7 +161,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => 
         await ctx.reply(notEnoughActiveUsersMessage());
         return;
       }
-      if (usersToRain.length >= 1) {
+      if (usersToRain.length >= 2) {
         const updatedBalance = await user.wallet.update({
           available: user.wallet.available - amount,
         }, {

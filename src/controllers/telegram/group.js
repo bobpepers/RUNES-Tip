@@ -6,6 +6,9 @@ export const updateGroup = async (ctx) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    if (ctx.update.message.chat.id === ctx.update.message.from.id) {
+      return;
+    }
     let group = await db.group.findOne(
       {
         where: {
