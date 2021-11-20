@@ -209,7 +209,7 @@ export const discordRain = async (discordClient, message, filteredMessage, io) =
         transaction: t,
       });
       // eslint-disable-next-line no-await-in-loop
-      await db.raintip.create({
+      const raintipRecord = await db.raintip.create({
         amount: amountPerUser,
         userId: rainee.id,
         rainId: rainRecord.id,
@@ -231,7 +231,7 @@ export const discordRain = async (discordClient, message, filteredMessage, io) =
         spenderId: user.id,
         earnerId: rainee.id,
         rainId: rainRecord.id,
-        raintipId: rainRecord.id,
+        raintipId: raintipRecord.id,
         earner_balance: raineeWallet.available + raineeWallet.locked,
         spender_balance: updatedBalance.available + updatedBalance.locked,
       }, {

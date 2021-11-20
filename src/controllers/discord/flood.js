@@ -207,7 +207,7 @@ export const discordFlood = async (discordClient, message, filteredMessage, io) 
         transaction: t,
       });
       // eslint-disable-next-line no-await-in-loop
-      await db.floodtip.create({
+      const floodtipRecord = await db.floodtip.create({
         amount: amountPerUser,
         userId: floodee.id,
         floodId: floodRecord.id,
@@ -228,7 +228,7 @@ export const discordFlood = async (discordClient, message, filteredMessage, io) 
         spenderId: user.id,
         earnerId: floodee.id,
         floodId: floodRecord.id,
-        floodtipId: floodRecord.id,
+        floodtipId: floodtipRecord.id,
         earner_balance: floodeeWallet.available + floodeeWallet.locked,
         spender_balance: updatedBalance.available + updatedBalance.locked,
       }, {
