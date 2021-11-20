@@ -42,7 +42,7 @@ export function sendVerificationEmail(email, token) {
     + "<div style='background-color: #ffffff; padding: 40px; text-align: center;'>"
     + "<h1 style='color: #5f5f5f; margin-bottom: 30px;'>Hello</h1>"
     + "<p style='color: #5f5f5f;'>Click the big button below to activate your account.</p>"
-    + "<a href='" + process.env.ROOT_URL + "/verify-email/?email=" + email + "&token=" + token + "' style='background-color: #288feb; color: #fff; padding: 14px; text-decoration: none; border-radius: 5px; margin-top: 20px; display: inline-block;'>Activate Account</a>"
+    + "<a href='" + process.env.ROOT_URL + "/register/verify-email?email=" + email + "&token=" + token + "' style='background-color: #288feb; color: #fff; padding: 14px; text-decoration: none; border-radius: 5px; margin-top: 20px; display: inline-block;'>Activate Account</a>"
     + "</div></div></div>";
 
   transporter.verify((error, success) => {
