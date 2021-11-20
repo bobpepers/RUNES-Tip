@@ -55,6 +55,30 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
           files: [new MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')],
         });
       }
+      let activity;
+      activity = await db.activity.create({
+        type: 'deposit',
+        earnerId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      activity = await db.activity.findOne({
+        where: {
+          id: activity.id,
+        },
+        include: [
+          {
+            model: db.user,
+            as: 'earner',
+          },
+        ],
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      io.to('admin').emit('updateActivity', {
+        activity,
+      });
     }
 
     t.afterCommit(() => {
