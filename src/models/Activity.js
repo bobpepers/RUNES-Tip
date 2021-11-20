@@ -60,6 +60,9 @@ module.exports = (sequelize, DataTypes) => {
         'reactdrop_s',
         'reactdroptip_f',
         'reactdroptip_s',
+        'thunderstormtip_s',
+        'thunderstormtip_f',
+        'ignore',
       ],
     },
     amount: {

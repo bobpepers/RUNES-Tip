@@ -299,7 +299,7 @@ export const router = (app, discordClient, telegramClient, io) => {
 
   telegramClient.command('help', (ctx) => {
     (async () => {
-      const task = await fetchHelp(ctx);
+      const task = await fetchHelp(ctx, io);
       await queue.add(() => task);
     })();
   });
@@ -308,7 +308,7 @@ export const router = (app, discordClient, telegramClient, io) => {
     (async () => {
       const groupTask = await updateGroup(ctx);
       await queue.add(() => groupTask);
-      const task = await fetchPriceInfo(ctx);
+      const task = await fetchPriceInfo(ctx, io);
       await queue.add(() => task);
     })();
   });
@@ -316,7 +316,7 @@ export const router = (app, discordClient, telegramClient, io) => {
   telegramClient.action('Price', (ctx) => {
     console.log(ctx);
     (async () => {
-      const task = await fetchPriceInfo(ctx);
+      const task = await fetchPriceInfo(ctx, io);
       await queue.add(() => task);
     })();
   });
@@ -345,7 +345,7 @@ export const router = (app, discordClient, telegramClient, io) => {
       await queue.add(() => groupTask);
       const telegramUserId = ctx.update.message.from.id;
       const telegramUserName = ctx.update.message.from.username;
-      const task = await fetchWalletBalance(ctx, telegramUserId, telegramUserName);
+      const task = await fetchWalletBalance(ctx, telegramUserId, telegramUserName, io);
       await queue.add(() => task);
     })();
   });
@@ -356,7 +356,7 @@ export const router = (app, discordClient, telegramClient, io) => {
       await queue.add(() => groupTask);
       const telegramUserId = ctx.update.callback_query.from.id;
       const telegramUserName = ctx.update.callback_query.from.username;
-      const task = await fetchWalletBalance(ctx, telegramUserId, telegramUserName);
+      const task = await fetchWalletBalance(ctx, telegramUserId, telegramUserName, io);
       await queue.add(() => task);
     })();
   });
@@ -375,7 +375,7 @@ export const router = (app, discordClient, telegramClient, io) => {
         await queue.add(() => groupTask);
         const tipAmount = filteredMessageTelegram[2];
         const tipTo = filteredMessageTelegram[1];
-        const task = await tipRunesToUser(ctx, tipTo, tipAmount, telegramClient, runesGroup);
+        const task = await tipRunesToUser(ctx, tipTo, tipAmount, telegramClient, runesGroup, io);
         await queue.add(() => task);
       })();
     }
@@ -391,7 +391,7 @@ export const router = (app, discordClient, telegramClient, io) => {
         const groupTask = await updateGroup(ctx);
         await queue.add(() => groupTask);
         const rainAmount = filteredMessageTelegram[1];
-        const task = await rainRunesToUsers(ctx, rainAmount, telegramClient, runesGroup);
+        const task = await rainRunesToUsers(ctx, rainAmount, telegramClient, runesGroup, io);
         await queue.add(() => task);
       })();
     }
@@ -403,7 +403,7 @@ export const router = (app, discordClient, telegramClient, io) => {
       await queue.add(() => groupTask);
       const telegramUserId = ctx.update.message.from.id;
       const telegramUserName = ctx.update.message.from.username;
-      const task = await fetchWalletDepositAddress(ctx, telegramUserId, telegramUserName);
+      const task = await fetchWalletDepositAddress(ctx, telegramUserId, telegramUserName, io);
       await queue.add(() => task);
     })();
   });
@@ -414,7 +414,7 @@ export const router = (app, discordClient, telegramClient, io) => {
       await queue.add(() => groupTask);
       const telegramUserId = ctx.update.callback_query.from.id;
       const telegramUserName = ctx.update.callback_query.from.username;
-      const task = await fetchWalletDepositAddress(ctx, telegramUserId, telegramUserName);
+      const task = await fetchWalletDepositAddress(ctx, telegramUserId, telegramUserName, io);
       await queue.add(() => task);
     })();
   });
@@ -433,7 +433,7 @@ export const router = (app, discordClient, telegramClient, io) => {
         await queue.add(() => groupTask);
         const withdrawalAddress = filteredMessageTelegram[1];
         const withdrawalAmount = filteredMessageTelegram[2];
-        const task = await withdrawTelegramCreate(ctx, withdrawalAddress, withdrawalAmount);
+        const task = await withdrawTelegramCreate(ctx, withdrawalAddress, withdrawalAmount, io);
         await queue.add(() => task);
       })();
     }
@@ -487,7 +487,7 @@ export const router = (app, discordClient, telegramClient, io) => {
       (async () => {
         const groupTask = await updateGroup(ctx);
         await queue.add(() => groupTask);
-        const task = await fetchHelp(ctx);
+        const task = await fetchHelp(ctx, io);
         await queue.add(() => task);
       })();
     }
@@ -495,7 +495,7 @@ export const router = (app, discordClient, telegramClient, io) => {
       (async () => {
         const groupTask = await updateGroup(ctx);
         await queue.add(() => groupTask);
-        const task = await fetchPriceInfo(ctx);
+        const task = await fetchPriceInfo(ctx, io);
         await queue.add(() => task);
       })();
     }
@@ -511,7 +511,7 @@ export const router = (app, discordClient, telegramClient, io) => {
       (async () => {
         const groupTask = await updateGroup(ctx);
         await queue.add(() => groupTask);
-        const task = await fetchHelp(ctx);
+        const task = await fetchHelp(ctx, io);
         await queue.add(() => task);
       })();
     }
@@ -539,7 +539,7 @@ export const router = (app, discordClient, telegramClient, io) => {
         await queue.add(() => groupTask);
         const telegramUserId = ctx.update.message.from.id;
         const telegramUserName = ctx.update.message.from.username;
-        const task = await fetchWalletBalance(ctx, telegramUserId, telegramUserName);
+        const task = await fetchWalletBalance(ctx, telegramUserId, telegramUserName, io);
         await queue.add(() => task);
       })();
     }
@@ -549,7 +549,7 @@ export const router = (app, discordClient, telegramClient, io) => {
         await queue.add(() => groupTask);
         const telegramUserId = ctx.update.message.from.id;
         const telegramUserName = ctx.update.message.from.username;
-        const task = await fetchWalletDepositAddress(ctx, telegramUserId, telegramUserName);
+        const task = await fetchWalletDepositAddress(ctx, telegramUserId, telegramUserName, io);
         await queue.add(() => task);
       })();
     }
@@ -566,7 +566,7 @@ export const router = (app, discordClient, telegramClient, io) => {
           await queue.add(() => groupTask);
           const withdrawalAddress = filteredMessageTelegram[2];
           const withdrawalAmount = filteredMessageTelegram[3];
-          const task = await withdrawTelegramCreate(ctx, withdrawalAddress, withdrawalAmount);
+          const task = await withdrawTelegramCreate(ctx, withdrawalAddress, withdrawalAmount, io);
           await queue.add(() => task);
         })();
       }
@@ -584,7 +584,7 @@ export const router = (app, discordClient, telegramClient, io) => {
           await queue.add(() => groupTask);
           const tipAmount = filteredMessageTelegram[3];
           const tipTo = filteredMessageTelegram[2];
-          const task = await tipRunesToUser(ctx, tipTo, tipAmount, telegramClient, runesGroup);
+          const task = await tipRunesToUser(ctx, tipTo, tipAmount, telegramClient, runesGroup, io);
           await queue.add(() => task);
         })();
       }
@@ -598,7 +598,7 @@ export const router = (app, discordClient, telegramClient, io) => {
           const groupTask = await updateGroup(ctx);
           await queue.add(() => groupTask);
           const rainAmount = filteredMessageTelegram[2];
-          const task = await rainRunesToUsers(ctx, rainAmount, telegramClient, runesGroup);
+          const task = await rainRunesToUsers(ctx, rainAmount, telegramClient, runesGroup, io);
           await queue.add(() => task);
         })();
       }

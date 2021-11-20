@@ -46,7 +46,7 @@ function shuffle(array) {
   return array;
 }
 
-export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
+export const listenReactDrop = async (reactMessage, distance, reactDrop, io) => {
   const filter = () => true;
   const collector = reactMessage.createReactionCollector({ filter, time: distance });
   collector.on('collect', async (reaction, collector) => {
@@ -351,7 +351,7 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
           // eslint-disable-next-line no-restricted-syntax
           for (const receiver of endReactDrop.reactdroptips) {
             // eslint-disable-next-line no-await-in-loop
-            await receiver.user.wallet.update({
+            const earnerWallet = await receiver.user.wallet.update({
               available: receiver.user.wallet.available + Number(amountEach),
             });
 
@@ -361,6 +361,50 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
               const userIdReceivedRain = receiver.user.user_id.replace('discord-', '');
               listOfUsersRained.push(`<@${userIdReceivedRain}>`);
             }
+            let tipActivity;
+            // eslint-disable-next-line no-await-in-loop
+            tipActivity = await db.activity.create({
+              amount: Number(amountEach),
+              type: 'reactdroptip_s',
+              spenderId: endReactDrop.user.id,
+              earnerId: receiver.user.id,
+              reactdropId: endReactDrop.id,
+              reactdroptipId: receiver.id,
+              earner_balance: earnerWallet.available + earnerWallet.locked,
+            }, {
+              lock: t.LOCK.UPDATE,
+              transaction: t,
+            });
+            // eslint-disable-next-line no-await-in-loop
+            tipActivity = await db.activity.findOne({
+              where: {
+                id: tipActivity.id,
+              },
+              include: [
+                {
+                  model: db.user,
+                  as: 'earner',
+                },
+                {
+                  model: db.user,
+                  as: 'spender',
+                },
+                {
+                  model: db.reactdrop,
+                  as: 'reactdrop',
+                },
+                {
+                  model: db.reactdroptip,
+                  as: 'reactdroptip',
+                },
+              ],
+              lock: t.LOCK.UPDATE,
+              transaction: t,
+            });
+            console.log(tipActivity);
+            io.to('admin').emit('updateActivity', {
+              activity: tipActivity,
+            });
           }
           const newStringListUsers = listOfUsersRained.join(", ");
           // console.log(newStringListUsers);
@@ -386,9 +430,33 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop) => {
 };
 
 export const discordReactDrop = async (discordClient, message, filteredMessage, io) => {
+  let activity;
+  let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    user = await db.user.findOne({
+      where: {
+        user_id: `discord-${message.author.id}`,
+      },
+      include: [
+        {
+          model: db.wallet,
+          as: 'wallet',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    if (!user) {
+      activity = await db.activity.create({
+        type: 'reactdrop_f',
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      await message.channel.send({ embeds: [userNotFoundMessage(message, 'ReactDrop')] });
+    }
     let amount = 0;
     if (filteredMessage[2].toLowerCase() === 'all') {
       const tipper = await db.user.findOne({
@@ -419,30 +487,44 @@ export const discordReactDrop = async (discordClient, message, filteredMessage, 
       amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
     }
     if (amount % 1 !== 0) {
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'ReactDrop')] });
-    } else if (amount <= 0) {
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'ReactDrop')] });
-    } else if (amount < Number(settings.min.discord.reactdrop)) {
-      await message.channel.send({ embeds: [minimumMessage(message, 'ReactDrop')] });
-    } else if (amount >= Number(settings.min.discord.reactdrop) && amount % 1 === 0) {
-      const user = await db.user.findOne({
-        where: {
-          user_id: `discord-${message.author.id}`,
-        },
-        include: [
-          {
-            model: db.wallet,
-            as: 'wallet',
-          },
-        ],
+      activity = await db.activity.create({
+        type: 'reactdrop_f',
+        spenderId: user.id,
+      }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      if (!user) {
-        await message.channel.send({ embeds: [userNotFoundMessage(message, 'ReactDrop')] });
-      }
+      await message.channel.send({ embeds: [invalidAmountMessage(message, 'ReactDrop')] });
+    } else if (amount <= 0) {
+      activity = await db.activity.create({
+        type: 'reactdrop_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      await message.channel.send({ embeds: [invalidAmountMessage(message, 'ReactDrop')] });
+    } else if (amount < Number(settings.min.discord.reactdrop)) {
+      activity = await db.activity.create({
+        type: 'reactdrop_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      await message.channel.send({ embeds: [minimumMessage(message, 'ReactDrop')] });
+    } else if (amount >= Number(settings.min.discord.reactdrop) && amount % 1 === 0) {
       if (user) {
         if (amount > user.wallet.available) {
+          activity = await db.activity.create({
+            type: 'reactdrop_i',
+            spenderId: user.id,
+            amount,
+            spender_balance: user.wallet.available + user.wallet.locked,
+          }, {
+            lock: t.LOCK.UPDATE,
+            transaction: t,
+          });
           await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'Reactdrop')] });
         }
         if (amount <= user.wallet.available) {
@@ -467,8 +549,22 @@ export const discordReactDrop = async (discordClient, message, filteredMessage, 
               && cutLastTimeLetter !== 'm'
               && cutLastTimeLetter !== 's')
           ) {
+            activity = await db.activity.create({
+              type: 'reactdrop_f',
+              spenderId: user.id,
+            }, {
+              lock: t.LOCK.UPDATE,
+              transaction: t,
+            });
             await message.channel.send({ embeds: [invalidTimeMessage(message, 'Reactdrop')] });
           } else if (cutLastTimeLetter === 's' && Number(cutNumberTime) < 60) {
+            activity = await db.activity.create({
+              type: 'reactdrop_f',
+              spenderId: user.id,
+            }, {
+              lock: t.LOCK.UPDATE,
+              transaction: t,
+            });
             await message.channel.send({ embeds: [minimumTimeReactDropMessage(message)] });
           } else {
             const allEmojis = emojiCompact;
@@ -480,6 +576,13 @@ export const discordReactDrop = async (discordClient, message, filteredMessage, 
             }
 
             if (!allEmojis.includes(filteredMessage[4])) {
+              activity = await db.activity.create({
+                type: 'reactdrop_f',
+                spenderId: user.id,
+              }, {
+                lock: t.LOCK.UPDATE,
+                transaction: t,
+              });
               await message.channel.send({ embeds: [invalidEmojiMessage(message, 'Reactdrop')] });
             } else {
               let dateObj = await new Date().getTime();
@@ -556,11 +659,41 @@ export const discordReactDrop = async (discordClient, message, filteredMessage, 
                   transaction: t,
                   lock: t.LOCK.UPDATE,
                 });
+
+                activity = await db.activity.create({
+                  amount,
+                  type: 'reactdrop_s',
+                  spenderId: user.id,
+                  reactdropId: newReactDrop.id,
+                  spender_balance: wallet.available + wallet.locked,
+                }, {
+                  lock: t.LOCK.UPDATE,
+                  transaction: t,
+                });
+                activity = await db.activity.findOne({
+                  where: {
+                    id: activity.id,
+                  },
+                  include: [
+                    {
+                      model: db.reactdrop,
+                      as: 'reactdrop',
+                    },
+                    {
+                      model: db.user,
+                      as: 'spender',
+                    },
+                  ],
+                  lock: t.LOCK.UPDATE,
+                  transaction: t,
+
+                });
+
                 const reactMessage = await discordClient.guilds.cache.get(sendReactDropMessage.guildId)
                   .channels.cache.get(sendReactDropMessage.channelId)
                   .messages.fetch(sendReactDropMessage.id);
 
-                listenReactDrop(reactMessage, distance, newReactDrop);
+                listenReactDrop(reactMessage, distance, newReactDrop, io);
 
                 // eslint-disable-next-line no-restricted-syntax
                 for (const shufEmoji of shuffeledEmojisArray) {
@@ -591,5 +724,8 @@ export const discordReactDrop = async (discordClient, message, filteredMessage, 
   }).catch((err) => {
     console.log(err);
     message.channel.send("Something went wrong.");
+  });
+  io.to('admin').emit('updateActivity', {
+    activity,
   });
 };

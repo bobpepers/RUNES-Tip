@@ -207,7 +207,7 @@ server.listen(port);
     let distance = countDownDate - now;
     console.log('recover listenReactDrop');
     // eslint-disable-next-line no-await-in-loop
-    await listenReactDrop(reactMessage, distance, runningReactDrop);
+    await listenReactDrop(reactMessage, distance, runningReactDrop, io);
     // eslint-disable-next-line no-loop-func
     const updateMessage = setInterval(async () => {
       now = new Date().getTime();

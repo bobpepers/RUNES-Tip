@@ -9,7 +9,7 @@ import settings from '../../config/settings';
 
 import logger from "../../helpers/logger";
 
-export const fetchWalletDepositAddress = async (ctx, telegramUserId, telegramUserName) => {
+export const fetchWalletDepositAddress = async (ctx, telegramUserId, telegramUserName, io) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {

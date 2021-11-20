@@ -7,7 +7,7 @@ import {
 
 import logger from "../../helpers/logger";
 
-export const fetchWalletBalance = async (ctx, telegramUserId, telegramUserName) => {
+export const fetchWalletBalance = async (ctx, telegramUserId, telegramUserName, io) => {
   console.log(ctx.update.message);
   console.log(ctx.update.message.chat.type);
 

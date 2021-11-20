@@ -14,7 +14,7 @@ import settings from '../../config/settings';
 
 import logger from "../../helpers/logger";
 
-export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup) => {
+export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {

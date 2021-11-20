@@ -15,7 +15,7 @@ import settings from '../../config/settings';
 
 import logger from "../../helpers/logger";
 
-export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup) => {
+export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {

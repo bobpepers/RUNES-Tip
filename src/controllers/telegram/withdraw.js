@@ -15,7 +15,7 @@ import settings from '../../config/settings';
 
 import logger from "../../helpers/logger";
 
-export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalAmount) => {
+export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalAmount, io) => {
   logger.info(`Start Withdrawal Request: ${ctx.update.message.from.id}-${ctx.update.message.from.username}`);
   if (ctx.update.message.chat.type !== 'private') {
     await ctx.reply("i have send you a direct message");

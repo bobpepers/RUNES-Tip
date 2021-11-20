@@ -73,11 +73,12 @@ export const discordThunderStorm = async (discordClient, message, filteredMessag
     }
   }
   const withoutBots = _.sampleSize(preWithoutBots, Number(filteredMessage[2]));
-
+  let activity;
+  let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const user = await db.user.findOne({
+    user = await db.user.findOne({
       where: {
         user_id: `discord-${message.author.id}`,
       },
@@ -99,6 +100,12 @@ export const discordThunderStorm = async (discordClient, message, filteredMessag
       transaction: t,
     });
     if (!user) {
+      activity = await db.activity.create({
+        type: 'thunderstorm_f',
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [walletNotFoundMessage(message, 'ThunderStorm')] });
       return;
     }
@@ -109,23 +116,58 @@ export const discordThunderStorm = async (discordClient, message, filteredMessag
       amount = new BigNumber(filteredMessage[3]).times(1e8).toNumber();
     }
     if (amount < Number(settings.min.discord.thunderstorm)) {
+      activity = await db.activity.create({
+        type: 'thunderstorm_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [minimumMessage(message, 'ThunderStorm')] });
       return;
     }
     if (amount % 1 !== 0) {
+      activity = await db.activity.create({
+        type: 'thunderstorm_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'ThunderStorm')] });
       return;
     }
     if (amount <= 0) {
+      activity = await db.activity.create({
+        type: 'thunderstorm_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'ThunderStorm')] });
       return;
     }
 
     if (user.wallet.available < amount) {
+      activity = await db.activity.create({
+        type: 'thunder_i',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'ThunderStorm')] });
       return;
     }
     if (withoutBots.length < 1) {
+      activity = await db.activity.create({
+        type: 'thunderstorm_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send('Not enough online users');
       return;
     }
@@ -138,7 +180,7 @@ export const discordThunderStorm = async (discordClient, message, filteredMessag
     });
 
     const amountPerUser = (((amount / withoutBots.length).toFixed(0)));
-    const thunderRecord = await db.thunder.create({
+    const thunderstormRecord = await db.thunderstorm.create({
       amount,
       userCount: withoutBots.length,
       userId: user.id,
@@ -146,32 +188,107 @@ export const discordThunderStorm = async (discordClient, message, filteredMessag
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+    activity = await db.activity.create({
+      amount,
+      type: 'thunderstorm_s',
+      spenderId: user.id,
+      thunderstormId: thunderstormRecord.id,
+      spender_balance: updatedBalance.available + updatedBalance.locked,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    activity = await db.activity.findOne({
+      where: {
+        id: activity.id,
+      },
+      include: [
+        {
+          model: db.thunderstorm,
+          as: 'thunderstorm'
+        },
+        {
+          model: db.user,
+          as: 'spender'
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+
+    });
     const listOfUsersRained = [];
     // eslint-disable-next-line no-restricted-syntax
-    for (const thunderee of withoutBots) {
+    for (const thunderstormee of withoutBots) {
       // eslint-disable-next-line no-await-in-loop
-      await thunderee.wallet.update({
-        available: thunderee.wallet.available + Number(amountPerUser),
+      const thunderstormeeWallet = await thunderstormee.wallet.update({
+        available: thunderstormee.wallet.available + Number(amountPerUser),
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
       // eslint-disable-next-line no-await-in-loop
-      await db.thundertip.create({
+      const thunderstormtipRecord = await db.thunderstormtip.create({
         amount: amountPerUser,
-        userId: thunderee.id,
-        thunderId: thunderRecord.id,
+        userId: thunderstormee.id,
+        thunderstormId: thunderstormRecord.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
 
-      if (thunderee.ignoreMe) {
-        listOfUsersRained.push(`${thunderee.username}`);
+      if (thunderstormee.ignoreMe) {
+        listOfUsersRained.push(`${thunderstormee.username}`);
       } else {
-        const userIdReceivedRain = thunderee.user_id.replace('discord-', '');
+        const userIdReceivedRain = thunderstormee.user_id.replace('discord-', '');
         listOfUsersRained.push(`<@${userIdReceivedRain}>`);;
       }
+      let tipActivity;
+      console.log(user);
+      console.log(thunderstormee);
+      console.log(thunderstormRecord);
+      console.log(thunderstormeeWallet);
+      tipActivity = await db.activity.create({
+        amount: Number(amountPerUser),
+        type: 'thunderstormtip_s',
+        spenderId: user.id,
+        earnerId: thunderstormee.id,
+        thunderstormId: thunderstormRecord.id,
+        thunderstormtipId: thunderstormtipRecord.id,
+        earner_balance: thunderstormeeWallet.available + thunderstormeeWallet.locked,
+        spender_balance: updatedBalance.available + updatedBalance.locked,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      tipActivity = await db.activity.findOne({
+        where: {
+          id: tipActivity.id,
+        },
+        include: [
+          {
+            model: db.user,
+            as: 'earner'
+          },
+          {
+            model: db.user,
+            as: 'spender'
+          },
+          {
+            model: db.thunderstorm,
+            as: 'thunderstorm'
+          },
+          {
+            model: db.thunderstormtip,
+            as: 'thunderstormtip'
+          },
+        ],
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      console.log(tipActivity);
+      io.to('admin').emit('updateActivity', {
+        activity: tipActivity,
+      });
     }
     await message.channel.send({ embeds: [AfterThunderStormSuccess(message, amount, amountPerUser, listOfUsersRained)] });
 
@@ -182,5 +299,8 @@ export const discordThunderStorm = async (discordClient, message, filteredMessag
     });
   }).catch((err) => {
     message.channel.send('something went wrong');
+  });
+  io.to('admin').emit('updateActivity', {
+    activity,
   });
 };

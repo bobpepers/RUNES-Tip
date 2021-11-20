@@ -58,11 +58,12 @@ export const discordThunder = async (discordClient, message, filteredMessage, io
     }
   }
   const withoutBots = _.sampleSize(preWithoutBots, 1);
-
+  let activity;
+  let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const user = await db.user.findOne({
+    user = await db.user.findOne({
       where: {
         user_id: `discord-${message.author.id}`,
       },
@@ -84,6 +85,12 @@ export const discordThunder = async (discordClient, message, filteredMessage, io
       transaction: t,
     });
     if (!user) {
+      activity = await db.activity.create({
+        type: 'thunder_f',
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Thunder')] });
       return;
     }
@@ -94,24 +101,59 @@ export const discordThunder = async (discordClient, message, filteredMessage, io
       amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
     }
     if (amount < Number(settings.min.discord.thunder)) {
+      activity = await db.activity.create({
+        type: 'thunder_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [minimumMessage(message, 'Thunder')] });
       return;
     }
     if (amount % 1 !== 0) {
+      activity = await db.activity.create({
+        type: 'thunder_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Thunder')] });
       return;
     }
     if (amount <= 0) {
+      activity = await db.activity.create({
+        type: 'thunder_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Thunder')] });
       return;
     }
 
     if (user.wallet.available < amount) {
+      activity = await db.activity.create({
+        type: 'thunder_i',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'Thunder')] });
       return;
     }
 
     if (withoutBots.length < 1) {
+      activity = await db.activity.create({
+        type: 'thunder_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send('Not enough online users');
       return;
     }
@@ -131,18 +173,46 @@ export const discordThunder = async (discordClient, message, filteredMessage, io
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      activity = await db.activity.create({
+        amount,
+        type: 'thunder_s',
+        spenderId: user.id,
+        thunderId: thunderRecord.id,
+        spender_balance: updatedBalance.available + updatedBalance.locked,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      activity = await db.activity.findOne({
+        where: {
+          id: activity.id,
+        },
+        include: [
+          {
+            model: db.thunder,
+            as: 'thunder'
+          },
+          {
+            model: db.user,
+            as: 'spender'
+          },
+        ],
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+
+      });
       const listOfUsersRained = [];
       // eslint-disable-next-line no-restricted-syntax
       for (const thunderee of withoutBots) {
         // eslint-disable-next-line no-await-in-loop
-        await thunderee.wallet.update({
+        const thundereeWallet = await thunderee.wallet.update({
           available: thunderee.wallet.available + Number(amountPerUser),
         }, {
           lock: t.LOCK.UPDATE,
           transaction: t,
         });
         // eslint-disable-next-line no-await-in-loop
-        await db.thundertip.create({
+        const thundertipRecord = await db.thundertip.create({
           amount: amountPerUser,
           userId: thunderee.id,
           thunderId: thunderRecord.id,
@@ -157,6 +227,49 @@ export const discordThunder = async (discordClient, message, filteredMessage, io
           const userIdReceivedRain = thunderee.user_id.replace('discord-', '');
           listOfUsersRained.push(`<@${userIdReceivedRain}>`);
         }
+        let tipActivity;
+        tipActivity = await db.activity.create({
+          amount: Number(amountPerUser),
+          type: 'thundertip_s',
+          spenderId: user.id,
+          earnerId: thunderee.id,
+          thunderId: thunderRecord.id,
+          thundertipId: thundertipRecord.id,
+          earner_balance: thundereeWallet.available + thundereeWallet.locked,
+          spender_balance: updatedBalance.available + updatedBalance.locked,
+        }, {
+          lock: t.LOCK.UPDATE,
+          transaction: t,
+        });
+        tipActivity = await db.activity.findOne({
+          where: {
+            id: tipActivity.id,
+          },
+          include: [
+            {
+              model: db.user,
+              as: 'earner'
+            },
+            {
+              model: db.user,
+              as: 'spender'
+            },
+            {
+              model: db.thunder,
+              as: 'thunder'
+            },
+            {
+              model: db.thundertip,
+              as: 'thundertip'
+            },
+          ],
+          lock: t.LOCK.UPDATE,
+          transaction: t,
+        });
+        console.log(tipActivity);
+        io.to('admin').emit('updateActivity', {
+          activity: tipActivity,
+        });
       }
       for (const userThunder of listOfUsersRained) {
         // eslint-disable-next-line no-await-in-loop
@@ -171,5 +284,8 @@ export const discordThunder = async (discordClient, message, filteredMessage, io
     });
   }).catch((err) => {
     message.channel.send('something went wrong');
+  });
+  io.to('admin').emit('updateActivity', {
+    activity,
   });
 };

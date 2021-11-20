@@ -15,10 +15,10 @@ import logger from "../../helpers/logger";
 
 export const discordSoak = async (discordClient, message, filteredMessage, io) => {
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  const onlineMembers = members.filter((member) => 
-  member.presence?.status === "online"
-  || member.presence?.status === "idle"
-  || member.presence?.status === "dnd"
+  const onlineMembers = members.filter((member) =>
+    member.presence?.status === "online"
+    || member.presence?.status === "idle"
+    || member.presence?.status === "dnd"
   );
   const mappedMembersArray = onlineMembers.map((a) => {
     return a.user;
@@ -57,10 +57,13 @@ export const discordSoak = async (discordClient, message, filteredMessage, io) =
     }
   }
 
+  let activity;
+  let user;
+
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const user = await db.user.findOne({
+    user = await db.user.findOne({
       where: {
         user_id: `discord-${message.author.id}`,
       },
@@ -80,6 +83,12 @@ export const discordSoak = async (discordClient, message, filteredMessage, io) =
       transaction: t,
     });
     if (!user) {
+      activity = await db.activity.create({
+        type: 'soak_f',
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Soak')] });
       return;
     }
@@ -90,22 +99,57 @@ export const discordSoak = async (discordClient, message, filteredMessage, io) =
       amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
     }
     if (amount < Number(settings.min.discord.soak)) {
+      activity = await db.activity.create({
+        type: 'soak_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [minimumMessage(message, 'Soak')] });
       return;
     }
     if (amount % 1 !== 0) {
+      activity = await db.activity.create({
+        type: 'soak_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Soak')] });
       return;
     }
     if (amount <= 0) {
+      activity = await db.activity.create({
+        type: 'soak_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'Soak')] });
       return;
     }
     if (user.wallet.available < amount) {
+      activity = await db.activity.create({
+        type: 'soak_i',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'Soak')] });
       return;
     }
     if (withoutBots.length < 2) {
+      activity = await db.activity.create({
+        type: 'soak_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
       await message.channel.send('Not enough online users');
       return;
     }
@@ -124,18 +168,46 @@ export const discordSoak = async (discordClient, message, filteredMessage, io) =
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+    activity = await db.activity.create({
+      amount,
+      type: 'soak_s',
+      spenderId: user.id,
+      soakId: soakRecord.id,
+      spender_balance: updatedBalance.available + updatedBalance.locked,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    activity = await db.activity.findOne({
+      where: {
+        id: activity.id,
+      },
+      include: [
+        {
+          model: db.soak,
+          as: 'soak'
+        },
+        {
+          model: db.user,
+          as: 'spender'
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+
+    });
     const listOfUsersRained = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const soakee of withoutBots) {
       // eslint-disable-next-line no-await-in-loop
-      await soakee.wallet.update({
+      const soakeeWallet = await soakee.wallet.update({
         available: soakee.wallet.available + Number(amountPerUser),
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
       // eslint-disable-next-line no-await-in-loop
-      await db.soaktip.create({
+      const soaktipRecord = await db.soaktip.create({
         amount: amountPerUser,
         userId: soakee.id,
         soakId: soakRecord.id,
@@ -149,7 +221,50 @@ export const discordSoak = async (discordClient, message, filteredMessage, io) =
         const userIdReceivedRain = soakee.user_id.replace('discord-', '');
         listOfUsersRained.push(`<@${userIdReceivedRain}>`);
       }
-      
+      let tipActivity;
+      tipActivity = await db.activity.create({
+        amount: Number(amountPerUser),
+        type: 'soaktip_s',
+        spenderId: user.id,
+        earnerId: soakee.id,
+        soakId: soakRecord.id,
+        soaktipId: soaktipRecord.id,
+        earner_balance: soakeeWallet.available + soakeeWallet.locked,
+        spender_balance: updatedBalance.available + updatedBalance.locked,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      tipActivity = await db.activity.findOne({
+        where: {
+          id: tipActivity.id,
+        },
+        include: [
+          {
+            model: db.user,
+            as: 'earner'
+          },
+          {
+            model: db.user,
+            as: 'spender'
+          },
+          {
+            model: db.soak,
+            as: 'soak'
+          },
+          {
+            model: db.soaktip,
+            as: 'soaktip'
+          },
+        ],
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      console.log(tipActivity);
+      io.to('admin').emit('updateActivity', {
+        activity: tipActivity,
+      });
+
     }
 
     const newStringListUsers = listOfUsersRained.join(", ");
@@ -169,5 +284,8 @@ export const discordSoak = async (discordClient, message, filteredMessage, io) =
     });
   }).catch((err) => {
     message.channel.send('something went wrong');
+  });
+  io.to('admin').emit('updateActivity', {
+    activity,
   });
 };
