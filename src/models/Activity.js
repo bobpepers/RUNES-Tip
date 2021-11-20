@@ -97,6 +97,63 @@ module.exports = (sequelize, DataTypes) => {
       as: 'transaction',
       foreignKey: 'transactionId',
     });
+
+    ActivityModel.belongsTo(model.transaction, {
+      as: 'rain',
+      foreignKey: 'rainId',
+    });
+    ActivityModel.belongsTo(model.transaction, {
+      as: 'raintip',
+      foreignKey: 'raintipId',
+    });
+    ActivityModel.belongsTo(model.transaction, {
+      as: 'soak',
+      foreignKey: 'soakId',
+    });
+    ActivityModel.belongsTo(model.transaction, {
+      as: 'soaktip',
+      foreignKey: 'soaktipId',
+    });
+    ActivityModel.belongsTo(model.transaction, {
+      as: 'flood',
+      foreignKey: 'floodId',
+    });
+    ActivityModel.belongsTo(model.transaction, {
+      as: 'floodtip',
+      foreignKey: 'floodtipId',
+    });
+    ActivityModel.belongsTo(model.transaction, {
+      as: 'sleet',
+      foreignKey: 'sleetId',
+    });
+    ActivityModel.belongsTo(model.transaction, {
+      as: 'sleettip',
+      foreignKey: 'sleettipId',
+    });
+    ActivityModel.belongsTo(model.transaction, {
+      as: 'thunder',
+      foreignKey: 'thunderId',
+    });
+    ActivityModel.belongsTo(model.transaction, {
+      as: 'thundertip',
+      foreignKey: 'thundertipId',
+    });
+    ActivityModel.belongsTo(model.transaction, {
+      as: 'thunderstorm',
+      foreignKey: 'thunderstormId',
+    });
+    ActivityModel.belongsTo(model.transaction, {
+      as: 'thunderstormtip',
+      foreignKey: 'thunderstormtipId',
+    });
+    ActivityModel.belongsTo(model.transaction, {
+      as: 'reactdrop',
+      foreignKey: 'reactdropId',
+    });
+    ActivityModel.belongsTo(model.transaction, {
+      as: 'reactdroptip',
+      foreignKey: 'reactdroptipId',
+    });
   };
 
   return ActivityModel;

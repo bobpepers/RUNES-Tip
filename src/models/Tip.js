@@ -39,6 +39,7 @@ module.exports = (sequelize, DataTypes) => {
       as: 'userTipped',
       foreignKey: 'userTippedId',
     });
+    TipModel.hasMany(model.activity, { as: 'tip' });
   };
 
   // 5: Wallet has many addresses

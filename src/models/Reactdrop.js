@@ -49,6 +49,7 @@ module.exports = (sequelize, DataTypes) => {
     ReactdropModel.hasMany(model.reactdroptip);
     ReactdropModel.belongsTo(model.group);
     ReactdropModel.belongsTo(model.channel);
+    ReactdropModel.hasMany(model.activity, { as: 'reactdrop' });
   };
 
   // 5: Wallet has many addresses

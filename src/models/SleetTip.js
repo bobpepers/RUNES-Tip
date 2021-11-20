@@ -25,6 +25,7 @@ module.exports = (sequelize, DataTypes) => {
   SleetTipModel.associate = (model) => {
     SleetTipModel.belongsTo(model.user);
     SleetTipModel.belongsTo(model.sleet);
+    SleetTipModel.hasMany(model.activity, { as: 'sleettip' });
   };
 
   // 5: Wallet has many addresses

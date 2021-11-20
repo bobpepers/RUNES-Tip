@@ -41,6 +41,7 @@ module.exports = (sequelize, DataTypes) => {
   ReactdropTipModel.associate = (model) => {
     ReactdropTipModel.belongsTo(model.user);
     ReactdropTipModel.belongsTo(model.reactdrop);
+    ReactdropTipModel.hasMany(model.activity, { as: 'reactdroptip' });
   };
 
   // 5: Wallet has many addresses
