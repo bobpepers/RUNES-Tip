@@ -134,6 +134,7 @@ export const discordFlood = async (discordClient, message, filteredMessage, io) 
       activity = await db.activity.create({
         type: 'flood_i',
         spenderId: user.id,
+        amount,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
@@ -225,6 +226,7 @@ export const discordFlood = async (discordClient, message, filteredMessage, io) 
         amount: Number(amountPerUser),
         type: 'floodtip_s',
         spenderId: user.id,
+        earnerId: floodee.id,
         floodId: floodRecord.id,
         floodtipId: floodRecord.id,
         earner_balance: floodeeWallet.available + floodeeWallet.locked,
@@ -238,6 +240,14 @@ export const discordFlood = async (discordClient, message, filteredMessage, io) 
           id: tipActivity.id,
         },
         include: [
+          {
+            model: db.user,
+            as: 'earner'
+          },
+          {
+            model: db.user,
+            as: 'spender'
+          },
           {
             model: db.flood,
             as: 'flood'
@@ -269,14 +279,14 @@ export const discordFlood = async (discordClient, message, filteredMessage, io) 
     logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 
     t.afterCommit(() => {
-      io.to('admin').emit('updateActivity', {
-        activity,
-      });
+
       console.log('done');
     });
   }).catch((err) => {
     console.log(err);
     message.channel.send('something went wrong');
   });
-
+  io.to('admin').emit('updateActivity', {
+    activity,
+  });
 };
