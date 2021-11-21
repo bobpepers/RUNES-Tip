@@ -27,6 +27,9 @@ export const fetchDashboardUsers = async (req, res, next) => {
   }
 
   const options = {
+    order: [
+      ['id', 'DESC'],
+    ],
     where: userOptions,
   };
   res.locals.dashboardusers = await db.dashboardUser.findAll(options);

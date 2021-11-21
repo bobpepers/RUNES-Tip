@@ -28,6 +28,9 @@ export const fetchDeposits = async (req, res, next) => {
 
   const options = {
     where: transactionOptions,
+    order: [
+      ['id', 'DESC'],
+    ],
     include: [
       {
         model: db.address,

@@ -20,11 +20,6 @@ import {
   banServer,
 } from './controllers/servers';
 
-import {
-  fetchChannels,
-  banChannel,
-} from './controllers/servers';
-
 import { fetchNodeStatus } from './controllers/status';
 
 import { fetchWithdrawals } from './controllers/withdrawals';

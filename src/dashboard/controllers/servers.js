@@ -26,6 +26,9 @@ export const fetchServers = async (req, res, next) => {
   }
 
   const options = {
+    order: [
+      ['id', 'DESC'],
+    ],
     where: userOptions,
   };
   res.locals.servers = await db.group.findAll(options);

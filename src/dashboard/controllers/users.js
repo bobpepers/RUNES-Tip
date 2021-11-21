@@ -37,6 +37,9 @@ export const fetchUsers = async (req, res, next) => {
   }
 
   const options = {
+    order: [
+      ['id', 'DESC'],
+    ],
     where: userOptions,
     include: [
       {
