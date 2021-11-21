@@ -5,7 +5,7 @@ import {
   verifyEmail,
   resendVerification,
   destroySession,
-  isUserBanned,
+  isDashboardUserBanned,
 } from './controllers/auth';
 
 import { isAdmin } from './controllers/admin';
@@ -96,6 +96,7 @@ export const dashboardRouter = (app, io) => {
     '/api/ban/user',
     IsAuthenticated,
     isAdmin,
+    isDashboardUserBanned,
     insertIp,
     banUser,
     (req, res) => {
@@ -117,12 +118,13 @@ export const dashboardRouter = (app, io) => {
     '/api/ban/channel',
     IsAuthenticated,
     isAdmin,
+    isDashboardUserBanned,
     insertIp,
     banChannel,
     (req, res) => {
-      if (res.locals.user) {
+      if (res.locals.channel) {
         res.json({
-          user: res.locals.user,
+          user: res.locals.channel,
         });
       } else {
         res.status(401).send({
@@ -137,6 +139,7 @@ export const dashboardRouter = (app, io) => {
     '/api/ban/server',
     IsAuthenticated,
     isAdmin,
+    isDashboardUserBanned,
     insertIp,
     banServer,
     (req, res) => {
@@ -158,6 +161,7 @@ export const dashboardRouter = (app, io) => {
     '/api/channels',
     IsAuthenticated,
     isAdmin,
+    isDashboardUserBanned,
     insertIp,
     fetchChannels,
     (req, res) => {
@@ -179,6 +183,7 @@ export const dashboardRouter = (app, io) => {
     '/api/activity',
     IsAuthenticated,
     isAdmin,
+    isDashboardUserBanned,
     insertIp,
     fetchActivity,
     (req, res) => {
@@ -200,6 +205,7 @@ export const dashboardRouter = (app, io) => {
     '/api/withdrawals',
     IsAuthenticated,
     isAdmin,
+    isDashboardUserBanned,
     insertIp,
     fetchWithdrawals,
     (req, res) => {
@@ -221,6 +227,7 @@ export const dashboardRouter = (app, io) => {
     '/api/deposits',
     IsAuthenticated,
     isAdmin,
+    isDashboardUserBanned,
     insertIp,
     fetchDeposits,
     (req, res) => {
@@ -242,6 +249,7 @@ export const dashboardRouter = (app, io) => {
     '/api/users',
     IsAuthenticated,
     isAdmin,
+    isDashboardUserBanned,
     insertIp,
     fetchUsers,
     (req, res) => {
@@ -262,6 +270,7 @@ export const dashboardRouter = (app, io) => {
     '/api/dashboardusers',
     IsAuthenticated,
     isAdmin,
+    isDashboardUserBanned,
     insertIp,
     fetchDashboardUsers,
     (req, res) => {
@@ -283,6 +292,7 @@ export const dashboardRouter = (app, io) => {
     '/api/servers',
     IsAuthenticated,
     isAdmin,
+    isDashboardUserBanned,
     insertIp,
     fetchServers,
     (req, res) => {
@@ -304,6 +314,7 @@ export const dashboardRouter = (app, io) => {
     '/api/status',
     IsAuthenticated,
     isAdmin,
+    isDashboardUserBanned,
     insertIp,
     fetchNodeStatus,
     (req, res) => {
@@ -326,6 +337,7 @@ export const dashboardRouter = (app, io) => {
     '/api/balance',
     IsAuthenticated,
     isAdmin,
+    isDashboardUserBanned,
     ensuretfa,
     fetchBalance,
     (req, res) => {
@@ -350,6 +362,7 @@ export const dashboardRouter = (app, io) => {
     '/api/liability',
     IsAuthenticated,
     isAdmin,
+    isDashboardUserBanned,
     ensuretfa,
     fetchLiability,
     (req, res) => {
@@ -416,7 +429,7 @@ export const dashboardRouter = (app, io) => {
     verifyMyCaptcha,
     // insertIp,
     requireSignin,
-    isUserBanned,
+    isDashboardUserBanned,
     signin,
     (err, req, res, next) => {
       if (req.authErr === 'EMAIL_NOT_VERIFIED') {
@@ -462,7 +475,7 @@ export const dashboardRouter = (app, io) => {
   app.post(
     '/api/2fa/enable',
     IsAuthenticated,
-    isUserBanned,
+    isDashboardUserBanned,
     // storeIp,
     ensuretfa,
     // updateLastSeen,
@@ -481,7 +494,7 @@ export const dashboardRouter = (app, io) => {
   app.post(
     '/api/2fa/unlock',
     IsAuthenticated,
-    isUserBanned,
+    isDashboardUserBanned,
     // storeIp,
     unlocktfa,
   );

@@ -11,6 +11,14 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    channelName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    banned: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     lastActive: {
       type: DataTypes.DATE,
       allowNull: true,

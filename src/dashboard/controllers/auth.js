@@ -1,18 +1,15 @@
 import { sendVerificationEmail } from '../helpers/email';
 import db from '../../models';
-import { generateVerificationToken, generateHash } from '../helpers/generate';
+import { generateVerificationToken } from '../helpers/generate';
 import timingSafeEqual from '../helpers/timingSafeEqual';
 
-const crypto = require('crypto');
-
-const { Sequelize, Transaction, Op } = require('sequelize');
-const { getInstance } = require('../../services/rclient');
+const { Transaction, Op } = require('sequelize');
 
 /**
  *
- * Is User Banned?
+ * Is Dashboard User Banned?
  */
-export const isUserBanned = async (req, res, next) => {
+export const isDashboardUserBanned = async (req, res, next) => {
   if (req.user.banned) {
     console.log('user is banned');
     req.logOut();
@@ -30,7 +27,6 @@ export const isUserBanned = async (req, res, next) => {
  * Sign in
  */
 export const signin = async (req, res, next) => {
-  console.log('start signin');
   const ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   if (req.authErr === 'USER_NOT_EXIST') {
     return next('USER_NOT_EXIST', false);
@@ -89,7 +85,7 @@ export const signin = async (req, res, next) => {
     //   },
     // ],
     // });
-    console.log('before send');
+    console.log(req.authErr);
     if (req.authErr === 'EMAIL_NOT_VERIFIED') {
       console.log('EMAIL_NOT_VERIFIED');
       req.session.destroy();
@@ -98,22 +94,16 @@ export const signin = async (req, res, next) => {
         email: res.locals.email,
       });
     } else if (req.authErr) {
-      console.log(req.authErr);
       console.log('LOGIN_ERROR');
       req.session.destroy();
       res.status(401).send({
         error: 'LOGIN_ERROR',
       });
     } else {
-      // console.log(req);
-      // console.log('Login Successfuls');
-      // console.log(req.user.username);
       res.json({
         username: req.user.username,
       });
     }
-
-    // next();
   }
 };
 
@@ -146,6 +136,7 @@ export const destroySession = async (req, res, next) => {
   req.session.destroy();
   next();
 };
+
 /**
  * Sign up
  */
@@ -234,7 +225,6 @@ export const resendVerification = async (req, res, next) => {
       ],
     },
   }).then(async (user) => {
-    console.log('wut');
     const verificationToken = await generateVerificationToken(24);
     if (user.authused === true) {
       res.json({ success: false });
