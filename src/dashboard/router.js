@@ -8,37 +8,28 @@ import {
   isUserBanned,
 } from './controllers/auth';
 
-import {
-  isAdmin,
-  fetchAdminLiability,
-} from './controllers/admin';
+import { isAdmin } from './controllers/admin';
 
-import {
-  fetchLiability,
-} from './controllers/liability';
-import {
-  fetchBalance,
-} from './controllers/balance';
+import { fetchLiability } from './controllers/liability';
+import { fetchBalance } from './controllers/balance';
 
-import {
-  insertIp,
-} from './controllers/ip';
+import { insertIp } from './controllers/ip';
 
 import {
   fetchServers,
+  banServer,
 } from './controllers/servers';
 
 import {
-  fetchNodeStatus,
-} from './controllers/status';
+  fetchChannels,
+  banChannel,
+} from './controllers/servers';
 
-import {
-  fetchWithdrawals,
-} from './controllers/withdrawals';
+import { fetchNodeStatus } from './controllers/status';
 
-import {
-  fetchActivity,
-} from './controllers/activity';
+import { fetchWithdrawals } from './controllers/withdrawals';
+
+import { fetchActivity } from './controllers/activity';
 
 import {
   resetPassword,
@@ -46,19 +37,20 @@ import {
   resetPasswordNew,
 } from './controllers/resetPassword';
 
-import {
-  verifyMyCaptcha,
-} from './controllers/recaptcha';
+import { verifyMyCaptcha } from './controllers/recaptcha';
 
 import {
   fetchDashboardUsers,
 } from './controllers/dashboardUsers';
+import { fetchDeposits } from './controllers/deposits';
 import {
-  fetchDeposits,
-} from './controllers/deposits';
+  fetchChannels,
+  banChannel,
+} from './controllers/channels';
 
 import {
   fetchUsers,
+  banUser,
 } from './controllers/users';
 import passportService from './services/passport';
 import {
@@ -103,6 +95,89 @@ export const dashboardRouter = (app, io) => {
     verifyMyCaptcha,
     insertIp,
     signup,
+  );
+
+  app.post(
+    '/api/ban/user',
+    IsAuthenticated,
+    isAdmin,
+    insertIp,
+    banUser,
+    (req, res) => {
+      if (res.locals.user) {
+        res.json({
+          user: res.locals.user,
+        });
+      } else {
+        res.status(401).send({
+          error: {
+            message: "Error",
+          },
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/ban/channel',
+    IsAuthenticated,
+    isAdmin,
+    insertIp,
+    banChannel,
+    (req, res) => {
+      if (res.locals.user) {
+        res.json({
+          user: res.locals.user,
+        });
+      } else {
+        res.status(401).send({
+          error: {
+            message: "Error",
+          },
+        });
+      }
+    },
+  );
+  app.post(
+    '/api/ban/server',
+    IsAuthenticated,
+    isAdmin,
+    insertIp,
+    banServer,
+    (req, res) => {
+      if (res.locals.server) {
+        res.json({
+          server: res.locals.server,
+        });
+      } else {
+        res.status(401).send({
+          error: {
+            message: "Error",
+          },
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/channels',
+    IsAuthenticated,
+    isAdmin,
+    insertIp,
+    fetchChannels,
+    (req, res) => {
+      if (res.locals.channel) {
+        res.json({
+          user: res.locals.channel,
+        });
+      } else {
+        res.status(401).send({
+          error: {
+            message: "Error",
+          },
+        });
+      }
+    },
   );
 
   app.post(

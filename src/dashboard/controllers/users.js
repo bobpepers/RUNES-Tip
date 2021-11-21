@@ -3,6 +3,11 @@ import db from '../../models';
 
 const { Op } = require('sequelize');
 
+export const banUser = async (req, res, next) => {
+  console.log('banUser');
+  next();
+};
+
 export const fetchUsers = async (req, res, next) => {
   const userOptions = {};
   if (req.body.id !== '') {
