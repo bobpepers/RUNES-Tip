@@ -99,6 +99,7 @@ Type "${settings.bot.command.discord} help" for usage info`);
 };
 
 export const updateDiscordLastSeen = async (client, message) => {
+  let updatedUser;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -159,7 +160,7 @@ export const updateDiscordLastSeen = async (client, message) => {
       }
     }
     if (user) {
-      const updatedUser = await user.update(
+      updatedUser = await user.update(
         {
           lastSeen: new Date(Date.now()),
         },
@@ -176,4 +177,5 @@ export const updateDiscordLastSeen = async (client, message) => {
   }).catch((err) => {
     console.log(err.message);
   });
+  return updatedUser;
 };

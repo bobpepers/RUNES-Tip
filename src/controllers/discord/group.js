@@ -3,13 +3,14 @@ import { Transaction } from "sequelize";
 import db from '../../models';
 
 export const updateDiscordGroup = async (client, message) => {
+  let group;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     if (message.guildId) {
       const guild = await client.guilds.cache.get(message.guildId);
       // console.log(guild);
-      let group = await db.group.findOne(
+      group = await db.group.findOne(
         {
           where: {
             groupId: `discord-${message.guildId}`,
@@ -43,9 +44,10 @@ export const updateDiscordGroup = async (client, message) => {
     }
 
     t.afterCommit(() => {
-      console.log('done');
+      console.log('Update Group transaction done');
     });
   }).catch((err) => {
     console.log(err.message);
   });
+  return group;
 };

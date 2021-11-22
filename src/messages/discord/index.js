@@ -2,6 +2,42 @@ import { MessageEmbed } from "discord.js";
 import settings from "../../config/settings";
 import pjson from "../../../package.json";
 
+export const discordUserBannedMessage = (user) => {
+  const result = new MessageEmbed()
+    .setColor("#C70039")
+    .setTitle('🚫     User Banned     🚫')
+    .setDescription(`Reason:
+${user.banMessage}`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
+export const discordServerBannedMessage = (server) => {
+  const result = new MessageEmbed()
+    .setColor(`#C70039`)
+    .setTitle('🚫     Server Banned     🚫')
+    .setDescription(`Reason:
+${server.banMessage}`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
+export const discordChannelBannedMessage = (channel) => {
+  const result = new MessageEmbed()
+    .setColor('#FF7900')
+    .setTitle('❗     Channel Restricted     ❗')
+    .setDescription(`Reason:
+${channel.banMessage}`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
 export const coinInfoMessage = (blockHeight, priceInfo) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
@@ -332,7 +368,7 @@ export const AfterThunderStormSuccess = (message, amount, amountPerUser, listOfU
       console.log(user);
       return `⛈ ${user} has been thunderstruck with ${amountPerUser / 1e8} ${settings.coin.ticker} ⛈`;
     }).join("\n")}`)
-  // .setDescription(`⛈ ${userThunder} has been thunderstruck with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
+    // .setDescription(`⛈ ${userThunder} has been thunderstruck with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
     .setTimestamp()
     .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
 

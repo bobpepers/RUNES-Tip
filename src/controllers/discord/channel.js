@@ -1,19 +1,21 @@
-/* eslint-disable import/prefer-default-export */
 import { Transaction } from "sequelize";
 import db from '../../models';
 
 export const updateDiscordChannel = async (client, message) => {
   console.log(message);
+  console.log('updateDiscordMessage');
+  let channelRecord;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    // const channel = await client.channels.cache.get(message.channelId);
+    const channel = message.guild.channels.cache.get(message.channelId);
+    console.log(channel);
     if (message.channelId) {
-      // const guild = await client.guilds.cache.get(message.guildId);
-    // const channel = await client.guilds.cache.get(message.guildId).channels.cache.get(message.channelId);
-      let channelRecord = await db.channel.findOne(
+      channelRecord = await db.channel.findOne(
         {
           where: {
-            channelId: `${message.channelId}`,
+            channelId: `discord-${message.channelId}`,
           },
           transaction: t,
           lock: t.LOCK.UPDATE,
@@ -22,8 +24,8 @@ export const updateDiscordChannel = async (client, message) => {
       if (!channelRecord) {
         channelRecord = await db.channel.create({
           channelId: `discord-${message.channelId}`,
-          // groupName: guild.name,
           lastActive: Date.now(),
+          channelName: channel.name,
         }, {
           transaction: t,
           lock: t.LOCK.UPDATE,
@@ -32,7 +34,7 @@ export const updateDiscordChannel = async (client, message) => {
       if (channelRecord) {
         channelRecord = await channelRecord.update(
           {
-          // groupName: guild.name,
+            channelName: channel.name,
             lastActive: Date.now(),
           },
           {
@@ -49,4 +51,5 @@ export const updateDiscordChannel = async (client, message) => {
   }).catch((err) => {
     console.log(err.message);
   });
+  return channelRecord;
 };

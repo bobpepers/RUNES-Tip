@@ -81,7 +81,12 @@ import {
 } from './controllers/telegram/referral';
 
 import { telegramIncomingDepositMessage } from './messages/telegram';
-import { discordIncomingDepositMessage } from './messages/discord';
+import {
+  discordIncomingDepositMessage,
+  discordUserBannedMessage,
+  discordServerBannedMessage,
+  discordChannelBannedMessage,
+} from './messages/discord';
 
 import fetchPriceInfo from './controllers/telegram/price';
 
@@ -178,15 +183,32 @@ export const router = (app, discordClient, telegramClient, io) => {
   });
 
   discordClient.on("messageCreate", async (message) => {
+    let groupTask;
+    let channelTask;
+    let lastSeenDiscordTask;
     if (!message.author.bot) {
       const walletExists = await createUpdateDiscordUser(message);
       await queue.add(() => walletExists);
-      const groupTask = await updateDiscordGroup(discordClient, message);
+      groupTask = await updateDiscordGroup(discordClient, message);
       await queue.add(() => groupTask);
-      const channelTask = await updateDiscordChannel(discordClient, message);
+      channelTask = await updateDiscordChannel(discordClient, message);
       await queue.add(() => channelTask);
-      const lastSeenDiscordTask = await updateDiscordLastSeen(discordClient, message);
+      lastSeenDiscordTask = await updateDiscordLastSeen(discordClient, message);
       await queue.add(() => lastSeenDiscordTask);
+    }
+    if (message.content.startsWith(settings.bot.command.discord)) {
+      if (groupTask.banned) {
+        await message.channel.send({ embeds: [discordServerBannedMessage(groupTask)] });
+        return;
+      }
+      if (channelTask.banned) {
+        await message.channel.send({ embeds: [discordChannelBannedMessage(channelTask)] });
+        return;
+      }
+      if (lastSeenDiscordTask.banned) {
+        await message.channel.send({ embeds: [discordUserBannedMessage(lastSeenDiscordTask)] });
+        return;
+      }
     }
 
     if (!message.content.startsWith(settings.bot.command.discord) || message.author.bot) return;
