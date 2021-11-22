@@ -4,7 +4,27 @@ import db from '../../models';
 const { Op } = require('sequelize');
 
 export const banUser = async (req, res, next) => {
-  console.log('banUser');
+  console.log('ban user');
+  try {
+    const user = await db.user.findOne({
+      where: {
+        id: req.body.id,
+      },
+      include: [
+        {
+          model: db.wallet,
+          as: 'wallet',
+        },
+      ],
+    });
+    res.locals.user = await user.update({
+      banned: !user.banned,
+      banMessage: req.body.banMessage,
+    });
+  } catch (err) {
+    res.locals.error = err;
+    console.log(err);
+  }
   next();
 };
 

@@ -4,15 +4,16 @@ import db from '../../models';
 const { Op } = require('sequelize');
 
 export const banServer = async (req, res, next) => {
-  console.log('ban channel');
+  console.log('ban server');
   try {
     const group = await db.group.findOne({
       where: {
         id: req.body.id,
       },
     });
-    res.locals.group = await group.update({
+    res.locals.server = await group.update({
       banned: !group.banned,
+      banMessage: req.body.banMessage,
     });
   } catch (err) {
     res.locals.error = err;

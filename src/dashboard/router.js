@@ -124,7 +124,7 @@ export const dashboardRouter = (app, io) => {
     (req, res) => {
       if (res.locals.channel) {
         res.json({
-          user: res.locals.channel,
+          channel: res.locals.channel,
         });
       } else {
         res.status(401).send({

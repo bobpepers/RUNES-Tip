@@ -5,6 +5,7 @@ const { Op } = require('sequelize');
 
 export const banChannel = async (req, res, next) => {
   console.log('ban channel');
+  console.log(req.body);
   try {
     const channel = await db.channel.findOne({
       where: {
@@ -13,11 +14,13 @@ export const banChannel = async (req, res, next) => {
     });
     res.locals.channel = await channel.update({
       banned: !channel.banned,
+      banMessage: req.body.banMessage,
     });
   } catch (err) {
     res.locals.error = err;
     console.log(err);
   }
+  console.log(res.locals.channel);
   next();
 };
 
@@ -38,6 +41,7 @@ export const fetchChannels = async (req, res, next) => {
     order: [
       ['id', 'DESC'],
     ],
+    limit: 300,
     where: userOptions,
   };
   res.locals.channels = await db.channel.findAll(options);
