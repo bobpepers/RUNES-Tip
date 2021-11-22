@@ -4,8 +4,6 @@ import db from '../../models';
 const { Op } = require('sequelize');
 
 export const banChannel = async (req, res, next) => {
-  console.log('ban channel');
-  console.log(req.body);
   try {
     const channel = await db.channel.findOne({
       where: {
@@ -43,6 +41,12 @@ export const fetchChannels = async (req, res, next) => {
     ],
     limit: 300,
     where: userOptions,
+    include: [
+      {
+        model: db.group,
+        as: 'group',
+      },
+    ],
   };
   res.locals.channels = await db.channel.findAll(options);
   console.log(res.locals.channels);

@@ -39,6 +39,7 @@ module.exports = (sequelize, DataTypes) => {
 
   ChannelModel.associate = (model) => {
     ChannelModel.hasMany(model.reactdrop);
+    ChannelModel.belongsTo(model.group);
   };
 
   return ChannelModel;
