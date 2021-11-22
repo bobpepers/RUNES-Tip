@@ -165,9 +165,9 @@ export const dashboardRouter = (app, io) => {
     insertIp,
     fetchChannels,
     (req, res) => {
-      if (res.locals.channel) {
+      if (res.locals.channels) {
         res.json({
-          user: res.locals.channel,
+          channels: res.locals.channels,
         });
       } else {
         res.status(401).send({

@@ -19,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    banMessage: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
     lastActive: {
       type: DataTypes.DATE,
       allowNull: true,

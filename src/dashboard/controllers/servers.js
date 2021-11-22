@@ -4,7 +4,20 @@ import db from '../../models';
 const { Op } = require('sequelize');
 
 export const banServer = async (req, res, next) => {
-  console.log('ban server');
+  console.log('ban channel');
+  try {
+    const group = await db.group.findOne({
+      where: {
+        id: req.body.id,
+      },
+    });
+    res.locals.group = await group.update({
+      banned: !group.banned,
+    });
+  } catch (err) {
+    res.locals.error = err;
+    console.log(err);
+  }
   next();
 };
 
