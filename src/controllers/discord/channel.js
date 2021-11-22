@@ -1,7 +1,7 @@
 import { Transaction } from "sequelize";
 import db from '../../models';
 
-export const updateDiscordChannel = async (client, message) => {
+export const updateDiscordChannel = async (client, message, group) => {
   console.log(message);
   console.log('updateDiscordMessage');
   let channelRecord;
@@ -26,6 +26,7 @@ export const updateDiscordChannel = async (client, message) => {
           channelId: `discord-${message.channelId}`,
           lastActive: Date.now(),
           channelName: channel.name,
+          groupId: group.id,
         }, {
           transaction: t,
           lock: t.LOCK.UPDATE,

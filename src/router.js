@@ -191,7 +191,7 @@ export const router = (app, discordClient, telegramClient, io) => {
       await queue.add(() => walletExists);
       groupTask = await updateDiscordGroup(discordClient, message);
       await queue.add(() => groupTask);
-      channelTask = await updateDiscordChannel(discordClient, message);
+      channelTask = await updateDiscordChannel(discordClient, message, groupTask);
       await queue.add(() => channelTask);
       lastSeenDiscordTask = await updateDiscordLastSeen(discordClient, message);
       await queue.add(() => lastSeenDiscordTask);
