@@ -27,7 +27,7 @@ function hashPassword(user, options) {
 }
 
 module.exports = (sequelize, DataTypes) => {
-// 1: The model schema.
+  // 1: The model schema.
   const modelDefinition = {
     id: {
       type: DataTypes.BIGINT,

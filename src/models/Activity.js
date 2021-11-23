@@ -158,6 +158,14 @@ module.exports = (sequelize, DataTypes) => {
       as: 'reactdroptip',
       foreignKey: 'reactdroptipId',
     });
+    ActivityModel.belongsTo(model.hurricane, {
+      as: 'hurricane',
+      foreignKey: 'hurricaneId',
+    });
+    ActivityModel.belongsTo(model.hurricanetip, {
+      as: 'hurricanetip',
+      foreignKey: 'hurricanetipId',
+    });
   };
 
   return ActivityModel;
