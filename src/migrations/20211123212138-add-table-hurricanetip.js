@@ -19,7 +19,7 @@ module.exports = {
           key: 'id',
         },
       },
-      soakId: {
+      hurricaneId: {
         type: DataTypes.BIGINT,
         allowNull: false,
         references: {

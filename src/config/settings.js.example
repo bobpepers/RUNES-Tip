@@ -54,6 +54,8 @@ module.exports = {
       soak: 1e7,
       thunder: 1e7,
       thunderstorm: 1e7,
+      hurricane: 1e7,
+      voicerain: 1e7,
     },
     telegram: {
       tip: 1e7,

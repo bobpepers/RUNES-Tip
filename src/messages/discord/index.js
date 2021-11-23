@@ -316,10 +316,36 @@ export const minimumMessage = (message, type) => {
   if (type === 'ThunderStorm') {
     minAmount = settings.min.discord.thunderstorm;
   }
+  if (type === 'Hurricane') {
+    minAmount = settings.min.discord.hurricane;
+  }
+  if (type === 'VoiceRain') {
+    minAmount = settings.min.discord.voicerain;
+  }
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle(type)
     .setDescription(`<@${message.author.id}>, Minimum ${type} is ${Number(minAmount) / 1e8} ${settings.coin.ticker}`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+export const hurricaneMaxUserAmountMessage = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Hurricane')
+    .setDescription(`<@${message.author.id}>, Maximum user amount is 50`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+export const hurricaneInvalidUserAmount = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Hurricane')
+    .setDescription(`<@${message.author.id}>, Invalid amount of users`)
     .setTimestamp()
     .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
 
@@ -348,11 +374,34 @@ export const thunderstormInvalidUserAmount = (message) => {
   return result;
 };
 
+export const hurricaneUserZeroAmountMessage = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Hurricane')
+    .setDescription(`<@${message.author.id}>, minimum amount of users to thunderstorm is 1`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
 export const thunderstormUserZeroAmountMessage = (message) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('ThunderStorm')
     .setDescription(`<@${message.author.id}>, minimum amount of users to thunderstorm is 1`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
+export const AfterHurricaneSuccess = (message, amount, amountPerUser, listOfUsersRained) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Hurricane')
+    .setDescription(`${listOfUsersRained.map((user) => `⛈ ${user} has been hit by hurricane with ${amountPerUser / 1e8} ${settings.coin.ticker} ⛈`).join("\n")}`)
+    // .setDescription(`⛈ ${userThunder} has been thunderstruck with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
     .setTimestamp()
     .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
 

@@ -57,6 +57,9 @@ import {
 import {
   discordThunderStorm,
 } from './controllers/discord/thunderstorm';
+import {
+  discordHurricane,
+} from './controllers/discord/hurricane';
 
 import {
   fetchHelp,
@@ -271,6 +274,11 @@ export const router = (app, discordClient, telegramClient, io) => {
 
     if (filteredMessageDiscord[1].toLowerCase() === 'thunderstorm') {
       const task = await discordThunderStorm(discordClient, message, filteredMessageDiscord, io);
+      await queue.add(() => task);
+    }
+
+    if (filteredMessageDiscord[1].toLowerCase() === 'hurricane') {
+      const task = await discordHurricane(discordClient, message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
 
