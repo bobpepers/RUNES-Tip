@@ -197,15 +197,15 @@ export const router = (app, discordClient, telegramClient, io) => {
       await queue.add(() => lastSeenDiscordTask);
     }
     if (message.content.startsWith(settings.bot.command.discord)) {
-      if (groupTask.banned) {
+      if (groupTask && groupTask.banned) {
         await message.channel.send({ embeds: [discordServerBannedMessage(groupTask)] });
         return;
       }
-      if (channelTask.banned) {
+      if (channelTask && channelTask.banned) {
         await message.channel.send({ embeds: [discordChannelBannedMessage(channelTask)] });
         return;
       }
-      if (lastSeenDiscordTask.banned) {
+      if (lastSeenDiscordTask && lastSeenDiscordTask.banned) {
         await message.channel.send({ embeds: [discordUserBannedMessage(lastSeenDiscordTask)] });
         return;
       }

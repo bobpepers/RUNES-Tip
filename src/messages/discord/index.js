@@ -528,6 +528,11 @@ example: \`${settings.bot.command.discord} flood 5.00\`
 \`${settings.bot.command.discord} sleet <amount|all>\`
 Makes a sleet storm with the desired amount onto all users that have been active in the channel in the last 15 minutes (optionally, within specified role
 
+\`${settings.bot.command.discord} voicerain <amount|all> <@voiceChannel>\`
+Rains the desired amount onto all listening users in the mentioned voice channel.
+example: \`${settings.bot.command.discord} voicerain 5.00 #General\`
+NOTE: To mention a voice channel, get the channel ID ([read here how](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)) and enclose it with <# and >
+
 \`${settings.bot.command.discord} thunder <amount|all>\`
 Tips a random lucky online user with the amount (optionally, within specified role)
 example: \`${settings.bot.command.discord} thunder 5\`
@@ -535,6 +540,13 @@ example: \`${settings.bot.command.discord} thunder 5\`
 \`${settings.bot.command.discord} thunderstorm <numberOfUsers> <amount|all>\`
 Tips a specified number (max: 50) random lucky online users with part of the amount (optionally, within specified role)
 example: \`${settings.bot.command.discord} thunderstorm 10 5.00\`
+
+\`${settings.bot.command.discord} hurricane <numberOfUsers> <amount|all>\`
+Tips a specified number (max: 50) random lucky online and idle users with part of the amount (optionally, within specified role)
+example: \`${settings.bot.command.discord} hurricane 10 5.00\`
+
+\`${settings.bot.command.discord} faucet\`
+Gets an amount from the faucet (applicable every 4 hours)
 
 \`${settings.bot.command.discord} reactdrop <amount> [<time>] [<emoji>]\`
 Performs a react airdrop with the amount, optionally within custom time, optionally using a custom-supplied emoji. <time> parameter accepts time interval expressions in the form of:\`60s\`, \`5m\`, \`1h\`. Default time interval is \`5m\`(5minutes), e.g. \`!arrrtip reactdrop 10 20m\`, \`!arrrtip reactdrop 10 3h 😃\`
