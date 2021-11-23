@@ -42,6 +42,7 @@ module.exports = {
   fee: {
     withdrawal: 1e7,
   },
+  faucet: 1, // percentage of total per claim
   min: {
     withdrawal: 2e8,
     confirmations: 6,
