@@ -20,6 +20,8 @@ import { router } from "./router";
 import { dashboardRouter } from "./dashboard/router";
 
 import { updatePrice } from "./helpers/updatePrice";
+import { createFaucet } from "./helpers/faucet";
+
 // import logger from "./helpers/logger";
 
 import { patchRunebaseDeposits } from "./helpers/runebase/patcher";
@@ -145,6 +147,7 @@ server.listen(port);
 (async function () {
   await telegramClient.launch();
   await discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
+  await createFaucet();
   if (settings.coin.name === 'Runebase') {
     await startRunebaseSync(discordClient, telegramClient);
     await patchRunebaseDeposits();
