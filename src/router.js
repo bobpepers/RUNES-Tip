@@ -196,6 +196,7 @@ export const router = (app, discordClient, telegramClient, io) => {
       lastSeenDiscordTask = await updateDiscordLastSeen(discordClient, message);
       await queue.add(() => lastSeenDiscordTask);
     }
+    if (!message.content.startsWith(settings.bot.command.discord) || message.author.bot) return;
     if (message.content.startsWith(settings.bot.command.discord)) {
       if (groupTask && groupTask.banned) {
         await message.channel.send({ embeds: [discordServerBannedMessage(groupTask)] });
@@ -211,9 +212,8 @@ export const router = (app, discordClient, telegramClient, io) => {
       }
     }
 
-    if (!message.content.startsWith(settings.bot.command.discord) || message.author.bot) return;
-    const filteredMessageTelegram = message.content.split(' ');
-    const filteredMessageDiscord = filteredMessageTelegram.filter((el) => el !== '');
+    const preFilteredMessageDiscord = message.content.split(' ');
+    const filteredMessageDiscord = preFilteredMessageDiscord.filter((el) => el !== '');
 
     if (filteredMessageDiscord.length > 1 && filteredMessageDiscord[1].startsWith('<@!')) {
       const userToTipId = filteredMessageDiscord[1].substring(0, filteredMessageDiscord[1].length - 1).substring(3);
