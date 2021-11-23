@@ -1,5 +1,4 @@
 module.exports = (sequelize, DataTypes) => {
-  // 1: The model schema.
   const modelDefinition = {
     id: {
       type: DataTypes.BIGINT,
@@ -54,12 +53,10 @@ module.exports = (sequelize, DataTypes) => {
     },
   };
 
-  // 2: The model options.
   const modelOptions = {
     freezeTableName: true,
   };
 
-  // 3: Define the User model.
   const UserModel = sequelize.define('user', modelDefinition, modelOptions);
 
   UserModel.associate = (model) => {
@@ -81,8 +78,8 @@ module.exports = (sequelize, DataTypes) => {
       as: 'active',
     });
     UserModel.hasMany(model.reactdrop);
+    UserModel.hasMany(model.faucettip);
   };
 
   return UserModel;
 };
-// module.exports = UserModel;
