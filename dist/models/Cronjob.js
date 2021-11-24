@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 module.exports = function (sequelize, DataTypes) {
   var modelDefinition = {
@@ -10,7 +10,7 @@ module.exports = function (sequelize, DataTypes) {
     },
     type: {
       type: DataTypes.ENUM,
-      values: ['drawJackpot']
+      values: ['autoRain']
     },
     state: {
       type: DataTypes.ENUM,
@@ -21,12 +21,9 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true
     }
   };
-
   var modelOptions = {
     freezeTableName: true
   };
-
   var CronjobModel = sequelize.define('cronjob', modelDefinition, modelOptions);
-
   return CronjobModel;
 };

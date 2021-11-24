@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 module.exports = {
   up: function up(queryInterface, Sequelize) {
@@ -7,8 +7,10 @@ module.exports = {
     {
       type: Sequelize.BIGINT,
       references: {
-        model: 'wallet', // name of Target model
+        model: 'wallet',
+        // name of Target model
         key: 'id' // key in Target model that we're referencing
+
       },
       onUpdate: 'CASCADE',
       onDelete: 'SET NULL'
@@ -18,7 +20,8 @@ module.exports = {
       {
         type: Sequelize.BIGINT,
         references: {
-          model: 'address', // name of Source model
+          model: 'address',
+          // name of Source model
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -26,11 +29,9 @@ module.exports = {
       });
     });
   },
-
   down: function down(queryInterface, Sequelize) {
     return queryInterface.removeColumn('address', 'walletId').then(function () {
       return queryInterface.removeColumn('transaction', 'addressId');
     });
   }
-
 };

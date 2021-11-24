@@ -1,26 +1,38 @@
-'use strict';
+"use strict";
 
-var _require = require('rweb3'),
-    Rweb3 = _require.Rweb3;
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _require2 = require('./rclientConfig'),
-    getRunebaseRPCAddress = _require2.getRunebaseRPCAddress;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.createInstance = createInstance;
+exports.getInstance = getInstance;
 
-var RClient = function () {
-  var instance = void 0;
+var _rweb = require("rweb3");
 
-  function createInstance() {
-    return new Rweb3(getRunebaseRPCAddress());
+var _arrrweb = require("arrrweb3");
+
+var _dotenv = require("dotenv");
+
+var _settings = _interopRequireDefault(require("../config/settings"));
+
+(0, _dotenv.config)();
+var instance;
+
+function createInstance() {
+  if (_settings["default"].coin.name === 'Runebase') {
+    return new _rweb.Rweb3("http://".concat(process.env.RPC_USER, ":").concat(process.env.RPC_PASS, "@localhost:").concat(process.env.RPC_PORT));
   }
 
-  return {
-    getInstance: function getInstance() {
-      if (!instance) {
-        instance = createInstance();
-      }
-      return instance;
-    }
-  };
-}();
+  if (_settings["default"].coin.name === 'Pirate') {
+    return new _arrrweb.ARRRweb3("http://".concat(process.env.RPC_USER, ":").concat(process.env.RPC_PASS, "@localhost:").concat(process.env.RPC_PORT));
+  }
+}
 
-module.exports = RClient;
+function getInstance() {
+  if (!instance) {
+    instance = createInstance();
+  }
+
+  return instance;
+}

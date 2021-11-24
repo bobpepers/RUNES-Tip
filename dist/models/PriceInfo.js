@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 module.exports = function (sequelize, DataTypes) {
   var modelDefinition = {
@@ -11,15 +11,18 @@ module.exports = function (sequelize, DataTypes) {
     price: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    currency: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "USD"
     }
-  };
+  }; // 2: The model options.
 
-  // 2: The model options.
   var modelOptions = {
     freezeTableName: true
-  };
+  }; // 3: Define the Domain model.
 
-  // 3: Define the Domain model.
   var PriceInfoModel = sequelize.define('priceInfo', modelDefinition, modelOptions);
   return PriceInfoModel;
 };

@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 module.exports = function (sequelize, DataTypes) {
   var modelDefinition = {
@@ -8,24 +8,30 @@ module.exports = function (sequelize, DataTypes) {
       primaryKey: true,
       autoIncrement: true
     },
-    earned: {
+    amount: {
       type: DataTypes.BIGINT,
-      allowNull: false,
-      defaultValue: 0
+      allowNull: false
+    },
+    totalAmountClaimed: {
+      type: DataTypes.BIGINT,
+      allowNull: false
+    },
+    claims: {
+      type: DataTypes.BIGINT,
+      allowNull: false
     }
-  };
+  }; // 2: The model options.
 
-  // 2: The model options.
   var modelOptions = {
     freezeTableName: true
-  };
+  }; // 3: Define the Wallet model.
 
-  // 3: Define the Domain model.
-  var FaucetModel = sequelize.define('faucet', modelDefinition, modelOptions);
+  var FaucetModel = sequelize.define('faucet', modelDefinition, modelOptions); // 4: Wallet belongs to User
 
   FaucetModel.associate = function (model) {
-    FaucetModel.hasMany(model.faucetRolls, { as: 'faucetRolls' });
-  };
+    FaucetModel.hasMany(model.faucettip);
+  }; // 5: Wallet has many addresses
+
 
   return FaucetModel;
 };

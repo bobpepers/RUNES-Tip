@@ -1,7 +1,8 @@
-'use strict';
+"use strict";
 
 require('dotenv').config();
-var fs = require('fs');
+
+var fs = require("fs");
 
 module.exports = {
   development: {
@@ -34,10 +35,10 @@ module.exports = {
     port: process.env.DB_PORT,
     dialect: 'mysql',
     dialectOptions: {
-      bigNumberStrings: true
-      // ssl: {
+      bigNumberStrings: true // ssl: {
       //  ca: fs.readFileSync(`${__dirname}/mysql-ca-master.crt`),
       // },
+
     }
   }
 };

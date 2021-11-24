@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 module.exports = function (sequelize, DataTypes) {
   var modelDefinition = {
@@ -28,24 +28,21 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       defaultValue: 0
     }
-  };
+  }; // 2: The model options.
 
-  // 2: The model options.
   var modelOptions = {
     freezeTableName: true
-  };
+  }; // 3: Define the Wallet model.
 
-  // 3: Define the Wallet model.
-  var WalletModel = sequelize.define('wallet', modelDefinition, modelOptions);
-
-  // 4: Wallet belongs to User
+  var WalletModel = sequelize.define('wallet', modelDefinition, modelOptions); // 4: Wallet belongs to User
 
   WalletModel.associate = function (model) {
-    WalletModel.belongsTo(model.user, { as: 'user' });
+    WalletModel.belongsTo(model.user, {
+      as: 'user'
+    });
     WalletModel.hasMany(model.address);
-  };
+  }; // 5: Wallet has many addresses
 
-  // 5: Wallet has many addresses
 
   return WalletModel;
 };

@@ -25,7 +25,7 @@ import {
   invalidEmojiMessage,
 } from '../../messages/discord';
 import db from '../../models';
-import emojiCompact from "../../config/emoji.json";
+import emojiCompact from "../../config/emoji";
 import logger from "../../helpers/logger";
 
 function shuffle(array) {

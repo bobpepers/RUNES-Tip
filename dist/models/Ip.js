@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 module.exports = function (sequelize, DataTypes) {
   var modelDefinition = {
@@ -17,26 +17,20 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       defaultValue: 0
     }
-  };
+  }; // 2: The model options.
 
-  // 2: The model options.
   var modelOptions = {
     freezeTableName: true
-  };
+  }; // 3: Define the Domain model.
 
-  // 3: Define the Domain model.
   var IpModel = sequelize.define('ip', modelDefinition, modelOptions);
 
   IpModel.associate = function (model) {
-    IpModel.hasMany(model.activity, {
-      as: 'ip',
-      foreignKey: 'ipId'
-    });
     IpModel.belongsToMany(model.user, {
-      through: 'IpUser',
-      as: 'users',
+      through: 'IpDashboardUser',
+      as: 'dashboardUsers',
       foreignKey: 'ipId',
-      otherKey: 'userId'
+      otherKey: 'dashboardUserId'
     });
   };
 

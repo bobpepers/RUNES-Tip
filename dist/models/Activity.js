@@ -1,5 +1,10 @@
-'use strict';
+"use strict";
 
+// LEGENDE
+// _i = insufficient balance
+// _s = Success
+// _f = fail
+//
 module.exports = function (sequelize, DataTypes) {
   var modelDefinition = {
     id: {
@@ -10,7 +15,7 @@ module.exports = function (sequelize, DataTypes) {
     },
     type: {
       type: DataTypes.ENUM,
-      values: ['login', 'register', 'registerVerified', 'resetpass', 'resetpassComplete', 'logout', 'surfStart', 'surfComplete', 'click', 'depositAccepted', 'depositComplete', 'withdrawRequested', 'withdrawAccepted', 'withdrawComplete', 'withdrawRejected', 'createSurfOrder', 'cancelSurfOrder', 'createClickOrder', 'cancelClickOrder', 'jackpot', 'buyTicket', 'buyWebslot', 'buyClickslot', 'newDomain', 'banned', 'referralBonus']
+      values: ['depositAccepted', 'depositComplete', 'withdrawRequested', 'withdrawAccepted', 'withdrawComplete', 'withdrawRejected', 'help', 'balance', 'deposit', 'info', 'tip_i', 'tip_f', 'tip_s', 'rain_i', 'rain_f', 'rain_s', 'raintip_f', 'raintip_s', 'soak_i', 'soak_f', 'soak_s', 'soaktip_f', 'soaktip_s', 'flood_i', 'flood_f', 'flood_s', 'floodtip_f', 'floodtip_s', 'sleet_i', 'sleet_f', 'sleet_s', 'sleettip_f', 'sleettip_s', 'thunder_i', 'thunder_f', 'thunder_s', 'thundertip_f', 'thundertip_s', 'thunderstorm_i', 'thunderstorm_f', 'thunderstorm_s', 'reactdrop_i', 'reactdrop_f', 'reactdrop_s', 'reactdroptip_f', 'reactdroptip_s', 'thunderstormtip_s', 'thunderstormtip_f', 'ignore', 'price', 'hurricane_f', 'hurricane_i', 'hurricane_s', 'hurricanetip_s', 'faucet_add', 'faucettip_s', 'faucettip_f', 'faucettip_i']
     },
     amount: {
       type: DataTypes.BIGINT,
@@ -24,20 +29,15 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.BIGINT,
       allowNull: true
     }
-  };
+  }; // 2: The model options.
 
-  // 2: The model options.
   var modelOptions = {
     freezeTableName: true
-  };
+  }; // 3: Define the Domain model.
 
-  // 3: Define the Domain model.
   var ActivityModel = sequelize.define('activity', modelDefinition, modelOptions);
 
   ActivityModel.associate = function (model) {
-    ActivityModel.belongsTo(model.ip, {
-      as: 'ip'
-    });
     ActivityModel.belongsTo(model.user, {
       as: 'spender',
       foreignKey: 'spenderId'
@@ -46,20 +46,73 @@ module.exports = function (sequelize, DataTypes) {
       as: 'earner',
       foreignKey: 'earnerId'
     });
-    ActivityModel.belongsTo(model.order, {
-      as: 'order',
-      foreignKey: 'orderId'
-    });
-    ActivityModel.belongsTo(model.domain, {
-      as: 'domainActivity',
-      foreignKey: 'domainId'
-    });
     ActivityModel.belongsTo(model.transaction, {
-      as: 'txActivity',
-      foreignKey: 'txId'
+      as: 'transaction',
+      foreignKey: 'transactionId'
     });
-    ActivityModel.belongsTo(model.faucetRolls, {
-      as: 'faucetRoll'
+    ActivityModel.belongsTo(model.rain, {
+      as: 'rain',
+      foreignKey: 'rainId'
+    });
+    ActivityModel.belongsTo(model.raintip, {
+      as: 'raintip',
+      foreignKey: 'raintipId'
+    });
+    ActivityModel.belongsTo(model.soak, {
+      as: 'soak',
+      foreignKey: 'soakId'
+    });
+    ActivityModel.belongsTo(model.soaktip, {
+      as: 'soaktip',
+      foreignKey: 'soaktipId'
+    });
+    ActivityModel.belongsTo(model.flood, {
+      as: 'flood',
+      foreignKey: 'floodId'
+    });
+    ActivityModel.belongsTo(model.floodtip, {
+      as: 'floodtip',
+      foreignKey: 'floodtipId'
+    });
+    ActivityModel.belongsTo(model.sleet, {
+      as: 'sleet',
+      foreignKey: 'sleetId'
+    });
+    ActivityModel.belongsTo(model.sleettip, {
+      as: 'sleettip',
+      foreignKey: 'sleettipId'
+    });
+    ActivityModel.belongsTo(model.thunder, {
+      as: 'thunder',
+      foreignKey: 'thunderId'
+    });
+    ActivityModel.belongsTo(model.thundertip, {
+      as: 'thundertip',
+      foreignKey: 'thundertipId'
+    });
+    ActivityModel.belongsTo(model.thunderstorm, {
+      as: 'thunderstorm',
+      foreignKey: 'thunderstormId'
+    });
+    ActivityModel.belongsTo(model.thunderstormtip, {
+      as: 'thunderstormtip',
+      foreignKey: 'thunderstormtipId'
+    });
+    ActivityModel.belongsTo(model.reactdrop, {
+      as: 'reactdrop',
+      foreignKey: 'reactdropId'
+    });
+    ActivityModel.belongsTo(model.reactdroptip, {
+      as: 'reactdroptip',
+      foreignKey: 'reactdroptipId'
+    });
+    ActivityModel.belongsTo(model.hurricane, {
+      as: 'hurricane',
+      foreignKey: 'hurricaneId'
+    });
+    ActivityModel.belongsTo(model.hurricanetip, {
+      as: 'hurricanetip',
+      foreignKey: 'hurricanetipId'
     });
   };
 

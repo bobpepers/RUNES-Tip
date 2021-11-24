@@ -1,49 +1,46 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var _require = require('winston'),
-    createLogger = _require.createLogger,
-    format = _require.format,
-    transports = _require.transports,
-    addColors = _require.addColors;
+var _winston = _interopRequireDefault(require("winston"));
 
-var combine = format.combine,
-    colorize = format.colorize,
-    label = format.label,
-    timestamp = format.timestamp,
-    json = format.json,
-    prettyPrint = format.prettyPrint,
-    printf = format.printf;
+// var appRoot = require('app-root-path');
+var options = {
+  file: {
+    level: 'info',
+    name: 'file.info',
+    filename: "./logs/app.log",
+    handleExceptions: true,
+    json: true,
+    maxsize: 5242880,
+    // 5MB
+    maxFiles: 100,
+    colorize: true
+  },
+  errorFile: {
+    level: 'error',
+    name: 'file.error',
+    filename: "./logs/error.log",
+    handleExceptions: true,
+    json: true,
+    maxsize: 5242880,
+    // 5MB
+    maxFiles: 100,
+    colorize: true
+  },
+  console: {
+    level: 'debug',
+    handleExceptions: true,
+    json: false,
+    colorize: true
+  }
+}; // your centralized logger object
 
+module.exports = _winston["default"].createLogger({
+  transports: [new _winston["default"].transports.Console(options.console), new _winston["default"].transports.File(options.errorFile), new _winston["default"].transports.File(options.file)],
+  exitOnError: false // do not exit on handled exceptions
 
-var myCustomFormat = format.combine(colorize({
-  all: true
-}), label({
-  label: '[LOGGER]'
-}), timestamp({
-  format: 'YY-MM-DD HH:MM:SS'
-}), printf(function (info) {
-  return ' ' + info.label + ' ' + info.timestamp + '  ' + info.level + ' : ' + info.message;
-}));
-
-addColors({
-  info: 'bold blue',
-  warn: 'italic yellow',
-  error: 'bold red',
-  debug: 'green'
-});
-
-var logger = createLogger({
-  level: 'info',
-  transports: [new transports.Console({
-    format: combine(myCustomFormat),
-    prettyPrint: true,
-    colorize: true,
-    timestamp: true
-  })]
-});
-
-exports.default = logger;
+}); // logger.info('and over your neighbors dog?');
+// logger.warn('Whats great for a snack,');
+// logger.error('Its log, log, log');
+// export default logger;

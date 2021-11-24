@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 module.exports = function (sequelize, DataTypes) {
   // 1: The model schema.
@@ -13,14 +13,12 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false,
       defaultValue: 0
     }
-  };
+  }; // 2: The model options.
 
-  // 2: The model options.
   var modelOptions = {
     freezeTableName: true
-  };
+  }; // 3: Define the Wallet model.
 
-  // 3: Define the Wallet model.
   var BlockModel = sequelize.define('block', modelDefinition, modelOptions);
 
   BlockModel.associate = function (model) {
