@@ -142,6 +142,27 @@ const syncTransactions = async (discordClient, telegramClient) => {
               transaction: t,
               lock: t.LOCK.UPDATE,
             });
+            /// Add To faucet
+            const faucet = await db.faucet.findOne({
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            });
+            if (faucet) {
+              await faucet.update({
+                amount: faucet + (settings.fee.withdrawal / 2),
+              }, {
+                transaction: t,
+                lock: t.LOCK.UPDATE,
+              });
+            }
+            const createFaucetActivity = await db.activity.create({
+              spenderId: updatedWallet.userId,
+              type: 'faucet_add',
+              amount: settings.fee.withdrawal / 2,
+            }, {
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            });
           }
           if (detail.category === 'receive' && trans.type === 'receive') {
             console.log('updating balance');

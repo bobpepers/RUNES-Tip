@@ -10,6 +10,7 @@ import {
   userNotFoundMessage,
   insufficientBalanceMessage,
   reviewMessage,
+  warnDirectMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
 import logger from "../../helpers/logger";
@@ -133,8 +134,16 @@ export const withdrawDiscordCreate = async (message, filteredMessage) => {
               lock: t.LOCK.UPDATE,
             },
           );
+          const userId = user.user_id.replace('discord-', '');
 
-          await message.author.send({ embeds: [reviewMessage(message)] });
+          if (message.channel.type === 'DM') {
+            await message.author.send({ embeds: [reviewMessage(message)] });
+          }
+
+          if (message.channel.type === 'GUILD_TEXT') {
+            await message.channel.send({ embeds: [warnDirectMessage(userId, 'Balance')] });
+            await message.author.send({ embeds: [reviewMessage(message)] });
+          }
         }
       }
     }

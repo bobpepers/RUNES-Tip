@@ -85,7 +85,7 @@ const syncTransactions = async (discordClient, telegramClient) => {
     // eslint-disable-next-line no-await-in-loop
     await db.sequelize.transaction({
       isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-    // eslint-disable-next-line no-loop-func
+      // eslint-disable-next-line no-loop-func
     }, async (t) => {
       const wallet = await db.wallet.findOne({
         where: {
@@ -116,17 +116,10 @@ const syncTransactions = async (discordClient, telegramClient) => {
           console.log(((transaction.sent[0].value * 1e8)));
           const prepareLockedAmount = ((transaction.sent[0].value * 1e8) - Number(settings.fee.withdrawal));
           const removeLockedAmount = Math.abs(prepareLockedAmount);
-          console.log('removeLockedAmount');
-          console.log('removeLockedAmount');
-          console.log('removeLockedAmount');
-          console.log('removeLockedAmount');
-          console.log('removeLockedAmount');
-          console.log('removeLockedAmount');
-          console.log('removeLockedAmount');
-          console.log('removeLockedAmount');
-          console.log('removeLockedAmount');
 
+          console.log('removeLockedAmount');
           console.log(removeLockedAmount);
+
           updatedWallet = await wallet.update({
             locked: wallet.locked - removeLockedAmount,
           }, {
@@ -146,6 +139,27 @@ const syncTransactions = async (discordClient, telegramClient) => {
             amount: transaction.sent[0].value * 1e8,
             spender_balance: updatedWallet.available + updatedWallet.locked,
             transactionId: updatedTransaction.id,
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          /// Add To faucet
+          const faucet = await db.faucet.findOne({
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          if (faucet) {
+            await faucet.update({
+              amount: faucet + (settings.fee.withdrawal / 2),
+            }, {
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            });
+          }
+          const createFaucetActivity = await db.activity.create({
+            spenderId: updatedWallet.userId,
+            type: 'faucet_add',
+            amount: settings.fee.withdrawal / 2,
           }, {
             transaction: t,
             lock: t.LOCK.UPDATE,
