@@ -331,6 +331,43 @@ export const minimumMessage = (message, type) => {
 
   return result;
 };
+
+export const claimTooFactFaucetMessage = (message, username, distance) => {
+  const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Faucet')
+    .setDescription(`${username}, you have to wait ${hours === 1 ? `${hours} hour` : ''} ${hours > 1 ? `${hours} hours` : ''}, ${minutes === 1 ? `${minutes} minute` : ''} ${minutes > 1 ? `${minutes} minutes` : ''} and ${seconds === 1 ? `${seconds} second` : ''} ${seconds > 1 ? `${seconds} seconds` : ''} before claiming the faucet again (the faucet can be claimed every 4 hours).`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
+export const faucetClaimedMessage = (message, username, amount) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Faucet')
+    .setDescription(`${username}, you have been tipped ${amount / 1e8} ${settings.coin.ticker} from the faucet.`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
+export const dryFaucetMessage = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Faucet')
+    .setDescription(`Faucet is dry`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
 export const hurricaneMaxUserAmountMessage = (message) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)

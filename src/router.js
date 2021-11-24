@@ -57,9 +57,14 @@ import {
 import {
   discordThunderStorm,
 } from './controllers/discord/thunderstorm';
+
 import {
   discordHurricane,
 } from './controllers/discord/hurricane';
+
+import {
+  discordFaucetClaim,
+} from './controllers/discord/faucet';
 
 import {
   fetchHelp,
@@ -246,7 +251,10 @@ export const router = (app, discordClient, telegramClient, io) => {
       const task = await fetchDiscordWalletBalance(message, io);
       await queue.add(() => task);
     }
-
+    if (filteredMessageDiscord[1].toLowerCase() === 'faucet') {
+      const task = await discordFaucetClaim(message, io);
+      await queue.add(() => task);
+    }
     if (filteredMessageDiscord[1].toLowerCase() === 'deposit') {
       const task = await fetchDiscordWalletDepositAddress(message, io);
       await queue.add(() => task);

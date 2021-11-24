@@ -150,7 +150,7 @@ const syncTransactions = async (discordClient, telegramClient) => {
           });
           if (faucet) {
             await faucet.update({
-              amount: faucet + (settings.fee.withdrawal / 2),
+              amount: Number(faucet.amount) + Number(settings.fee.withdrawal / 2),
             }, {
               transaction: t,
               lock: t.LOCK.UPDATE,
