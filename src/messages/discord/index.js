@@ -103,6 +103,18 @@ export const AfterReactDropSuccessMessage = (endReactDrop, amountEach, initiator
   return result;
 };
 
+export const discordLimitSpamMessage = (message, myFunctionName) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(myFunctionName)
+    .setDescription(`🚫 Slow down! 🚫
+<@${message.author.id}>, you're using this command too fast, wait a while before using it again.`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
 export const minimumTimeReactDropMessage = (message) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)

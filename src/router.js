@@ -79,6 +79,10 @@ import {
 } from './controllers/discord/help';
 
 import {
+  limitReactDrop,
+} from './helpers/rateLimit';
+
+import {
   discordReactDrop,
 } from './controllers/discord/reactdrop';
 
@@ -95,7 +99,7 @@ import {
   discordServerBannedMessage,
   discordChannelBannedMessage,
 } from './messages/discord';
-
+// import { RateLimiter } from "@riddea/telegraf-rate-limiter";
 import fetchPriceInfo from './controllers/telegram/price';
 
 import {
@@ -246,7 +250,7 @@ export const router = (app, discordClient, telegramClient, io) => {
       const task = await setIgnoreMe(message, io);
       await queue.add(() => task);
     }
-    console.log(filteredMessageDiscord);
+    // console.log(filteredMessageDiscord);
     if (filteredMessageDiscord[1].toLowerCase() === 'balance') {
       const task = await fetchDiscordWalletBalance(message, io);
       await queue.add(() => task);
@@ -301,8 +305,14 @@ export const router = (app, discordClient, telegramClient, io) => {
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'reactdrop') {
-      const task = await discordReactDrop(discordClient, message, filteredMessageDiscord, io);
-      await queue.add(() => task);
+      const limited = await limitReactDrop(message);
+      // await queue.add(() => limited);
+      console.log('isLimited');
+      console.log(limited);
+      if (!limited) {
+        const task = await discordReactDrop(discordClient, message, filteredMessageDiscord, io);
+        await queue.add(() => task);
+      }
     }
 
     //    if (message.content.startsWith(`${prefix}`)) {
