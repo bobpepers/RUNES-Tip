@@ -80,6 +80,16 @@ import {
 
 import {
   limitReactDrop,
+  limitTip,
+  limitWithdraw,
+  limitHelp,
+  limitInfo,
+  limitRain,
+  limitSoak,
+  limitFlood,
+  limitHurricane,
+  limitIgnoreMe,
+  limitSleet,
 } from './helpers/rateLimit';
 
 import {
@@ -118,12 +128,6 @@ const queue = new PQueue({ concurrency: 1 });
 
 const runesGroup = process.env.TELEGRAM_RUNES_GROUP;
 
-// Set limit to 1 message per 3 seconds
-const limitConfig = {
-  window: 10000,
-  limit: 4,
-  onLimitExceeded: (ctx, next) => ctx.reply('Rate limit exceeded - please wait 10 seconds'),
-};
 const localhostOnly = (req, res, next) => {
   const hostmachine = req.headers.host.split(':')[0];
   if (
@@ -228,78 +232,110 @@ export const router = (app, discordClient, telegramClient, io) => {
     const filteredMessageDiscord = preFilteredMessageDiscord.filter((el) => el !== '');
 
     if (filteredMessageDiscord.length > 1 && filteredMessageDiscord[1].startsWith('<@!')) {
+      const limited = await limitTip(message);
+      // await queue.add(() => limited);
       const userToTipId = filteredMessageDiscord[1].substring(0, filteredMessageDiscord[1].length - 1).substring(3);
       const task = await tipRunesToDiscordUser(message, filteredMessageDiscord, userToTipId, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1] === undefined) {
+      const limited = await limitHelp(message);
+      // await queue.add(() => limited);
       const task = await discordHelp(message, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'help') {
+      const limited = await limitHelp(message);
+      // await queue.add(() => limited);
       const task = await discordHelp(message, io);
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'info') {
+      const limited = await limitInfo(message);
+      // await queue.add(() => limited);
       const task = await discordCoinInfo(message, io);
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'ignoreme') {
+      const limited = await limitIgnoreMe(message);
+      // await queue.add(() => limited);
       const task = await setIgnoreMe(message, io);
       await queue.add(() => task);
     }
     // console.log(filteredMessageDiscord);
     if (filteredMessageDiscord[1].toLowerCase() === 'balance') {
+      const limited = await limitBalance(message);
+      // await queue.add(() => limited);
       const task = await fetchDiscordWalletBalance(message, io);
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'faucet') {
+      const limited = await limitFaucet(message);
+      // await queue.add(() => limited);
       const task = await discordFaucetClaim(message, io);
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'deposit') {
+      const limited = await limitDeposit(message);
+      // await queue.add(() => limited);
       const task = await fetchDiscordWalletDepositAddress(message, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'withdraw') {
+      const limited = await limitWithdraw(message);
+      // await queue.add(() => limited);
       const task = await withdrawDiscordCreate(message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'rain') {
+      const limited = await limitRain(message);
+      // await queue.add(() => limited);
       const task = await discordRain(discordClient, message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'flood') {
+      const limited = await limitFlood(message);
+      // await queue.add(() => limited);
       const task = await discordFlood(discordClient, message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'thunder') {
+      const limited = await limitThunder(message);
+      // await queue.add(() => limited);
       const task = await discordThunder(discordClient, message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'thunderstorm') {
+      const limited = await limitThunderStorm(message);
+      // await queue.add(() => limited);
       const task = await discordThunderStorm(discordClient, message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'hurricane') {
+      const limited = await limitHurricane(message);
+      // await queue.add(() => limited);
       const task = await discordHurricane(discordClient, message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'soak') {
+      const limited = await limitSoak(message);
+      // await queue.add(() => limited);
       const task = await discordSoak(discordClient, message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'sleet') {
+      const limited = await limitSleet(message);
+      // await queue.add(() => limited);
       const task = await discordSleet(discordClient, message, filteredMessageDiscord, io);
       await queue.add(() => task);
     }
@@ -307,8 +343,6 @@ export const router = (app, discordClient, telegramClient, io) => {
     if (filteredMessageDiscord[1].toLowerCase() === 'reactdrop') {
       const limited = await limitReactDrop(message);
       // await queue.add(() => limited);
-      console.log('isLimited');
-      console.log(limited);
       if (!limited) {
         const task = await discordReactDrop(discordClient, message, filteredMessageDiscord, io);
         await queue.add(() => task);

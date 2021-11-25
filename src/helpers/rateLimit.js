@@ -1,5 +1,4 @@
 import * as RateLimiterFlexible from "rate-limiter-flexible";
-// import { RateLimiter } from "@riddea/telegraf-rate-limiter";
 import {
   discordLimitSpamMessage,
 } from "../messages/discord";
@@ -10,9 +9,219 @@ const errorConsumer = new RateLimiterFlexible.default.RateLimiterMemory({
 });
 
 const rateLimiterReactdrop = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4, // 4 messages (4 reactdrops)
+  duration: 120, // every 120 seconds
+});
+const rateLimiterTip = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 4,
   duration: 120,
 });
+const rateLimiterWithdraw = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+const rateLimiterHelp = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+const rateLimiterInfo = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+const rateLimiterRain = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+const rateLimiterSoak = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+const rateLimiterFlood = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+const rateLimiterHurricane = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+const rateLimiterIgnoreMe = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+const rateLimiterSleet = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+
+export const limitTip = async (message) => {
+  try {
+    const limited = await rateLimiterTip.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Tip')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+
+export const limitWithdraw = async (message) => {
+  try {
+    const limited = await rateLimiterWithdraw.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Withdraw')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+
+export const limitHelp = async (message) => {
+  try {
+    const limited = await rateLimiterHelp.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Help')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+
+export const limitInfo = async (message) => {
+  try {
+    const limited = await rateLimiterInfo.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Info')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+
+export const limitRain = async (message) => {
+  try {
+    const limited = await rateLimiterRain.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Rain')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+
+export const limitSoak = async (message) => {
+  try {
+    const limited = await rateLimiterSoak.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Soak')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+
+export const limitFlood = async (message) => {
+  try {
+    const limited = await rateLimiterFlood.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Flood')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+
+export const limitHurricane = async (message) => {
+  try {
+    const limited = await rateLimiterHurricane.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Hurricane')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+
+export const limitIgnoreMe = async (message) => {
+  try {
+    const limited = await rateLimiterIgnoreMe.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'IgnoreMe')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+
+export const limitSleet = async (message) => {
+  try {
+    const limited = await rateLimiterSleet.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Sleet')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
 
 export const limitReactDrop = async (message) => {
   try {
@@ -21,8 +230,6 @@ export const limitReactDrop = async (message) => {
   } catch (err) {
     try {
       const notError = await errorConsumer.consume(message.author.id, 1);
-      console.log(notError);
-      console.log('notError');
       if (notError.remainingPoints > 0) {
         await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'ReactDrop')] });
       }
