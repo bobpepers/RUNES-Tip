@@ -90,6 +90,9 @@ import {
   limitHurricane,
   limitIgnoreMe,
   limitSleet,
+  limitBalance,
+  limitFaucet,
+  limitDeposit,
 } from './helpers/rateLimit';
 
 import {

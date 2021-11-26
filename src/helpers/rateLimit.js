@@ -52,6 +52,69 @@ const rateLimiterSleet = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 4,
   duration: 120,
 });
+const rateLimiterBalance = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+
+const rateLimiterFaucet = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+const rateLimiterDeposit = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+
+export const limitFaucet = async (message) => {
+  try {
+    const limited = await rateLimiterFaucet.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Tip')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+export const limitDeposit = async (message) => {
+  try {
+    const limited = await rateLimiterDeposit.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Tip')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+
+export const limitBalance = async (message) => {
+  try {
+    const limited = await rateLimiterBalance.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Tip')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
 
 export const limitTip = async (message) => {
   try {
