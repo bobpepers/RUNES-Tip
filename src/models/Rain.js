@@ -30,6 +30,8 @@ module.exports = (sequelize, DataTypes) => {
     RainModel.belongsTo(model.user);
     RainModel.hasMany(model.raintip);
     RainModel.hasMany(model.activity, { as: 'rain' });
+    RainModel.belongsTo(model.group);
+    RainModel.belongsTo(model.channel);
   };
 
   // 5: Wallet has many addresses

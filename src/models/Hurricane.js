@@ -28,6 +28,8 @@ module.exports = (sequelize, DataTypes) => {
     HurricaneModel.hasMany(model.activity, {
       as: 'hurricane',
     });
+    HurricaneModel.belongsTo(model.group);
+    HurricaneModel.belongsTo(model.channel);
   };
 
   return HurricaneModel;

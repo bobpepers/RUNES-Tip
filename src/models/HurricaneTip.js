@@ -22,6 +22,8 @@ module.exports = (sequelize, DataTypes) => {
     HurricaneTipModel.belongsTo(model.user);
     HurricaneTipModel.belongsTo(model.hurricane);
     HurricaneTipModel.hasMany(model.activity, { as: 'hurricanetip' });
+    HurricaneTipModel.belongsTo(model.group);
+    HurricaneTipModel.belongsTo(model.channel);
   };
 
   return HurricaneTipModel;

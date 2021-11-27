@@ -93,6 +93,11 @@ import {
   limitBalance,
   limitFaucet,
   limitDeposit,
+  limitStats,
+  limitLeaderboard,
+  limitPublicStats,
+  limitThunder,
+  limitThunderStorm,
 } from './helpers/rateLimit';
 
 import {
@@ -112,6 +117,10 @@ import {
   discordServerBannedMessage,
   discordChannelBannedMessage,
 } from './messages/discord';
+
+import { discordStats } from './controllers/discord/stats';
+import { discordPublicStats } from './controllers/discord/publicstats';
+import { discordLeaderboard } from './controllers/discord/leaderboard';
 // import { RateLimiter } from "@riddea/telegraf-rate-limiter";
 import fetchPriceInfo from './controllers/telegram/price';
 
@@ -253,6 +262,24 @@ export const router = (app, discordClient, telegramClient, io) => {
       const limited = await limitHelp(message);
       // await queue.add(() => limited);
       const task = await discordHelp(message, io);
+      await queue.add(() => task);
+    }
+    if (filteredMessageDiscord[1].toLowerCase() === 'stats') {
+      const limited = await limitStats(message);
+      await queue.add(() => limited);
+      const task = await discordStats(message, io);
+      await queue.add(() => task);
+    }
+    if (filteredMessageDiscord[1].toLowerCase() === 'leaderboard') {
+      const limited = await limitLeaderboard(message);
+      // await queue.add(() => limited);
+      const task = await discordLeaderboard(message, io);
+      await queue.add(() => task);
+    }
+    if (filteredMessageDiscord[1].toLowerCase() === 'publicstats') {
+      const limited = await limitPublicStats(message);
+      // await queue.add(() => limited);
+      const task = await discordPublicStats(message, io);
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'info') {

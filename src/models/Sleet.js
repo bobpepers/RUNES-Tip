@@ -30,6 +30,8 @@ module.exports = (sequelize, DataTypes) => {
     SleetModel.belongsTo(model.user);
     SleetModel.hasMany(model.sleettip);
     SleetModel.hasMany(model.activity, { as: 'sleet' });
+    SleetModel.belongsTo(model.group);
+    SleetModel.belongsTo(model.channel);
   };
 
   // 5: Wallet has many addresses

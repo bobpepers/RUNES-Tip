@@ -35,6 +35,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
+    publicStats: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
     banned: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -77,8 +81,16 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'active',
     });
+
     UserModel.hasMany(model.reactdrop);
     UserModel.hasMany(model.faucettip);
+    UserModel.hasMany(model.flood);
+    UserModel.hasMany(model.soak);
+    UserModel.hasMany(model.flood);
+    UserModel.hasMany(model.sleet);
+    UserModel.hasMany(model.thunder);
+    UserModel.hasMany(model.thunderstorm);
+    UserModel.hasMany(model.hurricane);
   };
 
   return UserModel;

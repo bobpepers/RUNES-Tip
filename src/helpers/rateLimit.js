@@ -66,6 +66,67 @@ const rateLimiterDeposit = new RateLimiterFlexible.default.RateLimiterMemory({
   duration: 120,
 });
 
+const rateLimiterStats = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+const rateLimiterLeaderboard = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+const rateLimiterPublicStats = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+
+export const limitStats = async (message) => {
+  try {
+    const limited = await rateLimiterStats.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Tip')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+export const limitLeaderboard = async (message) => {
+  try {
+    const limited = await rateLimiterLeaderboard.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Tip')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+export const limitPublicStats = async (message) => {
+  try {
+    const limited = await rateLimiterPublicStats.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Tip')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
 export const limitFaucet = async (message) => {
   try {
     const limited = await rateLimiterFaucet.consume(message.author.id, 1);

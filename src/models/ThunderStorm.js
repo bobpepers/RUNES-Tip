@@ -26,6 +26,8 @@ module.exports = (sequelize, DataTypes) => {
     ThunderStormModel.belongsTo(model.user);
     ThunderStormModel.hasMany(model.thunderstormtip);
     ThunderStormModel.hasMany(model.activity, { as: 'thunderstorm' });
+    ThunderStormModel.belongsTo(model.group);
+    ThunderStormModel.belongsTo(model.channel);
   };
 
   return ThunderStormModel;

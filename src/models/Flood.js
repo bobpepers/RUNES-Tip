@@ -28,6 +28,8 @@ module.exports = (sequelize, DataTypes) => {
 
   FloodModel.associate = (model) => {
     FloodModel.belongsTo(model.user);
+    FloodModel.belongsTo(model.group);
+    FloodModel.belongsTo(model.channel);
     FloodModel.hasMany(model.floodtip);
     FloodModel.hasMany(model.activity, {
       as: 'flood',

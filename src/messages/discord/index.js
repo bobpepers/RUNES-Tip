@@ -572,6 +572,41 @@ export const minimumWithdrawalMessage = (message) => {
   return result;
 };
 
+export const disablePublicStatsMessage = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle("Statistics")
+    .setDescription(`<@${message.author.id}>, Public Statistics has been disabled`)
+    .setThumbnail(settings.coin.logo)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+export const enablePublicStatsMeMessage = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle("Statistics")
+    .setDescription(`<@${message.author.id}>, Public Statistic has been enabled`)
+    .setThumbnail(settings.coin.logo)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
+export const statsMessage = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle("Statistics")
+    .setDescription(`<@${message.author.id}>, statsMessage`)
+    .setThumbnail(settings.coin.logo)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
 export const warnDirectMessage = (userId, title) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
@@ -599,8 +634,18 @@ Displays coin info
 \`${settings.bot.command.discord} balance\`
 Displays your balance
 
+\`${settings.bot.command.discord} stats\`
+Displays your tip statistics
+
 \`${settings.bot.command.discord} deposit\`
 Displays your deposit address
+
+\`${settings.bot.command.discord} leaderboard\`
+Displays server leaderboard
+
+\`${settings.bot.command.discord} publicstats\`
+Enable/Disable public statistics (determines if you want to be shown on the leaderboards) 
+default: disabled
 
 \`${settings.bot.command.discord} withdraw <address> <amount|all> \`
 Withdraws the entered amount to a ${settings.coin.name} address of your choice
