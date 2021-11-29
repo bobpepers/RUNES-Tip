@@ -9,12 +9,17 @@ import {
   walletNotFoundMessage,
   minimumMessage,
   AfterSuccessMessage,
+  NotInDirectMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
 
 import logger from "../../helpers/logger";
 
-export const discordSleet = async (client, message, filteredMessage, io) => {
+export const discordSleet = async (client, message, filteredMessage, io, groupTask, channelTask) => {
+  if (!groupTask || !channelTask) {
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+    return;
+  }
   let activity;
   let user;
   await db.sequelize.transaction({
@@ -175,6 +180,8 @@ export const discordSleet = async (client, message, filteredMessage, io) => {
         amount,
         userCount: usersToRain.length,
         userId: user.id,
+        groupId: groupTask.id,
+        channelId: channelTask.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
@@ -222,6 +229,8 @@ export const discordSleet = async (client, message, filteredMessage, io) => {
           amount: amountPerUser,
           userId: sleetee.id,
           sleetId: sleetRecord.id,
+          groupId: groupTask.id,
+          channelId: channelTask.id,
         }, {
           lock: t.LOCK.UPDATE,
           transaction: t,

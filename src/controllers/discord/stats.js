@@ -9,7 +9,7 @@ const _ = require('lodash');
 
 function group(arr, type, whichGroup) {
   return arr.reduce((res, obj) => {
-    const key = obj.group.groupName;
+    const key = obj.group && obj.group.groupName ? obj.group.groupName : 'undefined';
     const newObj = { amount: obj.amount };
     if (!res[key]) { res[key] = {}; }
     if (!res[key][type]) { res[key][type] = {}; }
@@ -48,21 +48,91 @@ export const discordStats = async (message, io) => {
           },
         ],
       },
+      {
+        model: db.soak,
+        as: 'soaks',
+        required: false,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
+      {
+        model: db.sleet,
+        as: 'sleets',
+        required: false,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
+      {
+        model: db.thunder,
+        as: 'thunder',
+        required: false,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
+      {
+        model: db.thunderstorm,
+        as: 'thunderstorms',
+        required: false,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
+      {
+        model: db.hurricane,
+        as: 'hurricanes',
+        required: false,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
     ],
   });
   console.log(user);
   if (!user) {
     return;
   }
+  console.log('123');
   // group the resuts by server and type
-  const groupedReactdrops = group(user.reactdrops, 'spend', 'reactdrops');
-  const groupedFloods = group(user.floods, 'spend', 'floods');
-
-  console.log(groupedReactdrops);
+  const groupedReactdrops = user.reactdrops ? group(user.reactdrops, 'spend', 'reactdrops') : {};
+  const groupedFloods = user.floods ? group(user.floods, 'spend', 'floods') : {};
+  const groupedSoaks = user.soaks ? group(user.soaks, 'spend', 'soaks') : {};
+  const groupedHurricanes = user.hurricanes ? group(user.hurricanes, 'spend', 'hurricanes') : {};
+  const groupedThunderStorms = user.thunderstorms ? group(user.thunderstorms, 'spend', 'thunderstorms') : {};
+  const groupedThunders = user.thunder ? group(user.thunder, 'spend', 'thunders') : {};
+  const groupedSleets = user.sleets ? group(user.sleets, 'spend', 'sleets') : {};
+  console.log('456');
   // merge results into a single object
   const mergedObject = _.merge(
     groupedReactdrops,
     groupedFloods,
+    groupedSoaks,
+    groupedHurricanes,
+    groupedThunderStorms,
+    groupedThunders,
+    groupedSleets,
   );
   console.log(mergedObject);
 

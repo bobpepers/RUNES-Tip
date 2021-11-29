@@ -9,6 +9,7 @@ import {
   thunderstormMaxUserAmountMessage,
   thunderstormInvalidUserAmount,
   thunderstormUserZeroAmountMessage,
+  NotInDirectMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
 
@@ -18,7 +19,11 @@ import BigNumber from "bignumber.js";
 import { Transaction, Op } from "sequelize";
 import logger from "../../helpers/logger";
 
-export const discordThunderStorm = async (discordClient, message, filteredMessage, io) => {
+export const discordThunderStorm = async (discordClient, message, filteredMessage, io, groupTask, channelTask) => {
+  if (!groupTask || !channelTask) {
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+    return;
+  }
   if (Number(filteredMessage[2]) > 50) {
     await message.channel.send({ embeds: [thunderstormMaxUserAmountMessage(message)] });
     return;
@@ -184,6 +189,8 @@ export const discordThunderStorm = async (discordClient, message, filteredMessag
       amount,
       userCount: withoutBots.length,
       userId: user.id,
+      groupId: groupTask.id,
+      channelId: channelTask.id,
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
@@ -231,6 +238,8 @@ export const discordThunderStorm = async (discordClient, message, filteredMessag
         amount: amountPerUser,
         userId: thunderstormee.id,
         thunderstormId: thunderstormRecord.id,
+        groupId: groupTask.id,
+        channelId: channelTask.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,

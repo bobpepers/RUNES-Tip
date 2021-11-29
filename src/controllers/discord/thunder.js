@@ -6,6 +6,7 @@ import {
   walletNotFoundMessage,
   minimumMessage,
   AfterThunderSuccess,
+  NotInDirectMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
 
@@ -15,7 +16,11 @@ import BigNumber from "bignumber.js";
 import { Transaction, Op } from "sequelize";
 import logger from "../../helpers/logger";
 
-export const discordThunder = async (discordClient, message, filteredMessage, io) => {
+export const discordThunder = async (discordClient, message, filteredMessage, io, groupTask, channelTask) => {
+  if (!groupTask || !channelTask) {
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+    return;
+  }
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
   const onlineMembers = members.filter((member) =>
     member.presence?.status === "online"
@@ -169,6 +174,8 @@ export const discordThunder = async (discordClient, message, filteredMessage, io
         amount,
         userCount: withoutBots.length,
         userId: user.id,
+        groupId: groupTask.id,
+        channelId: channelTask.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
@@ -216,6 +223,8 @@ export const discordThunder = async (discordClient, message, filteredMessage, io
           amount: amountPerUser,
           userId: thunderee.id,
           thunderId: thunderRecord.id,
+          groupId: groupTask.id,
+          channelId: channelTask.id,
         }, {
           lock: t.LOCK.UPDATE,
           transaction: t,

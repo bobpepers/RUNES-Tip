@@ -8,11 +8,17 @@ import {
   minimumMessage,
   walletNotFoundMessage,
   AfterSuccessMessage,
+  NotInDirectMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
 import logger from "../../helpers/logger";
 
-export const discordFlood = async (discordClient, message, filteredMessage, io) => {
+export const discordFlood = async (discordClient, message, filteredMessage, io, groupTask, channelTask) => {
+  if (!groupTask || !channelTask) {
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+    return;
+  }
+
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
   const onlineMembers = members.filter((member) =>
     member.presence?.status === "online"
@@ -164,6 +170,8 @@ export const discordFlood = async (discordClient, message, filteredMessage, io) 
       amount,
       userCount: withoutBots.length,
       userId: user.id,
+      groupId: groupTask.id,
+      channelId: channelTask.id,
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
@@ -211,6 +219,8 @@ export const discordFlood = async (discordClient, message, filteredMessage, io) 
         amount: amountPerUser,
         userId: floodee.id,
         floodId: floodRecord.id,
+        groupId: groupTask.id,
+        channelId: channelTask.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
@@ -260,7 +270,7 @@ export const discordFlood = async (discordClient, message, filteredMessage, io) 
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      console.log(tipActivity);
+      //console.log(tipActivity);
       io.to('admin').emit('updateActivity', {
         activity: tipActivity,
       });
@@ -276,10 +286,9 @@ export const discordFlood = async (discordClient, message, filteredMessage, io) 
     }
 
     await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, 'Flood', 'flooded')] });
-    logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+    logger.info(`Success Flood Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 
     t.afterCommit(() => {
-
       console.log('done');
     });
   }).catch((err) => {

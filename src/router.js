@@ -304,7 +304,7 @@ export const router = (app, discordClient, telegramClient, io) => {
     if (filteredMessageDiscord[1].toLowerCase() === 'faucet') {
       const limited = await limitFaucet(message);
       // await queue.add(() => limited);
-      const task = await discordFaucetClaim(message, io);
+      const task = await discordFaucetClaim(message, io, groupTask, channelTask);
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'deposit') {
@@ -324,49 +324,49 @@ export const router = (app, discordClient, telegramClient, io) => {
     if (filteredMessageDiscord[1].toLowerCase() === 'rain') {
       const limited = await limitRain(message);
       // await queue.add(() => limited);
-      const task = await discordRain(discordClient, message, filteredMessageDiscord, io);
+      const task = await discordRain(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'flood') {
       const limited = await limitFlood(message);
       // await queue.add(() => limited);
-      const task = await discordFlood(discordClient, message, filteredMessageDiscord, io);
+      const task = await discordFlood(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'thunder') {
       const limited = await limitThunder(message);
       // await queue.add(() => limited);
-      const task = await discordThunder(discordClient, message, filteredMessageDiscord, io);
+      const task = await discordThunder(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'thunderstorm') {
       const limited = await limitThunderStorm(message);
       // await queue.add(() => limited);
-      const task = await discordThunderStorm(discordClient, message, filteredMessageDiscord, io);
+      const task = await discordThunderStorm(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'hurricane') {
       const limited = await limitHurricane(message);
       // await queue.add(() => limited);
-      const task = await discordHurricane(discordClient, message, filteredMessageDiscord, io);
+      const task = await discordHurricane(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'soak') {
       const limited = await limitSoak(message);
       // await queue.add(() => limited);
-      const task = await discordSoak(discordClient, message, filteredMessageDiscord, io);
+      const task = await discordSoak(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'sleet') {
       const limited = await limitSleet(message);
       // await queue.add(() => limited);
-      const task = await discordSleet(discordClient, message, filteredMessageDiscord, io);
+      const task = await discordSleet(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
       await queue.add(() => task);
     }
 

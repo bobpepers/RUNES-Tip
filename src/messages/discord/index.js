@@ -583,6 +583,19 @@ export const disablePublicStatsMessage = (message) => {
 
   return result;
 };
+
+export const NotInDirectMessage = (message, title) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(title)
+    .setDescription(`<@${message.author.id}>, Can't use this command in a direct message`)
+    .setThumbnail(settings.coin.logo)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
 export const enablePublicStatsMeMessage = (message) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)

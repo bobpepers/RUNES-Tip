@@ -9,6 +9,7 @@ import {
     hurricaneMaxUserAmountMessage,
     hurricaneInvalidUserAmount,
     hurricaneUserZeroAmountMessage,
+    NotInDirectMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
 
@@ -18,7 +19,11 @@ import BigNumber from "bignumber.js";
 import { Transaction, Op } from "sequelize";
 import logger from "../../helpers/logger";
 
-export const discordHurricane = async (discordClient, message, filteredMessage, io) => {
+export const discordHurricane = async (discordClient, message, filteredMessage, io, groupTask, channelTask) => {
+    if (!groupTask || !channelTask) {
+        await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+        return;
+    }
     if (Number(filteredMessage[2]) > 50) {
         await message.channel.send({ embeds: [hurricaneMaxUserAmountMessage(message)] });
         return;
@@ -186,6 +191,8 @@ export const discordHurricane = async (discordClient, message, filteredMessage, 
             amount,
             userCount: withoutBots.length,
             userId: user.id,
+            groupId: groupTask.id,
+            channelId: channelTask.id,
         }, {
             lock: t.LOCK.UPDATE,
             transaction: t,
@@ -237,6 +244,8 @@ export const discordHurricane = async (discordClient, message, filteredMessage, 
                 amount: amountPerUser,
                 userId: hurricaneee.id,
                 hurricaneId: hurricaneRecord.id,
+                groupId: groupTask.id,
+                channelId: channelTask.id,
             }, {
                 lock: t.LOCK.UPDATE,
                 transaction: t,

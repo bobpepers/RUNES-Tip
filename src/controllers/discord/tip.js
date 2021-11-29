@@ -9,12 +9,17 @@ import {
   unableToFindUserTipMessage,
   userNotFoundMessage,
   tipSuccessMessage,
+  NotInDirectMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
 
 import logger from "../../helpers/logger";
 
-export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTip, io) => {
+export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTip, io, groupTask, channelTask) => {
+  if (!groupTask || !channelTask) {
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+    return;
+  }
   let activity;
   let user;
   await db.sequelize.transaction({
