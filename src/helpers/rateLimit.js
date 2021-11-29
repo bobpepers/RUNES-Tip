@@ -79,6 +79,48 @@ const rateLimiterPublicStats = new RateLimiterFlexible.default.RateLimiterMemory
   duration: 120,
 });
 
+const rateLimiterThunder = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+const rateLimiterThunderstorm = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+export const limitThunder = async (message) => {
+  try {
+    const limited = await rateLimiterThunder.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Thunder')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+
+export const limitThunderStorm = async (message) => {
+  try {
+    const limited = await rateLimiterThunderstorm.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Thunderstorm')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+
 export const limitStats = async (message) => {
   try {
     const limited = await rateLimiterStats.consume(message.author.id, 1);
