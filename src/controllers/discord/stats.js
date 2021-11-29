@@ -28,6 +28,7 @@ export const discordStats = async (message, io) => {
         model: db.reactdrop,
         as: 'reactdrops',
         required: false,
+        separate: true,
         include: [
           {
             model: db.group,
@@ -40,6 +41,7 @@ export const discordStats = async (message, io) => {
         model: db.flood,
         as: 'floods',
         required: false,
+        separate: true,
         include: [
           {
             model: db.group,
@@ -52,6 +54,7 @@ export const discordStats = async (message, io) => {
         model: db.soak,
         as: 'soaks',
         required: false,
+        separate: true,
         include: [
           {
             model: db.group,
@@ -64,6 +67,7 @@ export const discordStats = async (message, io) => {
         model: db.sleet,
         as: 'sleets',
         required: false,
+        separate: true,
         include: [
           {
             model: db.group,
@@ -72,34 +76,12 @@ export const discordStats = async (message, io) => {
           },
         ],
       },
-      {
-        model: db.thunder,
-        as: 'thunder',
-        required: false,
-        include: [
-          {
-            model: db.group,
-            as: 'group',
-            required: false,
-          },
-        ],
-      },
-      {
-        model: db.thunderstorm,
-        as: 'thunderstorms',
-        required: false,
-        include: [
-          {
-            model: db.group,
-            as: 'group',
-            required: false,
-          },
-        ],
-      },
+
       {
         model: db.hurricane,
         as: 'hurricanes',
         required: false,
+        separate: true,
         include: [
           {
             model: db.group,
@@ -108,6 +90,30 @@ export const discordStats = async (message, io) => {
           },
         ],
       },
+      // {
+      //  model: db.thunder,
+      //  as: 'thunders',
+      //  required: false,
+      //  include: [
+      //    {
+      //      model: db.group,
+      //      as: 'group',
+      //      required: false,
+      //    },
+      //  ],
+      // },
+      // {
+      // model: db.thunderstorm,
+      //      as: 'thunderstorms',
+      //    required: false,
+      //  include: [
+      //  {
+      //  model: db.group,
+      // as: 'group',
+      // required: false,
+      // },
+      // ],
+      // },
     ],
   });
   console.log(user);
@@ -121,7 +127,7 @@ export const discordStats = async (message, io) => {
   const groupedSoaks = user.soaks ? group(user.soaks, 'spend', 'soaks') : {};
   const groupedHurricanes = user.hurricanes ? group(user.hurricanes, 'spend', 'hurricanes') : {};
   const groupedThunderStorms = user.thunderstorms ? group(user.thunderstorms, 'spend', 'thunderstorms') : {};
-  const groupedThunders = user.thunder ? group(user.thunder, 'spend', 'thunders') : {};
+  const groupedThunders = user.thunder ? group(user.thunders, 'spend', 'thunders') : {};
   const groupedSleets = user.sleets ? group(user.sleets, 'spend', 'sleets') : {};
   console.log('456');
   // merge results into a single object

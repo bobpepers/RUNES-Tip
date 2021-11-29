@@ -88,7 +88,7 @@ module.exports = (sequelize, DataTypes) => {
     UserModel.hasMany(model.soak);
     UserModel.hasMany(model.flood);
     UserModel.hasMany(model.sleet);
-    UserModel.hasMany(model.thunder);
+    UserModel.hasMany(model.thunder, { as: 'thunders' });
     UserModel.hasMany(model.thunderstorm);
     UserModel.hasMany(model.hurricane);
   };
