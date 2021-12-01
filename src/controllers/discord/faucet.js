@@ -84,7 +84,7 @@ export const discordFaucetClaim = async (message, io) => {
     });
     const userId = user.user_id.replace('discord-', '');
     const username = user.ignoreme ? `<@${userId}>` : `${user.username}`;
-    const dateFuture = lastFaucetTip && lastFaucetTip.createdAt.getTime() + (1 * 60 * 1000);
+    const dateFuture = lastFaucetTip && lastFaucetTip.createdAt.getTime() + (4 * 60 * 60 * 1000);
     const dateNow = new Date().getTime();
     const distance = dateFuture && dateFuture - dateNow;
     console.log(distance);
