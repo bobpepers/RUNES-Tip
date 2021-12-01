@@ -14,7 +14,7 @@ import settings from '../../config/settings';
 
 import logger from "../../helpers/logger";
 
-export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io) => {
+export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io, groupTask) => {
   let activity;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -127,8 +127,19 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io)
 
           const tipTransaction = await db.tip.create({
             userId: user.id,
-            userTippedId: findUserToTip.id,
             amount,
+            type: 'split',
+            userCount: 1,
+            groupId: groupTask.id,
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          const tiptipTransaction = await db.tiptip.create({
+            userId: findUserToTip.id,
+            tipId: tipTransaction.id,
+            amount,
+            groupId: groupTask.id,
           }, {
             transaction: t,
             lock: t.LOCK.UPDATE,
@@ -157,22 +168,24 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io)
   }).catch((err) => {
     ctx.reply(generalErrorMessage());
   });
-  activity = await db.activity.findOne({
-    where: {
-      id: activity.id,
-    },
-    include: [
-      {
-        model: db.user,
-        as: 'earner',
+  if (activity) {
+    activity = await db.activity.findOne({
+      where: {
+        id: activity.id,
       },
-      {
-        model: db.user,
-        as: 'spender',
-      },
-    ],
-  });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+      include: [
+        {
+          model: db.user,
+          as: 'earner',
+        },
+        {
+          model: db.user,
+          as: 'spender',
+        },
+      ],
+    });
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

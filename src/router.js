@@ -499,8 +499,10 @@ export const router = (app, discordClient, telegramClient, io) => {
         await queue.add(() => groupTask);
         const tipAmount = filteredMessageTelegram[2];
         const tipTo = filteredMessageTelegram[1];
-        const task = await tipRunesToUser(ctx, tipTo, tipAmount, telegramClient, runesGroup, io);
-        await queue.add(() => task);
+        if (groupTask) {
+          const task = await tipRunesToUser(ctx, tipTo, tipAmount, telegramClient, runesGroup, io, groupTask);
+          await queue.add(() => task);
+        }
       })();
     }
   });
@@ -708,8 +710,10 @@ export const router = (app, discordClient, telegramClient, io) => {
           await queue.add(() => groupTask);
           const tipAmount = filteredMessageTelegram[3];
           const tipTo = filteredMessageTelegram[2];
-          const task = await tipRunesToUser(ctx, tipTo, tipAmount, telegramClient, runesGroup, io);
-          await queue.add(() => task);
+          if (groupTask) {
+            const task = await tipRunesToUser(ctx, tipTo, tipAmount, telegramClient, runesGroup, io, groupTask);
+            await queue.add(() => task);
+          }
         })();
       }
     }

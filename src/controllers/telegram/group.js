@@ -3,13 +3,14 @@ import { Transaction } from "sequelize";
 import db from '../../models';
 
 export const updateGroup = async (ctx) => {
+  let group;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     if (ctx.update.message.chat.id === ctx.update.message.from.id) {
       return;
     }
-    let group = await db.group.findOne(
+    group = await db.group.findOne(
       {
         where: {
           groupId: `telegram-${ctx.update.message.chat.id}`,
@@ -48,4 +49,5 @@ export const updateGroup = async (ctx) => {
   }).catch((err) => {
     console.log(err.message);
   });
+  return group;
 };
