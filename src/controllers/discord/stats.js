@@ -98,7 +98,7 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
   }
   if (message.channel.type === 'GUILD_TEXT') {
     childWhereOptions.groupId = groupTask.id;
-    message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Help')] });
+    message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Statistics')] });
     // message.author.send({ embeds: [statsMessage(message, serverString)] });
   }
 
@@ -106,6 +106,20 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
     where: parentWhereOptions,
     include: [
       // Spend
+      {
+        model: db.tip,
+        as: 'tips',
+        required: false,
+        separate: true,
+        where: childWhereOptions,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
       {
         model: db.reactdrop,
         as: 'reactdrops',
@@ -207,6 +221,20 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
 
       // Earned
       {
+        model: db.tiptip,
+        as: 'tiptips',
+        required: false,
+        separate: true,
+        where: childWhereOptions,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
+      {
         model: db.thunderstormtip,
         as: 'thunderstormtips',
         required: false,
@@ -306,11 +334,11 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
       },
     ],
   });
-  console.log(user);
   if (!user) {
     return;
   }
-  console.log('123');
+  let groupedTips;
+  let groupedTipTips;
   let groupedReactdrops;
   let groupedFloods;
   let groupedSoaks;
@@ -328,6 +356,7 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
 
   if (message.channel.type === 'DM') {
     // spend
+    groupedTips = user.tips ? groupGlobal(user.tips, 'spend', 'tips') : {};
     groupedReactdrops = user.reactdrops ? groupGlobal(user.reactdrops, 'spend', 'reactdrops') : {};
     groupedFloods = user.floods ? groupGlobal(user.floods, 'spend', 'floods') : {};
     groupedSoaks = user.soaks ? groupGlobal(user.soaks, 'spend', 'soaks') : {};
@@ -337,6 +366,7 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
     groupedSleets = user.sleets ? groupGlobal(user.sleets, 'spend', 'sleets') : {};
 
     // earned
+    groupedTipTips = user.tiptips ? groupGlobal(user.tiptips, 'earned', 'tips') : {};
     groupedReactdropTips = user.reactdroptips ? groupGlobal(user.reactdroptips, 'earned', 'reactdrops') : {};
     groupedFloodTips = user.floodtips ? groupGlobal(user.floodtips, 'earned', 'floods') : {};
     groupedSoakTips = user.soaktips ? groupGlobal(user.soaktips, 'earned', 'soaks') : {};
@@ -347,6 +377,7 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
   }
   if (message.channel.type === 'GUILD_TEXT') {
     // spend
+    groupedTips = user.tips ? group(user.tips, 'spend', 'tips') : {};
     groupedReactdrops = user.reactdrops ? group(user.reactdrops, 'spend', 'reactdrops') : {};
     groupedFloods = user.floods ? group(user.floods, 'spend', 'floods') : {};
     groupedSoaks = user.soaks ? group(user.soaks, 'spend', 'soaks') : {};
@@ -356,6 +387,7 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
     groupedSleets = user.sleets ? group(user.sleets, 'spend', 'sleets') : {};
 
     // earned
+    groupedTipTips = user.tiptips ? group(user.tiptips, 'earned', 'tips') : {};
     groupedReactdropTips = user.reactdroptips ? group(user.reactdroptips, 'earned', 'reactdrops') : {};
     groupedFloodTips = user.floodtips ? group(user.floodtips, 'earned', 'floods') : {};
     groupedSoakTips = user.soaktips ? group(user.soaktips, 'earned', 'soaks') : {};
@@ -365,11 +397,12 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
     groupedSleetTips = user.sleettips ? group(user.sleettips, 'earned', 'sleets') : {};
   }
   // group the resuts by server and type
-
+  console.log(groupedTipTips);
   // merge results into a single object
   const mergedObject = _.merge(
 
     // Spend
+    groupedTips,
     groupedReactdrops,
     groupedFloods,
     groupedSoaks,
@@ -379,6 +412,7 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
     groupedSleets,
 
     // Earned
+    groupedTipTips,
     groupedReactdropTips,
     groupedFloodTips,
     groupedSoakTips,
@@ -394,6 +428,9 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
   // eslint-disable-next-line no-restricted-syntax
   for (const serverObj in mergedObject) {
     // Spend
+    const spendTips = mergedObject[serverObj].spend && mergedObject[serverObj].spend.tips
+      && `${mergedObject[serverObj].spend.tips.length} tips for ${mergedObject[serverObj].spend.tips.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
     const spendFloods = mergedObject[serverObj].spend && mergedObject[serverObj].spend.floods
       && `${mergedObject[serverObj].spend.floods.length} floods for ${mergedObject[serverObj].spend.floods.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
@@ -416,6 +453,10 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
       && `${mergedObject[serverObj].spend.reactdrops.length} reactdrops for ${mergedObject[serverObj].spend.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
     // Earned
+    console.log('earnedTips');
+    console.log(mergedObject[serverObj].earned.tips);
+    const earnedTips = mergedObject[serverObj].earned && mergedObject[serverObj].earned.tips
+      && `${mergedObject[serverObj].earned.tips.length} tips for ${mergedObject[serverObj].earned.tips.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
     const earnedFloods = mergedObject[serverObj].earned && mergedObject[serverObj].earned.floods
       && `${mergedObject[serverObj].earned.floods.length} floods for ${mergedObject[serverObj].earned.floods.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
@@ -441,10 +482,10 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
     const serverString = `_**${serverObj}**_
     
 ${mergedObject[serverObj].spend ? '_Spend_\n' : ''}
-${spendRains ? `Rains: ${spendRains}\n` : ''}${spendFloods ? `Floods: ${spendFloods}\n` : ''}${spendSoaks ? `Soaks: ${spendSoaks}\n` : ''}${spendHurricanes ? `Hurricanes: ${spendHurricanes}\n` : ''}${spendThunders ? `Thunders: ${spendThunders}\n` : ''}${spendThunderstorms ? `Thunderstorms: ${spendThunderstorms}\n` : ''}${spendReactDrops ? `ReactDrops: ${spendReactDrops}\n` : ''}
+${spendTips ? `Tips: ${spendTips}\n` : ''}${spendRains ? `Rains: ${spendRains}\n` : ''}${spendFloods ? `Floods: ${spendFloods}\n` : ''}${spendSoaks ? `Soaks: ${spendSoaks}\n` : ''}${spendHurricanes ? `Hurricanes: ${spendHurricanes}\n` : ''}${spendThunders ? `Thunders: ${spendThunders}\n` : ''}${spendThunderstorms ? `Thunderstorms: ${spendThunderstorms}\n` : ''}${spendReactDrops ? `ReactDrops: ${spendReactDrops}\n` : ''}
   
 ${mergedObject[serverObj].earned ? '_Earned_\n' : ''}
-${earnedRains ? `Rains: ${earnedRains}\n` : ''}${earnedFloods ? `Floods: ${earnedFloods}\n` : ''}${earnedSoaks ? `Soaks: ${earnedSoaks}\n` : ''}${earnedHurricanes ? `Hurricanes: ${earnedHurricanes}\n` : ''}${earnedThunders ? `Thunders: ${earnedThunders}\n` : ''}${earnedThunderstorms ? `Thunderstorms: ${earnedThunderstorms}\n` : ''}${earnedReactDrops ? `ReactDrops: ${earnedReactDrops}\n` : ''}`;
+${earnedTips ? `Tips: ${earnedTips}\n` : ''}${earnedRains ? `Rains: ${earnedRains}\n` : ''}${earnedFloods ? `Floods: ${earnedFloods}\n` : ''}${earnedSoaks ? `Soaks: ${earnedSoaks}\n` : ''}${earnedHurricanes ? `Hurricanes: ${earnedHurricanes}\n` : ''}${earnedThunders ? `Thunders: ${earnedThunders}\n` : ''}${earnedThunderstorms ? `Thunderstorms: ${earnedThunderstorms}\n` : ''}${earnedReactDrops ? `ReactDrops: ${earnedReactDrops}\n` : ''}`;
     await message.author.send({ embeds: [statsMessage(message, serverString)] });
     // await message.channel.send(serverString);
   }

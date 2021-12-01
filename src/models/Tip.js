@@ -16,7 +16,12 @@ module.exports = (sequelize, DataTypes) => {
     },
     userTippedId: {
       type: DataTypes.BIGINT,
+      allowNull: true,
+    },
+    userCount: {
+      type: DataTypes.BIGINT,
       allowNull: false,
+      defaultValue: 1,
     },
     type: {
       type: DataTypes.ENUM,
@@ -40,15 +45,10 @@ module.exports = (sequelize, DataTypes) => {
   // 4: Wallet belongs to User
 
   TipModel.associate = (model) => {
-    TipModel.belongsTo(model.user, {
-      as: 'userTip',
-      foreignKey: 'userId',
-    });
-    TipModel.belongsTo(model.user, {
-      as: 'userTipped',
-      foreignKey: 'userTippedId',
-    });
+    TipModel.belongsTo(model.user);
     TipModel.hasMany(model.activity, { as: 'tip' });
+    TipModel.belongsTo(model.group);
+    TipModel.belongsTo(model.channel);
   };
 
   // 5: Wallet has many addresses

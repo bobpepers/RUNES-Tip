@@ -1,15 +1,19 @@
 /* eslint-disable import/prefer-default-export */
+import _ from "lodash";
 import BigNumber from "bignumber.js";
 import { Transaction, Op } from "sequelize";
 import db from '../../models';
 import {
   invalidAmountMessage,
   insufficientBalanceMessage,
+  walletNotFoundMessage,
   minimumMessage,
-  unableToFindUserTipMessage,
-  userNotFoundMessage,
+  AfterThunderStormSuccess,
+  thunderstormMaxUserAmountMessage,
+  thunderstormInvalidUserAmount,
   tipSuccessMessage,
   NotInDirectMessage,
+  userNotFoundMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
 
@@ -17,11 +21,16 @@ import logger from "../../helpers/logger";
 
 export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTip, io, groupTask, channelTask) => {
   if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] });
     return;
   }
   let activity;
   let user;
+  let AmountPosition = 1;
+  let AmountPositionEnded = false;
+  const usersToTip = [];
+  let type = 'split';
+
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -55,23 +64,59 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
       await message.channel.send({ embeds: [userNotFoundMessage(message, 'Tip')] });
       return;
     }
-    let amount = 0;
-    if (filteredMessage[2].toLowerCase() === 'all') {
-      amount = user.wallet.available;
-    } else {
-      amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
-    }
+    console.log(usersToTip);
+    console.log(AmountPosition);
+    console.log(type);
 
-    if (amount % 1 !== 0) {
-      activity = await db.activity.create({
-        type: 'tip_f',
-        spenderId: user.id,
-      }, {
+    // make users to tip array
+    while (!AmountPositionEnded) {
+      console.log(filteredMessage[AmountPosition]);
+      const discordId = filteredMessage[AmountPosition].slice(3).slice(0, -1);
+      console.log(discordId);
+      // eslint-disable-next-line no-await-in-loop
+      const userExist = await db.user.findOne({
+        where: {
+          user_id: `discord-${discordId}`,
+        },
+        include: [
+          {
+            model: db.wallet,
+            as: 'wallet',
+            required: true,
+            include: [
+              {
+                model: db.address,
+                as: 'addresses',
+                required: true,
+              },
+            ],
+          },
+        ],
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'Tip')] });
-      return;
+      if (userExist) {
+        const userIdTest = userExist.user_id.replace('discord-', '');
+        if (userIdTest !== message.author.id) {
+          usersToTip.push(userExist);
+        }
+      }
+      // usersToTip.push(filteredMessage[AmountPosition]);
+      AmountPosition += 1;
+      if (!filteredMessage[AmountPosition].startsWith('<@!')) {
+        AmountPositionEnded = true;
+      }
+    }
+    if (filteredMessage[AmountPosition + 1] && filteredMessage[AmountPosition + 1].toLowerCase() === 'each') {
+      type = 'each';
+    }
+
+    // verify amount
+    let amount = 0;
+    if (filteredMessage[AmountPosition].toLowerCase() === 'all') {
+      amount = user.wallet.available;
+    } else {
+      amount = new BigNumber(filteredMessage[AmountPosition]).times(1e8).toNumber();
     }
     if (amount < Number(settings.min.discord.tip)) {
       activity = await db.activity.create({
@@ -85,6 +130,21 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
 
       return;
     }
+    if (type === 'each' && filteredMessage[AmountPosition].toLowerCase() !== 'all') {
+      amount *= usersToTip.length;
+    }
+    if (amount % 1 !== 0) {
+      activity = await db.activity.create({
+        type: 'tip_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      await message.channel.send({ embeds: [invalidAmountMessage(message, 'Tip')] });
+      return;
+    }
+
     if (amount > user.wallet.available) {
       activity = await db.activity.create({
         type: 'tip_i',
@@ -96,118 +156,64 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
       await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'Tip')] });
       return;
     }
-    const findUserToTip = await db.user.findOne({
-      where: {
-        user_id: `discord-${userIdToTip}`,
-      },
-      include: [
-        {
-          model: db.wallet,
-          as: 'wallet',
-          include: [
-            {
-              model: db.address,
-              as: 'addresses',
-            },
-          ],
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-    if (!findUserToTip) {
-      activity = await db.activity.create({
-        type: 'tip_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [unableToFindUserTipMessage] });
-      return;
-    }
-    if (user.id === findUserToTip.id) {
-      activity = await db.activity.create({
-        type: 'tip_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send('cannot tip self');
-      return;
-    }
-
-    const wallet = await user.wallet.update({
+    //
+    const updatedBalance = await user.wallet.update({
       available: user.wallet.available - amount,
     }, {
-      transaction: t,
       lock: t.LOCK.UPDATE,
-    });
-
-    const updatedFindUserToTip = await findUserToTip.wallet.update({
-      available: findUserToTip.wallet.available + amount,
-    }, {
       transaction: t,
-      lock: t.LOCK.UPDATE,
     });
-    const tipTransaction = await db.tip.create({
+    const tipRecord = await db.tip.create({
+      amount,
+      type,
+      userCount: usersToTip.length,
       userId: user.id,
-      userTippedId: findUserToTip.id,
-      amount,
-    }, {
-      transaction: t,
-      lock: t.LOCK.UPDATE,
-    });
-    console.log(updatedFindUserToTip);
-    console.log("updatedFindUserToTip");
-    activity = await db.activity.create({
-      amount,
-      type: 'tip_s',
-      earnerId: findUserToTip.id,
-      spenderId: user.id,
-      earner_balance: updatedFindUserToTip.available + updatedFindUserToTip.locked,
-      spender_balance: wallet.available + wallet.locked,
+      groupId: groupTask.id,
+      channelId: channelTask.id,
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+    const userTipAmount = amount / usersToTip.length;
 
-    const userId = user.user_id.replace('discord-', '');
-
-    let tempUserName;
-    if (findUserToTip.ignoreMe) {
-      tempUserName = findUserToTip.username;
-    } else {
-      const userIdTipped = findUserToTip.user_id.replace('discord-', '');
-      tempUserName = `<@${userIdTipped}>`;
+    const listOfUsersRained = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const tipee of usersToTip) {
+      // eslint-disable-next-line no-await-in-loop
+      const tipeeWallet = await tipee.wallet.update({
+        available: tipee.wallet.available + Number(userTipAmount),
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      // eslint-disable-next-line no-await-in-loop
+      const tiptipRecord = await db.tiptip.create({
+        amount: Number(userTipAmount),
+        userId: tipee.id,
+        tipId: tipRecord.id,
+        groupId: groupTask.id,
+        channelId: channelTask.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      if (tipee.ignoreMe) {
+        listOfUsersRained.push(`${tipee.username}`);
+      } else {
+        const userIdReceivedRain = tipee.user_id.replace('discord-', '');
+        listOfUsersRained.push(`<@${userIdReceivedRain}>`);
+      }
     }
+    await message.channel.send({ embeds: [tipSuccessMessage(message, listOfUsersRained, userTipAmount, type)] });
 
-    await message.channel.send({ embeds: [tipSuccessMessage(userId, tempUserName, amount)] });
-    logger.info(`Success tip Requested by: ${user.user_id}-${user.username} to ${findUserToTip.user_id}-${findUserToTip.username} with ${amount / 1e8} ${settings.coin.ticker}`);
+    // await message.channel.send({ embeds: [AfterThunderStormSuccess(message, amount, amountPerUser, listOfUsersRained)] });
 
-    t.afterCommit(async () => {
-      console.log('Done');
+    logger.info(`Success Tip Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+
+    t.afterCommit(() => {
+      console.log('done');
     });
   }).catch((err) => {
-    message.channel.send("Something went wrong.");
-  });
-  activity = await db.activity.findOne({
-    where: {
-      id: activity.id,
-    },
-    include: [
-      {
-        model: db.user,
-        as: 'earner',
-      },
-      {
-        model: db.user,
-        as: 'spender',
-      },
-    ],
-  });
-  io.to('admin').emit('updateActivity', {
-    activity,
+    message.channel.send('something went wrong');
   });
 };

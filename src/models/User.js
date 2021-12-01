@@ -65,16 +65,6 @@ module.exports = (sequelize, DataTypes) => {
 
   UserModel.associate = (model) => {
     UserModel.hasOne(model.wallet);
-    UserModel.hasMany(model.tip, {
-      foreignKey: 'userId',
-      as: 'userTip',
-    });
-    UserModel.hasMany(model.tip, {
-      foreignKey: 'userTippedId',
-      as: 'userTipped',
-    });
-    UserModel.hasMany(model.rain);
-    UserModel.hasMany(model.raintip);
     UserModel.hasMany(model.referral);
     UserModel.hasMany(model.referralReward);
     UserModel.hasMany(model.active, {
@@ -82,6 +72,8 @@ module.exports = (sequelize, DataTypes) => {
       as: 'active',
     });
 
+    UserModel.hasMany(model.tip);
+    UserModel.hasMany(model.rain);
     UserModel.hasMany(model.reactdrop);
     UserModel.hasMany(model.faucettip);
     UserModel.hasMany(model.flood);
@@ -93,6 +85,7 @@ module.exports = (sequelize, DataTypes) => {
     UserModel.hasMany(model.hurricane);
 
     UserModel.hasMany(model.reactdroptip);
+    UserModel.hasMany(model.raintip);
     UserModel.hasMany(model.floodtip);
     UserModel.hasMany(model.soaktip);
     UserModel.hasMany(model.floodtip);
@@ -100,6 +93,7 @@ module.exports = (sequelize, DataTypes) => {
     UserModel.hasMany(model.thundertip);
     UserModel.hasMany(model.thunderstormtip);
     UserModel.hasMany(model.hurricanetip);
+    UserModel.hasMany(model.tiptip);
   };
 
   return UserModel;

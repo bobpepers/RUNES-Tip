@@ -247,7 +247,7 @@ export const router = (app, discordClient, telegramClient, io) => {
       const limited = await limitTip(message);
       // await queue.add(() => limited);
       const userToTipId = filteredMessageDiscord[1].substring(0, filteredMessageDiscord[1].length - 1).substring(3);
-      const task = await tipRunesToDiscordUser(message, filteredMessageDiscord, userToTipId, io);
+      const task = await tipRunesToDiscordUser(message, filteredMessageDiscord, userToTipId, io, groupTask, channelTask);
       await queue.add(() => task);
     }
 

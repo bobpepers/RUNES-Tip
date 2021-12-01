@@ -248,11 +248,15 @@ export const depositAddressMessage = (userId, user) => {
 
   return result;
 };
-export const tipSuccessMessage = (userId, tempUsername, amount) => {
+export const tipSuccessMessage = (message, listOfUsersRained, amount, type) => {
+  const userText = listOfUsersRained.join(", ");
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Tip')
-    .setDescription(`<@${userId}> tipped ${amount / 1e8} ${settings.coin.ticker} to ${tempUsername}`)
+    .setDescription(`
+    ${listOfUsersRained.length === 1 ? `<@${message.author.id}> tipped ${amount / 1e8} ${settings.coin.ticker} to ${listOfUsersRained[0]}` : ``}
+    ${listOfUsersRained.length > 1 ? `<@${message.author.id}> tipped ${amount / 1e8} ${settings.coin.ticker} to ${userText} (${type})` : ``}
+`)
     .setTimestamp()
     .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
 

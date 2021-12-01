@@ -221,7 +221,6 @@ export const discordThunderStorm = async (discordClient, message, filteredMessag
       ],
       lock: t.LOCK.UPDATE,
       transaction: t,
-
     });
     const listOfUsersRained = [];
     // eslint-disable-next-line no-restricted-syntax
@@ -249,7 +248,7 @@ export const discordThunderStorm = async (discordClient, message, filteredMessag
         listOfUsersRained.push(`${thunderstormee.username}`);
       } else {
         const userIdReceivedRain = thunderstormee.user_id.replace('discord-', '');
-        listOfUsersRained.push(`<@${userIdReceivedRain}>`);;
+        listOfUsersRained.push(`<@${userIdReceivedRain}>`);
       }
       let tipActivity;
       console.log(user);
