@@ -18,6 +18,15 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
       allowNull: false,
     },
+    type: {
+      type: DataTypes.ENUM,
+      values: [
+        'each',
+        'split',
+      ],
+      defaultValue: 'split',
+      allowNull: false,
+    },
   };
 
   // 2: The model options.

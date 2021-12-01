@@ -438,8 +438,8 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
     const earnedReactDrops = mergedObject[serverObj].earned && mergedObject[serverObj].earned.reactdrops
       && `${mergedObject[serverObj].earned.reactdrops.length} reactdrops for ${mergedObject[serverObj].earned.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
-    const serverString = `_**${serverObj}**_\n\n
-
+    const serverString = `_**${serverObj}**_
+    
 ${mergedObject[serverObj].spend ? '_Spend_\n' : ''}
 ${spendRains ? `Rains: ${spendRains}\n` : ''}${spendFloods ? `Floods: ${spendFloods}\n` : ''}${spendSoaks ? `Soaks: ${spendSoaks}\n` : ''}${spendHurricanes ? `Hurricanes: ${spendHurricanes}\n` : ''}${spendThunders ? `Thunders: ${spendThunders}\n` : ''}${spendThunderstorms ? `Thunderstorms: ${spendThunderstorms}\n` : ''}${spendReactDrops ? `ReactDrops: ${spendReactDrops}\n` : ''}
   
