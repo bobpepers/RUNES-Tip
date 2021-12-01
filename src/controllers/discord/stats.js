@@ -41,14 +41,10 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
   let cutNumberTime;
   let isnum;
   if (filteredMessageDiscord[2]) {
-    console.log('tilteredmessage');
     textTime = filteredMessageDiscord[2];
     cutLastTimeLetter = textTime.substring(textTime.length - 1, textTime.length).toLowerCase();
     cutNumberTime = textTime.substring(0, textTime.length - 1);
     isnum = /^\d+$/.test(cutNumberTime);
-    console.log(cutNumberTime);
-    console.log(cutLastTimeLetter);
-    console.log(isnum);
   }
   if (
     (filteredMessageDiscord[2]
@@ -397,7 +393,7 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
     groupedSleetTips = user.sleettips ? group(user.sleettips, 'earned', 'sleets') : {};
   }
   // group the resuts by server and type
-  console.log(groupedTipTips);
+
   // merge results into a single object
   const mergedObject = _.merge(
 
@@ -453,8 +449,6 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
       && `${mergedObject[serverObj].spend.reactdrops.length} reactdrops for ${mergedObject[serverObj].spend.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
     // Earned
-    console.log('earnedTips');
-    console.log(mergedObject[serverObj].earned.tips);
     const earnedTips = mergedObject[serverObj].earned && mergedObject[serverObj].earned.tips
       && `${mergedObject[serverObj].earned.tips.length} tips for ${mergedObject[serverObj].earned.tips.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
@@ -487,7 +481,6 @@ ${spendTips ? `Tips: ${spendTips}\n` : ''}${spendRains ? `Rains: ${spendRains}\n
 ${mergedObject[serverObj].earned ? '_Earned_\n' : ''}
 ${earnedTips ? `Tips: ${earnedTips}\n` : ''}${earnedRains ? `Rains: ${earnedRains}\n` : ''}${earnedFloods ? `Floods: ${earnedFloods}\n` : ''}${earnedSoaks ? `Soaks: ${earnedSoaks}\n` : ''}${earnedHurricanes ? `Hurricanes: ${earnedHurricanes}\n` : ''}${earnedThunders ? `Thunders: ${earnedThunders}\n` : ''}${earnedThunderstorms ? `Thunderstorms: ${earnedThunderstorms}\n` : ''}${earnedReactDrops ? `ReactDrops: ${earnedReactDrops}\n` : ''}`;
     await message.author.send({ embeds: [statsMessage(message, serverString)] });
-    // await message.channel.send(serverString);
   }
 
   let activity;
