@@ -267,7 +267,7 @@ export const router = (app, discordClient, telegramClient, io) => {
     if (filteredMessageDiscord[1].toLowerCase() === 'stats') {
       const limited = await limitStats(message);
       await queue.add(() => limited);
-      const task = await discordStats(message, io);
+      const task = await discordStats(message, filteredMessageDiscord, io, groupTask, channelTask);
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'leaderboard') {

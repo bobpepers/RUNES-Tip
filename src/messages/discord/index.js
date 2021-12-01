@@ -608,11 +608,11 @@ export const enablePublicStatsMeMessage = (message) => {
   return result;
 };
 
-export const statsMessage = (message) => {
+export const statsMessage = (message, statsMessage) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle("Statistics")
-    .setDescription(`<@${message.author.id}>, statsMessage`)
+    .setTitle(`Statistics`)
+    .setDescription(`<@${message.author.id}>, ${statsMessage}`)
     .setThumbnail(settings.coin.logo)
     .setTimestamp()
     .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);

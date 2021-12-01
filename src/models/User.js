@@ -91,6 +91,15 @@ module.exports = (sequelize, DataTypes) => {
     UserModel.hasMany(model.thunder, { as: 'thunders' });
     UserModel.hasMany(model.thunderstorm);
     UserModel.hasMany(model.hurricane);
+
+    UserModel.hasMany(model.reactdroptip);
+    UserModel.hasMany(model.floodtip);
+    UserModel.hasMany(model.soaktip);
+    UserModel.hasMany(model.floodtip);
+    UserModel.hasMany(model.sleettip);
+    UserModel.hasMany(model.thundertip);
+    UserModel.hasMany(model.thunderstormtip);
+    UserModel.hasMany(model.hurricanetip);
   };
 
   return UserModel;

@@ -1,11 +1,26 @@
+/* eslint-disable guard-for-in */
 /* eslint-disable import/prefer-default-export */
 import {
   warnDirectMessage,
   statsMessage,
+  serverStatsMessage,
 } from '../../messages/discord';
 import db from '../../models';
+import settings from '../../config/settings';
+
+const { Op } = require('sequelize');
 
 const _ = require('lodash');
+
+function groupGlobal(arr, type, whichGroup) {
+  return arr.reduce((res, obj) => {
+    const newObj = { amount: obj.amount };
+    if (!res.global) { res.global = {}; }
+    if (!res.global[type]) { res.global[type] = {}; }
+    if (res.global[type][whichGroup]) { res.global[type][whichGroup].push(newObj); } else { res.global[type][whichGroup] = [newObj]; }
+    return res;
+  }, {});
+}
 
 function group(arr, type, whichGroup) {
   return arr.reduce((res, obj) => {
@@ -18,17 +33,85 @@ function group(arr, type, whichGroup) {
   }, {});
 }
 
-export const discordStats = async (message, io) => {
+export const discordStats = async (message, filteredMessageDiscord, io, groupTask, channelTask) => {
+  const parentWhereOptions = {};
+  const childWhereOptions = {};
+  let textTime;
+  let cutLastTimeLetter;
+  let cutNumberTime;
+  let isnum;
+  if (filteredMessageDiscord[2]) {
+    console.log('tilteredmessage');
+    textTime = filteredMessageDiscord[2];
+    cutLastTimeLetter = textTime.substring(textTime.length - 1, textTime.length).toLowerCase();
+    cutNumberTime = textTime.substring(0, textTime.length - 1);
+    isnum = /^\d+$/.test(cutNumberTime);
+    console.log(cutNumberTime);
+    console.log(cutLastTimeLetter);
+    console.log(isnum);
+  }
+  if (
+    (filteredMessageDiscord[2]
+      && !isnum)
+    // && Number(cutNumberTime) < 0
+    && (
+      cutLastTimeLetter !== 'd'
+      || cutLastTimeLetter !== 'h'
+      || cutLastTimeLetter !== 'm'
+      || cutLastTimeLetter !== 's')
+  ) {
+    console.log('not pass');
+    return;
+  }
+
+  if (
+    (filteredMessageDiscord[2]
+      && isnum)
+    // && Number(cutNumberTime) < 0
+    && (
+      cutLastTimeLetter === 'd'
+      || cutLastTimeLetter === 'h'
+      || cutLastTimeLetter === 'm'
+      || cutLastTimeLetter === 's')
+  ) {
+    let dateObj = await new Date().getTime();
+    if (cutLastTimeLetter === 'd') {
+      dateObj -= Number(cutNumberTime) * 24 * 60 * 60 * 1000;
+    }
+    if (cutLastTimeLetter === 'h') {
+      dateObj -= Number(cutNumberTime) * 60 * 60 * 1000;
+    }
+    if (cutLastTimeLetter === 'm') {
+      dateObj -= Number(cutNumberTime) * 60 * 1000;
+    }
+    if (cutLastTimeLetter === 's') {
+      dateObj -= Number(cutNumberTime) * 1000;
+    }
+    dateObj = await new Date(dateObj);
+    childWhereOptions.createdAt = { [Op.gte]: dateObj };
+  }
+
+  parentWhereOptions.user_id = `discord-${message.author.id}`;
+
+  if (message.channel.type === 'DM') {
+    // message.author.send({ embeds: [statsMessage(message)] });
+  }
+  if (message.channel.type === 'GUILD_TEXT') {
+    childWhereOptions.groupId = groupTask.id;
+    message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Help')] });
+    // message.author.send({ embeds: [statsMessage(message, serverString)] });
+  }
+
   const user = await db.user.findOne({
-    where: {
-      user_id: `discord-${message.author.id}`,
-    },
+    where: parentWhereOptions,
     include: [
+      // Spend
       {
         model: db.reactdrop,
         as: 'reactdrops',
         required: false,
         separate: true,
+        where: childWhereOptions,
         include: [
           {
             model: db.group,
@@ -42,6 +125,7 @@ export const discordStats = async (message, io) => {
         as: 'floods',
         required: false,
         separate: true,
+        where: childWhereOptions,
         include: [
           {
             model: db.group,
@@ -55,6 +139,7 @@ export const discordStats = async (message, io) => {
         as: 'soaks',
         required: false,
         separate: true,
+        where: childWhereOptions,
         include: [
           {
             model: db.group,
@@ -68,6 +153,49 @@ export const discordStats = async (message, io) => {
         as: 'sleets',
         required: false,
         separate: true,
+        where: childWhereOptions,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
+      {
+        model: db.hurricane,
+        as: 'hurricanes',
+        required: false,
+        separate: true,
+        where: childWhereOptions,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
+      {
+        model: db.thunder,
+        as: 'thunders',
+        required: false,
+        separate: true,
+        where: childWhereOptions,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
+      {
+        model: db.thunderstorm,
+        as: 'thunderstorms',
+        required: false,
+        separate: true,
+        where: childWhereOptions,
         include: [
           {
             model: db.group,
@@ -77,11 +205,13 @@ export const discordStats = async (message, io) => {
         ],
       },
 
+      // Earned
       {
-        model: db.hurricane,
-        as: 'hurricanes',
+        model: db.thunderstormtip,
+        as: 'thunderstormtips',
         required: false,
         separate: true,
+        where: childWhereOptions,
         include: [
           {
             model: db.group,
@@ -90,30 +220,90 @@ export const discordStats = async (message, io) => {
           },
         ],
       },
-      // {
-      //  model: db.thunder,
-      //  as: 'thunders',
-      //  required: false,
-      //  include: [
-      //    {
-      //      model: db.group,
-      //      as: 'group',
-      //      required: false,
-      //    },
-      //  ],
-      // },
-      // {
-      // model: db.thunderstorm,
-      //      as: 'thunderstorms',
-      //    required: false,
-      //  include: [
-      //  {
-      //  model: db.group,
-      // as: 'group',
-      // required: false,
-      // },
-      // ],
-      // },
+      {
+        model: db.reactdroptip,
+        as: 'reactdroptips',
+        required: false,
+        separate: true,
+        where: childWhereOptions,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
+      {
+        model: db.floodtip,
+        as: 'floodtips',
+        required: false,
+        separate: true,
+        where: childWhereOptions,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
+      {
+        model: db.soaktip,
+        as: 'soaktips',
+        required: false,
+        separate: true,
+        where: childWhereOptions,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
+      {
+        model: db.hurricanetip,
+        as: 'hurricanetips',
+        required: false,
+        separate: true,
+        where: childWhereOptions,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
+      {
+        model: db.thundertip,
+        as: 'thundertips',
+        required: false,
+        separate: true,
+        where: childWhereOptions,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
+      {
+        model: db.sleettip,
+        as: 'sleettips',
+        required: false,
+        separate: true,
+        where: childWhereOptions,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
     ],
   });
   console.log(user);
@@ -121,17 +311,65 @@ export const discordStats = async (message, io) => {
     return;
   }
   console.log('123');
+  let groupedReactdrops;
+  let groupedFloods;
+  let groupedSoaks;
+  let groupedHurricanes;
+  let groupedThunderStorms;
+  let groupedThunders;
+  let groupedSleets;
+  let groupedReactdropTips;
+  let groupedFloodTips;
+  let groupedSoakTips;
+  let groupedHurricaneTips;
+  let groupedThunderStormTips;
+  let groupedThunderTips;
+  let groupedSleetTips;
+
+  if (message.channel.type === 'DM') {
+    // spend
+    groupedReactdrops = user.reactdrops ? groupGlobal(user.reactdrops, 'spend', 'reactdrops') : {};
+    groupedFloods = user.floods ? groupGlobal(user.floods, 'spend', 'floods') : {};
+    groupedSoaks = user.soaks ? groupGlobal(user.soaks, 'spend', 'soaks') : {};
+    groupedHurricanes = user.hurricanes ? groupGlobal(user.hurricanes, 'spend', 'hurricanes') : {};
+    groupedThunderStorms = user.thunderstorms ? groupGlobal(user.thunderstorms, 'spend', 'thunderstorms') : {};
+    groupedThunders = user.thunders ? groupGlobal(user.thunders, 'spend', 'thunders') : {};
+    groupedSleets = user.sleets ? groupGlobal(user.sleets, 'spend', 'sleets') : {};
+
+    // earned
+    groupedReactdropTips = user.reactdroptips ? groupGlobal(user.reactdroptips, 'earned', 'reactdrops') : {};
+    groupedFloodTips = user.floodtips ? groupGlobal(user.floodtips, 'earned', 'floods') : {};
+    groupedSoakTips = user.soaktips ? groupGlobal(user.soaktips, 'earned', 'soaks') : {};
+    groupedHurricaneTips = user.hurricanetips ? groupGlobal(user.hurricanetips, 'earned', 'hurricanes') : {};
+    groupedThunderStormTips = user.thunderstormtips ? groupGlobal(user.thunderstormtips, 'earned', 'thunderstorms') : {};
+    groupedThunderTips = user.thundertips ? groupGlobal(user.thundertips, 'earned', 'thunders') : {};
+    groupedSleetTips = user.sleettips ? groupGlobal(user.sleettips, 'earned', 'sleets') : {};
+  }
+  if (message.channel.type === 'GUILD_TEXT') {
+    // spend
+    groupedReactdrops = user.reactdrops ? group(user.reactdrops, 'spend', 'reactdrops') : {};
+    groupedFloods = user.floods ? group(user.floods, 'spend', 'floods') : {};
+    groupedSoaks = user.soaks ? group(user.soaks, 'spend', 'soaks') : {};
+    groupedHurricanes = user.hurricanes ? group(user.hurricanes, 'spend', 'hurricanes') : {};
+    groupedThunderStorms = user.thunderstorms ? group(user.thunderstorms, 'spend', 'thunderstorms') : {};
+    groupedThunders = user.thunders ? group(user.thunders, 'spend', 'thunders') : {};
+    groupedSleets = user.sleets ? group(user.sleets, 'spend', 'sleets') : {};
+
+    // earned
+    groupedReactdropTips = user.reactdroptips ? group(user.reactdroptips, 'earned', 'reactdrops') : {};
+    groupedFloodTips = user.floodtips ? group(user.floodtips, 'earned', 'floods') : {};
+    groupedSoakTips = user.soaktips ? group(user.soaktips, 'earned', 'soaks') : {};
+    groupedHurricaneTips = user.hurricanetips ? group(user.hurricanetips, 'earned', 'hurricanes') : {};
+    groupedThunderStormTips = user.thunderstormtips ? group(user.thunderstormtips, 'earned', 'thunderstorms') : {};
+    groupedThunderTips = user.thundertips ? group(user.thundertips, 'earned', 'thunders') : {};
+    groupedSleetTips = user.sleettips ? group(user.sleettips, 'earned', 'sleets') : {};
+  }
   // group the resuts by server and type
-  const groupedReactdrops = user.reactdrops ? group(user.reactdrops, 'spend', 'reactdrops') : {};
-  const groupedFloods = user.floods ? group(user.floods, 'spend', 'floods') : {};
-  const groupedSoaks = user.soaks ? group(user.soaks, 'spend', 'soaks') : {};
-  const groupedHurricanes = user.hurricanes ? group(user.hurricanes, 'spend', 'hurricanes') : {};
-  const groupedThunderStorms = user.thunderstorms ? group(user.thunderstorms, 'spend', 'thunderstorms') : {};
-  const groupedThunders = user.thunder ? group(user.thunders, 'spend', 'thunders') : {};
-  const groupedSleets = user.sleets ? group(user.sleets, 'spend', 'sleets') : {};
-  console.log('456');
+
   // merge results into a single object
   const mergedObject = _.merge(
+
+    // Spend
     groupedReactdrops,
     groupedFloods,
     groupedSoaks,
@@ -139,15 +377,76 @@ export const discordStats = async (message, io) => {
     groupedThunderStorms,
     groupedThunders,
     groupedSleets,
-  );
-  console.log(mergedObject);
 
-  if (message.channel.type === 'DM') {
-    message.author.send({ embeds: [statsMessage(message)] });
+    // Earned
+    groupedReactdropTips,
+    groupedFloodTips,
+    groupedSoakTips,
+    groupedHurricaneTips,
+    groupedThunderStormTips,
+    groupedThunderTips,
+    groupedSleetTips,
+  );
+
+  if (_.isEmpty(mergedObject)) {
+    await message.author.send({ embeds: [statsMessage(message, "No data found!")] });
   }
-  if (message.channel.type === 'GUILD_TEXT') {
-    message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Help')] });
-    message.author.send({ embeds: [statsMessage(message, mergedObject)] });
+  // eslint-disable-next-line no-restricted-syntax
+  for (const serverObj in mergedObject) {
+    // Spend
+    const spendFloods = mergedObject[serverObj].spend && mergedObject[serverObj].spend.floods
+      && `${mergedObject[serverObj].spend.floods.length} floods for ${mergedObject[serverObj].spend.floods.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
+    const spendRains = mergedObject[serverObj].spend && mergedObject[serverObj].spend.rains
+      && `${mergedObject[serverObj].spend.rains.length} rains for ${mergedObject[serverObj].spend.rains.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
+    const spendSoaks = mergedObject[serverObj].spend && mergedObject[serverObj].spend.soaks
+      && `${mergedObject[serverObj].spend.soaks.length} soaks for ${mergedObject[serverObj].spend.soaks.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
+    const spendHurricanes = mergedObject[serverObj].spend && mergedObject[serverObj].spend.hurricanes
+      && `${mergedObject[serverObj].spend.hurricanes.length} hurricanes for ${mergedObject[serverObj].spend.hurricanes.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
+    const spendThunders = mergedObject[serverObj].spend && mergedObject[serverObj].spend.thunders
+      && `${mergedObject[serverObj].spend.thunders.length} thunders for ${mergedObject[serverObj].spend.thunders.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
+    const spendThunderstorms = mergedObject[serverObj].spend && mergedObject[serverObj].spend.thunderstorms
+      && `${mergedObject[serverObj].spend.thunderstorms.length} thunderstorms for ${mergedObject[serverObj].spend.thunderstorms.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
+    const spendReactDrops = mergedObject[serverObj].spend && mergedObject[serverObj].spend.reactdrops
+      && `${mergedObject[serverObj].spend.reactdrops.length} reactdrops for ${mergedObject[serverObj].spend.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
+    // Earned
+
+    const earnedFloods = mergedObject[serverObj].earned && mergedObject[serverObj].earned.floods
+      && `${mergedObject[serverObj].earned.floods.length} floods for ${mergedObject[serverObj].earned.floods.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
+    const earnedRains = mergedObject[serverObj].earned && mergedObject[serverObj].earned.rains
+      && `${mergedObject[serverObj].earned.rains.length} rains for ${mergedObject[serverObj].earned.rains.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
+    const earnedSoaks = mergedObject[serverObj].earned && mergedObject[serverObj].earned.soaks
+      && `${mergedObject[serverObj].earned.soaks.length} soaks for ${mergedObject[serverObj].earned.soaks.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
+    const earnedHurricanes = mergedObject[serverObj].earned && mergedObject[serverObj].earned.hurricanes
+      && `${mergedObject[serverObj].earned.hurricanes.length} hurricanes for ${mergedObject[serverObj].earned.hurricanes.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
+    const earnedThunders = mergedObject[serverObj].earned && mergedObject[serverObj].earned.thunders
+      && `${mergedObject[serverObj].earned.thunders.length} thunders for ${mergedObject[serverObj].earned.thunders.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
+    const earnedThunderstorms = mergedObject[serverObj].earned && mergedObject[serverObj].earned.thunderstorms
+      && `${mergedObject[serverObj].earned.thunderstorms.length} thunderstorms for ${mergedObject[serverObj].earned.thunderstorms.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
+    const earnedReactDrops = mergedObject[serverObj].earned && mergedObject[serverObj].earned.reactdrops
+      && `${mergedObject[serverObj].earned.reactdrops.length} reactdrops for ${mergedObject[serverObj].earned.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
+    const serverString = `_**${serverObj}**_\n\n
+
+${mergedObject[serverObj].spend ? '_Spend_\n' : ''}
+${spendRains ? `Rains: ${spendRains}\n` : ''}${spendFloods ? `Floods: ${spendFloods}\n` : ''}${spendSoaks ? `Soaks: ${spendSoaks}\n` : ''}${spendHurricanes ? `Hurricanes: ${spendHurricanes}\n` : ''}${spendThunders ? `Thunders: ${spendThunders}\n` : ''}${spendThunderstorms ? `Thunderstorms: ${spendThunderstorms}\n` : ''}${spendReactDrops ? `ReactDrops: ${spendReactDrops}\n` : ''}
+  
+${mergedObject[serverObj].earned ? '_Earned_\n' : ''}
+${earnedRains ? `Rains: ${earnedRains}\n` : ''}${earnedFloods ? `Floods: ${earnedFloods}\n` : ''}${earnedSoaks ? `Soaks: ${earnedSoaks}\n` : ''}${earnedHurricanes ? `Hurricanes: ${earnedHurricanes}\n` : ''}${earnedThunders ? `Thunders: ${earnedThunders}\n` : ''}${earnedThunderstorms ? `Thunderstorms: ${earnedThunderstorms}\n` : ''}${earnedReactDrops ? `ReactDrops: ${earnedReactDrops}\n` : ''}`;
+    await message.author.send({ embeds: [statsMessage(message, serverString)] });
+    // await message.channel.send(serverString);
   }
 
   let activity;
