@@ -40,7 +40,7 @@ module.exports = {
     exampleAddress: '123',
   },
   fee: {
-    withdrawal: 1e7, // 50% goes to faucet, this has to be atleast double the transaction fee
+    withdrawal: 1e7, // 50% goes to faucet, this has to be atleast double the transaction
   },
   faucet: 1, // percentage of total per claim
   min: {
