@@ -33,6 +33,8 @@ import settings from "./config/settings";
 
 import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";
+import { processWithdrawal } from "./services/processWithdrawals";
+
 import { consolidatePirate } from "./helpers/pirate/consolidate";
 
 const socketIo = require("socket.io");
@@ -226,6 +228,10 @@ server.listen(port);
 updatePrice();
 const schedulePriceUpdate = schedule.scheduleJob('*/10 * * * *', () => {
   updatePrice();
+});
+
+const scheduleWithdrawal = schedule.scheduleJob('*/2 * * * *', () => { // Process a withdrawal every 2 minutes
+  processWithdrawal(telegramClient, discordClient);
 });
 
 console.log('server listening on:', port);
