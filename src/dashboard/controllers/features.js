@@ -115,7 +115,7 @@ export const addFeature = async (req, res, next) => {
   if (req.body.server) {
     featureOptions.groupId = Number(req.body.server);
   }
-  if (req.body.channel) {
+  if (req.body.channel && req.body.channel !== 'all') {
     featureOptions.channelId = req.body.channel;
   }
 
@@ -138,7 +138,7 @@ export const addFeature = async (req, res, next) => {
       type: 'local',
       name: req.body.feature,
       groupId: req.body.server,
-      channelId: req.body.channel ? req.body.channel : null,
+      channelId: req.body.channel && req.body.channel !== 'all' ? req.body.channel : null,
       min: amount,
       enabled: req.body.enabled === 'enable',
     });

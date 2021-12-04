@@ -248,6 +248,40 @@ export const depositAddressMessage = (userId, user) => {
 
   return result;
 };
+
+export const featureDisabledChannelMessage = (name) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(name)
+    .setDescription(`This Feature has been disabled for this channel`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
+export const featureDisabledServerMessage = (name) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(name)
+    .setDescription(`This Feature has been disabled for this server`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
+export const featureDisabledGlobalMessage = (name) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(name)
+    .setDescription(`This Feature has been disabled`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
 export const tipSuccessMessage = (message, listOfUsersRained, amount, type) => {
   const userText = listOfUsersRained.join(", ");
   const result = new MessageEmbed()

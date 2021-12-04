@@ -15,41 +15,23 @@ import {
 
 import { updateDiscordChannel } from '../controllers/discord/channel';
 
-import {
-  updateDiscordGroup,
-} from '../controllers/discord/group';
+import { updateDiscordGroup } from '../controllers/discord/group';
 
-import {
-  discordCoinInfo,
-} from '../controllers/discord/info';
+import { discordCoinInfo } from '../controllers/discord/info';
 
-import {
-  discordSoak,
-} from '../controllers/discord/soak';
+import { discordSoak } from '../controllers/discord/soak';
 
-import {
-  discordThunder,
-} from '../controllers/discord/thunder';
+import { discordThunder } from '../controllers/discord/thunder';
 
-import {
-  discordThunderStorm,
-} from '../controllers/discord/thunderstorm';
+import { discordThunderStorm } from '../controllers/discord/thunderstorm';
 
-import {
-  discordHurricane,
-} from '../controllers/discord/hurricane';
+import { discordHurricane } from '../controllers/discord/hurricane';
 
-import {
-  discordFaucetClaim,
-} from '../controllers/discord/faucet';
+import { discordFaucetClaim } from '../controllers/discord/faucet';
 
-import {
-  setIgnoreMe,
-} from '../controllers/discord/ignore';
+import { setIgnoreMe } from '../controllers/discord/ignore';
 
-import {
-  discordHelp,
-} from '../controllers/discord/help';
+import { discordHelp } from '../controllers/discord/help';
 
 import {
   limitReactDrop,
@@ -73,9 +55,7 @@ import {
   limitThunderStorm,
 } from '../helpers/rateLimit';
 
-import {
-  discordReactDrop,
-} from '../controllers/discord/reactdrop';
+import { discordReactDrop } from '../controllers/discord/reactdrop';
 
 import {
   discordUserBannedMessage,
@@ -87,6 +67,7 @@ import { discordStats } from '../controllers/discord/stats';
 import { discordPublicStats } from '../controllers/discord/publicstats';
 import { discordLeaderboard } from '../controllers/discord/leaderboard';
 import settings from '../config/settings';
+import { discordSettings } from '../controllers/discord/settings';
 
 config();
 
@@ -131,8 +112,11 @@ export const discordRouter = (discordClient, io) => {
     const filteredMessageDiscord = preFilteredMessageDiscord.filter((el) => el !== '');
 
     if (filteredMessageDiscord.length > 1 && filteredMessageDiscord[1].startsWith('<@!')) {
+      const setting = await discordSettings(message, 'tip', groupTask.id, channelTask.id);
+      await queue.add(() => setting);
+      if (!setting) return;
       const limited = await limitTip(message);
-      // await queue.add(() => limited);
+      await queue.add(() => limited);
       const userToTipId = filteredMessageDiscord[1].substring(0, filteredMessageDiscord[1].length - 1).substring(3);
       const task = await tipRunesToDiscordUser(message, filteredMessageDiscord, userToTipId, io, groupTask, channelTask);
       await queue.add(() => task);
@@ -189,6 +173,9 @@ export const discordRouter = (discordClient, io) => {
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'faucet') {
+      const setting = await discordSettings(message, 'faucet', groupTask.id, channelTask.id);
+      await queue.add(() => setting);
+      if (!setting) return;
       const limited = await limitFaucet(message);
       // await queue.add(() => limited);
       const task = await discordFaucetClaim(message, io, groupTask, channelTask);
@@ -202,6 +189,9 @@ export const discordRouter = (discordClient, io) => {
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'withdraw') {
+      const setting = await discordSettings(message, 'withdraw', groupTask.id, channelTask.id);
+      await queue.add(() => setting);
+      if (!setting) return;
       const limited = await limitWithdraw(message);
       // await queue.add(() => limited);
       const task = await withdrawDiscordCreate(message, filteredMessageDiscord, io);
@@ -209,6 +199,9 @@ export const discordRouter = (discordClient, io) => {
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'rain') {
+      const setting = await discordSettings(message, 'rain', groupTask.id, channelTask.id);
+      await queue.add(() => setting);
+      if (!setting) return;
       const limited = await limitRain(message);
       // await queue.add(() => limited);
       const task = await discordRain(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
@@ -216,6 +209,9 @@ export const discordRouter = (discordClient, io) => {
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'flood') {
+      const setting = await discordSettings(message, 'flood', groupTask.id, channelTask.id);
+      await queue.add(() => setting);
+      if (!setting) return;
       const limited = await limitFlood(message);
       // await queue.add(() => limited);
       const task = await discordFlood(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
@@ -223,6 +219,9 @@ export const discordRouter = (discordClient, io) => {
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'thunder') {
+      const setting = await discordSettings(message, 'thunder', groupTask.id, channelTask.id);
+      await queue.add(() => setting);
+      if (!setting) return;
       const limited = await limitThunder(message);
       // await queue.add(() => limited);
       const task = await discordThunder(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
@@ -230,6 +229,9 @@ export const discordRouter = (discordClient, io) => {
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'thunderstorm') {
+      const setting = await discordSettings(message, 'thunderstorm', groupTask.id, channelTask.id);
+      await queue.add(() => setting);
+      if (!setting) return;
       const limited = await limitThunderStorm(message);
       // await queue.add(() => limited);
       const task = await discordThunderStorm(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
@@ -237,6 +239,9 @@ export const discordRouter = (discordClient, io) => {
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'hurricane') {
+      const setting = await discordSettings(message, 'hurricane', groupTask.id, channelTask.id);
+      await queue.add(() => setting);
+      if (!setting) return;
       const limited = await limitHurricane(message);
       // await queue.add(() => limited);
       const task = await discordHurricane(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
@@ -244,6 +249,9 @@ export const discordRouter = (discordClient, io) => {
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'soak') {
+      const setting = await discordSettings(message, 'soak', groupTask.id, channelTask.id);
+      await queue.add(() => setting);
+      if (!setting) return;
       const limited = await limitSoak(message);
       // await queue.add(() => limited);
       const task = await discordSoak(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
@@ -251,6 +259,9 @@ export const discordRouter = (discordClient, io) => {
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'sleet') {
+      const setting = await discordSettings(message, 'sleet', groupTask.id, channelTask.id);
+      await queue.add(() => setting);
+      if (!setting) return;
       const limited = await limitSleet(message);
       // await queue.add(() => limited);
       const task = await discordSleet(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
@@ -258,6 +269,9 @@ export const discordRouter = (discordClient, io) => {
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'reactdrop') {
+      const setting = await discordSettings(message, 'reactdrop', groupTask.id, channelTask.id);
+      await queue.add(() => setting);
+      if (!setting) return;
       const limited = await limitReactDrop(message);
       // await queue.add(() => limited);
       if (!limited) {
