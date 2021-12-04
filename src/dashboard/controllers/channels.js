@@ -24,15 +24,19 @@ export const banChannel = async (req, res, next) => {
 
 export const fetchChannels = async (req, res, next) => {
   console.log('fetcChannels_____________________________');
-  const userOptions = {};
+  console.log(req.body);
+  const channelOptions = {};
   if (req.body.id !== '') {
-    userOptions.id = Number(req.body.id);
+    channelOptions.id = Number(req.body.id);
   }
   if (req.body.channelId !== '') {
-    userOptions.groupId = req.body.channelId;
+    channelOptions.channelId = req.body.channelId;
   }
   if (req.body.channelName !== '') {
-    userOptions.channelName = req.body.channelName;
+    channelOptions.channelName = req.body.channelName;
+  }
+  if (req.body.serverId !== 'all') {
+    channelOptions.groupId = req.body.serverId;
   }
 
   const options = {
@@ -40,7 +44,7 @@ export const fetchChannels = async (req, res, next) => {
       ['id', 'DESC'],
     ],
     limit: 300,
-    where: userOptions,
+    where: channelOptions,
     include: [
       {
         model: db.group,

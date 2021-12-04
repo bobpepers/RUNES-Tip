@@ -18,6 +18,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    min: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      defaultValue: 1000000,
+    },
     enabled: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -34,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
 
   FeaturesModel.associate = (model) => {
     FeaturesModel.belongsTo(model.group);
-    FeaturesModel.hasMany(model.channel);
+    FeaturesModel.belongsTo(model.channel);
   };
 
   return FeaturesModel;

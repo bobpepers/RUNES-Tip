@@ -60,6 +60,7 @@ module.exports = (sequelize, DataTypes) => {
     GroupModel.hasMany(model.thundertip);
     GroupModel.hasMany(model.thunderstormtip);
     GroupModel.hasMany(model.hurricanetip);
+    GroupModel.hasMany(model.features);
   };
 
   return GroupModel;

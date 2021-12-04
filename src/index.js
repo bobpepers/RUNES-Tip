@@ -150,7 +150,7 @@ server.listen(port);
 (async function () {
   await telegramClient.launch();
   await discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
-  await createFaucet();
+  await initDatabaseRecords();
   if (settings.coin.name === 'Runebase') {
     await startRunebaseSync(discordClient, telegramClient);
     await patchRunebaseDeposits();

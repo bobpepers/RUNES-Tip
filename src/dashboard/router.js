@@ -25,7 +25,12 @@ import { fetchNodeStatus } from './controllers/status';
 import { fetchWithdrawals } from './controllers/withdrawals';
 
 import { fetchActivity } from './controllers/activity';
-import { fetchFeatures } from './controllers/features';
+import {
+  fetchFeatures,
+  addFeature,
+  removeFeature,
+  updateFeature,
+} from './controllers/features';
 
 import {
   resetPassword,
@@ -107,9 +112,7 @@ export const dashboardRouter = (app, io) => {
         });
       } else {
         res.status(401).send({
-          error: {
-            message: "Error",
-          },
+          error: "ERROR",
         });
       }
     },
@@ -129,9 +132,7 @@ export const dashboardRouter = (app, io) => {
         });
       } else {
         res.status(401).send({
-          error: {
-            message: "Error",
-          },
+          error: "ERROR",
         });
       }
     },
@@ -148,6 +149,54 @@ export const dashboardRouter = (app, io) => {
       if (res.locals.server) {
         res.json({
           server: res.locals.server,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/feature/remove',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    removeFeature,
+    (req, res) => {
+      if (res.locals.error) {
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      } else if (res.locals.feature) {
+        res.json({
+          feature: res.locals.feature,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/feature/add',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    addFeature,
+    (req, res) => {
+      if (res.locals.error) {
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      } else if (res.locals.feature) {
+        res.json({
+          feature: res.locals.feature,
         });
       } else {
         res.status(401).send({
