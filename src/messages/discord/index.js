@@ -340,7 +340,7 @@ export const walletNotFoundMessage = (message, title) => {
   return result;
 };
 
-export const minimumMessage = (message, type) => {
+export const minimumMessage = (message, type, min) => {
   let minAmount;
   if (type === 'Sleet') {
     minAmount = settings.min.discord.sleet;
@@ -375,7 +375,7 @@ export const minimumMessage = (message, type) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle(type)
-    .setDescription(`<@${message.author.id}>, Minimum ${type} is ${Number(minAmount) / 1e8} ${settings.coin.ticker}`)
+    .setDescription(`<@${message.author.id}>, Minimum ${type} is ${min / 1e8} ${settings.coin.ticker}`)
     .setTimestamp()
     .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
 
@@ -599,11 +599,11 @@ export const invalidAmountMessage = (message, title) => {
   return result;
 };
 
-export const minimumWithdrawalMessage = (message) => {
+export const minimumWithdrawalMessage = (message, min) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Withdraw')
-    .setDescription(`<@${message.author.id}>, Minimum Withdrawal is ${Number(settings.min.withdrawal) / 1e8} ${settings.coin.ticker}`)
+    .setDescription(`<@${message.author.id}>, Minimum Withdrawal is ${min / 1e8} ${settings.coin.ticker}`)
     .setTimestamp()
     .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
 

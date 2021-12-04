@@ -8,7 +8,6 @@ import {
   AfterThunderSuccess,
   NotInDirectMessage,
 } from '../../messages/discord';
-import settings from '../../config/settings';
 
 import _ from "lodash";
 
@@ -16,7 +15,15 @@ import BigNumber from "bignumber.js";
 import { Transaction, Op } from "sequelize";
 import logger from "../../helpers/logger";
 
-export const discordThunder = async (discordClient, message, filteredMessage, io, groupTask, channelTask) => {
+export const discordThunder = async (
+  discordClient, 
+  message, 
+  filteredMessage, 
+  io, 
+  groupTask, 
+  channelTask,
+  setting,
+  ) => {
   if (!groupTask || !channelTask) {
     await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
     return;
@@ -105,7 +112,7 @@ export const discordThunder = async (discordClient, message, filteredMessage, io
     } else {
       amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
     }
-    if (amount < Number(settings.min.discord.thunder)) {
+    if (amount < setting.min) {
       activity = await db.activity.create({
         type: 'thunder_f',
         spenderId: user.id,

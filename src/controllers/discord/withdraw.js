@@ -17,7 +17,7 @@ import logger from "../../helpers/logger";
 /**
  * Create Withdrawal
  */
-export const withdrawDiscordCreate = async (message, filteredMessage) => {
+export const withdrawDiscordCreate = async (message, filteredMessage, io, setting) => {
   console.log(filteredMessage);
   logger.info(`Start Withdrawal Request: ${message.author.id}-${message.author.username}`);
   await db.sequelize.transaction({
@@ -53,8 +53,8 @@ export const withdrawDiscordCreate = async (message, filteredMessage) => {
       amount = new BigNumber(filteredMessage[3]).times(1e8).toNumber();
     }
 
-    if (amount < Number(settings.min.withdrawal)) { // smaller then 2 RUNES
-      await message.author.send({ embeds: [minimumWithdrawalMessage(message)] });
+    if (amount < setting.min) { // smaller then 2 RUNES
+      await message.author.send({ embeds: [minimumWithdrawalMessage(message, setting.min)] });
     }
 
     if (amount % 1 !== 0) {
@@ -75,7 +75,7 @@ export const withdrawDiscordCreate = async (message, filteredMessage) => {
     if (!isValidAddress) {
       await message.author.send({ embeds: [invalidAddressMessage(message)] });
     }
-    if (amount >= Number(settings.min.withdrawal) && amount % 1 === 0 && isValidAddress) {
+    if (amount >= setting.min && amount % 1 === 0 && isValidAddress) {
       const user = await db.user.findOne({
         where: {
           user_id: `discord-${message.author.id}`,

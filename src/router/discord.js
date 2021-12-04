@@ -80,15 +80,19 @@ export const discordRouter = (discordClient, io) => {
 
   discordClient.on("messageCreate", async (message) => {
     let groupTask;
+    let groupTaskId;
     let channelTask;
+    let channelTaskId;
     let lastSeenDiscordTask;
     if (!message.author.bot) {
       const walletExists = await createUpdateDiscordUser(message);
       await queue.add(() => walletExists);
       groupTask = await updateDiscordGroup(discordClient, message);
       await queue.add(() => groupTask);
+      groupTaskId = groupTask && groupTask.id;
       channelTask = await updateDiscordChannel(discordClient, message, groupTask);
       await queue.add(() => channelTask);
+      channelTaskId = channelTask && channelTask.id;
       lastSeenDiscordTask = await updateDiscordLastSeen(discordClient, message);
       await queue.add(() => lastSeenDiscordTask);
     }
@@ -112,13 +116,21 @@ export const discordRouter = (discordClient, io) => {
     const filteredMessageDiscord = preFilteredMessageDiscord.filter((el) => el !== '');
 
     if (filteredMessageDiscord.length > 1 && filteredMessageDiscord[1].startsWith('<@!')) {
-      const setting = await discordSettings(message, 'tip', groupTask.id, channelTask.id);
+      const setting = await discordSettings(message, 'tip', groupTaskId, channelTaskId);
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitTip(message);
       await queue.add(() => limited);
       const userToTipId = filteredMessageDiscord[1].substring(0, filteredMessageDiscord[1].length - 1).substring(3);
-      const task = await tipRunesToDiscordUser(message, filteredMessageDiscord, userToTipId, io, groupTask, channelTask);
+      const task = await tipRunesToDiscordUser(
+        message,
+        filteredMessageDiscord,
+        userToTipId,
+        io,
+        groupTask,
+        channelTask,
+        setting,
+      );
       await queue.add(() => task);
     }
 
@@ -173,7 +185,12 @@ export const discordRouter = (discordClient, io) => {
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'faucet') {
-      const setting = await discordSettings(message, 'faucet', groupTask.id, channelTask.id);
+      const setting = await discordSettings(
+        message,
+        'faucet',
+        groupTaskId,
+        channelTaskId,
+      );
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitFaucet(message);
@@ -189,93 +206,155 @@ export const discordRouter = (discordClient, io) => {
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'withdraw') {
-      const setting = await discordSettings(message, 'withdraw', groupTask.id, channelTask.id);
+      const setting = await discordSettings(message, 'withdraw', groupTaskId, channelTaskId);
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitWithdraw(message);
       // await queue.add(() => limited);
-      const task = await withdrawDiscordCreate(message, filteredMessageDiscord, io);
+      const task = await withdrawDiscordCreate(message, filteredMessageDiscord, io, setting);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'rain') {
-      const setting = await discordSettings(message, 'rain', groupTask.id, channelTask.id);
+      const setting = await discordSettings(message, 'rain', groupTaskId, channelTaskId);
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitRain(message);
       // await queue.add(() => limited);
-      const task = await discordRain(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
+      const task = await discordRain(
+        discordClient,
+        message,
+        filteredMessageDiscord,
+        io,
+        groupTask,
+        channelTask,
+        setting,
+      );
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'flood') {
-      const setting = await discordSettings(message, 'flood', groupTask.id, channelTask.id);
+      const setting = await discordSettings(message, 'flood', groupTaskId, channelTaskId);
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitFlood(message);
       // await queue.add(() => limited);
-      const task = await discordFlood(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
+      const task = await discordFlood(
+        discordClient,
+        message,
+        filteredMessageDiscord,
+        io,
+        groupTask,
+        channelTask,
+        setting,
+      );
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'thunder') {
-      const setting = await discordSettings(message, 'thunder', groupTask.id, channelTask.id);
+      const setting = await discordSettings(message, 'thunder', groupTaskId, channelTaskId);
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitThunder(message);
       // await queue.add(() => limited);
-      const task = await discordThunder(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
+      const task = await discordThunder(
+        discordClient,
+        message,
+        filteredMessageDiscord,
+        io,
+        groupTask,
+        channelTask,
+        setting,
+      );
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'thunderstorm') {
-      const setting = await discordSettings(message, 'thunderstorm', groupTask.id, channelTask.id);
+      const setting = await discordSettings(message, 'thunderstorm', groupTaskId, channelTaskId);
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitThunderStorm(message);
       // await queue.add(() => limited);
-      const task = await discordThunderStorm(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
+      const task = await discordThunderStorm(
+        discordClient,
+        message,
+        filteredMessageDiscord,
+        io,
+        groupTask,
+        channelTask,
+        setting,
+      );
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'hurricane') {
-      const setting = await discordSettings(message, 'hurricane', groupTask.id, channelTask.id);
+      const setting = await discordSettings(message, 'hurricane', groupTaskId, channelTaskId);
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitHurricane(message);
       // await queue.add(() => limited);
-      const task = await discordHurricane(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
+      const task = await discordHurricane(
+        discordClient,
+        message,
+        filteredMessageDiscord,
+        io,
+        groupTask,
+        channelTask,
+        setting,
+      );
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'soak') {
-      const setting = await discordSettings(message, 'soak', groupTask.id, channelTask.id);
+      const setting = await discordSettings(message, 'soak', groupTaskId, channelTaskId);
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitSoak(message);
       // await queue.add(() => limited);
-      const task = await discordSoak(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
+      const task = await discordSoak(
+        discordClient,
+        message,
+        filteredMessageDiscord,
+        io,
+        groupTask,
+        channelTask,
+        setting,
+      );
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'sleet') {
-      const setting = await discordSettings(message, 'sleet', groupTask.id, channelTask.id);
+      const setting = await discordSettings(message, 'sleet', groupTaskId, channelTaskId);
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitSleet(message);
       // await queue.add(() => limited);
-      const task = await discordSleet(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask);
+      const task = await discordSleet(
+        discordClient,
+        message,
+        filteredMessageDiscord,
+        io,
+        groupTask,
+        channelTask,
+        setting,
+      );
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'reactdrop') {
-      const setting = await discordSettings(message, 'reactdrop', groupTask.id, channelTask.id);
+      const setting = await discordSettings(message, 'reactdrop', groupTaskId, channelTaskId);
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitReactDrop(message);
       // await queue.add(() => limited);
       if (!limited) {
-        const task = await discordReactDrop(discordClient, message, filteredMessageDiscord, io);
+        const task = await discordReactDrop(
+          discordClient,
+          message,
+          filteredMessageDiscord,
+          io,
+          setting,
+        );
         await queue.add(() => task);
       }
     }

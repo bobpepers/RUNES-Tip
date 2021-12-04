@@ -10,10 +10,17 @@ import {
   AfterSuccessMessage,
   NotInDirectMessage,
 } from '../../messages/discord';
-import settings from '../../config/settings';
 import logger from "../../helpers/logger";
 
-export const discordFlood = async (discordClient, message, filteredMessage, io, groupTask, channelTask) => {
+export const discordFlood = async (
+  discordClient,
+  message,
+  filteredMessage,
+  io,
+  groupTask,
+  channelTask,
+  setting,
+) => {
   if (!groupTask || !channelTask) {
     await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
     return;
@@ -104,7 +111,7 @@ export const discordFlood = async (discordClient, message, filteredMessage, io, 
     } else {
       amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
     }
-    if (amount < Number(settings.min.discord.flood)) {
+    if (amount < setting.min) {
       activity = await db.activity.create({
         type: 'flood_f',
         spenderId: user.id,

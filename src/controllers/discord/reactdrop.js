@@ -429,7 +429,13 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop, io) => 
   });
 };
 
-export const discordReactDrop = async (discordClient, message, filteredMessage, io) => {
+export const discordReactDrop = async (
+  discordClient,
+  message,
+  filteredMessage,
+  io,
+  setting,
+) => {
   let activity;
   let user;
   await db.sequelize.transaction({
@@ -504,7 +510,7 @@ export const discordReactDrop = async (discordClient, message, filteredMessage, 
         transaction: t,
       });
       await message.channel.send({ embeds: [invalidAmountMessage(message, 'ReactDrop')] });
-    } else if (amount < Number(settings.min.discord.reactdrop)) {
+    } else if (amount < setting.min) {
       activity = await db.activity.create({
         type: 'reactdrop_f',
         spenderId: user.id,
@@ -513,7 +519,7 @@ export const discordReactDrop = async (discordClient, message, filteredMessage, 
         transaction: t,
       });
       await message.channel.send({ embeds: [minimumMessage(message, 'ReactDrop')] });
-    } else if (amount >= Number(settings.min.discord.reactdrop) && amount % 1 === 0) {
+    } else if (amount >= setting.min && amount % 1 === 0) {
       if (user) {
         if (amount > user.wallet.available) {
           activity = await db.activity.create({

@@ -19,7 +19,15 @@ import BigNumber from "bignumber.js";
 import { Transaction, Op } from "sequelize";
 import logger from "../../helpers/logger";
 
-export const discordThunderStorm = async (discordClient, message, filteredMessage, io, groupTask, channelTask) => {
+export const discordThunderStorm = async (
+  discordClient,
+  message,
+  filteredMessage,
+  io,
+  groupTask,
+  channelTask,
+  setting,
+) => {
   if (!groupTask || !channelTask) {
     await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
     return;
@@ -120,7 +128,7 @@ export const discordThunderStorm = async (discordClient, message, filteredMessag
     } else {
       amount = new BigNumber(filteredMessage[3]).times(1e8).toNumber();
     }
-    if (amount < Number(settings.min.discord.thunderstorm)) {
+    if (amount < setting.min) {
       activity = await db.activity.create({
         type: 'thunderstorm_f',
         spenderId: user.id,

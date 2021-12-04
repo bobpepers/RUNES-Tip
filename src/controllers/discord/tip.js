@@ -6,20 +6,24 @@ import db from '../../models';
 import {
   invalidAmountMessage,
   insufficientBalanceMessage,
-  walletNotFoundMessage,
   minimumMessage,
-  AfterThunderStormSuccess,
-  thunderstormMaxUserAmountMessage,
-  thunderstormInvalidUserAmount,
   tipSuccessMessage,
   NotInDirectMessage,
   userNotFoundMessage,
 } from '../../messages/discord';
-import settings from '../../config/settings';
+// import settings from '../../config/settings';
 
 import logger from "../../helpers/logger";
 
-export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTip, io, groupTask, channelTask) => {
+export const tipRunesToDiscordUser = async (
+  message,
+  filteredMessage,
+  userIdToTip,
+  io,
+  groupTask,
+  channelTask,
+  setting,
+) => {
   if (!groupTask || !channelTask) {
     await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] });
     return;
@@ -118,7 +122,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
     } else {
       amount = new BigNumber(filteredMessage[AmountPosition]).times(1e8).toNumber();
     }
-    if (amount < Number(settings.min.discord.tip)) {
+    if (amount < setting.min) {
       activity = await db.activity.create({
         type: 'tip_f',
         spenderId: user.id,
@@ -126,7 +130,7 @@ export const tipRunesToDiscordUser = async (message, filteredMessage, userIdToTi
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      await message.channel.send({ embeds: [minimumMessage(message, 'Tip')] });
+      await message.channel.send({ embeds: [minimumMessage(message, 'Tip', setting.min)] });
 
       return;
     }
