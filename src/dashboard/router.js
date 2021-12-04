@@ -25,6 +25,7 @@ import { fetchNodeStatus } from './controllers/status';
 import { fetchWithdrawals } from './controllers/withdrawals';
 
 import { fetchActivity } from './controllers/activity';
+import { fetchFeatures } from './controllers/features';
 
 import {
   resetPassword,
@@ -135,6 +136,7 @@ export const dashboardRouter = (app, io) => {
       }
     },
   );
+
   app.post(
     '/api/ban/server',
     IsAuthenticated,
@@ -146,6 +148,28 @@ export const dashboardRouter = (app, io) => {
       if (res.locals.server) {
         res.json({
           server: res.locals.server,
+        });
+      } else {
+        res.status(401).send({
+          error: {
+            message: "Error",
+          },
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/features',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    fetchFeatures,
+    (req, res) => {
+      if (res.locals.features) {
+        res.json({
+          features: res.locals.features,
         });
       } else {
         res.status(401).send({

@@ -20,7 +20,7 @@ import { router } from "./router";
 import { dashboardRouter } from "./dashboard/router";
 
 import { updatePrice } from "./helpers/updatePrice";
-import { createFaucet } from "./helpers/faucet";
+import { initDatabaseRecords } from "./helpers/initDatabaseRecords";
 
 // import logger from "./helpers/logger";
 
@@ -104,8 +104,9 @@ const sockets = {};
 io.on("connection", async (socket) => {
   const userId = socket.request.session.passport ? socket.request.session.passport.user : '';
   if (
-    socket.request.user.role === 4
-    || socket.request.user.role === 8
+    socket.request.user
+    && (socket.request.user.role === 4
+      || socket.request.user.role === 8)
   ) {
     console.log('joined admin socket');
     socket.join('admin');
