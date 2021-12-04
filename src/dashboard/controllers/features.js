@@ -27,6 +27,18 @@ export const updateFeature = async (req, res, next) => {
     where: {
       id: updatedFeature.id,
     },
+    include: [
+      {
+        model: db.channel,
+        as: 'channel',
+        required: false,
+      },
+      {
+        model: db.group,
+        as: 'group',
+        required: false,
+      },
+    ],
   });
   next();
 };
