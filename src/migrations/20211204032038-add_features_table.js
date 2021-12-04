@@ -1,6 +1,6 @@
 module.exports = {
   up: async (queryInterface, DataTypes) => {
-    await queryInterface.createTable('tiptip', {
+    await queryInterface.createTable('features', {
       id: {
         type: DataTypes.BIGINT,
         allowNull: false,
@@ -49,6 +49,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, DataTypes) => {
-    await queryInterface.dropTable('tiptip');
+    await queryInterface.dropTable('features');
   },
 };
