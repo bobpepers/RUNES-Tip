@@ -181,6 +181,29 @@ export const dashboardRouter = (app, io) => {
       }
     },
   );
+  app.post(
+    '/api/feature/update',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    updateFeature,
+    (req, res) => {
+      if (res.locals.error) {
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      } else if (res.locals.feature) {
+        res.json({
+          feature: res.locals.feature,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
 
   app.post(
     '/api/feature/add',

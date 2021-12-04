@@ -5,8 +5,29 @@ import db from '../../models';
 const { Op } = require('sequelize');
 
 export const updateFeature = async (req, res, next) => {
-  console.log(req.body);
-
+  const amount = new BigNumber(req.body.min).times(1e8).toNumber();
+  if (amount % 1 !== 0) {
+    res.locals.error = "invalid number";
+    next();
+  }
+  if (amount < 1e4) {
+    res.locals.error = `minimum amount is ${1e4 / 1e8}`;
+    next();
+  }
+  const feature = await db.features.findOne({
+    where: {
+      id: req.body.id,
+    },
+  });
+  const updatedFeature = await feature.update({
+    min: amount,
+    enabled: req.body.enabled,
+  });
+  res.locals.feature = await db.features.findOne({
+    where: {
+      id: updatedFeature.id,
+    },
+  });
   next();
 };
 
