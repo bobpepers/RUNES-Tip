@@ -92,7 +92,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io, set
       await ctx.reply(insufficientBalanceMessage());
       return;
     }
-    if (user.wallet.available >= amount) {
+    if (user.wallet.available >= Number(amount)) {
       const group = await db.group.findOne({
         where: {
           groupId: `telegram-${ctx.update.message.chat.id}`,

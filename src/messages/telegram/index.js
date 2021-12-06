@@ -150,9 +150,9 @@ ${settings.bot.command.telegram} price
 <code>Display current ${settings.coin.ticker} price</code>
     
       
-${settings.bot.command.telegram} exchanges
-/exchanges
-<code>Display list of exchanges to trade ${settings.coin.ticker}</code>
+${settings.bot.command.telegram} info
+/info
+<code>Displays coin info</code>
     
     
 ${settings.bot.command.telegram} balance
@@ -201,55 +201,38 @@ ${settings.bot.command.telegram} referral top
   return result;
 };
 
-export const exchangeListMessage = () => {
-  const result = `
-<b><u>Exchanges with ${settings.coin.ticker} listed</u></b>
-  
-<b>Bololex</b>
-    
-<pre>RUNES/BTC</pre>
-https://bololex.com/trading/?symbol=RUNES-BTC
-    
-<pre>RUNES/USDT</pre>
-https://bololex.com/trading/?symbol=RUNES-USDT
-  
-<pre>RUNES/DOGE</pre>
-https://bololex.com/trading/?symbol=RUNES-DOGE
-  
-<pre>RUNES/ETH</pre>
-https://bololex.com/trading/?symbol=RUNES-ETH
-  
-<pre>RUNES/BOLO</pre>
-https://bololex.com/trading/?symbol=RUNES-BOLO
-  
-<b>Altmarkets</b>
-    
-<pre>RUNES/DOGE</pre>
-https://v2.altmarkets.io/trading/runesdoge
-    
-<b>TxBit</b>
-    
-<pre>RUNES/BTC</pre>
-https://txbit.io/Trade/RUNES/BTC
-    
-<pre>RUNES/ETH</pre>
-https://txbit.io/Trade/RUNES/ETH
-    
-<b>StakeCenter</b>
-   
-<pre>RUNES/BTC</pre>
-https://stakecenter.co/client/exchange/BTC/RUNES
-    
-<pre>RUNES/LTC</pre>
-https://stakecenter.co/client/exchange/LTC/RUNES
-    
-<pre>RUNES/DOGE</pre>
-https://stakecenter.co/client/exchange/DOGE/RUNES
-    
-<pre>RUNES/RDD</pre>
-https://stakecenter.co/client/exchange/RDD/RUNES
-    
-<b>LocalRunes (any local currency)</b>
-https://www.localrunes.com/`;
+export const InfoMessage = (blockHeight, priceInfo) => {
+  const result = `<b><u>Coin Info</u></b>
+${settings.coin.description}
+
+<b><u>Coin Name</u></b>
+${settings.coin.name}
+
+<b><u>Coin Ticker</u></b>
+${settings.coin.ticker}
+
+<b><u>Current block height</u></b>
+${blockHeight}
+
+<b><u>Website</u></b>
+${settings.coin.website}
+
+<b><u>Github</u></b>
+${settings.coin.github}
+
+<b><u>Block Explorer</u></b>
+${settings.coin.explorer}
+
+<b><u>Discord Server</u></b>
+${settings.coin.discord}
+
+<b><u>Telegram Group</u></b>
+${settings.coin.telegram}
+
+<b><u>Exchanges</u></b>
+${settings.coin.exchanges.join('\n')}
+
+<b><u>Current price</u></b>
+$${priceInfo.price} (source: coinpaprika)`;
   return result;
 };

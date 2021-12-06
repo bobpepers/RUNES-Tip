@@ -6,7 +6,7 @@ import db from '../../models';
 
 export const fetchHelp = async (ctx, io) => {
   if (ctx.update.message.chat.type !== 'private') {
-    await ctx.reply("i have send you a direct message");
+    await ctx.reply("i have sent you a direct message");
   }
 
   ctx.telegram.sendMessage(
@@ -19,7 +19,7 @@ export const fetchHelp = async (ctx, io) => {
           ? [
             [Markup.button.callback('Balance', 'Balance'),
             Markup.button.callback('Price', 'Price')],
-            [Markup.button.callback('Exchanges', 'Exchanges'),
+            [Markup.button.callback('Info', 'Info'),
             Markup.button.callback('Deposit', 'Deposit')],
             [Markup.button.callback('Referral', 'Referral'),
             Markup.button.callback('Referral Top 10', 'ReferralTop')],
@@ -27,7 +27,7 @@ export const fetchHelp = async (ctx, io) => {
           : [
             [Markup.button.callback('Balance', 'Balance'),
             Markup.button.callback('Price', 'Price')],
-            [Markup.button.callback('Exchanges', 'Exchanges'),
+            [Markup.button.callback('Info', 'Info'),
             Markup.button.callback('Deposit', 'Deposit')],
           ],
       ),

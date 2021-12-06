@@ -34,8 +34,8 @@ import {
 import fetchPriceInfo from '../controllers/telegram/price';
 
 import {
-  fetchExchangeList,
-} from '../controllers/telegram/exchanges';
+  fetchInfo,
+} from '../controllers/telegram/info';
 import settings from '../config/settings';
 import { telegramSettings } from '../controllers/telegram/settings';
 
@@ -102,20 +102,20 @@ export const telegramRouter = (telegramClient, io) => {
     })();
   });
 
-  telegramClient.command('exchanges', (ctx) => {
+  telegramClient.command('info', (ctx) => {
     (async () => {
       const groupTask = await updateGroup(ctx);
       await queue.add(() => groupTask);
-      const task = await fetchExchangeList(ctx);
+      const task = await fetchInfo(ctx);
       await queue.add(() => task);
     })();
   });
 
-  telegramClient.action('Exchanges', (ctx) => {
+  telegramClient.action('Info', (ctx) => {
     (async () => {
       const groupTask = await updateGroup(ctx);
       await queue.add(() => groupTask);
-      const task = await fetchExchangeList(ctx);
+      const task = await fetchInfo(ctx);
       await queue.add(() => task);
     })();
   });
@@ -325,11 +325,11 @@ export const telegramRouter = (telegramClient, io) => {
           await queue.add(() => task);
         })();
       }
-      if (filteredMessageTelegram[1] === 'exchanges') {
+      if (filteredMessageTelegram[1] === 'info') {
         (async () => {
           const groupTask = await updateGroup(ctx);
           await queue.add(() => groupTask);
-          const task = await fetchExchangeList(ctx);
+          const task = await fetchInfo(ctx);
           await queue.add(() => task);
         })();
       }
