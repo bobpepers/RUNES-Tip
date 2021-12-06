@@ -61,8 +61,8 @@ export const tipSuccessMessage = (user, amount, findUserToTip) => {
   return result;
 };
 
-export const minimumTipMessage = () => {
-  const result = `Minimum Tip is ${Number(settings.min.telegram.tip) / 1e8} ${settings.coin.ticker}`;
+export const minimumTipMessage = (setting) => {
+  const result = `Minimum Tip is ${Number(setting.min) / 1e8} ${settings.coin.ticker}`;
   return result;
 };
 
@@ -81,8 +81,8 @@ export const rainSuccessMessage = (amount, usersToRain, amountPerUser) => {
   return result;
 };
 
-export const minimumRainMessage = () => {
-  const result = `Minimum Rain is ${Number(settings.min.telegram.rain) / 1e8} ${settings.coin.ticker}`;
+export const minimumRainMessage = (setting) => {
+  const result = `Minimum Rain is ${Number(setting.min) / 1e8} ${settings.coin.ticker}`;
   return result;
 };
 
@@ -129,71 +129,71 @@ export const depositAddressMessage = (telegramUserName, user) => {
 
 export const welcomeMessage = (ctx) => {
   const result = `Welcome ${ctx.update.message.from.username}, we created a wallet for you.
-Type "/${settings.bot.command.telegram} help" for usage info`;
+Type "${settings.bot.command.telegram} help" for usage info`;
   return result;
 };
 
 export const helpMessage = () => {
   const result = `<b>Tipbot Help</b>
       
-/${settings.bot.command.telegram}
+${settings.bot.command.telegram}
 <code>Display this message</code>
     
       
-/${settings.bot.command.telegram} help
+${settings.bot.command.telegram} help
 /help
 <code>Display this message</code>
     
       
-/${settings.bot.command.telegram} price
+${settings.bot.command.telegram} price
 /price
 <code>Display current ${settings.coin.ticker} price</code>
     
       
-/${settings.bot.command.telegram} exchanges
+${settings.bot.command.telegram} exchanges
 /exchanges
 <code>Display list of exchanges to trade ${settings.coin.ticker}</code>
     
     
-/${settings.bot.command.telegram} balance
+${settings.bot.command.telegram} balance
 /balance
 <code>Display wallet balance</code>
     
       
-/${settings.bot.command.telegram} tip [@user] [amount]
+${settings.bot.command.telegram} tip [@user] [amount]
 /tip [@user] [amount]
 <code>Tips the @ mentioned user with the desired amount, e.g.</code>
-/${settings.bot.command.telegram} tip @Bagosan 1.00
+${settings.bot.command.telegram} tip @Bagosan 1.00
 /tip @Bagosan 1.00
     
       
-/${settings.bot.command.telegram} rain [amount]
+${settings.bot.command.telegram} rain [amount]
 /rain [amount]
 <code>Rains the desired amount onto all active users (active time 3 hours), e.g.</code>
-/${settings.bot.command.telegram} rain 1.00
+${settings.bot.command.telegram} rain 1.00
 /rain 1.00
     
       
-/${settings.bot.command.telegram} deposit
+${settings.bot.command.telegram} deposit
 /deposit
 <code>Displays your deposit address</code>
     
       
-/${settings.bot.command.telegram} withdraw [address] [amount]
+${settings.bot.command.telegram} withdraw [address] [amount]
 /withdraw [address] [amount]
 <code>Withdraws the entered amount to a ${settings.coin.ticker} address of your choice, e.g.</code>
-/${settings.bot.command.telegram} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
+${settings.bot.command.telegram} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
 /withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
 <code>Note: Minimal amount to withdraw: ${settings.min.withdrawal / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${settings.fee.withdrawal / 1e8} ${settings.coin.ticker} will be automatically deducted from the amount.</code>
       
 ${settings.coin.name === 'Runebase'
-    && `/${settings.bot.command.telegram} referral
+    && `${settings.bot.command.telegram} referral
 /referral
 <code>Displays your referral count</code>
 <code>Note: We reward members for every 10 new members they add. current reward = 20 ${settings.coin.ticker}</code>
       
     
-/${settings.bot.command.telegram} referral top
+${settings.bot.command.telegram} referral top
 /top
 <code>Displays referral top 10</code>`}     
 `;

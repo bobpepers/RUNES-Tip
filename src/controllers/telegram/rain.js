@@ -11,11 +11,9 @@ import {
   generalErrorMessage,
   groupNotFoundMessage,
 } from '../../messages/telegram';
-import settings from '../../config/settings';
-
 import logger from "../../helpers/logger";
 
-export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => {
+export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io, setting) => {
   let activity;
 
   await db.sequelize.transaction({
@@ -60,7 +58,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => 
       .toFixed(0)
       .toString();
     console.log(amount);
-    if (Number(amount) < Number(settings.min.telegram.rain)) {
+    if (Number(amount) < Number(setting.min)) {
       activity = await db.activity.create({
         type: 'rain_f',
         spenderId: user.id,
@@ -68,7 +66,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io) => 
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      await ctx.reply(minimumRainMessage());
+      await ctx.reply(minimumRainMessage(setting));
       return;
     }
     if (Number(amount) % 1 !== 0) {

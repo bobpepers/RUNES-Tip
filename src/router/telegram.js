@@ -154,10 +154,14 @@ export const telegramRouter = (telegramClient, io) => {
       (async () => {
         const groupTask = await updateGroup(ctx);
         await queue.add(() => groupTask);
+        const groupTaskId = groupTask.id;
+        const setting = await telegramSettings(ctx, 'withdraw', groupTaskId);
+        await queue.add(() => setting);
+        if (!setting) return;
         const tipAmount = filteredMessageTelegram[2];
         const tipTo = filteredMessageTelegram[1];
         if (groupTask) {
-          const task = await tipRunesToUser(ctx, tipTo, tipAmount, telegramClient, runesGroup, io, groupTask);
+          const task = await tipRunesToUser(ctx, tipTo, tipAmount, telegramClient, runesGroup, io, groupTask, setting);
           await queue.add(() => task);
         }
       })();
@@ -177,8 +181,9 @@ export const telegramRouter = (telegramClient, io) => {
         const setting = await telegramSettings(ctx, 'rain', groupTaskId);
         await queue.add(() => setting);
         if (!setting) return;
+        console.log(setting);
         const rainAmount = filteredMessageTelegram[1];
-        const task = await rainRunesToUsers(ctx, rainAmount, telegramClient, runesGroup, io);
+        const task = await rainRunesToUsers(ctx, rainAmount, telegramClient, runesGroup, io, setting);
         await queue.add(() => task);
       })();
     }
@@ -218,9 +223,13 @@ export const telegramRouter = (telegramClient, io) => {
       (async () => {
         const groupTask = await updateGroup(ctx);
         await queue.add(() => groupTask);
+        const groupTaskId = groupTask.id;
+        const setting = await telegramSettings(ctx, 'withdraw', groupTaskId);
+        await queue.add(() => setting);
+        if (!setting) return;
         const withdrawalAddress = filteredMessageTelegram[1];
         const withdrawalAmount = filteredMessageTelegram[2];
-        const task = await withdrawTelegramCreate(ctx, withdrawalAddress, withdrawalAmount, io);
+        const task = await withdrawTelegramCreate(ctx, withdrawalAddress, withdrawalAmount, io, setting);
         await queue.add(() => task);
       })();
     }
@@ -351,9 +360,13 @@ export const telegramRouter = (telegramClient, io) => {
         (async () => {
           const groupTask = await updateGroup(ctx);
           await queue.add(() => groupTask);
+          const groupTaskId = groupTask.id;
+          const setting = await telegramSettings(ctx, 'withdraw', groupTaskId);
+          await queue.add(() => setting);
+          if (!setting) return;
           const withdrawalAddress = filteredMessageTelegram[2];
           const withdrawalAmount = filteredMessageTelegram[3];
-          const task = await withdrawTelegramCreate(ctx, withdrawalAddress, withdrawalAmount, io);
+          const task = await withdrawTelegramCreate(ctx, withdrawalAddress, withdrawalAmount, io, setting);
           await queue.add(() => task);
         })();
       }
@@ -369,10 +382,14 @@ export const telegramRouter = (telegramClient, io) => {
         (async () => {
           const groupTask = await updateGroup(ctx);
           await queue.add(() => groupTask);
+          const groupTaskId = groupTask.id;
+          const setting = await telegramSettings(ctx, 'withdraw', groupTaskId);
+          await queue.add(() => setting);
+          if (!setting) return;
           const tipAmount = filteredMessageTelegram[3];
           const tipTo = filteredMessageTelegram[2];
           if (groupTask) {
-            const task = await tipRunesToUser(ctx, tipTo, tipAmount, telegramClient, runesGroup, io, groupTask);
+            const task = await tipRunesToUser(ctx, tipTo, tipAmount, telegramClient, runesGroup, io, groupTask, setting);
             await queue.add(() => task);
           }
         })();
@@ -386,8 +403,12 @@ export const telegramRouter = (telegramClient, io) => {
         (async () => {
           const groupTask = await updateGroup(ctx);
           await queue.add(() => groupTask);
+          const groupTaskId = groupTask.id;
+          const setting = await telegramSettings(ctx, 'withdraw', groupTaskId);
+          await queue.add(() => setting);
+          if (!setting) return;
           const rainAmount = filteredMessageTelegram[2];
-          const task = await rainRunesToUsers(ctx, rainAmount, telegramClient, runesGroup, io);
+          const task = await rainRunesToUsers(ctx, rainAmount, telegramClient, runesGroup, io, setting);
           await queue.add(() => task);
         })();
       }
@@ -419,7 +440,7 @@ export const telegramRouter = (telegramClient, io) => {
     console.log('found text');
     console.log(ctx.update);
     console.log(ctx.update.message);
-    logger.info(`Chat - ${ctx.update.message.chat.id}: ${ctx.update.message.chat.title} : ${ctx.update.message.from.username}: ${ctx.update.message.text}`);
+    // logger.info(`Chat - ${ctx.update.message.chat.id}: ${ctx.update.message.chat.title} : ${ctx.update.message.from.username}: ${ctx.update.message.text}`);
     (async () => {
       const groupTask = await updateGroup(ctx);
       await queue.add(() => groupTask);
@@ -431,9 +452,8 @@ export const telegramRouter = (telegramClient, io) => {
   });
   telegramClient.on('message', (ctx) => {
     console.log('found message');
-    console.log(ctx.update);
     console.log(ctx.update.message);
-    logger.info(`Chat - ${ctx.update.message.chat.id}: ${ctx.update.message.chat.title} : ${ctx.update.message.from.username}: ${ctx.update.message.text}`);
+    // logger.info(`Chat - ${ctx.update.message.chat.id}: ${ctx.update.message.chat.title} : ${ctx.update.message.from.username}: ${ctx.update.message.text}`);
     (async () => {
       const groupTask = await updateGroup(ctx);
       await queue.add(() => groupTask);

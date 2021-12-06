@@ -14,7 +14,7 @@ import settings from '../../config/settings';
 
 import logger from "../../helpers/logger";
 
-export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io, groupTask) => {
+export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io, groupTask, setting) => {
   let activity;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -43,7 +43,7 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io,
       return;
     }
     const amount = new BigNumber(tipAmount).times(1e8).toNumber();
-    if (amount < Number(settings.min.telegram.tip)) {
+    if (amount < Number(setting.min)) {
       activity = await db.activity.create({
         type: 'tip_f',
         spenderId: user.id,
@@ -51,7 +51,7 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io,
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      ctx.reply(minimumTipMessage());
+      ctx.reply(minimumTipMessage(setting));
       return;
     }
     if (amount % 1 !== 0) {
@@ -98,7 +98,7 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io,
       return;
     }
 
-    if (amount >= Number(settings.min.telegram.tip) && amount % 1 === 0 && findUserToTip) {
+    if (amount >= Number(setting.min) && amount % 1 === 0 && findUserToTip) {
       if (user) {
         if (amount > user.wallet.available) {
           activity = await db.activity.create({
