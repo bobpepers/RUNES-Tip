@@ -18,7 +18,7 @@ export const createUpdateUser = async (ctx) => {
           lock: t.LOCK.UPDATE,
         },
       );
-      console.log(user);
+      // console.log(user);
       if (!user) {
         user = await db.user.create({
           user_id: `telegram-${ctx.update.message.from.id}`,
@@ -176,7 +176,7 @@ export const updateLastSeen = async (ctx) => {
         }
       }
     }
-    console.log(user);
+    // console.log(user);
     if (user) {
       const updatedUser = await user.update(
         {

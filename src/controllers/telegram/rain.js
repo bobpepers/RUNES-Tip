@@ -57,7 +57,6 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io, set
       .times(1e8)
       .toFixed(0)
       .toString();
-    console.log(amount);
     if (Number(amount) < Number(setting.min)) {
       activity = await db.activity.create({
         type: 'rain_f',
@@ -70,7 +69,6 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io, set
       return;
     }
     if (Number(amount) % 1 !== 0) {
-      console.log(3);
       activity = await db.activity.create({
         type: 'rain_f',
         spenderId: user.id,
@@ -224,6 +222,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io, set
           });
           listOfUsersRained.push(`@${rainee.username}`);
           let tipActivity;
+          // eslint-disable-next-line no-await-in-loop
           tipActivity = await db.activity.create({
             amount: Number(amountPerUser),
             type: 'raintip_s',
@@ -262,7 +261,7 @@ export const rainRunesToUsers = async (ctx, rainAmount, bot, runesGroup, io, set
             lock: t.LOCK.UPDATE,
             transaction: t,
           });
-          console.log(tipActivity);
+          // console.log(tipActivity);
           io.to('admin').emit('updateActivity', {
             activity: tipActivity,
           });
