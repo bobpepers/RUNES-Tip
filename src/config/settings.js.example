@@ -13,7 +13,8 @@ module.exports = {
     },
   },
   coin: {
-    name: "Runebase", // Supported names for setting (Runebase, Pirate) // default fallback settings are Runebase
+    setting: "Runebase", // Supported names for setting (Runebase, Pirate, Tokel) // default fallback settings are Runebase
+    name: "Runebase",
     ticker: "RUNES",
     logo: "https://downloads.runebase.io/logo-512x512.png",
     website: "https://www.runebase.io",

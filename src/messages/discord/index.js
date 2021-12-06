@@ -126,6 +126,17 @@ export const minimumTimeReactDropMessage = (message) => {
   return result;
 };
 
+export const maxTimeReactdropMessage = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Reactdrop')
+    .setDescription(`Maxiumum time is 2 weeks`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
 export const ignoreMeMessage = (message) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)

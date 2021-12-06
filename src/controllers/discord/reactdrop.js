@@ -23,6 +23,7 @@ import {
   ReactdropCaptchaMessage,
   AfterReactDropSuccessMessage,
   invalidEmojiMessage,
+  maxTimeReactdropMessage,
 } from '../../messages/discord';
 import db from '../../models';
 import emojiCompact from "../../config/emoji";
@@ -591,6 +592,9 @@ export const discordReactDrop = async (
               });
               await message.channel.send({ embeds: [invalidEmojiMessage(message, 'Reactdrop')] });
             } else {
+              if (Number(cutNumberTime) * 24 * 60 * 60 * 1000 > 1209600000) {
+                await message.channel.send({ embeds: [maxTimeReactdropMessage(message)] });
+              }
               let dateObj = await new Date().getTime();
               if (cutLastTimeLetter === 'd') {
                 dateObj += Number(cutNumberTime) * 24 * 60 * 60 * 1000;

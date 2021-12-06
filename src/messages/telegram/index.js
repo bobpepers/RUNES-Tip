@@ -1,6 +1,14 @@
 /* eslint-disable import/prefer-default-export */
 import settings from '../../config/settings';
 
+export const featureDisabledServerMessage = () => {
+  const result = `This feature has been disabled for this server`;
+  return result;
+};
+export const featureDisabledGlobalMessage = () => {
+  const result = `This feature has been disabled`;
+  return result;
+};
 export const telegramDepositConfirmedMessage = (amount) => {
   const result = `Deposit Confirmed 
 ${amount} ${settings.coin.ticker} has been credited to your wallet`;
@@ -179,7 +187,7 @@ export const helpMessage = () => {
 <code>Note: Minimal amount to withdraw: ${settings.min.withdrawal / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${settings.fee.withdrawal / 1e8} ${settings.coin.ticker} will be automatically deducted from the amount.</code>
       
 ${settings.coin.name === 'Runebase'
-&& `/${settings.bot.command.telegram} referral
+    && `/${settings.bot.command.telegram} referral
 /referral
 <code>Displays your referral count</code>
 <code>Note: We reward members for every 10 new members they add. current reward = 20 ${settings.coin.ticker}</code>

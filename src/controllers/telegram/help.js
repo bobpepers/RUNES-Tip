@@ -12,23 +12,26 @@ export const fetchHelp = async (ctx, io) => {
   ctx.telegram.sendMessage(
     ctx.update.message.from.id,
     helpMessage(),
-    Markup.inlineKeyboard(
-      settings.coin.name === 'Runebase'
-        ? [
-          [Markup.button.callback('Balance', 'Balance'),
-          Markup.button.callback('Price', 'Price')],
-          [Markup.button.callback('Exchanges', 'Exchanges'),
-          Markup.button.callback('Deposit', 'Deposit')],
-          [Markup.button.callback('Referral', 'Referral'),
-          Markup.button.callback('Referral Top 10', 'ReferralTop')],
-        ]
-        : [
-          [Markup.button.callback('Balance', 'Balance'),
-          Markup.button.callback('Price', 'Price')],
-          [Markup.button.callback('Exchanges', 'Exchanges'),
-          Markup.button.callback('Deposit', 'Deposit')],
-        ],
-    ),
+    {
+      parse_mode: 'HTML',
+      ...Markup.inlineKeyboard(
+        settings.coin.setting === 'Runebase'
+          ? [
+            [Markup.button.callback('Balance', 'Balance'),
+            Markup.button.callback('Price', 'Price')],
+            [Markup.button.callback('Exchanges', 'Exchanges'),
+            Markup.button.callback('Deposit', 'Deposit')],
+            [Markup.button.callback('Referral', 'Referral'),
+            Markup.button.callback('Referral Top 10', 'ReferralTop')],
+          ]
+          : [
+            [Markup.button.callback('Balance', 'Balance'),
+            Markup.button.callback('Price', 'Price')],
+            [Markup.button.callback('Exchanges', 'Exchanges'),
+            Markup.button.callback('Deposit', 'Deposit')],
+          ],
+      ),
+    },
   );
   let activity;
   const user = await db.user.findOne({

@@ -37,6 +37,7 @@ import {
   fetchExchangeList,
 } from '../controllers/telegram/exchanges';
 import settings from '../config/settings';
+import { telegramSettings } from '../controllers/telegram/settings';
 
 import logger from "../helpers/logger";
 
@@ -172,6 +173,10 @@ export const telegramRouter = (telegramClient, io) => {
       (async () => {
         const groupTask = await updateGroup(ctx);
         await queue.add(() => groupTask);
+        const groupTaskId = groupTask.id;
+        const setting = await telegramSettings(ctx, 'rain', groupTaskId);
+        await queue.add(() => setting);
+        if (!setting) return;
         const rainAmount = filteredMessageTelegram[1];
         const task = await rainRunesToUsers(ctx, rainAmount, telegramClient, runesGroup, io);
         await queue.add(() => task);
