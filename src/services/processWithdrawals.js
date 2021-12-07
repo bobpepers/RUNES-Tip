@@ -49,9 +49,9 @@ export const processWithdrawal = async (bot, discordClient) => {
       let response;
 
       // Add New Currency here (default fallback is Runebase)
-      if (settings.coin.name === 'Runebase') {
+      if (settings.coin.setting === 'Runebase') {
         response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
-      } else if (settings.coin.name === 'Pirate') {
+      } else if (settings.coin.setting === 'Pirate') {
         const preResponse = await getInstance().zSendMany(
           process.env.PIRATE_MAIN_ADDRESS,
           [{ address: transaction.to_from, amount: amount.toFixed(8) }],

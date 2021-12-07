@@ -154,14 +154,14 @@ server.listen(port);
   await telegramClient.launch();
   await discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
   await initDatabaseRecords();
-  if (settings.coin.name === 'Runebase') {
+  if (settings.coin.setting === 'Runebase') {
     await startRunebaseSync(discordClient, telegramClient);
     await patchRunebaseDeposits();
 
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
       patchRunebaseDeposits();
     });
-  } else if (settings.coin.name === 'Pirate') {
+  } else if (settings.coin.setting === 'Pirate') {
     await startPirateSync(discordClient, telegramClient);
     await patchPirateDeposits();
     await consolidatePirate();

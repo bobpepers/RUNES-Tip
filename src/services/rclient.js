@@ -7,10 +7,10 @@ config();
 let instance;
 
 export function createInstance() {
-  if (settings.coin.name === 'Runebase') {
+  if (settings.coin.setting === 'Runebase') {
     return new Rweb3(`http://${process.env.RPC_USER}:${process.env.RPC_PASS}@localhost:${process.env.RPC_PORT}`);
   }
-  if (settings.coin.name === 'Pirate') {
+  if (settings.coin.setting === 'Pirate') {
     return new ARRRweb3(`http://${process.env.RPC_USER}:${process.env.RPC_PASS}@localhost:${process.env.RPC_PORT}`);
   }
 }

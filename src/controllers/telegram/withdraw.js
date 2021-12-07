@@ -35,9 +35,9 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
 
     // Add new currencies here (default fallback Runebase)
     let isValidAddress = false;
-    if (settings.coin.name === 'Runebase') {
+    if (settings.coin.setting === 'Runebase') {
       isValidAddress = await getInstance().utils.isRunebaseAddress(withdrawalAddress);
-    } else if (settings.coin.name === 'Pirate') {
+    } else if (settings.coin.setting === 'Pirate') {
       isValidAddress = await getInstance().utils.isPirateAddress(withdrawalAddress);
     } else {
       isValidAddress = await getInstance().utils.isRunebaseAddress(withdrawalAddress);

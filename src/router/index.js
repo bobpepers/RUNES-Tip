@@ -35,16 +35,16 @@ export const router = (app, discordClient, telegramClient, io, telegrafGetChatMe
     localhostOnly,
     (req, res) => {
       console.log('new block found');
-      if (settings.coin.name === 'Runebase') {
+      if (settings.coin.setting === 'Runebase') {
         startRunebaseSync(discordClient, telegramClient);
-      } else if (settings.coin.name === 'Pirate') {
+      } else if (settings.coin.setting === 'Pirate') {
         startPirateSync(discordClient, telegramClient);
       } else {
         startRunebaseSync(discordClient, telegramClient);
       }
     },
   );
-  if (settings.coin.name === 'Pirate') {
+  if (settings.coin.setting === 'Pirate') {
     app.post(
       '/api/rpc/walletnotify',
       localhostOnly,
