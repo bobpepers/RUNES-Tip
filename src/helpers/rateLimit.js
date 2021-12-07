@@ -13,7 +13,7 @@ const rateLimiterReactdrop = new RateLimiterFlexible.default.RateLimiterMemory({
   duration: 120, // every 120 seconds
 });
 const rateLimiterTip = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 4,
+  points: 10,
   duration: 120,
 });
 const rateLimiterWithdraw = new RateLimiterFlexible.default.RateLimiterMemory({
@@ -21,39 +21,39 @@ const rateLimiterWithdraw = new RateLimiterFlexible.default.RateLimiterMemory({
   duration: 120,
 });
 const rateLimiterHelp = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 4,
+  points: 20,
   duration: 120,
 });
 const rateLimiterInfo = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 4,
+  points: 20,
   duration: 120,
 });
 const rateLimiterRain = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 4,
+  points: 50,
   duration: 120,
 });
 const rateLimiterSoak = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 4,
+  points: 50,
   duration: 120,
 });
 const rateLimiterFlood = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 4,
+  points: 50,
   duration: 120,
 });
 const rateLimiterHurricane = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 4,
+  points: 50,
   duration: 120,
 });
 const rateLimiterIgnoreMe = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 4,
+  points: 5,
   duration: 120,
 });
 const rateLimiterSleet = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 4,
+  points: 20,
   duration: 120,
 });
 const rateLimiterBalance = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 4,
+  points: 50,
   duration: 120,
 });
 
@@ -67,24 +67,24 @@ const rateLimiterDeposit = new RateLimiterFlexible.default.RateLimiterMemory({
 });
 
 const rateLimiterStats = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 4,
+  points: 10,
   duration: 120,
 });
 const rateLimiterLeaderboard = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 4,
+  points: 10,
   duration: 120,
 });
 const rateLimiterPublicStats = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 4,
+  points: 8,
   duration: 120,
 });
 
 const rateLimiterThunder = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 4,
+  points: 180,
   duration: 120,
 });
 const rateLimiterThunderstorm = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 4,
+  points: 180,
   duration: 120,
 });
 export const limitThunder = async (message) => {
