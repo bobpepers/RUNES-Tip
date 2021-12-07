@@ -1,6 +1,20 @@
 import db from '../models';
 
 export const initDatabaseRecords = async () => {
+  // Flood
+  const autoWithdrawalSetting = await db.features.findOne({
+    where: {
+      type: 'global',
+      name: 'autoWithdrawal',
+    },
+  });
+  if (!autoWithdrawalSetting) {
+    await db.features.create({
+      type: 'global',
+      name: 'autoWithdrawal',
+      enabled: true,
+    });
+  }
   // Init faucet Record
   const faucet = await db.faucet.findOne();
   if (!faucet) {

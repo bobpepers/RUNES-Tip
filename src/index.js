@@ -234,8 +234,15 @@ const schedulePriceUpdate = schedule.scheduleJob('*/10 * * * *', () => {
   updatePrice();
 });
 
-const scheduleWithdrawal = schedule.scheduleJob('*/2 * * * *', () => { // Process a withdrawal every 2 minutes
-  processWithdrawal(telegramClient, discordClient);
+const scheduleWithdrawal = schedule.scheduleJob('*/2 * * * *', async () => { // Process a withdrawal every 2 minutes
+  const autoWithdrawalSetting = await db.features.findOne({
+    where: {
+      name: 'autoWithdrawal',
+    },
+  });
+  if (autoWithdrawalSetting.enabled) {
+    processWithdrawal(telegramClient, discordClient);
+  }
 });
 
 console.log('server listening on:', port);
