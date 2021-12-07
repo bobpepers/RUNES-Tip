@@ -29,7 +29,7 @@ const localhostOnly = (req, res, next) => {
   next();
 };
 
-export const router = (app, discordClient, telegramClient, io) => {
+export const router = (app, discordClient, telegramClient, io, telegrafGetChatMembers) => {
   app.post(
     '/api/chaininfo/block',
     localhostOnly,
@@ -85,5 +85,5 @@ export const router = (app, discordClient, telegramClient, io) => {
   }
 
   discordRouter(discordClient, io);
-  telegramRouter(telegramClient, io);
+  telegramRouter(telegramClient, io, telegrafGetChatMembers);
 };

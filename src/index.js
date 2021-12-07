@@ -37,6 +37,8 @@ import { processWithdrawal } from "./services/processWithdrawals";
 
 import { consolidatePirate } from "./helpers/pirate/consolidate";
 
+const telegrafGetChatMembers = require('telegraf-getchatmembers');
+
 const socketIo = require("socket.io");
 const redis = require('redis');
 
@@ -141,8 +143,9 @@ const discordClient = new Client({
 });
 
 const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+telegramClient.use(telegrafGetChatMembers);
 
-router(app, discordClient, telegramClient, io);
+router(app, discordClient, telegramClient, io, telegrafGetChatMembers);
 dashboardRouter(app, io);
 
 server.listen(port);

@@ -22,7 +22,11 @@ import {
 
 import { fetchNodeStatus } from './controllers/status';
 
-import { fetchWithdrawals } from './controllers/withdrawals';
+import {
+  fetchWithdrawals,
+  acceptWithdrawal,
+  declineWithdrawal,
+} from './controllers/withdrawals';
 
 import { fetchActivity } from './controllers/activity';
 import {
@@ -96,6 +100,46 @@ export const dashboardRouter = (app, io) => {
     verifyMyCaptcha,
     insertIp,
     signup,
+  );
+
+  app.post(
+    '/api/withdrawal/accept',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    acceptWithdrawal,
+    (req, res) => {
+      if (res.locals.withdrawal) {
+        res.json({
+          withdrawal: res.locals.withdrawal,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/withdrawal/decline',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    declineWithdrawal,
+    (req, res) => {
+      if (res.locals.withdrawal) {
+        res.json({
+          withdrawal: res.locals.withdrawal,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
   );
 
   app.post(

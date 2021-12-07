@@ -3,6 +3,14 @@ import db from '../../models';
 
 const { Op } = require('sequelize');
 
+export const acceptWithdrawal = async (req, res, next) => {
+  console.log('accept Withdrawal');
+};
+
+export const declineWithdrawal = async (req, res, next) => {
+  console.log('declineWithdrawal');
+};
+
 export const fetchWithdrawals = async (req, res, next) => {
   console.log(req.body);
   const transactionOptions = {

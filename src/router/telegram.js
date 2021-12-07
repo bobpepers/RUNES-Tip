@@ -47,7 +47,7 @@ const queue = new PQueue({ concurrency: 1 });
 
 const runesGroup = process.env.TELEGRAM_RUNES_GROUP;
 
-export const telegramRouter = (telegramClient, io) => {
+export const telegramRouter = (telegramClient, io, telegrafGetChatMembers) => {
   telegramClient.hears('adminwithdrawals', (ctx) => {
     if (ctx.update.message.from.id === Number(process.env.TELEGRAM_ADMIN_ID)) {
       // console.log(ctx.from)
@@ -155,7 +155,7 @@ export const telegramRouter = (telegramClient, io) => {
         const groupTask = await updateGroup(ctx);
         await queue.add(() => groupTask);
         const groupTaskId = groupTask.id;
-        const setting = await telegramSettings(ctx, 'withdraw', groupTaskId);
+        const setting = await telegramSettings(ctx, 'tip', groupTaskId);
         await queue.add(() => setting);
         if (!setting) return;
         const tipAmount = filteredMessageTelegram[2];
@@ -444,8 +444,12 @@ export const telegramRouter = (telegramClient, io) => {
         }
       }
     }
-    const telegramInfo = await telegramClient.telegram.getChat(ctx.update.message.chat.id);
+    const telegramInfo = await telegrafGetChatMembers.check(ctx.update.message.chat.id);
     console.log(telegramInfo);
+    console.log(telegramInfo[0].user.id);
+    const chatMemberInfo = await telegramClient.telegram.getChatMember(ctx.update.message.chat.id, telegramInfo[0].user.id);
+    console.log(chatMemberInfo);
+    console.log('Users');
   });
 
   telegramClient.on('message', (ctx) => {
