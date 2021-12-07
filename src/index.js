@@ -146,7 +146,7 @@ const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 telegramClient.use(telegrafGetChatMembers);
 
 router(app, discordClient, telegramClient, io, telegrafGetChatMembers);
-dashboardRouter(app, io);
+dashboardRouter(app, io, discordClient, telegramClient);
 
 server.listen(port);
 

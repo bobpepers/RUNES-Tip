@@ -1,14 +1,241 @@
 // import { parseDomain } from "parse-domain";
+import { Transaction, Op } from "sequelize";
 import db from '../../models';
+import settings from '../../config/settings';
+import {
+  discordWithdrawalAcceptedMessage,
+  discordWithdrawalRejectedMessage,
+} from "../../messages/discord";
+import {
+  withdrawalAcceptedAdminMessage,
+  withdrawalAcceptedMessage,
+  telegramWithdrawalRejectedMessage,
+} from "../../messages/telegram";
 
-const { Op } = require('sequelize');
+const { getInstance } = require('../../services/rclient');
 
 export const acceptWithdrawal = async (req, res, next) => {
-  console.log('accept Withdrawal');
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    let updatedTrans;
+    const transaction = await db.transaction.findOne({
+      where: {
+        id: req.body.id,
+        phase: 'review',
+      },
+      include: [
+        {
+          model: db.address,
+          as: 'address',
+          include: [
+            {
+              model: db.wallet,
+              as: 'wallet',
+              include: [{
+                model: db.user,
+                as: 'user',
+              }],
+            },
+          ],
+        },
+      ],
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    });
+    if (!transaction) {
+      res.locals.error = "Transaction not found";
+      next();
+    }
+    if (transaction) {
+      const amount = ((transaction.amount - Number(settings.fee.withdrawal)) / 1e8);
+      let response;
+
+      // Add New Currency here (default fallback is Runebase)
+      if (settings.coin.name === 'Runebase') {
+        response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
+      } else if (settings.coin.name === 'Pirate') {
+        const preResponse = await getInstance().zSendMany(
+          process.env.PIRATE_MAIN_ADDRESS,
+          [{ address: transaction.to_from, amount: amount.toFixed(8) }],
+          1,
+          0.0001,
+        );
+        let opStatus = await getInstance().zGetOperationStatus([preResponse]);
+        while (!opStatus || opStatus[0].status === 'executing') {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          opStatus = await getInstance().zGetOperationStatus([preResponse]);
+        }
+        console.log('opStatus');
+        console.log(opStatus);
+        response = opStatus[0].result.txid;
+      } else {
+        response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
+      }
+
+      console.log(5);
+      res.locals.withdrawal = await transaction.update(
+        {
+          txid: response,
+          phase: 'confirming',
+          type: 'send',
+        },
+        {
+          transaction: t,
+          lock: t.LOCK.UPDATE,
+        },
+      );
+      const activity = await db.activity.create(
+        {
+          spenderId: transaction.address.wallet.userId,
+          type: 'withdrawAccepted',
+          transactionId: transaction.id,
+        },
+        {
+          transaction: t,
+          lock: t.LOCK.UPDATE,
+        },
+      );
+    }
+
+    t.afterCommit(async () => {
+      if (transaction) {
+        if (transaction.address.wallet.user.user_id.startsWith('discord-')) {
+          const userDiscordId = transaction.address.wallet.user.user_id.replace('discord-', '');
+          const myClient = await res.locals.discordClient.users.fetch(userDiscordId, false);
+          await myClient.send({ embeds: [discordWithdrawalAcceptedMessage(res.locals.withdrawal)] });
+        }
+        if (transaction.address.wallet.user.user_id.startsWith('telegram-')) {
+          const userTelegramId = transaction.address.wallet.user.user_id.replace('telegram-', '');
+          res.locals.telegramClient.telegram.sendMessage(userTelegramId, withdrawalAcceptedMessage(transaction, res.locals.withdrawal));
+          // bot.telegram.sendMessage(runesGroup, withdrawalAcceptedMessage(transaction, updatedTrans));
+        }
+        // res.locals.telegramClient.telegram.sendMessage(adminTelegramId, withdrawalAcceptedAdminMessage(updatedTrans));
+      }
+      next();
+    });
+  }).catch((err) => {
+    // res.locals.telegramClient.telegram.sendMessage(adminTelegramId, `Something went wrong`);
+  });
 };
 
 export const declineWithdrawal = async (req, res, next) => {
-  console.log('declineWithdrawal');
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    const transaction = await db.transaction.findOne({
+      where: {
+        id: req.body.id,
+        phase: 'review',
+      },
+      include: [{
+        model: db.address,
+        as: 'address',
+        include: [{
+          model: db.wallet,
+          as: 'wallet',
+          include: [{
+            model: db.user,
+            as: 'user',
+          }],
+        }],
+      }],
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    });
+
+    if (!transaction) {
+      res.locals.error = "transaction not found";
+    }
+    console.log("123");
+    if (transaction) {
+      const wallet = await db.wallet.findOne({
+        where: {
+          userId: transaction.address.wallet.userId,
+        },
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      });
+
+      if (!wallet) {
+        res.locals.error = "Wallet not found";
+      }
+      if (wallet) {
+        const updatedWallet = await wallet.update({
+          available: wallet.available + transaction.amount,
+          locked: wallet.locked - transaction.amount,
+        }, {
+          transaction: t,
+          lock: t.LOCK.UPDATE,
+        });
+        const updatedTransaction = await transaction.update(
+          {
+            phase: 'rejected',
+          },
+          {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          },
+        );
+        console.log('beforeActivity');
+        const activity = await db.activity.create(
+          {
+            spenderId: transaction.address.wallet.userId,
+            type: 'withdrawRejected',
+            transactionId: updatedTransaction.id,
+          },
+          {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          },
+        );
+        if (transaction.address.wallet.user.user_id.startsWith('discord-')) {
+          // await myClient.send({ embeds: [discordUserWithdrawalRejectMessage()] });
+          const userDiscordId = transaction.address.wallet.user.user_id.replace('discord-', '');
+          const myClient = await res.locals.discordClient.users.fetch(userDiscordId, false);
+          await myClient.send({ embeds: [discordWithdrawalRejectedMessage(updatedTransaction)] });
+        }
+        if (transaction.address.wallet.user.user_id.startsWith('telegram-')) {
+          const userTelegramId = transaction.address.wallet.user.user_id.replace('telegram-', '');
+          res.locals.telegramClient.telegram.sendMessage(userTelegramId, telegramWithdrawalRejectedMessage(updatedTransaction));
+          // bot.telegram.sendMessage(runesGroup, `${transaction.address.wallet.user.username}'s withdrawal has been rejected`);
+        }
+        // bot.telegram.sendMessage(adminTelegramId, `Withdrawal Rejected`);
+      }
+    }
+
+    t.afterCommit(() => {
+      console.log("done");
+    });
+  }).catch((err) => {
+    console.log(err);
+    res.locals.error = "Something went wrong";
+    next();
+  });
+  const newTransaction = await db.transaction.findOne({
+    where: {
+      id: req.body.id,
+      phase: 'rejected',
+    },
+    include: [
+      {
+        model: db.address,
+        as: 'address',
+        include: [
+          {
+            model: db.wallet,
+            as: 'wallet',
+            include: [{
+              model: db.user,
+              as: 'user',
+            }],
+          },
+        ],
+      },
+    ],
+  });
+  res.locals.withdrawal = newTransaction;
+  next();
 };
 
 export const fetchWithdrawals = async (req, res, next) => {

@@ -50,6 +50,10 @@ export const withdrawalReviewMessage = () => {
   const result = `Withdrawal is being reviewed`;
   return result;
 };
+export const telegramWithdrawalRejectedMessage = () => {
+  const result = `Withdrawal has been rejected`;
+  return result;
+};
 
 export const generalErrorMessage = () => {
   const result = `Something went wrong`;

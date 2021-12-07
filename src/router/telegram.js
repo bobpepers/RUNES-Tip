@@ -1,10 +1,5 @@
 import { config } from "dotenv";
 import PQueue from 'p-queue';
-import {
-  withdrawTelegramAdminFetch,
-  withdrawTelegramAdminAccept,
-  withdrawTelegramAdminDecline,
-} from '../controllers/admin';
 
 import { fetchWalletBalance } from '../controllers/telegram/balance';
 import { fetchWalletDepositAddress } from '../controllers/telegram/deposit';
@@ -48,36 +43,6 @@ const queue = new PQueue({ concurrency: 1 });
 const runesGroup = process.env.TELEGRAM_RUNES_GROUP;
 
 export const telegramRouter = (telegramClient, io, telegrafGetChatMembers) => {
-  telegramClient.hears('adminwithdrawals', (ctx) => {
-    if (ctx.update.message.from.id === Number(process.env.TELEGRAM_ADMIN_ID)) {
-      // console.log(ctx.from)
-      (async () => {
-        const task = await withdrawTelegramAdminFetch(telegramClient, ctx, Number(process.env.TELEGRAM_ADMIN_ID));
-        await queue.add(() => task);
-      })();
-    }
-  });
-
-  telegramClient.action(/acceptWithdrawal-+/, (ctx) => {
-    const withdrawalId = ctx.match.input.substring(17);
-    if (ctx.update.callback_query.from.id === Number(process.env.TELEGRAM_ADMIN_ID)) {
-      (async () => {
-        const task = await withdrawTelegramAdminAccept(telegramClient, ctx, Number(process.env.TELEGRAM_ADMIN_ID), withdrawalId, runesGroup, discordClient);
-        await queue.add(() => task);
-      })();
-    }
-  });
-
-  telegramClient.action(/declineWithdrawal-+/, (ctx) => {
-    const withdrawalId = ctx.match.input.substring(18);
-    if (ctx.update.callback_query.from.id === Number(process.env.TELEGRAM_ADMIN_ID)) {
-      (async () => {
-        const task = await withdrawTelegramAdminDecline(telegramClient, ctx, Number(process.env.TELEGRAM_ADMIN_ID), withdrawalId, runesGroup, discordClient);
-        await queue.add(() => task);
-      })();
-    }
-  });
-
   telegramClient.command('help', (ctx) => {
     (async () => {
       const task = await fetchHelp(ctx, io);

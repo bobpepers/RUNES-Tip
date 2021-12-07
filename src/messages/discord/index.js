@@ -340,6 +340,17 @@ export const notEnoughActiveUsersMessage = (message, title) => {
   return result;
 };
 
+export const discordWithdrawalRejectedMessage = () => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle("Withdraw")
+    .setDescription(`Your withdrawal has been rejected`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
 export const walletNotFoundMessage = (message, title) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)

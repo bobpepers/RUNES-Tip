@@ -82,7 +82,7 @@ const IsAuthenticated = (req, res, next) => {
   }
 };
 
-export const dashboardRouter = (app, io) => {
+export const dashboardRouter = (app, io, discordClient, telegramClient) => {
   app.get(
     '/api/authenticated',
     (req, res, next) => {
@@ -108,9 +108,18 @@ export const dashboardRouter = (app, io) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    (req, res, next) => {
+      res.locals.discordClient = discordClient;
+      res.locals.telegramClient = telegramClient;
+      next();
+    },
     acceptWithdrawal,
     (req, res) => {
-      if (res.locals.withdrawal) {
+      if (res.locals.error) {
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      } else if (res.locals.withdrawal) {
         res.json({
           withdrawal: res.locals.withdrawal,
         });
@@ -128,9 +137,18 @@ export const dashboardRouter = (app, io) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    (req, res, next) => {
+      res.locals.discordClient = discordClient;
+      res.locals.telegramClient = telegramClient;
+      next();
+    },
     declineWithdrawal,
     (req, res) => {
-      if (res.locals.withdrawal) {
+      if (res.locals.error) {
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      } else if (res.locals.withdrawal) {
         res.json({
           withdrawal: res.locals.withdrawal,
         });
