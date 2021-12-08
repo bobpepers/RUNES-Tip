@@ -112,12 +112,14 @@ export const withdrawDiscordCreate = async (message, filteredMessage, io, settin
             lock: t.LOCK.UPDATE,
           });
           console.log('6');
+          const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
           const transaction = await db.transaction.create({
             addressId: wallet.addresses[0].id,
             phase: 'review',
             type: 'send',
             to_from: filteredMessage[2],
             amount,
+            feeAmount: Number(fee),
           }, {
             transaction: t,
             lock: t.LOCK.UPDATE,

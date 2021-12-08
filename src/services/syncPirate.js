@@ -114,7 +114,7 @@ const syncTransactions = async (discordClient, telegramClient) => {
         if (transaction.sent.length > 0 && trans.type === 'send') {
           console.log(transaction.sent[0].value);
           console.log(((transaction.sent[0].value * 1e8)));
-          const prepareLockedAmount = ((transaction.sent[0].value * 1e8) - Number(settings.fee.withdrawal));
+          const prepareLockedAmount = ((transaction.sent[0].value * 1e8) - Number(trans.feeAmount));
           const removeLockedAmount = Math.abs(prepareLockedAmount);
 
           console.log('removeLockedAmount');
@@ -150,7 +150,7 @@ const syncTransactions = async (discordClient, telegramClient) => {
           });
           if (faucet) {
             await faucet.update({
-              amount: Number(faucet.amount) + Number(settings.fee.withdrawal / 2),
+              amount: Number(faucet.amount) + Number(trans.feeAmount / 2),
             }, {
               transaction: t,
               lock: t.LOCK.UPDATE,
@@ -159,7 +159,7 @@ const syncTransactions = async (discordClient, telegramClient) => {
           const createFaucetActivity = await db.activity.create({
             spenderId: updatedWallet.userId,
             type: 'faucet_add',
-            amount: settings.fee.withdrawal / 2,
+            amount: trans.feeAmount / 2,
           }, {
             transaction: t,
             lock: t.LOCK.UPDATE,

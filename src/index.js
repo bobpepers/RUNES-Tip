@@ -33,7 +33,7 @@ import settings from "./config/settings";
 
 import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";
-import { processWithdrawal } from "./services/processWithdrawals";
+import { processWithdrawals } from "./services/processWithdrawals";
 
 import { consolidatePirate } from "./helpers/pirate/consolidate";
 
@@ -241,7 +241,7 @@ const scheduleWithdrawal = schedule.scheduleJob('*/2 * * * *', async () => { // 
     },
   });
   if (autoWithdrawalSetting.enabled) {
-    processWithdrawal(telegramClient, discordClient);
+    processWithdrawals(telegramClient, discordClient);
   }
 });
 
