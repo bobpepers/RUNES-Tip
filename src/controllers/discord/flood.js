@@ -172,16 +172,12 @@ export const discordFlood = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    const feetest = (amount * (1 - (setting.fee / 1e2) / 100));
-    console.log(feetest);
-    console.log('feetest');
-    const fee = (amount * (1 - (setting.fee / 1e2) / 100)).toFixed(0);
-    console.log(setting.fee);
-    console.log(fee);
-    console.log('fee');
-    const amountPerUser = (((amount / withoutBots.length).toFixed(0)));
+
+    const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
+    const amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
 
     const floodRecord = await db.flood.create({
+      feeAmount: fee,
       amount,
       userCount: withoutBots.length,
       userId: user.id,

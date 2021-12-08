@@ -182,8 +182,10 @@ export const discordSleet = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      const amountPerUser = (((amount / usersToRain.length).toFixed(0)));
+      const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
+      const amountPerUser = ((amount - Number(fee)) / usersToRain.length).toFixed(0);
       const sleetRecord = await db.sleet.create({
+        feeAmount: fee,
         amount,
         userCount: usersToRain.length,
         userId: user.id,
@@ -233,7 +235,7 @@ export const discordSleet = async (
         });
         // eslint-disable-next-line no-await-in-loop
         const sleettipRecord = await db.sleettip.create({
-          amount: amountPerUser,
+          amount: Number(amountPerUser),
           userId: sleetee.id,
           sleetId: sleetRecord.id,
           groupId: groupTask.id,

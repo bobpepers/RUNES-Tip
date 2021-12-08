@@ -192,10 +192,12 @@ export const discordHurricane = async (
             lock: t.LOCK.UPDATE,
             transaction: t,
         });
+        const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
+        const amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
 
-        const amountPerUser = (((amount / withoutBots.length).toFixed(0)));
         const hurricaneRecord = await db.hurricane.create({
             amount,
+            feeAmount: fee,
             userCount: withoutBots.length,
             userId: user.id,
             groupId: groupTask.id,

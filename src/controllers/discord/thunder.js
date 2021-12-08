@@ -16,14 +16,14 @@ import { Transaction, Op } from "sequelize";
 import logger from "../../helpers/logger";
 
 export const discordThunder = async (
-  discordClient, 
-  message, 
-  filteredMessage, 
-  io, 
-  groupTask, 
+  discordClient,
+  message,
+  filteredMessage,
+  io,
+  groupTask,
   channelTask,
   setting,
-  ) => {
+) => {
   if (!groupTask || !channelTask) {
     await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
     return;
@@ -176,8 +176,10 @@ export const discordThunder = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      const amountPerUser = (((amount / withoutBots.length).toFixed(0)));
+      const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
+      const amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
       const thunderRecord = await db.thunder.create({
+        feeAmount: fee,
         amount,
         userCount: withoutBots.length,
         userId: user.id,

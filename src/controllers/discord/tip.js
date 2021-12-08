@@ -167,7 +167,10 @@ export const tipRunesToDiscordUser = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+    const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
+    const userTipAmount = (amount - Number(fee)) / usersToTip.length;
     const tipRecord = await db.tip.create({
+      feeAmount: fee,
       amount,
       type,
       userCount: usersToTip.length,
@@ -178,7 +181,6 @@ export const tipRunesToDiscordUser = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    const userTipAmount = amount / usersToTip.length;
 
     const listOfUsersRained = [];
     // eslint-disable-next-line no-restricted-syntax

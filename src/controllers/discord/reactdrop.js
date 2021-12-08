@@ -339,7 +339,7 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop, io) => 
           });
           reactMessage.channel.send('Nobody claimed, returning funds to reactdrop initiator');
         } else {
-          const amountEach = (Number(endReactDrop.amount) / Number(endReactDrop.reactdroptips.length)).toFixed(0);
+          const amountEach = ((Number(endReactDrop.amount) - Number(endReactDrop.feeAmount)) / Number(endReactDrop.reactdroptips.length)).toFixed(0);
 
           console.log("amountEach");
           console.log(amountEach);
@@ -657,7 +657,9 @@ export const discordReactDrop = async (
                   transaction: t,
                   lock: t.LOCK.UPDATE,
                 });
+                const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
                 const newReactDrop = await db.reactdrop.create({
+                  feeAmount: Number(fee),
                   amount,
                   groupId: group.id,
                   channelId: channel.id,

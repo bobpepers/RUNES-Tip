@@ -192,8 +192,10 @@ export const discordThunderStorm = async (
       transaction: t,
     });
 
-    const amountPerUser = (((amount / withoutBots.length).toFixed(0)));
+    const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
+    const amountPerUser = (((amount - Number(fee)) / withoutBots.length).toFixed(0));
     const thunderstormRecord = await db.thunderstorm.create({
+      feeAmount: fee,
       amount,
       userCount: withoutBots.length,
       userId: user.id,
