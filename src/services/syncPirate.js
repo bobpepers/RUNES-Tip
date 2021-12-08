@@ -17,11 +17,6 @@ import { getInstance } from "./rclient";
 
 const queue = new PQueue({ concurrency: 1 });
 
-// const RPC_BATCH_SIZE = 1;
-const BLOCK_BATCH_SIZE = 1;
-// const SYNC_THRESHOLD_SECS = 2400;
-// const BLOCK_0_TIMESTAMP = 0;
-
 const sequentialLoop = async (iterations, process, exit) => {
   let index = 0;
   let done = false;
@@ -74,9 +69,9 @@ const syncTransactions = async (discordClient, telegramClient) => {
       }],
     }],
   });
-  console.log('transactions');
+  // console.log('transactions');
 
-  console.log(transactions);
+  // console.log(transactions);
   // eslint-disable-next-line no-restricted-syntax
   for await (const trans of transactions) {
     const transaction = await getInstance().getTransaction(trans.txid);
@@ -95,11 +90,11 @@ const syncTransactions = async (discordClient, telegramClient) => {
         lock: t.LOCK.UPDATE,
       });
 
-      console.log('update transaction');
-      console.log(transaction);
+      // console.log('update transaction');
+      // console.log(transaction);
       let updatedTransaction;
       let updatedWallet;
-      console.log(transaction.confirmations);
+      // console.log(transaction.confirmations);
       if (transaction.confirmations < Number(settings.min.confirmations)) {
         updatedTransaction = await trans.update({
           confirmations: transaction.confirmations,
@@ -112,13 +107,13 @@ const syncTransactions = async (discordClient, telegramClient) => {
         // transaction.details.forEach(async (detail) => {
 
         if (transaction.sent.length > 0 && trans.type === 'send') {
-          console.log(transaction.sent[0].value);
-          console.log(((transaction.sent[0].value * 1e8)));
+          // console.log(transaction.sent[0].value);
+          // console.log(((transaction.sent[0].value * 1e8)));
           const prepareLockedAmount = ((transaction.sent[0].value * 1e8) - Number(trans.feeAmount));
           const removeLockedAmount = Math.abs(prepareLockedAmount);
 
-          console.log('removeLockedAmount');
-          console.log(removeLockedAmount);
+          // console.log('removeLockedAmount');
+          // console.log(removeLockedAmount);
 
           updatedWallet = await wallet.update({
             locked: wallet.locked - removeLockedAmount,
@@ -215,7 +210,7 @@ const syncTransactions = async (discordClient, telegramClient) => {
     });
     // }
   }
-  console.log(transactions.length);
+  // console.log(transactions.length);
   return true;
 };
 
@@ -225,7 +220,7 @@ const getInsertBlockPromises = async (startBlock, endBlock) => {
   const insertBlockPromises = [];
 
   for (let i = startBlock; i <= endBlock; i += 1) {
-    console.log(i);
+    // console.log(i);
     const blockPromise = new Promise((resolve) => {
       try {
         getInstance().getBlockHash(i).then((blockHash) => {
@@ -268,11 +263,7 @@ const getInsertBlockPromises = async (startBlock, endBlock) => {
 
 const sync = async (discordClient, telegramClient) => {
   const currentBlockCount = Math.max(0, await getInstance().getBlockCount());
-  const currentBlockHash = await getInstance().getBlockHash(currentBlockCount);
-  const currentBlockTime = (await getInstance().getBlock(currentBlockHash)).time;
   let startBlock = Number(settings.startSyncBlock);
-
-  // const blocks = await db.Blocks.cfind({}).sort({ blockNum: -1 }).limit(1).exec();
   const blocks = await db.block.findAll({
     limit: 1,
     order: [['id', 'DESC']],
@@ -282,12 +273,12 @@ const sync = async (discordClient, telegramClient) => {
     startBlock = Math.max(blocks[0].id + 1, startBlock);
   }
 
-  const numOfIterations = Math.ceil(((currentBlockCount - startBlock) + 1) / BLOCK_BATCH_SIZE);
+  const numOfIterations = Math.ceil(((currentBlockCount - startBlock) + 1) / 1);
 
   await sequentialLoop(
     numOfIterations,
     async (loop) => {
-      const endBlock = Math.min((startBlock + BLOCK_BATCH_SIZE) - 1, currentBlockCount);
+      const endBlock = Math.min((startBlock + 1) - 1, currentBlockCount);
 
       // await syncTransactions(startBlock, endBlock);
       await queue.add(() => syncTransactions(discordClient, telegramClient));
@@ -301,15 +292,6 @@ const sync = async (discordClient, telegramClient) => {
       await loop.next();
     },
     async () => {
-      if (numOfIterations > 0) {
-        // sendSyncInfo(
-        //  currentBlockCount,
-        //  currentBlockTime,
-        //  await calculateSyncPercent(currentBlockCount, currentBlockTime),
-        //  await network.getPeerNodeCount(),
-        //  await getAddressBalances(),
-        // );
-      }
       console.log('sleep');
       // setTimeout(startSync, 5000);
     },

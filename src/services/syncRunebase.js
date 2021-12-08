@@ -11,17 +11,9 @@ import {
   discordDepositConfirmedMessage,
 } from '../messages/discord';
 import settings from '../config/settings';
-
-// const { isMainnet } = require('./runebaseConfig');
-
 import { getInstance } from "./rclient";
 
 const queue = new PQueue({ concurrency: 1 });
-
-// const RPC_BATCH_SIZE = 1;
-const BLOCK_BATCH_SIZE = 1;
-// const SYNC_THRESHOLD_SECS = 2400;
-// const BLOCK_0_TIMESTAMP = 0;
 
 const sequentialLoop = async (iterations, process, exit) => {
   let index = 0;
@@ -75,9 +67,9 @@ const syncTransactions = async (discordClient, telegramClient) => {
       }],
     }],
   });
-  console.log('transactions');
+  // console.log('transactions');
 
-  console.log(transactions);
+  // console.log(transactions);
   // eslint-disable-next-line no-restricted-syntax
   for await (const trans of transactions) {
     const transaction = await getInstance().getTransaction(trans.txid);
@@ -96,11 +88,11 @@ const syncTransactions = async (discordClient, telegramClient) => {
           lock: t.LOCK.UPDATE,
         });
 
-        console.log('update transaction');
-        console.log(transaction);
+        // console.log('update transaction');
+        // console.log(transaction);
         let updatedTransaction;
         let updatedWallet;
-        console.log(transaction.confirmations);
+        // console.log(transaction.confirmations);
         if (transaction.confirmations < Number(settings.min.confirmations)) {
           updatedTransaction = await trans.update({
             confirmations: transaction.confirmations,
@@ -113,12 +105,12 @@ const syncTransactions = async (discordClient, telegramClient) => {
           // transaction.details.forEach(async (detail) => {
 
           if (detail.category === 'send' && trans.type === 'send') {
-            console.log(detail.amount);
-            console.log(((detail.amount * 1e8)));
+            // console.log(detail.amount);
+            // console.log(((detail.amount * 1e8)));
             const prepareLockedAmount = ((detail.amount * 1e8) - Number(trans.feeAmount));
             const removeLockedAmount = Math.abs(prepareLockedAmount);
 
-            console.log(removeLockedAmount);
+            // console.log(removeLockedAmount);
             updatedWallet = await wallet.update({
               locked: wallet.locked - removeLockedAmount,
             }, {
@@ -165,7 +157,7 @@ const syncTransactions = async (discordClient, telegramClient) => {
             });
           }
           if (detail.category === 'receive' && trans.type === 'receive') {
-            console.log('updating balance');
+            // console.log('updating balance');
             updatedWallet = await wallet.update({
               available: wallet.available + (detail.amount * 1e8),
             }, {
@@ -214,17 +206,17 @@ const syncTransactions = async (discordClient, telegramClient) => {
       });
     }
   }
-  console.log(transactions.length);
+  // console.log(transactions.length);
   return true;
 };
 
 const getInsertBlockPromises = async (startBlock, endBlock) => {
-  let blockHash;
+  // let blockHash;
   let blockTime;
   const insertBlockPromises = [];
 
   for (let i = startBlock; i <= endBlock; i += 1) {
-    console.log(i);
+    // console.log(i);
     const blockPromise = new Promise((resolve) => {
       try {
         getInstance().getBlockHash(i).then((blockHash) => {
@@ -267,11 +259,8 @@ const getInsertBlockPromises = async (startBlock, endBlock) => {
 
 const sync = async (discordClient, telegramClient) => {
   const currentBlockCount = Math.max(0, await getInstance().getBlockCount());
-  const currentBlockHash = await getInstance().getBlockHash(currentBlockCount);
-  const currentBlockTime = (await getInstance().getBlock(currentBlockHash)).time;
   let startBlock = Number(settings.startSyncBlock);
 
-  // const blocks = await db.Blocks.cfind({}).sort({ blockNum: -1 }).limit(1).exec();
   const blocks = await db.block.findAll({
     limit: 1,
     order: [['id', 'DESC']],
@@ -281,12 +270,12 @@ const sync = async (discordClient, telegramClient) => {
     startBlock = Math.max(blocks[0].id + 1, startBlock);
   }
 
-  const numOfIterations = Math.ceil(((currentBlockCount - startBlock) + 1) / BLOCK_BATCH_SIZE);
+  const numOfIterations = Math.ceil(((currentBlockCount - startBlock) + 1) / 1);
 
   await sequentialLoop(
     numOfIterations,
     async (loop) => {
-      const endBlock = Math.min((startBlock + BLOCK_BATCH_SIZE) - 1, currentBlockCount);
+      const endBlock = Math.min((startBlock + 1) - 1, currentBlockCount);
 
       // await syncTransactions(startBlock, endBlock);
       await queue.add(() => syncTransactions(discordClient, telegramClient));
@@ -294,22 +283,11 @@ const sync = async (discordClient, telegramClient) => {
 
       const { insertBlockPromises } = await getInsertBlockPromises(startBlock, endBlock);
       await queue.add(() => Promise.all(insertBlockPromises));
-      // await Promise.all(insertBlockPromises);
-      console.log('Inserted Blocks');
 
       startBlock = endBlock + 1;
       await loop.next();
     },
     async () => {
-      if (numOfIterations > 0) {
-        // sendSyncInfo(
-        //  currentBlockCount,
-        //  currentBlockTime,
-        //  await calculateSyncPercent(currentBlockCount, currentBlockTime),
-        //  await network.getPeerNodeCount(),
-        //  await getAddressBalances(),
-        // );
-      }
       console.log('sleep');
       // setTimeout(startSync, 5000);
     },
@@ -317,12 +295,5 @@ const sync = async (discordClient, telegramClient) => {
 };
 
 export async function startRunebaseSync(discordClient, telegramClient) {
-  // const transactions = await getInstance().listTransactions(1000);
-  // console.log(transactions);
-
-  // TransactionModel.findAll
-  // MetaData = await getContractMetadata();
-  // senderAddress = isMainnet() ? 'RKBLGRvYqunBtpueEPuXzQQmoVsQQTvd3a' : '5VMGo2gGHhkW5TvRRtcKM1RkyUgrnNP7dn';
-  // console.log('startSync');
   sync(discordClient, telegramClient);
 }
