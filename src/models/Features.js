@@ -23,6 +23,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 1000000,
     },
+    fee: {
+      type: DataTypes.SMALLINT,
+      allowNull: false,
+      defaultValue: 0,
+    },
     enabled: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
