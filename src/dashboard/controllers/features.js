@@ -125,16 +125,16 @@ export const addFeature = async (req, res, next) => {
     res.locals.error = 'Minimum is required';
     next();
   }
+  if (!req.body.fee) {
+    res.locals.error = 'Fee is required';
+    next();
+  }
   if (!req.body.enabled) {
     res.locals.error = 'Enable is required';
     next();
   }
   const amount = new BigNumber(req.body.min).times(1e8).toNumber();
   const fee = new BigNumber(req.body.fee).times(1e2).toNumber();
-  console.log(fee);
-  console.log(req.body.fee);
-  console.log('fee');
-  console.log(req.user);
   // Validate Fee
   if (fee % 1 !== 0) {
     res.locals.error = "invalid number";

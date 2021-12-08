@@ -10,6 +10,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
       allowNull: false,
     },
+    feeAmount: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+    },
     userId: {
       type: DataTypes.BIGINT,
       allowNull: false,
