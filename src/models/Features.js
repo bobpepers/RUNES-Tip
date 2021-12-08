@@ -43,6 +43,7 @@ module.exports = (sequelize, DataTypes) => {
   const FeaturesModel = sequelize.define('features', modelDefinition, modelOptions);
 
   FeaturesModel.associate = (model) => {
+    FeaturesModel.belongsTo(model.dashboardUser);
     FeaturesModel.belongsTo(model.group);
     FeaturesModel.belongsTo(model.channel);
   };

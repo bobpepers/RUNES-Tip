@@ -83,7 +83,7 @@ npx sequelize-cli migration:generate --name Sleet-table
 
 undo single migration
 ````
-npx sequelize-cli db:migrate:undo --name 20210416015813-add-countryid-to-user.js
+npx sequelize-cli db:migrate:undo --name 20211208092519-Add-user-association-to-features.js
 
 ````
 
