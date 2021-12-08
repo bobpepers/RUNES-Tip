@@ -20,6 +20,7 @@ export const processWithdrawal = async (transaction) => {
     );
     let opStatus = await getInstance().zGetOperationStatus([preResponse]);
     while (!opStatus || opStatus[0].status === 'executing') {
+      // eslint-disable-next-line no-await-in-loop
       await new Promise((resolve) => setTimeout(resolve, 1000));
       opStatus = await getInstance().zGetOperationStatus([preResponse]);
     }

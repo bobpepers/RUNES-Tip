@@ -279,12 +279,12 @@ const sync = async (discordClient, telegramClient) => {
 
       // await syncTransactions(startBlock, endBlock);
       await queue.add(() => syncTransactions(discordClient, telegramClient));
-      console.log('Synced syncTrade');
 
       const { insertBlockPromises } = await getInsertBlockPromises(startBlock, endBlock);
       await queue.add(() => Promise.all(insertBlockPromises));
 
       startBlock = endBlock + 1;
+      console.log('Synced block');
       await loop.next();
     },
     async () => {

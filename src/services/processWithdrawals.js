@@ -1,17 +1,16 @@
-// import { MessageEmbed, MessageAttachment } from "discord.js";
 import { Transaction } from "sequelize";
 import { config } from "dotenv";
 import db from '../models';
-import { getInstance } from "./rclient";
 import { discordWithdrawalAcceptedMessage, discordUserWithdrawalRejectMessage } from "../messages/discord";
-import { withdrawalAcceptedAdminMessage, withdrawalAcceptedMessage } from "../messages/telegram";
+import {
+  withdrawalAcceptedAdminMessage,
+  withdrawalAcceptedMessage,
+} from "../messages/telegram";
 import { processWithdrawal } from "./processWithdrawal";
-
-import settings from '../config/settings';
 
 config();
 
-export const processWithdrawals = async (bot, discordClient) => {
+export const processWithdrawals = async (telegramClient, discordClient) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -83,12 +82,12 @@ export const processWithdrawals = async (bot, discordClient) => {
         }
         if (transaction.address.wallet.user.user_id.startsWith('telegram-')) {
           const userTelegramId = transaction.address.wallet.user.user_id.replace('telegram-', '');
-          bot.telegram.sendMessage(userTelegramId, withdrawalAcceptedMessage(transaction, updatedTrans));
+          telegramClient.telegram.sendMessage(userTelegramId, withdrawalAcceptedMessage(transaction, updatedTrans));
         }
-        bot.telegram.sendMessage(Number(process.env.TELEGRAM_ADMIN_ID), withdrawalAcceptedAdminMessage(updatedTrans));
+        telegramClient.telegram.sendMessage(Number(process.env.TELEGRAM_ADMIN_ID), withdrawalAcceptedAdminMessage(updatedTrans));
       }
     });
   }).catch((err) => {
-    bot.telegram.sendMessage(Number(process.env.TELEGRAM_ADMIN_ID), `Something went wrong`);
+    telegramClient.telegram.sendMessage(Number(process.env.TELEGRAM_ADMIN_ID), `Something went wrong`);
   });
 };
