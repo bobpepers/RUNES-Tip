@@ -3,6 +3,8 @@ import PQueue from 'p-queue';
 import { fetchDiscordWalletBalance } from '../controllers/discord/balance';
 import { fetchDiscordWalletDepositAddress } from '../controllers/discord/deposit';
 import { withdrawDiscordCreate } from '../controllers/discord/withdraw';
+
+import { discordVoiceRain } from '../controllers/discord/voicerain';
 import { discordRain } from '../controllers/discord/rain';
 import { discordSleet } from '../controllers/discord/sleet';
 import { discordFlood } from '../controllers/discord/flood';
@@ -76,6 +78,13 @@ const queue = new PQueue({ concurrency: 1 });
 export const discordRouter = (discordClient, io) => {
   discordClient.on('ready', () => {
     console.log(`Logged in as ${discordClient.user.tag}!`);
+  });
+
+  discordClient.on('voiceStateUpdate', async (oldMember, newMember) => {
+    const groupTask = await updateDiscordGroup(discordClient, newMember);
+    await queue.add(() => groupTask);
+    const channelTask = await updateDiscordChannel(discordClient, newMember, groupTask);
+    await queue.add(() => channelTask);
   });
 
   discordClient.on("messageCreate", async (message) => {
@@ -212,6 +221,24 @@ export const discordRouter = (discordClient, io) => {
       const limited = await limitWithdraw(message);
       // await queue.add(() => limited);
       const task = await withdrawDiscordCreate(message, filteredMessageDiscord, io, setting);
+      await queue.add(() => task);
+    }
+
+    if (filteredMessageDiscord[1].toLowerCase() === 'voicerain') {
+      const setting = await discordSettings(message, 'voicerain', groupTaskId, channelTaskId);
+      await queue.add(() => setting);
+      if (!setting) return;
+      const limited = await limitRain(message);
+      // await queue.add(() => limited);
+      const task = await discordVoiceRain(
+        discordClient,
+        message,
+        filteredMessageDiscord,
+        io,
+        groupTask,
+        channelTask,
+        setting,
+      );
       await queue.add(() => task);
     }
 

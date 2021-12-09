@@ -131,6 +131,7 @@ const discordClient = new Client({
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
     Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+    Intents.FLAGS.GUILD_VOICE_STATES,
   ],
   partials: [
     'MESSAGE',

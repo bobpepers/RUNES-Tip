@@ -72,6 +72,11 @@ module.exports = (sequelize, DataTypes) => {
         'faucettip_s',
         'faucettip_f',
         'faucettip_i',
+        'faucettip_t',
+        'voicerain_s',
+        'voicerain_i',
+        'voicerain_f',
+        'voiceraintip_s',
       ],
     },
     amount: {

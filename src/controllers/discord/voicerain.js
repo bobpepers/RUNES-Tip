@@ -1,4 +1,6 @@
 /* eslint-disable import/prefer-default-export */
+import BigNumber from "bignumber.js";
+import { Transaction, Op } from "sequelize";
 import db from '../../models';
 import {
   invalidAmountMessage,
@@ -9,30 +11,55 @@ import {
   NotInDirectMessage,
 } from '../../messages/discord';
 
-import BigNumber from "bignumber.js";
-import { Transaction, Op } from "sequelize";
 import logger from "../../helpers/logger";
 
-export const discordRain = async (
+export const discordVoiceRain = async (
   discordClient,
   message,
   filteredMessage,
   io,
   groupTask,
   channelTask,
-  setting
+  setting,
 ) => {
   if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Voicerain')] });
     return;
   }
-  const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  const onlineMembers = members.filter((member) =>
-    member.presence?.status === "online"
-  );
-  const mappedMembersArray = onlineMembers.map((a) => {
-    return a.user;
+  console.log(channelTask);
+  console.log('channelTask');
+  console.log('channelTask');
+  console.log('channelTask');
+  console.log('channelTask');
+  console.log('channelTask');
+  console.log(filteredMessage);
+  if (!filteredMessage[3].startsWith('<#')) {
+    console.log('not a channel');
+    return;
+  }
+  if (!filteredMessage[3].endsWith('>')) {
+    console.log('not a channel');
+    return;
+  }
+  const voiceChannelId = filteredMessage[3].substr(2).slice(0, -1);
+  console.log(voiceChannelId);
+
+  const voiceChannel = await db.channel.findOne({
+    where: {
+      channelId: `discord-${voiceChannelId}`,
+      groupId: groupTask.id,
+    },
   });
+  if (!voiceChannel) {
+    console.log('channel not found');
+    return;
+  }
+
+  const members = await discordClient.channels.cache.get(voiceChannelId).members;
+  console.log(members);
+  console.log('members');
+  const onlineMembers = members;
+  const mappedMembersArray = onlineMembers.map((a) => a.user);
   const withoutBots = [];
 
   // eslint-disable-next-line no-restricted-syntax
@@ -96,12 +123,12 @@ export const discordRain = async (
     });
     if (!user) {
       activity = await db.activity.create({
-        type: 'rain_f',
+        type: 'voicerain_f',
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Rain')] });
+      await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Voicerain')] });
       return;
     }
     let amount = 0;
@@ -112,13 +139,13 @@ export const discordRain = async (
     }
     if (amount < setting.min) {
       activity = await db.activity.create({
-        type: 'rain_f',
+        type: 'voicerain_f',
         spenderId: user.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      await message.channel.send({ embeds: [minimumMessage(message, 'Rain')] });
+      await message.channel.send({ embeds: [minimumMessage(message, 'VoiceRain')] });
       return;
     }
     if (amount % 1 !== 0) {
@@ -129,35 +156,35 @@ export const discordRain = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'Rain')] });
+      await message.channel.send({ embeds: [invalidAmountMessage(message, 'VoiceRain')] });
       return;
     }
     if (amount <= 0) {
       activity = await db.activity.create({
-        type: 'rain_f',
+        type: 'voicerain_f',
         spenderId: user.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'Rain')] });
+      await message.channel.send({ embeds: [invalidAmountMessage(message, 'VoiceRain')] });
     }
 
     if (user.wallet.available < amount) {
       activity = await db.activity.create({
-        type: 'rain_i',
+        type: 'voicerain_i',
         spenderId: user.id,
         amount,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'Rain')] });
+      await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'VoiceRain')] });
       return;
     }
     if (withoutBots.length < 2) {
       activity = await db.activity.create({
-        type: 'rain_f',
+        type: 'voicerain_f',
         spenderId: user.id,
       }, {
         lock: t.LOCK.UPDATE,
@@ -166,7 +193,10 @@ export const discordRain = async (
       await message.channel.send('Not enough online users');
       return;
     }
+    console.log('123');
 
+    console.log(user.wallet);
+    console.log(amount);
     const updatedBalance = await user.wallet.update({
       available: user.wallet.available - amount,
     }, {
@@ -177,20 +207,21 @@ export const discordRain = async (
     const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
     const amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
 
-    const rainRecord = await db.rain.create({
+    const rainRecord = await db.voicerain.create({
+      amount: Number(amount),
       feeAmount: Number(fee),
-      amount,
       userCount: withoutBots.length,
       userId: user.id,
       groupId: groupTask.id,
-      channelId: channelTask.id,
+      channelId: voiceChannel.id,
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+    console.log('333333');
     activity = await db.activity.create({
       amount,
-      type: 'rain_s',
+      type: 'voicerain_s',
       spenderId: user.id,
       rainId: rainRecord.id,
       spender_balance: updatedBalance.available + updatedBalance.locked,
@@ -205,11 +236,11 @@ export const discordRain = async (
       include: [
         {
           model: db.rain,
-          as: 'rain'
+          as: 'rain',
         },
         {
           model: db.user,
-          as: 'spender'
+          as: 'spender',
         },
       ],
       lock: t.LOCK.UPDATE,
@@ -217,6 +248,7 @@ export const discordRain = async (
 
     });
     const listOfUsersRained = [];
+    console.log(999);
     // eslint-disable-next-line no-restricted-syntax
     for (const rainee of withoutBots) {
       // eslint-disable-next-line no-await-in-loop
@@ -227,12 +259,12 @@ export const discordRain = async (
         transaction: t,
       });
       // eslint-disable-next-line no-await-in-loop
-      const raintipRecord = await db.raintip.create({
-        amount: amountPerUser,
+      const raintipRecord = await db.voiceraintip.create({
+        amount: Number(amountPerUser),
         userId: rainee.id,
-        rainId: rainRecord.id,
+        voicerainId: rainRecord.id,
         groupId: groupTask.id,
-        channelId: channelTask.id,
+        channelId: voiceChannel.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
@@ -243,21 +275,25 @@ export const discordRain = async (
         const userIdReceivedRain = rainee.user_id.replace('discord-', '');
         listOfUsersRained.push(`<@${userIdReceivedRain}>`);
       }
+      console.log('before tipactivity record');
 
       let tipActivity;
+      // eslint-disable-next-line no-await-in-loop
       tipActivity = await db.activity.create({
         amount: Number(amountPerUser),
-        type: 'raintip_s',
+        type: 'voiceraintip_s',
         spenderId: user.id,
         earnerId: rainee.id,
-        rainId: rainRecord.id,
-        raintipId: raintipRecord.id,
+        voicerainId: rainRecord.id,
+        voiceraintipId: raintipRecord.id,
         earner_balance: raineeWallet.available + raineeWallet.locked,
         spender_balance: updatedBalance.available + updatedBalance.locked,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+
+      // eslint-disable-next-line no-await-in-loop
       tipActivity = await db.activity.findOne({
         where: {
           id: tipActivity.id,
@@ -265,19 +301,19 @@ export const discordRain = async (
         include: [
           {
             model: db.user,
-            as: 'earner'
+            as: 'earner',
           },
           {
             model: db.user,
-            as: 'spender'
+            as: 'spender',
           },
           {
             model: db.rain,
-            as: 'rain'
+            as: 'rain',
           },
           {
             model: db.raintip,
-            as: 'raintip'
+            as: 'raintip',
           },
         ],
         lock: t.LOCK.UPDATE,
@@ -287,7 +323,6 @@ export const discordRain = async (
       io.to('admin').emit('updateActivity', {
         activity: tipActivity,
       });
-
     }
 
     const newStringListUsers = listOfUsersRained.join(", ");

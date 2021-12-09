@@ -4,16 +4,23 @@ import db from '../../models';
 
 export const updateDiscordGroup = async (client, message) => {
   let group;
+  let guildId;
+  if (message.guild && message.guild.id) {
+    guildId = message.guild.id;
+  } else {
+    guildId = message.guildId;
+  }
+
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    if (message.guildId) {
-      const guild = await client.guilds.cache.get(message.guildId);
+    if (guildId) {
+      const guild = await client.guilds.cache.get(guildId);
       // console.log(guild);
       group = await db.group.findOne(
         {
           where: {
-            groupId: `discord-${message.guildId}`,
+            groupId: `discord-${guildId}`,
           },
           transaction: t,
           lock: t.LOCK.UPDATE,
@@ -21,7 +28,7 @@ export const updateDiscordGroup = async (client, message) => {
       );
       if (!group) {
         group = await db.group.create({
-          groupId: `discord-${message.guildId}`,
+          groupId: `discord-${guildId}`,
           groupName: guild.name,
           lastActive: Date.now(),
         }, {
