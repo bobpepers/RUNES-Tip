@@ -127,51 +127,59 @@ export const discordRouter = (discordClient, io) => {
 
     if (filteredMessageDiscord[1] === undefined) {
       const limited = await limitHelp(message);
-      // await queue.add(() => limited);
+      await queue.add(() => limited);
+      if (limited) return;
       const task = await discordHelp(message, io);
       await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'help') {
       const limited = await limitHelp(message);
-      // await queue.add(() => limited);
+      await queue.add(() => limited);
+      if (limited) return;
       const task = await discordHelp(message, io);
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'stats') {
       const limited = await limitStats(message);
       await queue.add(() => limited);
+      if (limited) return;
       const task = await discordStats(message, filteredMessageDiscord, io, groupTask, channelTask);
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'leaderboard') {
       const limited = await limitLeaderboard(message);
-      // await queue.add(() => limited);
+      await queue.add(() => limited);
+      if (limited) return;
       const task = await discordLeaderboard(message, io);
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'publicstats') {
       const limited = await limitPublicStats(message);
-      // await queue.add(() => limited);
+      await queue.add(() => limited);
+      if (limited) return;
       const task = await discordPublicStats(message, io);
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'info') {
       const limited = await limitInfo(message);
-      // await queue.add(() => limited);
+      await queue.add(() => limited);
+      if (limited) return;
       const task = await discordCoinInfo(message, io);
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'ignoreme') {
       const limited = await limitIgnoreMe(message);
-      // await queue.add(() => limited);
+      await queue.add(() => limited);
+      if (limited) return;
       const task = await setIgnoreMe(message, io);
       await queue.add(() => task);
     }
     // console.log(filteredMessageDiscord);
     if (filteredMessageDiscord[1].toLowerCase() === 'balance') {
       const limited = await limitBalance(message);
-      // await queue.add(() => limited);
+      await queue.add(() => limited);
+      if (limited) return;
       const task = await fetchDiscordWalletBalance(message, io);
       await queue.add(() => task);
     }
@@ -185,7 +193,9 @@ export const discordRouter = (discordClient, io) => {
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitFaucet(message);
-      // await queue.add(() => limited);
+      await queue.add(() => limited);
+      if (limited) return;
+
       const task = await discordFaucetClaim(
         message,
         io,
@@ -196,7 +206,8 @@ export const discordRouter = (discordClient, io) => {
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'deposit') {
       const limited = await limitDeposit(message);
-      // await queue.add(() => limited);
+      await queue.add(() => limited);
+      if (limited) return;
       const task = await fetchDiscordWalletDepositAddress(message, io);
       await queue.add(() => task);
     }
@@ -207,6 +218,8 @@ export const discordRouter = (discordClient, io) => {
       if (!setting) return;
       const limited = await limitWithdraw(message);
       await queue.add(() => limited);
+      if (limited) return;
+
       await executeTipFunction(
         withdrawDiscordCreate,
         queue,
@@ -227,6 +240,7 @@ export const discordRouter = (discordClient, io) => {
       if (!setting) return;
       const limited = await limitTip(message);
       await queue.add(() => limited);
+      if (limited) return;
 
       let AmountPosition = 1;
       let AmountPositionEnded = false;
@@ -449,16 +463,5 @@ export const discordRouter = (discordClient, io) => {
         setting,
       );
     }
-
-    //    if (message.content.startsWith(`${prefix}`)) {
-    //      message.channel.send(`filtered message:
-    // filterMessage[0] = ${filteredMessageDiscord[0]}
-    // filterMessage[1] = ${filteredMessageDiscord[1]}
-    // filterMessage[2] = ${filteredMessageDiscord[2]}
-    // filterMessage[3] = ${filteredMessageDiscord[3]}
-    // filterMessage[4] = ${filteredMessageDiscord[4]}
-    // filterMessage[5] = ${filteredMessageDiscord[5]}
-    //      `);
-    //    }
   });
 };
