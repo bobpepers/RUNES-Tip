@@ -12,6 +12,7 @@ import {
   userNotFoundMessage,
 } from '../../messages/discord';
 // import settings from '../../config/settings';
+import { validateAmount } from "../../helpers/validateAmount";
 
 import logger from "../../helpers/logger";
 
@@ -116,50 +117,24 @@ export const tipRunesToDiscordUser = async (
     }
 
     // verify amount
-    let amount = 0;
-    if (filteredMessage[AmountPosition].toLowerCase() === 'all') {
-      amount = user.wallet.available;
-    } else {
-      amount = new BigNumber(filteredMessage[AmountPosition]).times(1e8).toNumber();
-    }
-    if (amount < setting.min) {
-      activity = await db.activity.create({
-        type: 'tip_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [minimumMessage(message, 'Tip', setting.min)] });
-
-      return;
-    }
-    if (type === 'each' && filteredMessage[AmountPosition].toLowerCase() !== 'all') {
-      amount *= usersToTip.length;
-    }
-    if (amount % 1 !== 0) {
-      activity = await db.activity.create({
-        type: 'tip_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'Tip')] });
+    const [
+      activityValiateAmount,
+      amount,
+    ] = await validateAmount(
+      message,
+      t,
+      filteredMessage[AmountPosition],
+      user,
+      setting,
+      'tip',
+      type,
+      usersToTip,
+    );
+    if (activityValiateAmount) {
+      activity = activityValiateAmount;
       return;
     }
 
-    if (amount > user.wallet.available) {
-      activity = await db.activity.create({
-        type: 'tip_i',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'Tip')] });
-      return;
-    }
     //
     const updatedBalance = await user.wallet.update({
       available: user.wallet.available - amount,

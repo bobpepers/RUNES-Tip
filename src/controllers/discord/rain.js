@@ -1,17 +1,14 @@
 /* eslint-disable import/prefer-default-export */
 import db from '../../models';
 import {
-  invalidAmountMessage,
-  insufficientBalanceMessage,
   walletNotFoundMessage,
-  minimumMessage,
   AfterSuccessMessage,
   NotInDirectMessage,
 } from '../../messages/discord';
 
-import BigNumber from "bignumber.js";
 import { Transaction, Op } from "sequelize";
 import logger from "../../helpers/logger";
+import { validateAmount } from "../../helpers/validateAmount";
 
 export const discordRain = async (
   discordClient,
@@ -104,57 +101,23 @@ export const discordRain = async (
       await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Rain')] });
       return;
     }
-    let amount = 0;
-    if (filteredMessage[2].toLowerCase() === 'all') {
-      amount = user.wallet.available;
-    } else {
-      amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
-    }
-    if (amount < setting.min) {
-      activity = await db.activity.create({
-        type: 'rain_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [minimumMessage(message, 'Rain')] });
+
+    const [
+      activityValiateAmount,
+      amount,
+    ] = await validateAmount(
+      message,
+      t,
+      filteredMessage[2],
+      user,
+      setting,
+      'rain'
+    );
+    if (activityValiateAmount) {
+      activity = activityValiateAmount;
       return;
-    }
-    if (amount % 1 !== 0) {
-      activity = await db.activity.create({
-        type: 'rain_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'Rain')] });
-      return;
-    }
-    if (amount <= 0) {
-      activity = await db.activity.create({
-        type: 'rain_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'Rain')] });
     }
 
-    if (user.wallet.available < amount) {
-      activity = await db.activity.create({
-        type: 'rain_i',
-        spenderId: user.id,
-        amount,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'Rain')] });
-      return;
-    }
     if (withoutBots.length < 2) {
       activity = await db.activity.create({
         type: 'rain_f',

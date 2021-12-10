@@ -1,20 +1,17 @@
 /* eslint-disable import/prefer-default-export */
 import db from '../../models';
 import {
-    invalidAmountMessage,
-    insufficientBalanceMessage,
     walletNotFoundMessage,
-    minimumMessage,
     AfterHurricaneSuccess,
     hurricaneMaxUserAmountMessage,
     hurricaneInvalidUserAmount,
     hurricaneUserZeroAmountMessage,
     NotInDirectMessage,
 } from '../../messages/discord';
+import { validateAmount } from "../../helpers/validateAmount";
 
 import _ from "lodash";
 
-import BigNumber from "bignumber.js";
 import { Transaction, Op } from "sequelize";
 import logger from "../../helpers/logger";
 
@@ -123,57 +120,22 @@ export const discordHurricane = async (
             await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Hurricane')] });
             return;
         }
-        let amount = 0;
-        if (filteredMessage[3].toLowerCase() === 'all') {
-            amount = user.wallet.available;
-        } else {
-            amount = new BigNumber(filteredMessage[3]).times(1e8).toNumber();
-        }
-        if (amount < setting.min) {
-            activity = await db.activity.create({
-                type: 'hurricane_f',
-                spenderId: user.id,
-            }, {
-                lock: t.LOCK.UPDATE,
-                transaction: t,
-            });
-            await message.channel.send({ embeds: [minimumMessage(message, 'Hurricane')] });
-            return;
-        }
-        if (amount % 1 !== 0) {
-            activity = await db.activity.create({
-                type: 'hurricane_f',
-                spenderId: user.id,
-            }, {
-                lock: t.LOCK.UPDATE,
-                transaction: t,
-            });
-            await message.channel.send({ embeds: [invalidAmountMessage(message, 'Hurricane')] });
-            return;
-        }
-        if (amount <= 0) {
-            activity = await db.activity.create({
-                type: 'hurricane_f',
-                spenderId: user.id,
-            }, {
-                lock: t.LOCK.UPDATE,
-                transaction: t,
-            });
-            await message.channel.send({ embeds: [invalidAmountMessage(message, 'Hurricane')] });
+        const [
+            activityValiateAmount,
+            amount,
+        ] = await validateAmount(
+            message,
+            t,
+            filteredMessage[3],
+            user,
+            setting,
+            'hurricane',
+        );
+        if (activityValiateAmount) {
+            activity = activityValiateAmount;
             return;
         }
 
-        if (user.wallet.available < amount) {
-            activity = await db.activity.create({
-                type: 'hurricane_i',
-                spenderId: user.id,
-            }, {
-                lock: t.LOCK.UPDATE,
-                transaction: t,
-            });
-            await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'Hurricane')] });
-            return;
-        }
         if (withoutBots.length < 1) {
             activity = await db.activity.create({
                 type: 'hurricane_f',

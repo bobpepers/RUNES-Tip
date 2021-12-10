@@ -10,6 +10,7 @@ import {
   AfterSuccessMessage,
   NotInDirectMessage,
 } from '../../messages/discord';
+import { validateAmount } from "../../helpers/validateAmount";
 
 import logger from "../../helpers/logger";
 
@@ -26,13 +27,6 @@ export const discordVoiceRain = async (
     await message.channel.send({ embeds: [NotInDirectMessage(message, 'Voicerain')] });
     return;
   }
-  console.log(channelTask);
-  console.log('channelTask');
-  console.log('channelTask');
-  console.log('channelTask');
-  console.log('channelTask');
-  console.log('channelTask');
-  console.log(filteredMessage);
   if (!filteredMessage[3].startsWith('<#')) {
     console.log('not a channel');
     return;
@@ -42,7 +36,6 @@ export const discordVoiceRain = async (
     return;
   }
   const voiceChannelId = filteredMessage[3].substr(2).slice(0, -1);
-  console.log(voiceChannelId);
 
   const voiceChannel = await db.channel.findOne({
     where: {
@@ -56,8 +49,6 @@ export const discordVoiceRain = async (
   }
 
   const members = await discordClient.channels.cache.get(voiceChannelId).members;
-  console.log(members);
-  console.log('members');
   const onlineMembers = members;
   const mappedMembersArray = onlineMembers.map((a) => a.user);
   const withoutBots = [];
@@ -131,57 +122,23 @@ export const discordVoiceRain = async (
       await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Voicerain')] });
       return;
     }
-    let amount = 0;
-    if (filteredMessage[2].toLowerCase() === 'all') {
-      amount = user.wallet.available;
-    } else {
-      amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
-    }
-    if (amount < setting.min) {
-      activity = await db.activity.create({
-        type: 'voicerain_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [minimumMessage(message, 'VoiceRain')] });
+
+    const [
+      activityValiateAmount,
+      amount,
+    ] = await validateAmount(
+      message,
+      t,
+      filteredMessage[2],
+      user,
+      setting,
+      'voicerain',
+    );
+    if (activityValiateAmount) {
+      activity = activityValiateAmount;
       return;
-    }
-    if (amount % 1 !== 0) {
-      activity = await db.activity.create({
-        type: 'rain_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'VoiceRain')] });
-      return;
-    }
-    if (amount <= 0) {
-      activity = await db.activity.create({
-        type: 'voicerain_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'VoiceRain')] });
     }
 
-    if (user.wallet.available < amount) {
-      activity = await db.activity.create({
-        type: 'voicerain_i',
-        spenderId: user.id,
-        amount,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'VoiceRain')] });
-      return;
-    }
     if (withoutBots.length < 2) {
       activity = await db.activity.create({
         type: 'voicerain_f',
@@ -193,10 +150,7 @@ export const discordVoiceRain = async (
       await message.channel.send('Not enough online users');
       return;
     }
-    console.log('123');
 
-    console.log(user.wallet);
-    console.log(amount);
     const updatedBalance = await user.wallet.update({
       available: user.wallet.available - amount,
     }, {
@@ -218,7 +172,7 @@ export const discordVoiceRain = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    console.log('333333');
+
     activity = await db.activity.create({
       amount,
       type: 'voicerain_s',
@@ -248,7 +202,7 @@ export const discordVoiceRain = async (
 
     });
     const listOfUsersRained = [];
-    console.log(999);
+
     // eslint-disable-next-line no-restricted-syntax
     for (const rainee of withoutBots) {
       // eslint-disable-next-line no-await-in-loop
@@ -275,8 +229,6 @@ export const discordVoiceRain = async (
         const userIdReceivedRain = rainee.user_id.replace('discord-', '');
         listOfUsersRained.push(`<@${userIdReceivedRain}>`);
       }
-      console.log('before tipactivity record');
-
       let tipActivity;
       // eslint-disable-next-line no-await-in-loop
       tipActivity = await db.activity.create({

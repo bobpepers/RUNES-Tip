@@ -28,6 +28,7 @@ import {
 import db from '../../models';
 import emojiCompact from "../../config/emoji";
 import logger from "../../helpers/logger";
+import { validateAmount } from "../../helpers/validateAmount";
 
 function shuffle(array) {
   let currentIndex = array.length; let
@@ -463,269 +464,213 @@ export const discordReactDrop = async (
         transaction: t,
       });
       await message.channel.send({ embeds: [userNotFoundMessage(message, 'ReactDrop')] });
+      return;
     }
-    let amount = 0;
-    if (filteredMessage[2].toLowerCase() === 'all') {
-      const tipper = await db.user.findOne({
-        where: {
-          user_id: `discord-${message.author.id}`,
-        },
-        include: [
-          {
-            model: db.wallet,
-            as: 'wallet',
-            include: [
-              {
-                model: db.address,
-                as: 'addresses',
-              },
-            ],
-          },
-        ],
+
+    const [
+      activityValiateAmount,
+      amount,
+    ] = await validateAmount(
+      message,
+      t,
+      filteredMessage[2],
+      user,
+      setting,
+      'reactdrop',
+    );
+    if (activityValiateAmount) {
+      activity = activityValiateAmount;
+      return;
+    }
+
+    /// Reactdrop
+
+    // Convert Message time to MS
+    let textTime = '5m';
+    if (filteredMessage[3]) {
+      textTime = filteredMessage[3];
+    }
+    // const textTime = filteredMessage[3];
+    const cutLastTimeLetter = textTime.substring(textTime.length - 1, textTime.length).toLowerCase();
+    const cutNumberTime = textTime.substring(0, textTime.length - 1);
+    const isnum = /^\d+$/.test(cutNumberTime);
+
+    if (
+      !isnum
+      // && Number(cutNumberTime) < 0
+      || (
+        cutLastTimeLetter !== 'd'
+        && cutLastTimeLetter !== 'h'
+        && cutLastTimeLetter !== 'm'
+        && cutLastTimeLetter !== 's')
+    ) {
+      activity = await db.activity.create({
+        type: 'reactdrop_f',
+        spenderId: user.id,
+      }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      if (tipper) {
-        amount = tipper.wallet.available;
-      } else {
-        amount = 0;
-      }
+      await message.channel.send({ embeds: [invalidTimeMessage(message, 'Reactdrop')] });
+    } else if (cutLastTimeLetter === 's' && Number(cutNumberTime) < 60) {
+      activity = await db.activity.create({
+        type: 'reactdrop_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      await message.channel.send({ embeds: [minimumTimeReactDropMessage(message)] });
     } else {
-      amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
-    }
-    if (amount % 1 !== 0) {
-      activity = await db.activity.create({
-        type: 'reactdrop_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
+      const allEmojis = emojiCompact;
+      await message.guild.emojis.cache.forEach((customEmoji) => {
+        allEmojis.push(`<:${customEmoji.name}:${customEmoji.id}>`);
       });
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'ReactDrop')] });
-    } else if (amount <= 0) {
-      activity = await db.activity.create({
-        type: 'reactdrop_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'ReactDrop')] });
-    } else if (amount < setting.min) {
-      activity = await db.activity.create({
-        type: 'reactdrop_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [minimumMessage(message, 'ReactDrop')] });
-    } else if (amount >= setting.min && amount % 1 === 0) {
-      if (user) {
-        if (amount > user.wallet.available) {
-          activity = await db.activity.create({
-            type: 'reactdrop_i',
-            spenderId: user.id,
+      if (!filteredMessage[4]) {
+        filteredMessage[4] = '❤️';
+      }
+
+      if (!allEmojis.includes(filteredMessage[4])) {
+        activity = await db.activity.create({
+          type: 'reactdrop_f',
+          spenderId: user.id,
+        }, {
+          lock: t.LOCK.UPDATE,
+          transaction: t,
+        });
+        await message.channel.send({ embeds: [invalidEmojiMessage(message, 'Reactdrop')] });
+      } else {
+        if (Number(cutNumberTime) * 24 * 60 * 60 * 1000 > 1209600000) {
+          await message.channel.send({ embeds: [maxTimeReactdropMessage(message)] });
+        }
+        let dateObj = await new Date().getTime();
+        if (cutLastTimeLetter === 'd') {
+          dateObj += Number(cutNumberTime) * 24 * 60 * 60 * 1000;
+        }
+        if (cutLastTimeLetter === 'h') {
+          dateObj += Number(cutNumberTime) * 60 * 60 * 1000;
+        }
+        if (cutLastTimeLetter === 'm') {
+          dateObj += Number(cutNumberTime) * 60 * 1000;
+        }
+        if (cutLastTimeLetter === 's') {
+          dateObj += Number(cutNumberTime) * 1000;
+        }
+        dateObj = await new Date(dateObj);
+        const countDownDate = await dateObj.getTime();
+        let now = await new Date().getTime();
+        let distance = countDownDate - now;
+
+        const randomAmount = Math.floor(Math.random() * 3) + 1;
+        const useEmojis = [];
+        for (let i = 0; i < randomAmount; i++) {
+          const randomX = Math.floor(Math.random() * allEmojis.length);
+          useEmojis.push(allEmojis[randomX]);
+        }
+        await useEmojis.push(filteredMessage[4]);
+
+        const shuffeledEmojisArray = await shuffle(useEmojis);
+
+        console.log(shuffeledEmojisArray);
+        const findGroup = await db.group.findOne({
+          where: {
+            groupId: `discord-${message.guildId}`,
+          },
+          transaction: t,
+          lock: t.LOCK.UPDATE,
+        });
+        if (!findGroup) {
+          console.log('group not found');
+        } else {
+          const wallet = await user.wallet.update({
+            available: user.wallet.available - amount,
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          console.log(distance);
+          console.log('distance');
+          const sendReactDropMessage = await message.channel.send({ embeds: [reactDropMessage(distance, message.author.id, filteredMessage[4], amount)] });
+          const group = await db.group.findOne({
+            where: {
+              groupId: `discord-${message.guildId}`,
+            },
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          const channel = await db.channel.findOne({
+            where: {
+              channelId: `discord-${message.channelId}`,
+            },
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
+          const newReactDrop = await db.reactdrop.create({
+            feeAmount: Number(fee),
             amount,
-            spender_balance: user.wallet.available + user.wallet.locked,
+            groupId: group.id,
+            channelId: channel.id,
+            ends: dateObj,
+            emoji: filteredMessage[4],
+            discordMessageId: sendReactDropMessage.id,
+            userId: user.id,
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+
+          activity = await db.activity.create({
+            amount,
+            type: 'reactdrop_s',
+            spenderId: user.id,
+            reactdropId: newReactDrop.id,
+            spender_balance: wallet.available + wallet.locked,
           }, {
             lock: t.LOCK.UPDATE,
             transaction: t,
           });
-          await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'Reactdrop')] });
-        }
-        if (amount <= user.wallet.available) {
-          /// Reactdrop
+          activity = await db.activity.findOne({
+            where: {
+              id: activity.id,
+            },
+            include: [
+              {
+                model: db.reactdrop,
+                as: 'reactdrop',
+              },
+              {
+                model: db.user,
+                as: 'spender',
+              },
+            ],
+            lock: t.LOCK.UPDATE,
+            transaction: t,
 
-          // Convert Message time to MS
-          let textTime = '5m';
-          if (filteredMessage[3]) {
-            textTime = filteredMessage[3];
+          });
+
+          const reactMessage = await discordClient.guilds.cache.get(sendReactDropMessage.guildId)
+            .channels.cache.get(sendReactDropMessage.channelId)
+            .messages.fetch(sendReactDropMessage.id);
+
+          listenReactDrop(reactMessage, distance, newReactDrop, io);
+
+          // eslint-disable-next-line no-restricted-syntax
+          for (const shufEmoji of shuffeledEmojisArray) {
+            // eslint-disable-next-line no-await-in-loop
+            await reactMessage.react(shufEmoji);
           }
-          // const textTime = filteredMessage[3];
-          const cutLastTimeLetter = textTime.substring(textTime.length - 1, textTime.length).toLowerCase();
-          const cutNumberTime = textTime.substring(0, textTime.length - 1);
-          const isnum = /^\d+$/.test(cutNumberTime);
 
-          if (
-            !isnum
-            // && Number(cutNumberTime) < 0
-            || (
-              cutLastTimeLetter !== 'd'
-              && cutLastTimeLetter !== 'h'
-              && cutLastTimeLetter !== 'm'
-              && cutLastTimeLetter !== 's')
-          ) {
-            activity = await db.activity.create({
-              type: 'reactdrop_f',
-              spenderId: user.id,
-            }, {
-              lock: t.LOCK.UPDATE,
-              transaction: t,
-            });
-            await message.channel.send({ embeds: [invalidTimeMessage(message, 'Reactdrop')] });
-          } else if (cutLastTimeLetter === 's' && Number(cutNumberTime) < 60) {
-            activity = await db.activity.create({
-              type: 'reactdrop_f',
-              spenderId: user.id,
-            }, {
-              lock: t.LOCK.UPDATE,
-              transaction: t,
-            });
-            await message.channel.send({ embeds: [minimumTimeReactDropMessage(message)] });
-          } else {
-            const allEmojis = emojiCompact;
-            await message.guild.emojis.cache.forEach((customEmoji) => {
-              allEmojis.push(`<:${customEmoji.name}:${customEmoji.id}>`);
-            });
-            if (!filteredMessage[4]) {
-              filteredMessage[4] = '❤️';
+          const updateMessage = setInterval(async () => {
+            now = new Date().getTime();
+            console.log('listen');
+            distance = countDownDate - now;
+            await reactMessage.edit({ embeds: [reactDropMessage(distance, message.author.id, filteredMessage[4], amount)] });
+            if (distance < 0) {
+              clearInterval(updateMessage);
             }
-
-            if (!allEmojis.includes(filteredMessage[4])) {
-              activity = await db.activity.create({
-                type: 'reactdrop_f',
-                spenderId: user.id,
-              }, {
-                lock: t.LOCK.UPDATE,
-                transaction: t,
-              });
-              await message.channel.send({ embeds: [invalidEmojiMessage(message, 'Reactdrop')] });
-            } else {
-              if (Number(cutNumberTime) * 24 * 60 * 60 * 1000 > 1209600000) {
-                await message.channel.send({ embeds: [maxTimeReactdropMessage(message)] });
-              }
-              let dateObj = await new Date().getTime();
-              if (cutLastTimeLetter === 'd') {
-                dateObj += Number(cutNumberTime) * 24 * 60 * 60 * 1000;
-              }
-              if (cutLastTimeLetter === 'h') {
-                dateObj += Number(cutNumberTime) * 60 * 60 * 1000;
-              }
-              if (cutLastTimeLetter === 'm') {
-                dateObj += Number(cutNumberTime) * 60 * 1000;
-              }
-              if (cutLastTimeLetter === 's') {
-                dateObj += Number(cutNumberTime) * 1000;
-              }
-              dateObj = await new Date(dateObj);
-              const countDownDate = await dateObj.getTime();
-              let now = await new Date().getTime();
-              let distance = countDownDate - now;
-
-              const randomAmount = Math.floor(Math.random() * 3) + 1;
-              const useEmojis = [];
-              for (let i = 0; i < randomAmount; i++) {
-                const randomX = Math.floor(Math.random() * allEmojis.length);
-                useEmojis.push(allEmojis[randomX]);
-              }
-              await useEmojis.push(filteredMessage[4]);
-
-              const shuffeledEmojisArray = await shuffle(useEmojis);
-
-              console.log(shuffeledEmojisArray);
-              const findGroup = await db.group.findOne({
-                where: {
-                  groupId: `discord-${message.guildId}`,
-                },
-                transaction: t,
-                lock: t.LOCK.UPDATE,
-              });
-              if (!findGroup) {
-                console.log('group not found');
-              } else {
-                const wallet = await user.wallet.update({
-                  available: user.wallet.available - amount,
-                }, {
-                  transaction: t,
-                  lock: t.LOCK.UPDATE,
-                });
-                console.log(distance);
-                console.log('distance');
-                const sendReactDropMessage = await message.channel.send({ embeds: [reactDropMessage(distance, message.author.id, filteredMessage[4], amount)] });
-                const group = await db.group.findOne({
-                  where: {
-                    groupId: `discord-${message.guildId}`,
-                  },
-                  transaction: t,
-                  lock: t.LOCK.UPDATE,
-                });
-                const channel = await db.channel.findOne({
-                  where: {
-                    channelId: `discord-${message.channelId}`,
-                  },
-                  transaction: t,
-                  lock: t.LOCK.UPDATE,
-                });
-                const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
-                const newReactDrop = await db.reactdrop.create({
-                  feeAmount: Number(fee),
-                  amount,
-                  groupId: group.id,
-                  channelId: channel.id,
-                  ends: dateObj,
-                  emoji: filteredMessage[4],
-                  discordMessageId: sendReactDropMessage.id,
-                  userId: user.id,
-                }, {
-                  transaction: t,
-                  lock: t.LOCK.UPDATE,
-                });
-
-                activity = await db.activity.create({
-                  amount,
-                  type: 'reactdrop_s',
-                  spenderId: user.id,
-                  reactdropId: newReactDrop.id,
-                  spender_balance: wallet.available + wallet.locked,
-                }, {
-                  lock: t.LOCK.UPDATE,
-                  transaction: t,
-                });
-                activity = await db.activity.findOne({
-                  where: {
-                    id: activity.id,
-                  },
-                  include: [
-                    {
-                      model: db.reactdrop,
-                      as: 'reactdrop',
-                    },
-                    {
-                      model: db.user,
-                      as: 'spender',
-                    },
-                  ],
-                  lock: t.LOCK.UPDATE,
-                  transaction: t,
-
-                });
-
-                const reactMessage = await discordClient.guilds.cache.get(sendReactDropMessage.guildId)
-                  .channels.cache.get(sendReactDropMessage.channelId)
-                  .messages.fetch(sendReactDropMessage.id);
-
-                listenReactDrop(reactMessage, distance, newReactDrop, io);
-
-                // eslint-disable-next-line no-restricted-syntax
-                for (const shufEmoji of shuffeledEmojisArray) {
-                  // eslint-disable-next-line no-await-in-loop
-                  await reactMessage.react(shufEmoji);
-                }
-
-                const updateMessage = setInterval(async () => {
-                  now = new Date().getTime();
-                  console.log('listen');
-                  distance = countDownDate - now;
-                  await reactMessage.edit({ embeds: [reactDropMessage(distance, message.author.id, filteredMessage[4], amount)] });
-                  if (distance < 0) {
-                    clearInterval(updateMessage);
-                  }
-                }, 5000);
-                logger.info(`Success started reactdrop Requested by: ${user.user_id}-${user.username} with ${amount / 1e8} ${settings.coin.ticker}`);
-              }
-            }
-          }
+          }, 5000);
+          logger.info(`Success started reactdrop Requested by: ${user.user_id}-${user.username} with ${amount / 1e8} ${settings.coin.ticker}`);
         }
       }
     }

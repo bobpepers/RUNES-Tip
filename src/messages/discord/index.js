@@ -362,42 +362,11 @@ export const walletNotFoundMessage = (message, title) => {
   return result;
 };
 
-export const minimumMessage = (message, type, min) => {
-  let minAmount;
-  if (type === 'Sleet') {
-    minAmount = settings.min.discord.sleet;
-  }
-  if (type === 'Rain') {
-    minAmount = settings.min.discord.rain;
-  }
-  if (type === 'Flood') {
-    minAmount = settings.min.discord.flood;
-  }
-  if (type === 'Tip') {
-    minAmount = settings.min.discord.tip;
-  }
-  if (type === 'Soak') {
-    minAmount = settings.min.discord.soak;
-  }
-  if (type === 'ReactDrop') {
-    minAmount = settings.min.discord.reactdrop;
-  }
-  if (type === 'Thunder') {
-    minAmount = settings.min.discord.thunder;
-  }
-  if (type === 'ThunderStorm') {
-    minAmount = settings.min.discord.thunderstorm;
-  }
-  if (type === 'Hurricane') {
-    minAmount = settings.min.discord.hurricane;
-  }
-  if (type === 'VoiceRain') {
-    minAmount = settings.min.discord.voicerain;
-  }
+export const minimumMessage = (message, setting, type) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle(type)
-    .setDescription(`<@${message.author.id}>, Minimum ${type} is ${min / 1e8} ${settings.coin.ticker}`)
+    .setDescription(`<@${message.author.id}>, Minimum ${type} is ${setting.min / 1e8} ${settings.coin.ticker}`)
     .setTimestamp()
     .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
 

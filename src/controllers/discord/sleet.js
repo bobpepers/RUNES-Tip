@@ -1,16 +1,13 @@
 /* eslint-disable import/prefer-default-export */
-import BigNumber from "bignumber.js";
 import { Transaction, Op } from "sequelize";
 import db from '../../models';
 import {
-  invalidAmountMessage,
-  insufficientBalanceMessage,
   notEnoughActiveUsersMessage,
   walletNotFoundMessage,
-  minimumMessage,
   AfterSuccessMessage,
   NotInDirectMessage,
 } from '../../messages/discord';
+import { validateAmount } from "../../helpers/validateAmount";
 
 import logger from "../../helpers/logger";
 
@@ -61,56 +58,22 @@ export const discordSleet = async (
       await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Sleet')] });
       return;
     }
-    let amount = 0;
-    if (filteredMessage[2].toLowerCase() === 'all') {
-      amount = user.wallet.available;
-    } else {
-      amount = new BigNumber(filteredMessage[2]).times(1e8).toNumber();
-    }
-    if (amount < setting.min) {
-      activity = await db.activity.create({
-        type: 'sleet_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [minimumMessage(message, 'Sleet')] });
+    const [
+      activityValiateAmount,
+      amount,
+    ] = await validateAmount(
+      message,
+      t,
+      filteredMessage[2],
+      user,
+      setting,
+      'sleet',
+    );
+    if (activityValiateAmount) {
+      activity = activityValiateAmount;
       return;
     }
-    if (amount % 1 !== 0) {
-      activity = await db.activity.create({
-        type: 'sleet_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'Sleet')] });
-      return;
-    }
-    if (amount <= 0) {
-      activity = await db.activity.create({
-        type: 'sleet_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'Sleet')] });
-      return;
-    }
-    if (user.wallet.available < amount) {
-      activity = await db.activity.create({
-        type: 'sleet_i',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'Sleet')] });
-      return;
-    }
+
     const group = await db.group.findOne({
       where: {
         groupId: `discord-${message.guildId}`,

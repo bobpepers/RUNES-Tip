@@ -12,6 +12,7 @@ import {
   NotInDirectMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
+import { validateAmount } from "../../helpers/validateAmount";
 
 import _ from "lodash";
 
@@ -122,57 +123,23 @@ export const discordThunderStorm = async (
       await message.channel.send({ embeds: [walletNotFoundMessage(message, 'ThunderStorm')] });
       return;
     }
-    let amount = 0;
-    if (filteredMessage[3].toLowerCase() === 'all') {
-      amount = user.wallet.available;
-    } else {
-      amount = new BigNumber(filteredMessage[3]).times(1e8).toNumber();
-    }
-    if (amount < setting.min) {
-      activity = await db.activity.create({
-        type: 'thunderstorm_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [minimumMessage(message, 'ThunderStorm')] });
-      return;
-    }
-    if (amount % 1 !== 0) {
-      activity = await db.activity.create({
-        type: 'thunderstorm_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'ThunderStorm')] });
-      return;
-    }
-    if (amount <= 0) {
-      activity = await db.activity.create({
-        type: 'thunderstorm_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [invalidAmountMessage(message, 'ThunderStorm')] });
+
+    const [
+      activityValiateAmount,
+      amount,
+    ] = await validateAmount(
+      message,
+      t,
+      filteredMessage[3],
+      user,
+      setting,
+      'thunderstorm',
+    );
+    if (activityValiateAmount) {
+      activity = activityValiateAmount;
       return;
     }
 
-    if (user.wallet.available < amount) {
-      activity = await db.activity.create({
-        type: 'thunder_i',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [insufficientBalanceMessage(message, 'ThunderStorm')] });
-      return;
-    }
     if (withoutBots.length < 1) {
       activity = await db.activity.create({
         type: 'thunderstorm_f',
