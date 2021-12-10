@@ -1,25 +1,21 @@
 /* eslint-disable import/prefer-default-export */
 import _ from "lodash";
-import BigNumber from "bignumber.js";
 import { Transaction, Op } from "sequelize";
 import db from '../../models';
 import {
-  invalidAmountMessage,
-  insufficientBalanceMessage,
-  minimumMessage,
   tipSuccessMessage,
   NotInDirectMessage,
   userNotFoundMessage,
 } from '../../messages/discord';
 // import settings from '../../config/settings';
-import { validateAmount } from "../../helpers/validateAmount";
+import { validateAmount } from "../../helpers/discord/validateAmount";
 
 import logger from "../../helpers/logger";
 
 export const tipRunesToDiscordUser = async (
+  discordClient,
   message,
   filteredMessage,
-  userIdToTip,
   io,
   groupTask,
   channelTask,

@@ -70,6 +70,7 @@ import { discordPublicStats } from '../controllers/discord/publicstats';
 import { discordLeaderboard } from '../controllers/discord/leaderboard';
 import settings from '../config/settings';
 import { discordSettings } from '../controllers/discord/settings';
+import { executeTipFunction } from '../helpers/discord/executeTips';
 
 config();
 
@@ -123,25 +124,6 @@ export const discordRouter = (discordClient, io) => {
 
     const preFilteredMessageDiscord = message.content.split(' ');
     const filteredMessageDiscord = preFilteredMessageDiscord.filter((el) => el !== '');
-
-    if (filteredMessageDiscord.length > 1 && filteredMessageDiscord[1].startsWith('<@!')) {
-      const setting = await discordSettings(message, 'tip', groupTaskId, channelTaskId);
-      await queue.add(() => setting);
-      if (!setting) return;
-      const limited = await limitTip(message);
-      await queue.add(() => limited);
-      const userToTipId = filteredMessageDiscord[1].substring(0, filteredMessageDiscord[1].length - 1).substring(3);
-      const task = await tipRunesToDiscordUser(
-        message,
-        filteredMessageDiscord,
-        userToTipId,
-        io,
-        groupTask,
-        channelTask,
-        setting,
-      );
-      await queue.add(() => task);
-    }
 
     if (filteredMessageDiscord[1] === undefined) {
       const limited = await limitHelp(message);
@@ -204,7 +186,12 @@ export const discordRouter = (discordClient, io) => {
       if (!setting) return;
       const limited = await limitFaucet(message);
       // await queue.add(() => limited);
-      const task = await discordFaucetClaim(message, io, groupTask, channelTask);
+      const task = await discordFaucetClaim(
+        message,
+        io,
+        groupTask,
+        channelTask,
+      );
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'deposit') {
@@ -219,9 +206,50 @@ export const discordRouter = (discordClient, io) => {
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitWithdraw(message);
-      // await queue.add(() => limited);
-      const task = await withdrawDiscordCreate(message, filteredMessageDiscord, io, setting);
-      await queue.add(() => task);
+      await queue.add(() => limited);
+      await executeTipFunction(
+        withdrawDiscordCreate,
+        queue,
+        filteredMessageDiscord[3],
+        discordClient,
+        message,
+        filteredMessageDiscord,
+        io,
+        groupTask,
+        channelTask,
+        setting,
+      );
+    }
+
+    if (filteredMessageDiscord.length > 1 && filteredMessageDiscord[1].startsWith('<@!')) {
+      const setting = await discordSettings(message, 'tip', groupTaskId, channelTaskId);
+      await queue.add(() => setting);
+      if (!setting) return;
+      const limited = await limitTip(message);
+      await queue.add(() => limited);
+
+      let AmountPosition = 1;
+      let AmountPositionEnded = false;
+      while (!AmountPositionEnded) {
+        AmountPosition += 1;
+        if (!filteredMessageDiscord[AmountPosition].startsWith('<@!')) {
+          AmountPositionEnded = true;
+        }
+      }
+
+      //
+      await executeTipFunction(
+        tipRunesToDiscordUser,
+        queue,
+        filteredMessageDiscord[AmountPosition],
+        discordClient,
+        message,
+        filteredMessageDiscord,
+        io,
+        groupTask,
+        channelTask,
+        setting,
+      );
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'voicerain') {
@@ -229,8 +257,13 @@ export const discordRouter = (discordClient, io) => {
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitRain(message);
-      // await queue.add(() => limited);
-      const task = await discordVoiceRain(
+      await queue.add(() => limited);
+      if (limited) return;
+
+      await executeTipFunction(
+        discordVoiceRain,
+        queue,
+        filteredMessageDiscord[2],
         discordClient,
         message,
         filteredMessageDiscord,
@@ -239,7 +272,6 @@ export const discordRouter = (discordClient, io) => {
         channelTask,
         setting,
       );
-      await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'rain') {
@@ -247,8 +279,13 @@ export const discordRouter = (discordClient, io) => {
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitRain(message);
-      // await queue.add(() => limited);
-      const task = await discordRain(
+      await queue.add(() => limited);
+      if (limited) return;
+
+      await executeTipFunction(
+        discordRain,
+        queue,
+        filteredMessageDiscord[2],
         discordClient,
         message,
         filteredMessageDiscord,
@@ -257,7 +294,6 @@ export const discordRouter = (discordClient, io) => {
         channelTask,
         setting,
       );
-      await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'flood') {
@@ -265,8 +301,13 @@ export const discordRouter = (discordClient, io) => {
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitFlood(message);
-      // await queue.add(() => limited);
-      const task = await discordFlood(
+      await queue.add(() => limited);
+      if (limited) return;
+
+      await executeTipFunction(
+        discordFlood,
+        queue,
+        filteredMessageDiscord[2],
         discordClient,
         message,
         filteredMessageDiscord,
@@ -275,7 +316,6 @@ export const discordRouter = (discordClient, io) => {
         channelTask,
         setting,
       );
-      await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'thunder') {
@@ -283,8 +323,13 @@ export const discordRouter = (discordClient, io) => {
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitThunder(message);
-      // await queue.add(() => limited);
-      const task = await discordThunder(
+      await queue.add(() => limited);
+      if (limited) return;
+
+      await executeTipFunction(
+        discordThunder,
+        queue,
+        filteredMessageDiscord[2],
         discordClient,
         message,
         filteredMessageDiscord,
@@ -293,7 +338,6 @@ export const discordRouter = (discordClient, io) => {
         channelTask,
         setting,
       );
-      await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'thunderstorm') {
@@ -301,8 +345,13 @@ export const discordRouter = (discordClient, io) => {
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitThunderStorm(message);
-      // await queue.add(() => limited);
-      const task = await discordThunderStorm(
+      await queue.add(() => limited);
+      if (limited) return;
+
+      await executeTipFunction(
+        discordThunderStorm,
+        queue,
+        filteredMessageDiscord[2],
         discordClient,
         message,
         filteredMessageDiscord,
@@ -311,7 +360,6 @@ export const discordRouter = (discordClient, io) => {
         channelTask,
         setting,
       );
-      await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'hurricane') {
@@ -319,8 +367,13 @@ export const discordRouter = (discordClient, io) => {
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitHurricane(message);
-      // await queue.add(() => limited);
-      const task = await discordHurricane(
+      await queue.add(() => limited);
+      if (limited) return;
+
+      await executeTipFunction(
+        discordHurricane,
+        queue,
+        filteredMessageDiscord[2],
         discordClient,
         message,
         filteredMessageDiscord,
@@ -329,7 +382,6 @@ export const discordRouter = (discordClient, io) => {
         channelTask,
         setting,
       );
-      await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'soak') {
@@ -337,8 +389,13 @@ export const discordRouter = (discordClient, io) => {
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitSoak(message);
-      // await queue.add(() => limited);
-      const task = await discordSoak(
+      await queue.add(() => limited);
+      if (limited) return;
+
+      await executeTipFunction(
+        discordSoak,
+        queue,
+        filteredMessageDiscord[2],
         discordClient,
         message,
         filteredMessageDiscord,
@@ -347,7 +404,6 @@ export const discordRouter = (discordClient, io) => {
         channelTask,
         setting,
       );
-      await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'sleet') {
@@ -355,8 +411,13 @@ export const discordRouter = (discordClient, io) => {
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitSleet(message);
-      // await queue.add(() => limited);
-      const task = await discordSleet(
+      await queue.add(() => limited);
+      if (limited) return;
+
+      await executeTipFunction(
+        discordSleet,
+        queue,
+        filteredMessageDiscord[2],
         discordClient,
         message,
         filteredMessageDiscord,
@@ -365,7 +426,6 @@ export const discordRouter = (discordClient, io) => {
         channelTask,
         setting,
       );
-      await queue.add(() => task);
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'reactdrop') {
@@ -373,17 +433,21 @@ export const discordRouter = (discordClient, io) => {
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitReactDrop(message);
-      // await queue.add(() => limited);
-      if (!limited) {
-        const task = await discordReactDrop(
-          discordClient,
-          message,
-          filteredMessageDiscord,
-          io,
-          setting,
-        );
-        await queue.add(() => task);
-      }
+      await queue.add(() => limited);
+      if (limited) return;
+
+      await executeTipFunction(
+        discordReactDrop,
+        queue,
+        filteredMessageDiscord[2],
+        discordClient,
+        message,
+        filteredMessageDiscord,
+        io,
+        groupTask,
+        channelTask,
+        setting,
+      );
     }
 
     //    if (message.content.startsWith(`${prefix}`)) {

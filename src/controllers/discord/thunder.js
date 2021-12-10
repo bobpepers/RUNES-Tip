@@ -14,7 +14,7 @@ import _ from "lodash";
 import BigNumber from "bignumber.js";
 import { Transaction, Op } from "sequelize";
 import logger from "../../helpers/logger";
-import { validateAmount } from "../../helpers/validateAmount";
+import { validateAmount } from "../../helpers/discord/validateAmount";
 
 export const discordThunder = async (
   discordClient,

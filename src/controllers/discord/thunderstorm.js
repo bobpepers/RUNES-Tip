@@ -12,7 +12,7 @@ import {
   NotInDirectMessage,
 } from '../../messages/discord';
 import settings from '../../config/settings';
-import { validateAmount } from "../../helpers/validateAmount";
+import { validateAmount } from "../../helpers/discord/validateAmount";
 
 import _ from "lodash";
 

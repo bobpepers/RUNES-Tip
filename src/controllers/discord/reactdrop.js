@@ -14,10 +14,7 @@ import { AlgebraicCaptcha } from "algebraic-captcha";
 import settings from '../../config/settings';
 import {
   reactDropMessage,
-  invalidAmountMessage,
-  minimumMessage,
   userNotFoundMessage,
-  insufficientBalanceMessage,
   minimumTimeReactDropMessage,
   invalidTimeMessage,
   ReactdropCaptchaMessage,
@@ -28,7 +25,7 @@ import {
 import db from '../../models';
 import emojiCompact from "../../config/emoji";
 import logger from "../../helpers/logger";
-import { validateAmount } from "../../helpers/validateAmount";
+import { validateAmount } from "../../helpers/discord/validateAmount";
 
 function shuffle(array) {
   let currentIndex = array.length; let
@@ -436,6 +433,8 @@ export const discordReactDrop = async (
   message,
   filteredMessage,
   io,
+  groupTask,
+  channelTask,
   setting,
 ) => {
   let activity;

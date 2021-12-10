@@ -17,7 +17,15 @@ import logger from "../../helpers/logger";
 /**
  * Create Withdrawal
  */
-export const withdrawDiscordCreate = async (message, filteredMessage, io, setting) => {
+export const withdrawDiscordCreate = async (
+  discordClient,
+  message,
+  filteredMessage,
+  io,
+  groupTask,
+  channelTask,
+  setting,
+) => {
   console.log(filteredMessage);
   logger.info(`Start Withdrawal Request: ${message.author.id}-${message.author.username}`);
   await db.sequelize.transaction({

@@ -8,7 +8,7 @@ import {
   NotInDirectMessage,
 } from '../../messages/discord';
 import logger from "../../helpers/logger";
-import { validateAmount } from "../../helpers/validateAmount";
+import { validateAmount } from "../../helpers/discord/validateAmount";
 
 export const discordFlood = async (
   discordClient,

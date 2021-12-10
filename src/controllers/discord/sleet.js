@@ -7,7 +7,7 @@ import {
   AfterSuccessMessage,
   NotInDirectMessage,
 } from '../../messages/discord';
-import { validateAmount } from "../../helpers/validateAmount";
+import { validateAmount } from "../../helpers/discord/validateAmount";
 
 import logger from "../../helpers/logger";
 
