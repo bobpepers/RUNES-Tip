@@ -2,6 +2,8 @@ import { MessageEmbed } from "discord.js";
 import settings from "../../config/settings";
 import pjson from "../../../package.json";
 
+const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
+
 export const discordUserBannedMessage = (user) => {
   const result = new MessageEmbed()
     .setColor("#C70039")
@@ -367,6 +369,40 @@ export const minimumMessage = (message, setting, type) => {
     .setColor(settings.bot.color)
     .setTitle(type)
     .setDescription(`<@${message.author.id}>, Minimum ${type} is ${setting.min / 1e8} ${settings.coin.ticker}`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
+export const timeOutAllAmoutMessageDiscord = (message, title) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(capitalize(title))
+    .setDescription(`<@${message.author.id}>, the request to ${title} all your ${settings.coin.ticker} has expired`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+export const canceledAllAmoutMessageDiscord = (message, title) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(capitalize(title))
+    .setDescription(`<@${message.author.id}>, you canceled the request to ${title} all your ${settings.coin.ticker}`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
+export const confirmAllAmoutMessageDiscord = (message, title) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(capitalize(title))
+    .setDescription(`<@${message.author.id}>, are you sure that you want to ${title} with all your ${settings.coin.ticker}?
+    Accepted answers: yes/no/y/n; 
+    Auto-cancel in 30 seconds.`)
     .setTimestamp()
     .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
 
