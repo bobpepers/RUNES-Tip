@@ -3,12 +3,11 @@ import db from '../../models';
 import {
   userNotFoundMessage,
   unableToFindUserMessage,
-  insufficientBalanceMessage,
   tipSuccessMessage,
   generalErrorMessage,
 } from '../../messages/telegram';
 import settings from '../../config/settings';
-import { validateAmount } from "../../helpers/discord/validateAmount";
+import { validateAmount } from "../../helpers/telegram/validateAmount";
 
 import logger from "../../helpers/logger";
 

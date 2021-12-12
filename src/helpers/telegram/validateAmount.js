@@ -29,6 +29,8 @@ export const validateAmount = async (
   }
 
   if (amount < Number(setting.min)) {
+    console.log(type);
+    console.log(user.id);
     activity = await db.activity.create({
       type: `${type}_f`,
       spenderId: user.id,
