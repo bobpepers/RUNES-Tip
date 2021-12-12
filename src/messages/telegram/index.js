@@ -65,8 +65,8 @@ export const tipSuccessMessage = (user, amount, findUserToTip) => {
   return result;
 };
 
-export const minimumTipMessage = (setting) => {
-  const result = `Minimum Tip is ${Number(setting.min) / 1e8} ${settings.coin.ticker}`;
+export const minimumMessage = (setting, title) => {
+  const result = `Minimum ${title} is ${Number(setting.min) / 1e8} ${settings.coin.ticker}`;
   return result;
 };
 
@@ -82,11 +82,6 @@ export const rainErrorMessage = () => {
 
 export const rainSuccessMessage = (amount, usersToRain, amountPerUser) => {
   const result = `Raining ${amount / 1e8} ${settings.coin.ticker} on ${usersToRain.length} active users -- ${amountPerUser / 1e8} ${settings.coin.ticker} each`;
-  return result;
-};
-
-export const minimumRainMessage = (setting) => {
-  const result = `Minimum Rain is ${Number(setting.min) / 1e8} ${settings.coin.ticker}`;
   return result;
 };
 
@@ -117,11 +112,6 @@ export const invalidAddressMessage = () => {
 
 export const invalidAmountMessage = () => {
   const result = `Invalid amount`;
-  return result;
-};
-
-export const minimumWithdrawalMessage = () => {
-  const result = `Minimum ${settings.coin.ticker} is ${Number(settings.min.withdrawal) / 1e8} ${settings.coin.ticker}`;
   return result;
 };
 

@@ -105,8 +105,8 @@ export const withdrawDiscordCreate = async (
       });
       if (!user) {
         await message.author.send({ embeds: [userNotFoundMessage(message, 'Withdraw')] });
+        return;
       }
-      console.log('5');
       if (user) {
         if (amount > user.wallet.available) {
           await message.author.send({ embeds: [insufficientBalanceMessage(message, 'Withdraw')] });

@@ -5,6 +5,8 @@ import {
 } from '../../messages/telegram';
 import db from '../../models';
 
+const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1); // Upper case first letter
+
 export const telegramSettings = async (ctx, name, groupId = null) => {
   let setting;
 
@@ -29,7 +31,6 @@ export const telegramSettings = async (ctx, name, groupId = null) => {
     ctx.reply('settings not found');
     return false;
   }
-  const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1); // Upper case first letter
 
   if (!setting.enabled && setting.groupId) {
     ctx.reply(featureDisabledServerMessage());
@@ -39,6 +40,6 @@ export const telegramSettings = async (ctx, name, groupId = null) => {
     ctx.reply(featureDisabledGlobalMessage());
     return false;
   }
-  console.log(setting);
+  // console.log(setting);
   return setting;
 };

@@ -8,6 +8,7 @@ import {
 } from '../../messages/telegram';
 import settings from '../../config/settings';
 import { validateAmount } from "../../helpers/telegram/validateAmount";
+import { userWalletExist } from "../../helpers/telegram/userWalletExist";
 
 import logger from "../../helpers/logger";
 
@@ -21,33 +22,21 @@ export const tipRunesToUser = async (
   groupTask,
   setting,
 ) => {
+  let user;
   let activity;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const user = await db.user.findOne({
-      where: {
-        user_id: `telegram-${ctx.update.message.from.id}`,
-      },
-      include: [
-        {
-          model: db.wallet,
-          as: 'wallet',
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-    if (!user) {
-      activity = await db.activity.create({
-        type: 'tip_f',
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      ctx.reply(userNotFoundMessage());
-      return;
-    }
+    [
+      user,
+      activity,
+    ] = await userWalletExist(
+      ctx,
+      t,
+      'tip',
+    );
+    if (!user) return;
+
     const [
       activityValiateAmount,
       amount,

@@ -3,7 +3,7 @@ import db from '../../models';
 import {
   invalidAmountMessage,
   insufficientBalanceMessage,
-  minimumTipMessage,
+  minimumMessage,
 } from '../../messages/telegram';
 
 const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
@@ -29,8 +29,6 @@ export const validateAmount = async (
   }
 
   if (amount < Number(setting.min)) {
-    console.log(type);
-    console.log(user.id);
     activity = await db.activity.create({
       type: `${type}_f`,
       spenderId: user.id,
@@ -38,13 +36,12 @@ export const validateAmount = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    ctx.reply(minimumTipMessage(setting));
+    ctx.reply(minimumMessage(setting, capitalize(type)));
     return [
       activity,
       amount,
     ];
   }
-
   if (amount % 1 !== 0) {
     activity = await db.activity.create({
       type: `${type}_f`,

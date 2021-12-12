@@ -77,6 +77,8 @@ module.exports = (sequelize, DataTypes) => {
         'voicerain_i',
         'voicerain_f',
         'voiceraintip_s',
+        'withdraw_i',
+        'withdraw_f',
       ],
     },
     amount: {

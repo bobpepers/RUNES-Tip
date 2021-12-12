@@ -12,6 +12,8 @@ import {
   withdrawalReviewMessage,
 } from '../../messages/telegram';
 import settings from '../../config/settings';
+import { validateAmount } from "../../helpers/telegram/validateAmount";
+import { userWalletExist } from "../../helpers/telegram/userWalletExist";
 
 import logger from "../../helpers/logger";
 
@@ -26,20 +28,40 @@ export const withdrawTelegramCreate = async (
   if (ctx.update.message.chat.type !== 'private') {
     await ctx.reply("i have sent you a direct message");
   }
-
+  let user;
+  let activity;
   // await ctx.telegram.sendMessage(ctx.update.message.from.id, balanceMessage(telegramUserName, user, priceInfo));
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const amount = new BigNumber(withdrawalAmount).times(1e8).toNumber();
-    if (amount < Number(setting.min)) {
-      ctx.reply(minimumWithdrawalMessage());
+    [
+      user,
+      activity,
+    ] = await userWalletExist(
+      ctx,
+      t,
+      'withdraw',
+    );
+    if (!user) return;
+
+    console.log('after user find');
+
+    const [
+      activityValiateAmount,
+      amount,
+    ] = await validateAmount(
+      ctx,
+      t,
+      withdrawalAmount,
+      user,
+      setting,
+      'withdraw',
+    );
+    if (activityValiateAmount) {
+      activity = activityValiateAmount;
       return;
     }
-    if (amount % 1 !== 0) {
-      ctx.reply(invalidAmountMessage());
-      return;
-    }
+    console.log('after validate amount');
 
     // Add new currencies here (default fallback Runebase)
     let isValidAddress = false;
@@ -56,34 +78,6 @@ export const withdrawTelegramCreate = async (
       return;
     }
 
-    const user = await db.user.findOne({
-      where: {
-        user_id: `telegram-${ctx.update.message.from.id}`,
-      },
-      include: [
-        {
-          model: db.wallet,
-          as: 'wallet',
-          include: [
-            {
-              model: db.address,
-              as: 'addresses',
-            },
-          ],
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-    if (!user) {
-      ctx.telegram.sendMessage(ctx.update.message.from.id, userNotFoundMessage());
-      return;
-    }
-
-    if (amount > user.wallet.available) {
-      ctx.telegram.sendMessage(ctx.update.message.from.id, insufficientBalanceMessage());
-      return;
-    }
     const wallet = await user.wallet.update({
       available: user.wallet.available - amount,
       locked: user.wallet.locked + amount,
@@ -91,17 +85,19 @@ export const withdrawTelegramCreate = async (
       transaction: t,
       lock: t.LOCK.UPDATE,
     });
+    const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
     const transaction = await db.transaction.create({
       addressId: wallet.addresses[0].id,
       phase: 'review',
       type: 'send',
       to_from: withdrawalAddress,
       amount,
+      feeAmount: Number(fee),
     }, {
       transaction: t,
       lock: t.LOCK.UPDATE,
     });
-    const activity = await db.activity.create(
+    activity = await db.activity.create(
       {
         spenderId: user.id,
         type: 'withdrawRequested',

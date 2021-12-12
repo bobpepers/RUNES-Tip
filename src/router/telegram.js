@@ -217,30 +217,31 @@ export const telegramRouter = (telegramClient, io, telegrafGetChatMembers) => {
     const filteredMessageTelegram = ctx.update.message.text.split(' ');
     if (!filteredMessageTelegram[1]) {
       ctx.reply('insufficient Arguments');
+      return;
     }
     if (!filteredMessageTelegram[2]) {
       ctx.reply('insufficient Arguments');
+      return;
     }
-    if (filteredMessageTelegram[1] && filteredMessageTelegram[2]) {
-      (async () => {
-        const groupTask = await updateGroup(ctx);
-        await queue.add(() => groupTask);
-        const groupTaskId = groupTask.id;
-        const setting = await telegramSettings(ctx, 'withdraw', groupTaskId);
-        await queue.add(() => setting);
-        if (!setting) return;
-        const withdrawalAddress = filteredMessageTelegram[1];
-        const withdrawalAmount = filteredMessageTelegram[2];
-        const task = await withdrawTelegramCreate(
-          ctx,
-          withdrawalAddress,
-          withdrawalAmount,
-          io,
-          setting,
-        );
-        await queue.add(() => task);
-      })();
-    }
+
+    const groupTask = await updateGroup(ctx);
+    await queue.add(() => groupTask);
+    console.log(groupTask);
+    const groupTaskId = groupTask ? groupTask.id : null;
+    const setting = await telegramSettings(ctx, 'withdraw', groupTaskId);
+    await queue.add(() => setting);
+    if (!setting) return;
+    const withdrawalAddress = filteredMessageTelegram[1];
+    const withdrawalAmount = filteredMessageTelegram[2];
+    console.log('before withdrawal create');
+    const task = await withdrawTelegramCreate(
+      ctx,
+      withdrawalAddress,
+      withdrawalAmount,
+      io,
+      setting,
+    );
+    await queue.add(() => task);
   });
 
   if (settings.coin.setting === 'Runebase') {
