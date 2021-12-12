@@ -127,7 +127,7 @@ Type "${settings.bot.command.telegram} help" for usage info`;
   return result;
 };
 
-export const helpMessage = () => {
+export const helpMessage = (withdraw) => {
   const result = `<b>Tipbot Help</b>
       
 ${settings.bot.command.telegram}
@@ -178,7 +178,7 @@ ${settings.bot.command.telegram} withdraw [address] [amount]
 <code>Withdraws the entered amount to a ${settings.coin.ticker} address of your choice, e.g.</code>
 ${settings.bot.command.telegram} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
 /withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
-<code>Note: Minimal amount to withdraw: ${settings.min.withdrawal / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${settings.fee.withdrawal / 1e8} ${settings.coin.ticker} will be automatically deducted from the amount.</code>
+<code>Note: Minimal amount to withdraw: ${withdraw.min / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${withdraw.fee / 1e2}% ${settings.coin.ticker} will be automatically deducted from the amount. half of the fee is donated to common faucet pot.</code>
       
 ${settings.coin.name === 'Runebase'
     && `${settings.bot.command.telegram} referral

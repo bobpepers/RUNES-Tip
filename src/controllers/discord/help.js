@@ -6,12 +6,21 @@ import {
 import db from '../../models';
 
 export const discordHelp = async (message, io) => {
+  const withdraw = await db.features.findOne(
+    {
+      where: {
+        type: 'global',
+        name: 'withdraw',
+      },
+    },
+  );
+  console.log(withdraw);
   if (message.channel.type === 'DM') {
-    message.author.send({ embeds: [helpMessage] });
+    message.author.send({ embeds: [helpMessage(withdraw)] });
   }
   if (message.channel.type === 'GUILD_TEXT') {
     message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Help')] });
-    message.author.send({ embeds: [helpMessage] });
+    message.author.send({ embeds: [helpMessage(withdraw)] });
   }
 
   let activity;

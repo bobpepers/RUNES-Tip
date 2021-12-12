@@ -697,10 +697,11 @@ export const warnDirectMessage = (userId, title) => {
   return result;
 };
 
-export const helpMessage = new MessageEmbed()
-  .setColor(settings.bot.color)
-  .setTitle(`${`${settings.bot.name} v${pjson.version}`} Help`)
-  .setDescription(`\`${settings.bot.command.discord}\`
+export const helpMessage = (withdraw) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(`${`${settings.bot.name} v${pjson.version}`} Help`)
+    .setDescription(`\`${settings.bot.command.discord}\`
 Displays this message
 
 \`${settings.bot.command.discord} help\`
@@ -728,7 +729,7 @@ default: disabled
 \`${settings.bot.command.discord} withdraw <address> <amount|all> \`
 Withdraws the entered amount to a ${settings.coin.name} address of your choice
 example: \`${settings.bot.command.discord} withdraw ${settings.coin.exampleAddress} 5.20 \`
-Note: Minimal amount to withdraw: ${settings.min.withdrawal / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${settings.fee.withdrawal / 1e8} ${settings.coin.ticker} will be automatically deducted from the amount and will be donated to the common faucet pot.
+Note: Minimal amount to withdraw: ${withdraw.min / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${withdraw.fee / 1e2}% ${settings.coin.ticker}. half of the withdrawal fee will be automatically deducted from the amount and will be donated to the common faucet pot.
 
 \`${settings.bot.command.discord} <@user> <amount|all>\`
 Tips the @ mentioned user with the desired amount
@@ -777,5 +778,7 @@ Turns @mentioning you during mass operations on/off
 
 **Like the bot?**
 [Invite it to your server](${settings.bot.url.discord})`)
-  .setTimestamp()
-  .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+  return result;
+};

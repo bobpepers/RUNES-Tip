@@ -12,7 +12,7 @@ import {
   telegramWithdrawalRejectedMessage,
 } from "../../messages/telegram";
 
-const { getInstance } = require('../../services/rclient');
+import { processWithdrawal } from '../../services/processWithdrawal';
 
 export const acceptWithdrawal = async (req, res, next) => {
   await db.sequelize.transaction({
@@ -47,55 +47,42 @@ export const acceptWithdrawal = async (req, res, next) => {
       res.locals.error = "Transaction not found";
       next();
     }
+    const settings = await db.features.findOne({
+      where: {
+        type: 'global',
+        name: 'withdraw',
+      },
+    });
+    if (!settings) {
+      res.locals.error = "settings not found";
+      next();
+    }
     if (transaction) {
-      const amount = ((transaction.amount - Number(settings.fee.withdrawal)) / 1e8);
-      let response;
-
-      // Add New Currency here (default fallback is Runebase)
-      if (settings.coin.setting === 'Runebase') {
-        response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
-      } else if (settings.coin.setting === 'Pirate') {
-        const preResponse = await getInstance().zSendMany(
-          process.env.PIRATE_MAIN_ADDRESS,
-          [{ address: transaction.to_from, amount: amount.toFixed(8) }],
-          1,
-          0.0001,
+      const response = await processWithdrawal(transaction);
+      if (response) {
+        res.locals.withdrawal = await transaction.update(
+          {
+            txid: response,
+            phase: 'confirming',
+            type: 'send',
+          },
+          {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          },
         );
-        let opStatus = await getInstance().zGetOperationStatus([preResponse]);
-        while (!opStatus || opStatus[0].status === 'executing') {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          opStatus = await getInstance().zGetOperationStatus([preResponse]);
-        }
-        console.log('opStatus');
-        console.log(opStatus);
-        response = opStatus[0].result.txid;
-      } else {
-        response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
+        const activity = await db.activity.create(
+          {
+            spenderId: transaction.address.wallet.userId,
+            type: 'withdrawAccepted',
+            transactionId: transaction.id,
+          },
+          {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          },
+        );
       }
-
-      console.log(5);
-      res.locals.withdrawal = await transaction.update(
-        {
-          txid: response,
-          phase: 'confirming',
-          type: 'send',
-        },
-        {
-          transaction: t,
-          lock: t.LOCK.UPDATE,
-        },
-      );
-      const activity = await db.activity.create(
-        {
-          spenderId: transaction.address.wallet.userId,
-          type: 'withdrawAccepted',
-          transactionId: transaction.id,
-        },
-        {
-          transaction: t,
-          lock: t.LOCK.UPDATE,
-        },
-      );
     }
 
     t.afterCommit(async () => {

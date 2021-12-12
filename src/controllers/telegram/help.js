@@ -8,10 +8,18 @@ export const fetchHelp = async (ctx, io) => {
   if (ctx.update.message.chat.type !== 'private') {
     await ctx.reply("i have sent you a direct message");
   }
+  const withdraw = await db.features.findOne(
+    {
+      where: {
+        type: 'global',
+        name: 'withdraw',
+      },
+    },
+  );
 
   ctx.telegram.sendMessage(
     ctx.update.message.from.id,
-    helpMessage(),
+    helpMessage(withdraw),
     {
       parse_mode: 'HTML',
       ...Markup.inlineKeyboard(

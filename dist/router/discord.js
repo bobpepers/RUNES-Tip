@@ -584,7 +584,7 @@ var discordRouter = function discordRouter(discordClient, io) {
 
             case 166:
               _context2.next = 168;
-              return (0, _faucet.discordFaucetClaim)(message, io, groupTask, channelTask);
+              return (0, _faucet.discordFaucetClaim)(message, filteredMessageDiscord, io);
 
             case 168:
               _task8 = _context2.sent;

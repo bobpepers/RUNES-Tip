@@ -7,14 +7,18 @@ import {
 
 import logger from "../../helpers/logger";
 
-export const fetchWalletBalance = async (ctx, telegramUserId, telegramUserName, io) => {
-  console.log(ctx.update.message);
-  console.log(ctx.update.message.chat.type);
-
+export const fetchWalletBalance = async (
+  ctx,
+  telegramUserId,
+  telegramUserName,
+  io,
+) => {
+  let user;
+  let activity;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const user = await db.user.findOne({
+    user = await db.user.findOne({
       where: {
         user_id: `telegram-${telegramUserId}`,
       },
@@ -51,11 +55,21 @@ export const fetchWalletBalance = async (ctx, telegramUserId, telegramUserName, 
       transaction: t,
     });
 
-    if (ctx.update.message.chat.type !== 'private') {
-      await ctx.reply("i have send you a direct message");
+    if (
+      ctx.update
+      && ctx.update.message
+      && ctx.update.message.chat
+      && ctx.update.message.chat.type
+      && ctx.update.message.chat.type !== 'private'
+    ) {
+      await ctx.reply("i have sent you a direct message");
     }
-
-    await ctx.telegram.sendMessage(ctx.update.message.from.id, balanceMessage(telegramUserName, user, priceInfo));
+    console.log(ctx);
+    if (ctx.update.callback_query) {
+      await ctx.telegram.sendMessage(ctx.update.callback_query.from.id, balanceMessage(telegramUserName, user, priceInfo));
+    } else {
+      await ctx.telegram.sendMessage(ctx.update.message.from.id, balanceMessage(telegramUserName, user, priceInfo));
+    }
 
     t.afterCommit(() => {
       logger.info(`Success Balance Requested by: ${telegramUserId}-${telegramUserName}`);

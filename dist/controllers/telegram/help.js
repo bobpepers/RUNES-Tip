@@ -27,7 +27,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 var fetchHelp = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(ctx, io) {
-    var activity, user;
+    var withdraw, activity, user;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -41,36 +41,46 @@ var fetchHelp = /*#__PURE__*/function () {
             return ctx.reply("i have sent you a direct message");
 
           case 3:
-            ctx.telegram.sendMessage(ctx.update.message.from.id, (0, _telegram.helpMessage)(), _objectSpread({
+            _context.next = 5;
+            return _models["default"].features.findOne({
+              where: {
+                type: 'global',
+                name: 'withdraw'
+              }
+            });
+
+          case 5:
+            withdraw = _context.sent;
+            ctx.telegram.sendMessage(ctx.update.message.from.id, (0, _telegram.helpMessage)(withdraw), _objectSpread({
               parse_mode: 'HTML'
             }, _telegraf.Markup.inlineKeyboard(_settings["default"].coin.setting === 'Runebase' ? [[_telegraf.Markup.button.callback('Balance', 'Balance'), _telegraf.Markup.button.callback('Price', 'Price')], [_telegraf.Markup.button.callback('Info', 'Info'), _telegraf.Markup.button.callback('Deposit', 'Deposit')], [_telegraf.Markup.button.callback('Referral', 'Referral'), _telegraf.Markup.button.callback('Referral Top 10', 'ReferralTop')]] : [[_telegraf.Markup.button.callback('Balance', 'Balance'), _telegraf.Markup.button.callback('Price', 'Price')], [_telegraf.Markup.button.callback('Info', 'Info'), _telegraf.Markup.button.callback('Deposit', 'Deposit')]])));
-            _context.next = 6;
+            _context.next = 9;
             return _models["default"].user.findOne({
               where: {
                 user_id: "telegram-".concat(ctx.update.message.from.id)
               }
             });
 
-          case 6:
+          case 9:
             user = _context.sent;
 
             if (user) {
-              _context.next = 9;
+              _context.next = 12;
               break;
             }
 
             return _context.abrupt("return");
 
-          case 9:
-            _context.next = 11;
+          case 12:
+            _context.next = 14;
             return _models["default"].activity.create({
               type: 'help',
               earnerId: user.id
             });
 
-          case 11:
+          case 14:
             activity = _context.sent;
-            _context.next = 14;
+            _context.next = 17;
             return _models["default"].activity.findOne({
               where: {
                 id: activity.id
@@ -81,13 +91,13 @@ var fetchHelp = /*#__PURE__*/function () {
               }]
             });
 
-          case 14:
+          case 17:
             activity = _context.sent;
             io.to('admin').emit('updateActivity', {
               activity: activity
             });
 
-          case 16:
+          case 19:
           case "end":
             return _context.stop();
         }

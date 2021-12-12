@@ -1,51 +1,34 @@
 /* eslint-disable import/prefer-default-export */
 import { Transaction } from "sequelize";
 import {
-  walletNotFoundMessage,
   dryFaucetMessage,
   claimTooFactFaucetMessage,
   faucetClaimedMessage,
 } from '../../messages/discord';
 import db from '../../models';
 import settings from '../../config/settings';
+import { userWalletExist } from "../../helpers/discord/userWalletExist";
 
-export const discordFaucetClaim = async (message, io) => {
+export const discordFaucetClaim = async (
+  message,
+  filteredMessage,
+  io,
+) => {
+  let user;
   let activity;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const user = await db.user.findOne({
-      where: {
-        user_id: `discord-${message.author.id}`,
-      },
-      include: [
-        {
-          model: db.wallet,
-          as: 'wallet',
-          required: true,
-          include: [
-            {
-              model: db.address,
-              as: 'addresses',
-              required: true,
-            },
-          ],
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
+    [
+      user,
+      activity,
+    ] = await userWalletExist(
+      message,
+      t,
+      filteredMessage[1].toLowerCase(),
+    );
+    if (!user) return;
 
-    if (!user) {
-      activity = await db.activity.create({
-        type: 'faucettip_f',
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Faucet')] });
-      return;
-    }
     const faucet = await db.faucet.findOne({
       order: [
         ['id', 'DESC'],
@@ -63,9 +46,8 @@ export const discordFaucetClaim = async (message, io) => {
       await message.channel.send('faucet not found');
       return;
     }
-    console.log(Number(settings.fee.withdrawal));
-    console.log(Number(faucet.amount));
-    if (Number(faucet.amount) < Number(settings.fee.withdrawal)) {
+
+    if (Number(faucet.amount) < 10000) {
       activity = await db.activity.create({
         type: 'faucettip_i',
       }, {
@@ -102,7 +84,7 @@ export const discordFaucetClaim = async (message, io) => {
       await message.channel.send({ embeds: [claimTooFactFaucetMessage(message, username, distance)] });
       return;
     }
-    const amountToTip = Number(((faucet.amount / 100) * settings.faucet).toFixed(0));
+    const amountToTip = Number(((faucet.amount / 100) * (settings.faucet / 1e2)).toFixed(0));
     const faucetTip = await db.faucettip.create({
       amount: amountToTip,
       faucetId: faucet.id,
@@ -112,7 +94,9 @@ export const discordFaucetClaim = async (message, io) => {
       transaction: t,
     });
     const updateFaucet = await faucet.update({
-      amount: Number(faucet.amount) - amountToTip,
+      amount: Number(faucet.amount) - Number(amountToTip),
+      claims: faucet.claims + 1,
+      totalAmountClaimed: faucet.totalAmountClaimed + Number(amountToTip),
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,

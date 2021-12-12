@@ -40,16 +40,8 @@ module.exports = {
     ],
     exampleAddress: '123',
   },
-  fee: {
-    withdrawal: 1e7, // 50% goes to faucet, this has to be atleast double the transaction
-  },
-  faucet: 1, // percentage of total per claim
+  faucet: 50, // (50 = 0,5% / 100 = 1% / ...) percentage of total per claim
   min: {
-    withdrawal: 2e8,
     confirmations: 6,
-    telegram: {
-      tip: 1e7,
-      rain: 1e7,
-    },
   },
 };

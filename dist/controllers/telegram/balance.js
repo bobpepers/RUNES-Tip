@@ -22,18 +22,17 @@ var _logger = _interopRequireDefault(require("../../helpers/logger"));
 // import settings from '../../config/settings';
 var fetchWalletBalance = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(ctx, telegramUserId, telegramUserName, io) {
+    var user, activity;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            console.log(ctx.update.message);
-            console.log(ctx.update.message.chat.type);
-            _context2.next = 4;
+            _context2.next = 2;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var user, priceInfo;
+                var priceInfo;
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
@@ -88,24 +87,39 @@ var fetchWalletBalance = /*#__PURE__*/function () {
                       case 11:
                         priceInfo = _context.sent;
 
-                        if (!(ctx.update.message.chat.type !== 'private')) {
+                        if (!(ctx.update && ctx.update.message && ctx.update.message.chat && ctx.update.message.chat.type && ctx.update.message.chat.type !== 'private')) {
                           _context.next = 15;
                           break;
                         }
 
                         _context.next = 15;
-                        return ctx.reply("i have send you a direct message");
+                        return ctx.reply("i have sent you a direct message");
 
                       case 15:
-                        _context.next = 17;
+                        console.log(ctx);
+
+                        if (!ctx.update.callback_query) {
+                          _context.next = 21;
+                          break;
+                        }
+
+                        _context.next = 19;
+                        return ctx.telegram.sendMessage(ctx.update.callback_query.from.id, (0, _telegram.balanceMessage)(telegramUserName, user, priceInfo));
+
+                      case 19:
+                        _context.next = 23;
+                        break;
+
+                      case 21:
+                        _context.next = 23;
                         return ctx.telegram.sendMessage(ctx.update.message.from.id, (0, _telegram.balanceMessage)(telegramUserName, user, priceInfo));
 
-                      case 17:
+                      case 23:
                         t.afterCommit(function () {
                           _logger["default"].info("Success Balance Requested by: ".concat(telegramUserId, "-").concat(telegramUserName));
                         });
 
-                      case 18:
+                      case 24:
                       case "end":
                         return _context.stop();
                     }
@@ -122,7 +136,7 @@ var fetchWalletBalance = /*#__PURE__*/function () {
               _logger["default"].error("Error Balance Requested by: ".concat(telegramUserId, "-").concat(telegramUserName, " - ").concat(err));
             });
 
-          case 4:
+          case 2:
           case "end":
             return _context2.stop();
         }

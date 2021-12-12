@@ -202,9 +202,8 @@ export const discordRouter = (discordClient, io) => {
 
       const task = await discordFaucetClaim(
         message,
+        filteredMessageDiscord,
         io,
-        groupTask,
-        channelTask,
       );
       await queue.add(() => task);
     }

@@ -23,10 +23,9 @@ var _discord = require("../../messages/discord");
 
 var _telegram = require("../../messages/telegram");
 
-// import { parseDomain } from "parse-domain";
-var _require = require('../../services/rclient'),
-    getInstance = _require.getInstance;
+var _processWithdrawal = require("../../services/processWithdrawal");
 
+// import { parseDomain } from "parse-domain";
 var acceptWithdrawal = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(req, res, next) {
     return _regenerator["default"].wrap(function _callee3$(_context3) {
@@ -38,7 +37,7 @@ var acceptWithdrawal = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(t) {
-                var updatedTrans, transaction, amount, response, preResponse, opStatus, activity;
+                var updatedTrans, transaction, settings, response, activity;
                 return _regenerator["default"].wrap(function _callee2$(_context2) {
                   while (1) {
                     switch (_context2.prev = _context2.next) {
@@ -73,83 +72,39 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                           next();
                         }
 
+                        _context2.next = 6;
+                        return _models["default"].features.findOne({
+                          where: {
+                            type: 'global',
+                            name: 'withdraw'
+                          }
+                        });
+
+                      case 6:
+                        settings = _context2.sent;
+
+                        if (!settings) {
+                          res.locals.error = "settings not found";
+                          next();
+                        }
+
                         if (!transaction) {
-                          _context2.next = 42;
+                          _context2.next = 19;
                           break;
                         }
 
-                        amount = (transaction.amount - Number(_settings["default"].fee.withdrawal)) / 1e8;
+                        _context2.next = 11;
+                        return (0, _processWithdrawal.processWithdrawal)(transaction);
 
-                        if (!(_settings["default"].coin.setting === 'Runebase')) {
-                          _context2.next = 12;
-                          break;
-                        }
-
-                        _context2.next = 9;
-                        return getInstance().sendToAddress(transaction.to_from, amount.toFixed(8).toString());
-
-                      case 9:
+                      case 11:
                         response = _context2.sent;
-                        _context2.next = 35;
-                        break;
 
-                      case 12:
-                        if (!(_settings["default"].coin.setting === 'Pirate')) {
-                          _context2.next = 32;
+                        if (!response) {
+                          _context2.next = 19;
                           break;
                         }
 
                         _context2.next = 15;
-                        return getInstance().zSendMany(process.env.PIRATE_MAIN_ADDRESS, [{
-                          address: transaction.to_from,
-                          amount: amount.toFixed(8)
-                        }], 1, 0.0001);
-
-                      case 15:
-                        preResponse = _context2.sent;
-                        _context2.next = 18;
-                        return getInstance().zGetOperationStatus([preResponse]);
-
-                      case 18:
-                        opStatus = _context2.sent;
-
-                      case 19:
-                        if (!(!opStatus || opStatus[0].status === 'executing')) {
-                          _context2.next = 27;
-                          break;
-                        }
-
-                        _context2.next = 22;
-                        return new Promise(function (resolve) {
-                          return setTimeout(resolve, 1000);
-                        });
-
-                      case 22:
-                        _context2.next = 24;
-                        return getInstance().zGetOperationStatus([preResponse]);
-
-                      case 24:
-                        opStatus = _context2.sent;
-                        _context2.next = 19;
-                        break;
-
-                      case 27:
-                        console.log('opStatus');
-                        console.log(opStatus);
-                        response = opStatus[0].result.txid;
-                        _context2.next = 35;
-                        break;
-
-                      case 32:
-                        _context2.next = 34;
-                        return getInstance().sendToAddress(transaction.to_from, amount.toFixed(8).toString());
-
-                      case 34:
-                        response = _context2.sent;
-
-                      case 35:
-                        console.log(5);
-                        _context2.next = 38;
                         return transaction.update({
                           txid: response,
                           phase: 'confirming',
@@ -159,9 +114,9 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 38:
+                      case 15:
                         res.locals.withdrawal = _context2.sent;
-                        _context2.next = 41;
+                        _context2.next = 18;
                         return _models["default"].activity.create({
                           spenderId: transaction.address.wallet.userId,
                           type: 'withdrawAccepted',
@@ -171,10 +126,10 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 41:
+                      case 18:
                         activity = _context2.sent;
 
-                      case 42:
+                      case 19:
                         t.afterCommit( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
                           var userDiscordId, myClient, userTelegramId;
                           return _regenerator["default"].wrap(function _callee$(_context) {
@@ -220,7 +175,7 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                           }, _callee);
                         })));
 
-                      case 43:
+                      case 20:
                       case "end":
                         return _context2.stop();
                     }

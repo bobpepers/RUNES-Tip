@@ -18,14 +18,26 @@ var _models = _interopRequireDefault(require("../../models"));
 /* eslint-disable import/prefer-default-export */
 var discordHelp = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(message, io) {
-    var activity, user;
+    var withdraw, activity, user;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
+            _context.next = 2;
+            return _models["default"].features.findOne({
+              where: {
+                type: 'global',
+                name: 'withdraw'
+              }
+            });
+
+          case 2:
+            withdraw = _context.sent;
+            console.log(withdraw);
+
             if (message.channel.type === 'DM') {
               message.author.send({
-                embeds: [_discord.helpMessage]
+                embeds: [(0, _discord.helpMessage)(withdraw)]
               });
             }
 
@@ -34,37 +46,37 @@ var discordHelp = /*#__PURE__*/function () {
                 embeds: [(0, _discord.warnDirectMessage)(message.author.id, 'Help')]
               });
               message.author.send({
-                embeds: [_discord.helpMessage]
+                embeds: [(0, _discord.helpMessage)(withdraw)]
               });
             }
 
-            _context.next = 4;
+            _context.next = 8;
             return _models["default"].user.findOne({
               where: {
                 user_id: "discord-".concat(message.author.id)
               }
             });
 
-          case 4:
+          case 8:
             user = _context.sent;
 
             if (user) {
-              _context.next = 7;
+              _context.next = 11;
               break;
             }
 
             return _context.abrupt("return");
 
-          case 7:
-            _context.next = 9;
+          case 11:
+            _context.next = 13;
             return _models["default"].activity.create({
               type: 'help',
               earnerId: user.id
             });
 
-          case 9:
+          case 13:
             activity = _context.sent;
-            _context.next = 12;
+            _context.next = 16;
             return _models["default"].activity.findOne({
               where: {
                 id: activity.id
@@ -75,14 +87,14 @@ var discordHelp = /*#__PURE__*/function () {
               }]
             });
 
-          case 12:
+          case 16:
             activity = _context.sent;
             io.to('admin').emit('updateActivity', {
               activity: activity
             });
             return _context.abrupt("return", true);
 
-          case 15:
+          case 19:
           case "end":
             return _context.stop();
         }
