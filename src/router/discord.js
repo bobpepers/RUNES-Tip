@@ -68,18 +68,19 @@ import {
 import { discordStats } from '../controllers/discord/stats';
 import { discordPublicStats } from '../controllers/discord/publicstats';
 import { discordLeaderboard } from '../controllers/discord/leaderboard';
-import getCoinSettings from '../config/settings';
 import { discordSettings } from '../controllers/discord/settings';
 import { executeTipFunction } from '../helpers/discord/executeTips';
 import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
-
-const settings = getCoinSettings();
 
 config();
 
 const queue = new PQueue({ concurrency: 1 });
 
-export const discordRouter = (discordClient, io) => {
+export const discordRouter = (
+  discordClient,
+  io,
+  settings,
+) => {
   discordClient.on('ready', () => {
     console.log(`Logged in as ${discordClient.user.tag}!`);
   });

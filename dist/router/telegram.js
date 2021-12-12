@@ -51,7 +51,7 @@ var queue = new _pQueue["default"]({
 });
 var runesGroup = process.env.TELEGRAM_RUNES_GROUP;
 
-var telegramRouter = function telegramRouter(telegramClient, io, telegrafGetChatMembers) {
+var telegramRouter = function telegramRouter(telegramClient, io, settings) {
   telegramClient.command('help', function (ctx) {
     (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
       var maintenance, task;
@@ -1140,7 +1140,7 @@ var telegramRouter = function telegramRouter(telegramClient, io, telegrafGetChat
   });
   telegramClient.on('text', /*#__PURE__*/function () {
     var _ref20 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee20(ctx) {
-      var maintenance, groupTask, task, lastSeenTask, preFilteredMessageTelegram, filteredMessageTelegram, telegramUserId, telegramUserName, _task, _task2, _task3, _task4, _task5, _task6, _task7, _task8, _groupTask, groupTaskId, setting, withdrawalAddress, withdrawalAmount, _task9, _groupTask2, _groupTaskId, _setting, tipAmount, tipTo, _task10, _groupTask3, _groupTaskId2, _setting2, rainAmount, _task11, telegramInfo, chatMemberInfo;
+      var maintenance, groupTask, task, lastSeenTask, preFilteredMessageTelegram, filteredMessageTelegram, telegramUserId, telegramUserName, _task, _task2, _task3, _task4, _task5, _task6, _task7, _task8, _groupTask, groupTaskId, setting, withdrawalAddress, withdrawalAmount, _task9, _groupTask2, _groupTaskId, _setting, tipAmount, tipTo, _task10, _groupTask3, _groupTaskId2, _setting2, rainAmount, _task11;
 
       return _regenerator["default"].wrap(function _callee20$(_context20) {
         while (1) {
@@ -1540,22 +1540,6 @@ var telegramRouter = function telegramRouter(telegramClient, io, telegrafGetChat
               });
 
             case 154:
-              _context20.next = 156;
-              return telegrafGetChatMembers.check(ctx.update.message.chat.id);
-
-            case 156:
-              telegramInfo = _context20.sent;
-              console.log(telegramInfo);
-              console.log(telegramInfo[0].user.id);
-              _context20.next = 161;
-              return telegramClient.telegram.getChatMember(ctx.update.message.chat.id, telegramInfo[0].user.id);
-
-            case 161:
-              chatMemberInfo = _context20.sent;
-              console.log(chatMemberInfo);
-              console.log('Users');
-
-            case 164:
             case "end":
               return _context20.stop();
           }

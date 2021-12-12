@@ -7,16 +7,12 @@ import {
   discordIncomingDepositMessage,
 } from '../messages/discord';
 
-import getCoinSettings from '../config/settings';
-
 import logger from "../helpers/logger";
 
 import { startRunebaseSync } from "../services/syncRunebase";
 import { startPirateSync } from "../services/syncPirate";
 import { discordRouter } from './discord';
 import { telegramRouter } from './telegram';
-
-const settings = getCoinSettings();
 
 config();
 
@@ -31,7 +27,13 @@ const localhostOnly = (req, res, next) => {
   next();
 };
 
-export const router = (app, discordClient, telegramClient, io, telegrafGetChatMembers) => {
+export const router = (
+  app,
+  discordClient,
+  telegramClient,
+  io,
+  settings,
+) => {
   app.post(
     '/api/chaininfo/block',
     localhostOnly,
@@ -86,6 +88,6 @@ export const router = (app, discordClient, telegramClient, io, telegrafGetChatMe
     );
   }
 
-  discordRouter(discordClient, io);
-  telegramRouter(telegramClient, io, telegrafGetChatMembers);
+  discordRouter(discordClient, io, settings);
+  telegramRouter(telegramClient, io, settings);
 };

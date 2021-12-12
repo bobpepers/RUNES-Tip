@@ -21,8 +21,6 @@ var _telegram = require("../messages/telegram");
 
 var _discord = require("../messages/discord");
 
-var _settings = _interopRequireDefault(require("../config/settings"));
-
 var _logger = _interopRequireDefault(require("../helpers/logger"));
 
 var _syncRunebase = require("../services/syncRunebase");
@@ -33,7 +31,6 @@ var _discord2 = require("./discord");
 
 var _telegram2 = require("./telegram");
 
-var settings = (0, _settings["default"])();
 (0, _dotenv.config)();
 
 var localhostOnly = function localhostOnly(req, res, next) {
@@ -46,7 +43,7 @@ var localhostOnly = function localhostOnly(req, res, next) {
   next();
 };
 
-var router = function router(app, discordClient, telegramClient, io, telegrafGetChatMembers) {
+var router = function router(app, discordClient, telegramClient, io, settings) {
   app.post('/api/chaininfo/block', localhostOnly, function (req, res) {
     console.log('new block found');
 
@@ -169,8 +166,8 @@ var router = function router(app, discordClient, telegramClient, io, telegrafGet
     }());
   }
 
-  (0, _discord2.discordRouter)(discordClient, io);
-  (0, _telegram2.telegramRouter)(telegramClient, io, telegrafGetChatMembers);
+  (0, _discord2.discordRouter)(discordClient, io, settings);
+  (0, _telegram2.telegramRouter)(telegramClient, io, settings);
 };
 
 exports.router = router;

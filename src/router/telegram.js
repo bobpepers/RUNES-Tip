@@ -45,7 +45,11 @@ const queue = new PQueue({ concurrency: 1 });
 
 const runesGroup = process.env.TELEGRAM_RUNES_GROUP;
 
-export const telegramRouter = (telegramClient, io, telegrafGetChatMembers) => {
+export const telegramRouter = (
+  telegramClient,
+  io,
+  settings,
+) => {
   telegramClient.command('help', (ctx) => {
     (async () => {
       const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
@@ -451,12 +455,12 @@ export const telegramRouter = (telegramClient, io, telegrafGetChatMembers) => {
     }
 
     // Test for holding telegram members on memory
-    const telegramInfo = await telegrafGetChatMembers.check(ctx.update.message.chat.id);
-    console.log(telegramInfo);
-    console.log(telegramInfo[0].user.id);
-    const chatMemberInfo = await telegramClient.telegram.getChatMember(ctx.update.message.chat.id, telegramInfo[0].user.id);
-    console.log(chatMemberInfo);
-    console.log('Users');
+    // const telegramInfo = await telegrafGetChatMembers.check(ctx.update.message.chat.id);
+    // console.log(telegramInfo);
+    // console.log(telegramInfo[0].user.id);
+    // const chatMemberInfo = await telegramClient.telegram.getChatMember(ctx.update.message.chat.id, telegramInfo[0].user.id);
+    // console.log(chatMemberInfo);
+    // console.log('Users');
   });
 
   telegramClient.on('message', async (ctx) => {

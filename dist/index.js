@@ -175,7 +175,7 @@ var discordClient = new _discord.Client({
 });
 var telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 telegramClient.use(telegrafGetChatMembers);
-(0, _router.router)(app, discordClient, telegramClient, io, telegrafGetChatMembers);
+(0, _router.router)(app, discordClient, telegramClient, io, settings);
 (0, _router2.dashboardRouter)(app, io, discordClient, telegramClient);
 server.listen(port);
 (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
