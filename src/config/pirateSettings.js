@@ -1,21 +1,21 @@
-module.exports = {
+export const runebaseSettings = {
   startSyncBlock: 500000,
   bot: {
-    name: "RunesTipBot",
+    name: "PirateTipBot",
     color: "#0099ff",
     url: {
       telegram: "",
       discord: "https://discord.com/oauth2/authorize?client_id=906563045248094249&scope=bot&permissions=523328",
     },
     command: {
-      discord: "!runestip",
-      telegram: "!runestip",
+      discord: "!piratetip",
+      telegram: "!piratetip",
     },
   },
   coin: {
-    setting: "Runebase", // Supported names for setting (Runebase, Pirate) // default fallback settings are Runebase
-    name: "Runebase",
-    ticker: "RUNES",
+    setting: "Pirate", // Supported names for setting (Runebase, Pirate) // default fallback settings are Runebase
+    name: "Pirate",
+    ticker: "ARRR",
     logo: "https://downloads.runebase.io/logo-512x512.png",
     website: "https://www.runebase.io",
     explorer: "https://explorer.runebase.io",
