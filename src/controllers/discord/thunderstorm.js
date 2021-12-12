@@ -1,23 +1,19 @@
 /* eslint-disable import/prefer-default-export */
 import db from '../../models';
 import {
-  invalidAmountMessage,
-  insufficientBalanceMessage,
-  walletNotFoundMessage,
-  minimumMessage,
   AfterThunderStormSuccess,
   thunderstormMaxUserAmountMessage,
   thunderstormInvalidUserAmount,
   thunderstormUserZeroAmountMessage,
   NotInDirectMessage,
 } from '../../messages/discord';
-import settings from '../../config/settings';
 import { validateAmount } from "../../helpers/discord/validateAmount";
+import { mapMembers } from "../../helpers/discord/mapMembers";
+import { userWalletExist } from "../../helpers/discord/userWalletExist";
 
 import _ from "lodash";
 
-import BigNumber from "bignumber.js";
-import { Transaction, Op } from "sequelize";
+import { Transaction } from "sequelize";
 import logger from "../../helpers/logger";
 
 export const discordThunderStorm = async (
@@ -49,80 +45,29 @@ export const discordThunderStorm = async (
   const onlineMembers = members.filter((member) =>
     member.presence?.status === "online"
   );
-  const mappedMembersArray = onlineMembers.map((a) => {
-    return a.user;
-  });
-  const preWithoutBots = [];
 
-  // eslint-disable-next-line no-restricted-syntax
-  for (const discordUser of mappedMembersArray) {
-    // eslint-disable-next-line no-await-in-loop
-    if (discordUser.bot === false) {
-      // eslint-disable-next-line no-await-in-loop
-      const userExist = await db.user.findOne({
-        where: {
-          user_id: `discord-${discordUser.id}`,
-        },
-        include: [
-          {
-            model: db.wallet,
-            as: 'wallet',
-            required: true,
-            include: [
-              {
-                model: db.address,
-                as: 'addresses',
-                required: true,
-              },
-            ],
-          },
-        ],
-      });
-      if (userExist) {
-        const userIdTest = userExist.user_id.replace('discord-', '');
-        if (userIdTest !== message.author.id) {
-          preWithoutBots.push(userExist);
-        }
-      }
-    }
-  }
-  const withoutBots = _.sampleSize(preWithoutBots, Number(filteredMessage[2]));
   let activity;
   let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    user = await db.user.findOne({
-      where: {
-        user_id: `discord-${message.author.id}`,
-      },
-      include: [
-        {
-          model: db.wallet,
-          as: 'wallet',
-          required: true,
-          include: [
-            {
-              model: db.address,
-              as: 'addresses',
-              required: true,
-            },
-          ],
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-    if (!user) {
-      activity = await db.activity.create({
-        type: 'thunderstorm_f',
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [walletNotFoundMessage(message, 'ThunderStorm')] });
-      return;
-    }
+    [
+      user,
+      activity,
+    ] = await userWalletExist(
+      message,
+      t,
+      filteredMessage[1].toLowerCase(),
+    );
+    if (!user) return;
+
+    const preWithoutBots = await mapMembers(
+      message,
+      t,
+      filteredMessage[4],
+      onlineMembers,
+    );
+    const withoutBots = _.sampleSize(preWithoutBots, Number(filteredMessage[2]));
 
     const [
       activityValiateAmount,

@@ -9,6 +9,8 @@ import {
 import { Transaction } from "sequelize";
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/discord/validateAmount";
+import { mapMembers } from "../../helpers/discord/mapMembers";
+import { userWalletExist } from "../../helpers/discord/userWalletExist";
 
 export const discordSoak = async (
   discordClient,
@@ -29,42 +31,6 @@ export const discordSoak = async (
     || member.presence?.status === "idle"
     || member.presence?.status === "dnd"
   );
-  const mappedMembersArray = onlineMembers.map((a) => {
-    return a.user;
-  });
-  const withoutBots = [];
-  // eslint-disable-next-line no-restricted-syntax
-  for (const discordUser of mappedMembersArray) {
-    // eslint-disable-next-line no-await-in-loop
-    if (discordUser.bot === false) {
-      // eslint-disable-next-line no-await-in-loop
-      const userExist = await db.user.findOne({
-        where: {
-          user_id: `discord-${discordUser.id}`,
-        },
-        include: [
-          {
-            model: db.wallet,
-            as: 'wallet',
-            required: true,
-            include: [
-              {
-                model: db.address,
-                as: 'addresses',
-                required: true,
-              },
-            ],
-          },
-        ],
-      });
-      if (userExist) {
-        const userIdTest = userExist.user_id.replace('discord-', '');
-        if (userIdTest !== message.author.id) {
-          withoutBots.push(userExist);
-        }
-      }
-    }
-  }
 
   let activity;
   let user;
@@ -72,35 +38,22 @@ export const discordSoak = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    user = await db.user.findOne({
-      where: {
-        user_id: `discord-${message.author.id}`,
-      },
-      include: [
-        {
-          model: db.wallet,
-          as: 'wallet',
-          include: [
-            {
-              model: db.address,
-              as: 'addresses',
-            },
-          ],
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-    if (!user) {
-      activity = await db.activity.create({
-        type: 'soak_f',
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Soak')] });
-      return;
-    }
+    [
+      user,
+      activity,
+    ] = await userWalletExist(
+      message,
+      t,
+      filteredMessage[1].toLowerCase(),
+    );
+    if (!user) return;
+
+    const withoutBots = await mapMembers(
+      message,
+      t,
+      filteredMessage[3],
+      onlineMembers,
+    );
 
     const [
       activityValiateAmount,
@@ -111,7 +64,7 @@ export const discordSoak = async (
       filteredMessage[2],
       user,
       setting,
-      'soak',
+      filteredMessage[1].toLowerCase(),
     );
     if (activityValiateAmount) {
       activity = activityValiateAmount;

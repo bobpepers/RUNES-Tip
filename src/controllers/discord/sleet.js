@@ -8,6 +8,8 @@ import {
   NotInDirectMessage,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/discord/validateAmount";
+import { mapMembers } from "../../helpers/discord/mapMembers";
+import { userWalletExist } from "../../helpers/discord/userWalletExist";
 
 import logger from "../../helpers/logger";
 
@@ -29,35 +31,16 @@ export const discordSleet = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    user = await db.user.findOne({
-      where: {
-        user_id: `discord-${message.author.id}`,
-      },
-      include: [
-        {
-          model: db.wallet,
-          as: 'wallet',
-          include: [
-            {
-              model: db.address,
-              as: 'addresses',
-            },
-          ],
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-    if (!user) {
-      activity = await db.activity.create({
-        type: 'sleet_f',
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Sleet')] });
-      return;
-    }
+    [
+      user,
+      activity,
+    ] = await userWalletExist(
+      message,
+      t,
+      filteredMessage[1].toLowerCase(),
+    );
+    if (!user) return;
+
     const [
       activityValiateAmount,
       amount,
@@ -67,7 +50,7 @@ export const discordSleet = async (
       filteredMessage[2],
       user,
       setting,
-      'sleet',
+      filteredMessage[1].toLowerCase(),
     );
     if (activityValiateAmount) {
       activity = activityValiateAmount;
