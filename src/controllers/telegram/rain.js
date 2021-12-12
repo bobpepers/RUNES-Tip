@@ -96,7 +96,7 @@ export const rainRunesToUsers = async (
             [Op.and]: [
               {
                 lastSeen: {
-                  [Op.gte]: new Date(Date.now() - (3 * 60 * 60 * 1000)),
+                  [Op.gte]: new Date(Date.now() - (24 * 60 * 60 * 1000)),
                 },
               },
               {
@@ -131,8 +131,10 @@ export const rainRunesToUsers = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      const amountPerUser = (((amount / usersToRain.length).toFixed(0)));
+      const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
+      const amountPerUser = ((amount - Number(fee)) / usersToRain.length).toFixed(0);
       const rainRecord = await db.rain.create({
+        feeAmount: fee,
         amount,
         userCount: usersToRain.length,
         userId: user.id,
