@@ -20,11 +20,11 @@ var _settings = _interopRequireDefault(require("../config/settings"));
 var instance;
 
 function createInstance() {
-  if (_settings["default"].coin.name === 'Runebase') {
+  if (_settings["default"].coin.setting === 'Runebase') {
     return new _rweb.Rweb3("http://".concat(process.env.RPC_USER, ":").concat(process.env.RPC_PASS, "@localhost:").concat(process.env.RPC_PORT));
   }
 
-  if (_settings["default"].coin.name === 'Pirate') {
+  if (_settings["default"].coin.setting === 'Pirate') {
     return new _arrrweb.ARRRweb3("http://".concat(process.env.RPC_USER, ":").concat(process.env.RPC_PASS, "@localhost:").concat(process.env.RPC_PORT));
   }
 }

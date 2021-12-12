@@ -17,14 +17,19 @@ var _models = _interopRequireDefault(require("../../models"));
 
 var updateDiscordChannel = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(client, message, group) {
-    var channelRecord;
+    var channelId, channelRecord;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            console.log(message);
-            console.log('updateDiscordMessage');
-            _context2.next = 4;
+            if (message.type && message.type === "GUILD_VOICE") {
+              console.log('GUILD_VOICE');
+              channelId = message.id;
+            } else {
+              channelId = message.channelId;
+            }
+
+            _context2.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -34,35 +39,37 @@ var updateDiscordChannel = /*#__PURE__*/function () {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
-                        // const channel = await client.channels.cache.get(message.channelId);
-                        channel = message.guild.channels.cache.get(message.channelId);
-                        console.log(channel);
+                        _context.next = 2;
+                        return message.guild.channels.cache.get(channelId);
 
-                        if (!message.channelId) {
-                          _context.next = 14;
+                      case 2:
+                        channel = _context.sent;
+
+                        if (!channelId) {
+                          _context.next = 15;
                           break;
                         }
 
-                        _context.next = 5;
+                        _context.next = 6;
                         return _models["default"].channel.findOne({
                           where: {
-                            channelId: "discord-".concat(message.channelId)
+                            channelId: "discord-".concat(channelId)
                           },
                           transaction: t,
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 5:
+                      case 6:
                         channelRecord = _context.sent;
 
                         if (channelRecord) {
-                          _context.next = 10;
+                          _context.next = 11;
                           break;
                         }
 
-                        _context.next = 9;
+                        _context.next = 10;
                         return _models["default"].channel.create({
-                          channelId: "discord-".concat(message.channelId),
+                          channelId: "discord-".concat(channelId),
                           lastActive: Date.now(),
                           channelName: channel.name,
                           groupId: group.id
@@ -71,16 +78,16 @@ var updateDiscordChannel = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 9:
+                      case 10:
                         channelRecord = _context.sent;
 
-                      case 10:
+                      case 11:
                         if (!channelRecord) {
-                          _context.next = 14;
+                          _context.next = 15;
                           break;
                         }
 
-                        _context.next = 13;
+                        _context.next = 14;
                         return channelRecord.update({
                           channelName: channel.name,
                           lastActive: Date.now()
@@ -89,15 +96,15 @@ var updateDiscordChannel = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 13:
+                      case 14:
                         channelRecord = _context.sent;
 
-                      case 14:
+                      case 15:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 15:
+                      case 16:
                       case "end":
                         return _context.stop();
                     }
@@ -112,10 +119,10 @@ var updateDiscordChannel = /*#__PURE__*/function () {
               console.log(err.message);
             });
 
-          case 4:
+          case 3:
             return _context2.abrupt("return", channelRecord);
 
-          case 5:
+          case 4:
           case "end":
             return _context2.stop();
         }

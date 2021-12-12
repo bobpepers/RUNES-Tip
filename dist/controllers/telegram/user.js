@@ -51,14 +51,13 @@ var createUpdateUser = /*#__PURE__*/function () {
 
                       case 2:
                         user = _context.sent;
-                        console.log(user);
 
                         if (user) {
-                          _context.next = 8;
+                          _context.next = 7;
                           break;
                         }
 
-                        _context.next = 7;
+                        _context.next = 6;
                         return _models["default"].user.create({
                           user_id: "telegram-".concat(ctx.update.message.from.id),
                           username: ctx.update.message.from.username,
@@ -69,21 +68,21 @@ var createUpdateUser = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 7:
+                      case 6:
                         user = _context.sent;
 
-                      case 8:
+                      case 7:
                         if (!user) {
-                          _context.next = 39;
+                          _context.next = 38;
                           break;
                         }
 
                         if (!(user.firstname !== ctx.update.message.from.first_name)) {
-                          _context.next = 13;
+                          _context.next = 12;
                           break;
                         }
 
-                        _context.next = 12;
+                        _context.next = 11;
                         return user.update({
                           firstname: ctx.update.message.from.first_name
                         }, {
@@ -91,16 +90,16 @@ var createUpdateUser = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 12:
+                      case 11:
                         user = _context.sent;
 
-                      case 13:
+                      case 12:
                         if (!(user.lastname !== ctx.update.message.from.last_name)) {
-                          _context.next = 17;
+                          _context.next = 16;
                           break;
                         }
 
-                        _context.next = 16;
+                        _context.next = 15;
                         return user.update({
                           lastname: ctx.update.message.from.last_name
                         }, {
@@ -108,16 +107,16 @@ var createUpdateUser = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 16:
+                      case 15:
                         user = _context.sent;
 
-                      case 17:
+                      case 16:
                         if (!(user.username !== ctx.update.message.from.username)) {
-                          _context.next = 21;
+                          _context.next = 20;
                           break;
                         }
 
-                        _context.next = 20;
+                        _context.next = 19;
                         return user.update({
                           username: ctx.update.message.from.username
                         }, {
@@ -125,11 +124,11 @@ var createUpdateUser = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 20:
+                      case 19:
                         user = _context.sent;
 
-                      case 21:
-                        _context.next = 23;
+                      case 20:
+                        _context.next = 22;
                         return _models["default"].wallet.findOne({
                           where: {
                             userId: user.id
@@ -138,15 +137,15 @@ var createUpdateUser = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 23:
+                      case 22:
                         wallet = _context.sent;
 
                         if (wallet) {
-                          _context.next = 28;
+                          _context.next = 27;
                           break;
                         }
 
-                        _context.next = 27;
+                        _context.next = 26;
                         return _models["default"].wallet.create({
                           userId: user.id,
                           available: 0,
@@ -156,11 +155,11 @@ var createUpdateUser = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 27:
+                      case 26:
                         wallet = _context.sent;
 
-                      case 28:
-                        _context.next = 30;
+                      case 27:
+                        _context.next = 29;
                         return _models["default"].address.findOne({
                           where: {
                             walletId: wallet.id
@@ -169,20 +168,20 @@ var createUpdateUser = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 30:
+                      case 29:
                         address = _context.sent;
 
                         if (address) {
-                          _context.next = 39;
+                          _context.next = 38;
                           break;
                         }
 
-                        _context.next = 34;
+                        _context.next = 33;
                         return (0, _rclient.getInstance)().getNewAddress();
 
-                      case 34:
+                      case 33:
                         newAddress = _context.sent;
-                        _context.next = 37;
+                        _context.next = 36;
                         return _models["default"].address.create({
                           address: newAddress,
                           walletId: wallet.id,
@@ -193,16 +192,16 @@ var createUpdateUser = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 37:
+                      case 36:
                         address = _context.sent;
                         ctx.reply((0, _telegram.welcomeMessage)(ctx));
 
-                      case 39:
+                      case 38:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 40:
+                      case 39:
                       case "end":
                         return _context.stop();
                     }
@@ -330,14 +329,12 @@ var updateLastSeen = /*#__PURE__*/function () {
                         _updatedActive = _context3.sent;
 
                       case 19:
-                        console.log(user);
-
                         if (!user) {
-                          _context3.next = 24;
+                          _context3.next = 23;
                           break;
                         }
 
-                        _context3.next = 23;
+                        _context3.next = 22;
                         return user.update({
                           lastSeen: new Date(Date.now())
                         }, {
@@ -345,15 +342,15 @@ var updateLastSeen = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 23:
+                      case 22:
                         updatedUser = _context3.sent;
 
-                      case 24:
+                      case 23:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 25:
+                      case 24:
                       case "end":
                         return _context3.stop();
                     }

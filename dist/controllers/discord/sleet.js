@@ -11,9 +11,9 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
-var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
-var _bignumber = _interopRequireDefault(require("bignumber.js"));
+var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _sequelize = require("sequelize");
 
@@ -21,7 +21,11 @@ var _models = _interopRequireDefault(require("../../models"));
 
 var _discord = require("../../messages/discord");
 
-var _settings = _interopRequireDefault(require("../../config/settings"));
+var _validateAmount = require("../../helpers/discord/validateAmount");
+
+var _mapMembers = require("../../helpers/discord/mapMembers");
+
+var _userWalletExist = require("../../helpers/discord/userWalletExist");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
@@ -32,176 +36,73 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var discordSleet = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(client, message, filteredMessage, io) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(client, message, filteredMessage, io, groupTask, channelTask, setting) {
     var activity, user;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.next = 2;
+            if (!(!groupTask || !channelTask)) {
+              _context2.next = 4;
+              break;
+            }
+
+            _context2.next = 3;
+            return message.channel.send({
+              embeds: [(0, _discord.NotInDirectMessage)(message, 'Flood')]
+            });
+
+          case 3:
+            return _context2.abrupt("return");
+
+          case 4:
+            _context2.next = 6;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var amount, group, usersToRain, updatedBalance, amountPerUser, sleetRecord, listOfUsersRained, _iterator, _step, sleetee, sleeteeWallet, sleettipRecord, userIdTest, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, group, usersToRain, updatedBalance, fee, amountPerUser, sleetRecord, listOfUsersRained, _iterator, _step, sleetee, sleeteeWallet, sleettipRecord, userIdTest, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
                         _context.next = 2;
-                        return _models["default"].user.findOne({
-                          where: {
-                            user_id: "discord-".concat(message.author.id)
-                          },
-                          include: [{
-                            model: _models["default"].wallet,
-                            as: 'wallet',
-                            include: [{
-                              model: _models["default"].address,
-                              as: 'addresses'
-                            }]
-                          }],
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
+                        return (0, _userWalletExist.userWalletExist)(message, t, filteredMessage[1].toLowerCase());
 
                       case 2:
-                        user = _context.sent;
+                        _yield$userWalletExis = _context.sent;
+                        _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
+                        user = _yield$userWalletExis2[0];
+                        activity = _yield$userWalletExis2[1];
 
                         if (user) {
-                          _context.next = 10;
+                          _context.next = 8;
                           break;
                         }
 
-                        _context.next = 6;
-                        return _models["default"].activity.create({
-                          type: 'sleet_f'
-                        }, {
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
-
-                      case 6:
-                        activity = _context.sent;
-                        _context.next = 9;
-                        return message.channel.send({
-                          embeds: [(0, _discord.walletNotFoundMessage)(message, 'Sleet')]
-                        });
-
-                      case 9:
                         return _context.abrupt("return");
+
+                      case 8:
+                        _context.next = 10;
+                        return (0, _validateAmount.validateAmount)(message, t, filteredMessage[2], user, setting, filteredMessage[1].toLowerCase());
 
                       case 10:
-                        amount = 0;
+                        _yield$validateAmount = _context.sent;
+                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
+                        activityValiateAmount = _yield$validateAmount2[0];
+                        amount = _yield$validateAmount2[1];
 
-                        if (filteredMessage[2].toLowerCase() === 'all') {
-                          amount = user.wallet.available;
-                        } else {
-                          amount = new _bignumber["default"](filteredMessage[2]).times(1e8).toNumber();
-                        }
-
-                        if (!(amount < Number(_settings["default"].min.discord.sleet))) {
-                          _context.next = 19;
+                        if (!activityValiateAmount) {
+                          _context.next = 17;
                           break;
                         }
 
-                        _context.next = 15;
-                        return _models["default"].activity.create({
-                          type: 'sleet_f',
-                          spenderId: user.id
-                        }, {
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
-
-                      case 15:
-                        activity = _context.sent;
-                        _context.next = 18;
-                        return message.channel.send({
-                          embeds: [(0, _discord.minimumMessage)(message, 'Sleet')]
-                        });
-
-                      case 18:
+                        activity = activityValiateAmount;
                         return _context.abrupt("return");
 
-                      case 19:
-                        if (!(amount % 1 !== 0)) {
-                          _context.next = 26;
-                          break;
-                        }
-
-                        _context.next = 22;
-                        return _models["default"].activity.create({
-                          type: 'sleet_f',
-                          spenderId: user.id
-                        }, {
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
-
-                      case 22:
-                        activity = _context.sent;
-                        _context.next = 25;
-                        return message.channel.send({
-                          embeds: [(0, _discord.invalidAmountMessage)(message, 'Sleet')]
-                        });
-
-                      case 25:
-                        return _context.abrupt("return");
-
-                      case 26:
-                        if (!(amount <= 0)) {
-                          _context.next = 33;
-                          break;
-                        }
-
-                        _context.next = 29;
-                        return _models["default"].activity.create({
-                          type: 'sleet_f',
-                          spenderId: user.id
-                        }, {
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
-
-                      case 29:
-                        activity = _context.sent;
-                        _context.next = 32;
-                        return message.channel.send({
-                          embeds: [(0, _discord.invalidAmountMessage)(message, 'Sleet')]
-                        });
-
-                      case 32:
-                        return _context.abrupt("return");
-
-                      case 33:
-                        if (!(user.wallet.available < amount)) {
-                          _context.next = 40;
-                          break;
-                        }
-
-                        _context.next = 36;
-                        return _models["default"].activity.create({
-                          type: 'sleet_i',
-                          spenderId: user.id
-                        }, {
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
-
-                      case 36:
-                        activity = _context.sent;
-                        _context.next = 39;
-                        return message.channel.send({
-                          embeds: [(0, _discord.insufficientBalanceMessage)(message, 'Sleet')]
-                        });
-
-                      case 39:
-                        return _context.abrupt("return");
-
-                      case 40:
-                        _context.next = 42;
+                      case 17:
+                        _context.next = 19;
                         return _models["default"].group.findOne({
                           where: {
                             groupId: "discord-".concat(message.guildId)
@@ -210,15 +111,15 @@ var discordSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 42:
+                      case 19:
                         group = _context.sent;
 
                         if (group) {
-                          _context.next = 50;
+                          _context.next = 27;
                           break;
                         }
 
-                        _context.next = 46;
+                        _context.next = 23;
                         return _models["default"].activity.create({
                           type: 'sleet_f',
                           spenderId: user.id
@@ -227,16 +128,16 @@ var discordSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 46:
+                      case 23:
                         activity = _context.sent;
-                        _context.next = 49;
+                        _context.next = 26;
                         return message.channel.send("Group not found");
 
-                      case 49:
+                      case 26:
                         return _context.abrupt("return");
 
-                      case 50:
-                        _context.next = 52;
+                      case 27:
+                        _context.next = 29;
                         return _models["default"].user.findAll({
                           where: (0, _defineProperty2["default"])({}, _sequelize.Op.and, [{
                             user_id: (0, _defineProperty2["default"])({}, _sequelize.Op.not, "discord-".concat(message.author.id))
@@ -258,15 +159,15 @@ var discordSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 52:
+                      case 29:
                         usersToRain = _context.sent;
 
                         if (!(usersToRain.length < 2)) {
-                          _context.next = 60;
+                          _context.next = 37;
                           break;
                         }
 
-                        _context.next = 56;
+                        _context.next = 33;
                         return _models["default"].activity.create({
                           type: 'sleet_f',
                           spenderId: user.id
@@ -275,23 +176,23 @@ var discordSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 56:
+                      case 33:
                         activity = _context.sent;
-                        _context.next = 59;
+                        _context.next = 36;
                         return message.channel.send({
                           embeds: [(0, _discord.notEnoughActiveUsersMessage)(message, 'Sleet')]
                         });
 
-                      case 59:
+                      case 36:
                         return _context.abrupt("return");
 
-                      case 60:
+                      case 37:
                         if (!(usersToRain.length >= 2)) {
-                          _context.next = 128;
+                          _context.next = 106;
                           break;
                         }
 
-                        _context.next = 63;
+                        _context.next = 40;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -299,22 +200,26 @@ var discordSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 63:
+                      case 40:
                         updatedBalance = _context.sent;
-                        amountPerUser = (amount / usersToRain.length).toFixed(0);
-                        _context.next = 67;
+                        fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
+                        amountPerUser = ((amount - Number(fee)) / usersToRain.length).toFixed(0);
+                        _context.next = 45;
                         return _models["default"].sleet.create({
+                          feeAmount: fee,
                           amount: amount,
                           userCount: usersToRain.length,
-                          userId: user.id
+                          userId: user.id,
+                          groupId: groupTask.id,
+                          channelId: channelTask.id
                         }, {
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 67:
+                      case 45:
                         sleetRecord = _context.sent;
-                        _context.next = 70;
+                        _context.next = 48;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'sleet_s',
@@ -326,9 +231,9 @@ var discordSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 70:
+                      case 48:
                         activity = _context.sent;
-                        _context.next = 73;
+                        _context.next = 51;
                         return _models["default"].activity.findOne({
                           where: {
                             id: activity.id
@@ -344,24 +249,24 @@ var discordSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 73:
+                      case 51:
                         activity = _context.sent;
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(usersToRain);
-                        _context.prev = 76;
+                        _context.prev = 54;
 
                         _iterator.s();
 
-                      case 78:
+                      case 56:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 98;
+                          _context.next = 76;
                           break;
                         }
 
                         sleetee = _step.value;
-                        _context.next = 82;
+                        _context.next = 60;
                         return sleetee.wallet.update({
                           available: sleetee.wallet.available + Number(amountPerUser)
                         }, {
@@ -369,19 +274,21 @@ var discordSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 82:
+                      case 60:
                         sleeteeWallet = _context.sent;
-                        _context.next = 85;
+                        _context.next = 63;
                         return _models["default"].sleettip.create({
-                          amount: amountPerUser,
+                          amount: Number(amountPerUser),
                           userId: sleetee.id,
-                          sleetId: sleetRecord.id
+                          sleetId: sleetRecord.id,
+                          groupId: groupTask.id,
+                          channelId: channelTask.id
                         }, {
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 85:
+                      case 63:
                         sleettipRecord = _context.sent;
 
                         if (sleetee.ignoreMe) {
@@ -393,7 +300,7 @@ var discordSleet = /*#__PURE__*/function () {
 
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context.next = 90;
+                        _context.next = 68;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
                           type: 'sleettip_s',
@@ -408,9 +315,9 @@ var discordSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 90:
+                      case 68:
                         tipActivity = _context.sent;
-                        _context.next = 93;
+                        _context.next = 71;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -432,110 +339,110 @@ var discordSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 93:
+                      case 71:
                         tipActivity = _context.sent;
                         console.log(tipActivity);
                         io.to('admin').emit('updateActivity', {
                           activity: tipActivity
                         });
 
-                      case 96:
-                        _context.next = 78;
+                      case 74:
+                        _context.next = 56;
                         break;
 
-                      case 98:
-                        _context.next = 103;
+                      case 76:
+                        _context.next = 81;
                         break;
 
-                      case 100:
-                        _context.prev = 100;
-                        _context.t0 = _context["catch"](76);
+                      case 78:
+                        _context.prev = 78;
+                        _context.t0 = _context["catch"](54);
 
                         _iterator.e(_context.t0);
 
-                      case 103:
-                        _context.prev = 103;
+                      case 81:
+                        _context.prev = 81;
 
                         _iterator.f();
 
-                        return _context.finish(103);
+                        return _context.finish(81);
 
-                      case 106:
+                      case 84:
                         newStringListUsers = listOfUsersRained.join(", ");
                         cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                        _context.prev = 109;
+                        _context.prev = 87;
 
                         _iterator2.s();
 
-                      case 111:
+                      case 89:
                         if ((_step2 = _iterator2.n()).done) {
-                          _context.next = 117;
+                          _context.next = 95;
                           break;
                         }
 
                         element = _step2.value;
-                        _context.next = 115;
+                        _context.next = 93;
                         return message.channel.send(element);
 
-                      case 115:
-                        _context.next = 111;
+                      case 93:
+                        _context.next = 89;
                         break;
 
-                      case 117:
-                        _context.next = 122;
+                      case 95:
+                        _context.next = 100;
                         break;
 
-                      case 119:
-                        _context.prev = 119;
-                        _context.t1 = _context["catch"](109);
+                      case 97:
+                        _context.prev = 97;
+                        _context.t1 = _context["catch"](87);
 
                         _iterator2.e(_context.t1);
 
-                      case 122:
-                        _context.prev = 122;
+                      case 100:
+                        _context.prev = 100;
 
                         _iterator2.f();
 
-                        return _context.finish(122);
+                        return _context.finish(100);
 
-                      case 125:
-                        _context.next = 127;
+                      case 103:
+                        _context.next = 105;
                         return message.channel.send({
                           embeds: [(0, _discord.AfterSuccessMessage)(message, amount, usersToRain, amountPerUser, 'Sleet', 'sleeted')]
                         });
 
-                      case 127:
+                      case 105:
                         _logger["default"].info("Success Rain Requested by: ".concat(message.author.id, "-").concat(message.author.username, " for ").concat(amount / 1e8));
 
-                      case 128:
+                      case 106:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 129:
+                      case 107:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[76, 100, 103, 106], [109, 119, 122, 125]]);
+                }, _callee, null, [[54, 78, 81, 84], [87, 97, 100, 103]]);
               }));
 
-              return function (_x5) {
+              return function (_x8) {
                 return _ref2.apply(this, arguments);
               };
             }())["catch"](function (err) {
               message.channel.send("Something went wrong.");
             });
 
-          case 2:
+          case 6:
             io.to('admin').emit('updateActivity', {
               activity: activity
             });
 
-          case 3:
+          case 7:
           case "end":
             return _context2.stop();
         }
@@ -543,7 +450,7 @@ var discordSleet = /*#__PURE__*/function () {
     }, _callee2);
   }));
 
-  return function discordSleet(_x, _x2, _x3, _x4) {
+  return function discordSleet(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
     return _ref.apply(this, arguments);
   };
 }();

@@ -37,6 +37,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
+    publicStats: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
     banned: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
@@ -61,24 +65,35 @@ module.exports = function (sequelize, DataTypes) {
 
   UserModel.associate = function (model) {
     UserModel.hasOne(model.wallet);
-    UserModel.hasMany(model.tip, {
-      foreignKey: 'userId',
-      as: 'userTip'
-    });
-    UserModel.hasMany(model.tip, {
-      foreignKey: 'userTippedId',
-      as: 'userTipped'
-    });
-    UserModel.hasMany(model.rain);
-    UserModel.hasMany(model.raintip);
     UserModel.hasMany(model.referral);
     UserModel.hasMany(model.referralReward);
     UserModel.hasMany(model.active, {
       foreignKey: 'userId',
       as: 'active'
     });
+    UserModel.hasMany(model.tip);
+    UserModel.hasMany(model.rain);
     UserModel.hasMany(model.reactdrop);
     UserModel.hasMany(model.faucettip);
+    UserModel.hasMany(model.flood);
+    UserModel.hasMany(model.soak);
+    UserModel.hasMany(model.flood);
+    UserModel.hasMany(model.sleet);
+    UserModel.hasMany(model.thunder, {
+      as: 'thunders'
+    });
+    UserModel.hasMany(model.thunderstorm);
+    UserModel.hasMany(model.hurricane);
+    UserModel.hasMany(model.reactdroptip);
+    UserModel.hasMany(model.raintip);
+    UserModel.hasMany(model.floodtip);
+    UserModel.hasMany(model.soaktip);
+    UserModel.hasMany(model.floodtip);
+    UserModel.hasMany(model.sleettip);
+    UserModel.hasMany(model.thundertip);
+    UserModel.hasMany(model.thunderstormtip);
+    UserModel.hasMany(model.hurricanetip);
+    UserModel.hasMany(model.tiptip);
   };
 
   return UserModel;

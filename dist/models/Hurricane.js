@@ -12,6 +12,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.BIGINT,
       allowNull: false
     },
+    feeAmount: {
+      type: DataTypes.BIGINT,
+      allowNull: false
+    },
     userCount: {
       type: DataTypes.BIGINT,
       allowNull: false
@@ -28,6 +32,8 @@ module.exports = function (sequelize, DataTypes) {
     HurricaneModel.hasMany(model.activity, {
       as: 'hurricane'
     });
+    HurricaneModel.belongsTo(model.group);
+    HurricaneModel.belongsTo(model.channel);
   };
 
   return HurricaneModel;

@@ -32,7 +32,7 @@ var _router2 = require("./dashboard/router");
 
 var _updatePrice = require("./helpers/updatePrice");
 
-var _faucet = require("./helpers/faucet");
+var _initDatabaseRecords = require("./helpers/initDatabaseRecords");
 
 var _patcher = require("./helpers/runebase/patcher");
 
@@ -50,6 +50,8 @@ var _syncRunebase = require("./services/syncRunebase");
 
 var _syncPirate = require("./services/syncPirate");
 
+var _processWithdrawals = require("./services/processWithdrawals");
+
 var _consolidate = require("./helpers/pirate/consolidate");
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -59,6 +61,8 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 require('dotenv').config();
+
+var telegrafGetChatMembers = require('telegraf-getchatmembers');
 
 var socketIo = require("socket.io");
 
@@ -136,7 +140,7 @@ io.on("connection", /*#__PURE__*/function () {
           case 0:
             userId = socket.request.session.passport ? socket.request.session.passport.user : '';
 
-            if (socket.request.user.role === 4 || socket.request.user.role === 8) {
+            if (socket.request.user && (socket.request.user.role === 4 || socket.request.user.role === 8)) {
               console.log('joined admin socket');
               socket.join('admin');
               sockets[userId] = socket;
@@ -161,15 +165,16 @@ io.on("connection", /*#__PURE__*/function () {
   };
 }());
 var discordClient = new _discord.Client({
-  intents: [_discord.Intents.FLAGS.GUILDS, _discord.Intents.FLAGS.GUILD_MEMBERS, _discord.Intents.FLAGS.GUILD_PRESENCES, _discord.Intents.FLAGS.GUILD_MESSAGES, _discord.Intents.FLAGS.DIRECT_MESSAGES, _discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, _discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, _discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS],
+  intents: [_discord.Intents.FLAGS.GUILDS, _discord.Intents.FLAGS.GUILD_MEMBERS, _discord.Intents.FLAGS.GUILD_PRESENCES, _discord.Intents.FLAGS.GUILD_MESSAGES, _discord.Intents.FLAGS.DIRECT_MESSAGES, _discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, _discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, _discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, _discord.Intents.FLAGS.GUILD_VOICE_STATES],
   partials: ['MESSAGE', 'CHANNEL', 'REACTION'] // makeCache: Options.cacheWithLimits({
   //  GuildEmoji: 5000, // This is default
   // }),
 
 });
 var telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN);
-(0, _router.router)(app, discordClient, telegramClient, io);
-(0, _router2.dashboardRouter)(app, io);
+telegramClient.use(telegrafGetChatMembers);
+(0, _router.router)(app, discordClient, telegramClient, io, telegrafGetChatMembers);
+(0, _router2.dashboardRouter)(app, io, discordClient, telegramClient);
 server.listen(port);
 (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
   var schedulePatchDeposits, _schedulePatchDeposits, consolidatePirateCoins, _schedulePatchDeposits2, allRunningReactDrops, _iterator, _step, _loop;
@@ -187,10 +192,10 @@ server.listen(port);
 
         case 4:
           _context4.next = 6;
-          return (0, _faucet.createFaucet)();
+          return (0, _initDatabaseRecords.initDatabaseRecords)();
 
         case 6:
-          if (!(_settings["default"].coin.name === 'Runebase')) {
+          if (!(_settings["default"].coin.setting === 'Runebase')) {
             _context4.next = 14;
             break;
           }
@@ -210,7 +215,7 @@ server.listen(port);
           break;
 
         case 14:
-          if (!(_settings["default"].coin.name === 'Pirate')) {
+          if (!(_settings["default"].coin.setting === 'Pirate')) {
             _context4.next = 25;
             break;
           }
@@ -378,5 +383,33 @@ server.listen(port);
 var schedulePriceUpdate = _nodeSchedule["default"].scheduleJob('*/10 * * * *', function () {
   (0, _updatePrice.updatePrice)();
 });
+
+var scheduleWithdrawal = _nodeSchedule["default"].scheduleJob('*/2 * * * *', /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4() {
+  var autoWithdrawalSetting;
+  return _regenerator["default"].wrap(function _callee4$(_context5) {
+    while (1) {
+      switch (_context5.prev = _context5.next) {
+        case 0:
+          _context5.next = 2;
+          return _models["default"].features.findOne({
+            where: {
+              name: 'autoWithdrawal'
+            }
+          });
+
+        case 2:
+          autoWithdrawalSetting = _context5.sent;
+
+          if (autoWithdrawalSetting.enabled) {
+            (0, _processWithdrawals.processWithdrawals)(telegramClient, discordClient);
+          }
+
+        case 4:
+        case "end":
+          return _context5.stop();
+      }
+    }
+  }, _callee4);
+})));
 
 console.log('server listening on:', port);

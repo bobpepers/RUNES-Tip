@@ -38,8 +38,26 @@ module.exports = function (sequelize, DataTypes) {
   var ChannelModel = sequelize.define('channel', modelDefinition, modelOptions);
 
   ChannelModel.associate = function (model) {
-    ChannelModel.hasMany(model.reactdrop);
     ChannelModel.belongsTo(model.group);
+    ChannelModel.hasMany(model.features); // spend
+
+    ChannelModel.hasMany(model.reactdrop);
+    ChannelModel.hasMany(model.flood);
+    ChannelModel.hasMany(model.rain);
+    ChannelModel.hasMany(model.soak);
+    ChannelModel.hasMany(model.sleet);
+    ChannelModel.hasMany(model.thunder);
+    ChannelModel.hasMany(model.thunderstorm);
+    ChannelModel.hasMany(model.hurricane); // receive
+
+    ChannelModel.hasMany(model.reactdroptip);
+    ChannelModel.hasMany(model.floodtip);
+    ChannelModel.hasMany(model.raintip);
+    ChannelModel.hasMany(model.soaktip);
+    ChannelModel.hasMany(model.sleettip);
+    ChannelModel.hasMany(model.thundertip);
+    ChannelModel.hasMany(model.thunderstormtip);
+    ChannelModel.hasMany(model.hurricanetip);
   };
 
   return ChannelModel;

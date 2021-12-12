@@ -144,6 +144,7 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'dashboardUserId',
       otherKey: 'ipId'
     });
+    DashboardUserModel.hasMany(model.features);
   };
 
   return DashboardUserModel;

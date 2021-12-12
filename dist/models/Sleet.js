@@ -12,6 +12,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.BIGINT,
       allowNull: false
     },
+    feeAmount: {
+      type: DataTypes.BIGINT,
+      allowNull: false
+    },
     userCount: {
       type: DataTypes.BIGINT,
       allowNull: false
@@ -30,6 +34,8 @@ module.exports = function (sequelize, DataTypes) {
     SleetModel.hasMany(model.activity, {
       as: 'sleet'
     });
+    SleetModel.belongsTo(model.group);
+    SleetModel.belongsTo(model.channel);
   }; // 5: Wallet has many addresses
 
 

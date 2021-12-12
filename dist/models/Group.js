@@ -39,8 +39,26 @@ module.exports = function (sequelize, DataTypes) {
 
   GroupModel.associate = function (model) {
     GroupModel.hasMany(model.active);
+    GroupModel.hasMany(model.channel); // spend
+
     GroupModel.hasMany(model.reactdrop);
-    GroupModel.hasMany(model.channel);
+    GroupModel.hasMany(model.flood);
+    GroupModel.hasMany(model.rain);
+    GroupModel.hasMany(model.soak);
+    GroupModel.hasMany(model.sleet);
+    GroupModel.hasMany(model.thunder);
+    GroupModel.hasMany(model.thunderstorm);
+    GroupModel.hasMany(model.hurricane); // receive
+
+    GroupModel.hasMany(model.reactdroptip);
+    GroupModel.hasMany(model.floodtip);
+    GroupModel.hasMany(model.raintip);
+    GroupModel.hasMany(model.soaktip);
+    GroupModel.hasMany(model.sleettip);
+    GroupModel.hasMany(model.thundertip);
+    GroupModel.hasMany(model.thunderstormtip);
+    GroupModel.hasMany(model.hurricanetip);
+    GroupModel.hasMany(model.features);
   };
 
   return GroupModel;

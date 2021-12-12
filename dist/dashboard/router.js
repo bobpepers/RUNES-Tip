@@ -17,6 +17,8 @@ var _liability = require("./controllers/liability");
 
 var _balance = require("./controllers/balance");
 
+var _bots = require("./controllers/bots");
+
 var _ip = require("./controllers/ip");
 
 var _servers = require("./controllers/servers");
@@ -26,6 +28,8 @@ var _status = require("./controllers/status");
 var _withdrawals = require("./controllers/withdrawals");
 
 var _activity = require("./controllers/activity");
+
+var _features = require("./controllers/features");
 
 var _resetPassword = require("./controllers/resetPassword");
 
@@ -61,7 +65,7 @@ var IsAuthenticated = function IsAuthenticated(req, res, next) {
   }
 };
 
-var dashboardRouter = function dashboardRouter(app, io) {
+var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramClient) {
   app.get('/api/authenticated', function (req, res, next) {
     if (req.isAuthenticated()) {
       next();
@@ -72,6 +76,44 @@ var dashboardRouter = function dashboardRouter(app, io) {
     }
   }, _tfa.istfa);
   app.post('/api/signup', _recaptcha.verifyMyCaptcha, _ip.insertIp, _auth.signup);
+  app.post('/api/withdrawal/accept', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, function (req, res, next) {
+    res.locals.discordClient = discordClient;
+    res.locals.telegramClient = telegramClient;
+    next();
+  }, _withdrawals.acceptWithdrawal, function (req, res) {
+    if (res.locals.error) {
+      res.status(401).send({
+        error: res.locals.error
+      });
+    } else if (res.locals.withdrawal) {
+      res.json({
+        withdrawal: res.locals.withdrawal
+      });
+    } else {
+      res.status(401).send({
+        error: "ERROR"
+      });
+    }
+  });
+  app.post('/api/withdrawal/decline', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, function (req, res, next) {
+    res.locals.discordClient = discordClient;
+    res.locals.telegramClient = telegramClient;
+    next();
+  }, _withdrawals.declineWithdrawal, function (req, res) {
+    if (res.locals.error) {
+      res.status(401).send({
+        error: res.locals.error
+      });
+    } else if (res.locals.withdrawal) {
+      res.json({
+        withdrawal: res.locals.withdrawal
+      });
+    } else {
+      res.status(401).send({
+        error: "ERROR"
+      });
+    }
+  });
   app.post('/api/ban/user', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _users.banUser, function (req, res) {
     if (res.locals.user) {
       res.json({
@@ -79,9 +121,7 @@ var dashboardRouter = function dashboardRouter(app, io) {
       });
     } else {
       res.status(401).send({
-        error: {
-          message: "Error"
-        }
+        error: "ERROR"
       });
     }
   });
@@ -92,9 +132,7 @@ var dashboardRouter = function dashboardRouter(app, io) {
       });
     } else {
       res.status(401).send({
-        error: {
-          message: "Error"
-        }
+        error: "ERROR"
       });
     }
   });
@@ -105,9 +143,85 @@ var dashboardRouter = function dashboardRouter(app, io) {
       });
     } else {
       res.status(401).send({
-        error: {
-          message: "Error"
-        }
+        error: "ERROR"
+      });
+    }
+  });
+  app.post('/api/feature/remove', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _features.removeFeature, function (req, res) {
+    if (res.locals.error) {
+      res.status(401).send({
+        error: res.locals.error
+      });
+    } else if (res.locals.feature) {
+      res.json({
+        feature: res.locals.feature
+      });
+    } else {
+      res.status(401).send({
+        error: "ERROR"
+      });
+    }
+  });
+  app.post('/api/feature/update', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _features.updateFeature, function (req, res) {
+    if (res.locals.error) {
+      res.status(401).send({
+        error: res.locals.error
+      });
+    } else if (res.locals.feature) {
+      res.json({
+        feature: res.locals.feature
+      });
+    } else {
+      res.status(401).send({
+        error: "ERROR"
+      });
+    }
+  });
+  app.post('/api/feature/add', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _features.addFeature, function (req, res) {
+    if (res.locals.error) {
+      res.status(401).send({
+        error: res.locals.error
+      });
+    } else if (res.locals.feature) {
+      res.json({
+        feature: res.locals.feature
+      });
+    } else {
+      res.status(401).send({
+        error: "ERROR"
+      });
+    }
+  });
+  app.post('/api/features', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _features.fetchFeatures, function (req, res) {
+    if (res.locals.features) {
+      res.json({
+        features: res.locals.features
+      });
+    } else {
+      res.status(401).send({
+        error: "ERROR"
+      });
+    }
+  });
+  app.post('/api/bot/settings/update', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _bots.updateBotSettings, function (req, res) {
+    if (res.locals.settings) {
+      res.json({
+        settings: res.locals.settings
+      });
+    } else {
+      res.status(401).send({
+        error: "ERROR"
+      });
+    }
+  });
+  app.post('/api/bot/settings', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _bots.fetchBotSettings, function (req, res) {
+    if (res.locals.settings) {
+      res.json({
+        settings: res.locals.settings
+      });
+    } else {
+      res.status(401).send({
+        error: "ERROR"
       });
     }
   });
@@ -118,9 +232,7 @@ var dashboardRouter = function dashboardRouter(app, io) {
       });
     } else {
       res.status(401).send({
-        error: {
-          message: "Error"
-        }
+        error: "ERROR"
       });
     }
   });
@@ -131,9 +243,7 @@ var dashboardRouter = function dashboardRouter(app, io) {
       });
     } else {
       res.status(401).send({
-        error: {
-          message: "Error"
-        }
+        error: "ERROR"
       });
     }
   });
@@ -144,9 +254,7 @@ var dashboardRouter = function dashboardRouter(app, io) {
       });
     } else {
       res.status(401).send({
-        error: {
-          message: "Error"
-        }
+        error: "ERROR"
       });
     }
   });
@@ -157,9 +265,7 @@ var dashboardRouter = function dashboardRouter(app, io) {
       });
     } else {
       res.status(401).send({
-        error: {
-          message: "Error"
-        }
+        error: "ERROR"
       });
     }
   });
@@ -170,9 +276,7 @@ var dashboardRouter = function dashboardRouter(app, io) {
       });
     } else {
       res.status(401).send({
-        error: {
-          message: "Error"
-        }
+        error: "ERROR"
       });
     }
   });
@@ -183,9 +287,7 @@ var dashboardRouter = function dashboardRouter(app, io) {
       });
     } else {
       res.status(401).send({
-        error: {
-          message: "Error"
-        }
+        error: "ERROR"
       });
     }
   });
@@ -196,9 +298,7 @@ var dashboardRouter = function dashboardRouter(app, io) {
       });
     } else {
       res.status(401).send({
-        error: {
-          message: "Error"
-        }
+        error: "ERROR"
       });
     }
   });
@@ -210,9 +310,7 @@ var dashboardRouter = function dashboardRouter(app, io) {
       });
     } else {
       res.status(401).send({
-        error: {
-          message: "Error"
-        }
+        error: "ERROR"
       });
     }
   });

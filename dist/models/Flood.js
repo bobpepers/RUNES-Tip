@@ -12,6 +12,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.BIGINT,
       allowNull: false
     },
+    feeAmount: {
+      type: DataTypes.BIGINT,
+      allowNull: false
+    },
     userCount: {
       type: DataTypes.BIGINT,
       allowNull: false
@@ -26,6 +30,8 @@ module.exports = function (sequelize, DataTypes) {
 
   FloodModel.associate = function (model) {
     FloodModel.belongsTo(model.user);
+    FloodModel.belongsTo(model.group);
+    FloodModel.belongsTo(model.channel);
     FloodModel.hasMany(model.floodtip);
     FloodModel.hasMany(model.activity, {
       as: 'flood'

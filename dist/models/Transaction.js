@@ -24,6 +24,11 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.BIGINT,
       allowNull: false
     },
+    feeAmount: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      defaultValue: 0
+    },
     confirmations: {
       type: DataTypes.SMALLINT,
       allowNull: false,

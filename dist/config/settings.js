@@ -11,12 +11,13 @@ module.exports = {
     },
     command: {
       discord: "!runestip",
-      telegram: "runestip"
+      telegram: "!runestip"
     }
   },
   coin: {
+    setting: "Runebase",
+    // Supported names for setting (Runebase, Pirate, Tokel) // default fallback settings are Runebase
     name: "Runebase",
-    // Supported names for setting (Runebase, Pirate) // default fallback settings are Runebase
     ticker: "RUNES",
     logo: "https://downloads.runebase.io/logo-512x512.png",
     website: "https://www.runebase.io",
@@ -37,18 +38,6 @@ module.exports = {
   min: {
     withdrawal: 2e8,
     confirmations: 6,
-    discord: {
-      tip: 1e7,
-      rain: 1e7,
-      flood: 1e7,
-      sleet: 1e7,
-      reactdrop: 1e7,
-      soak: 1e7,
-      thunder: 1e7,
-      thunderstorm: 1e7,
-      hurricane: 1e7,
-      voicerain: 1e7
-    },
     telegram: {
       tip: 1e7,
       rain: 1e7

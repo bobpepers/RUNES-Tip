@@ -18,6 +18,7 @@ var _models = _interopRequireDefault(require("../../models"));
 /* eslint-disable import/prefer-default-export */
 var updateGroup = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(ctx) {
+    var group;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
@@ -27,7 +28,6 @@ var updateGroup = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var group;
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
@@ -109,6 +109,9 @@ var updateGroup = /*#__PURE__*/function () {
             });
 
           case 2:
+            return _context2.abrupt("return", group);
+
+          case 3:
           case "end":
             return _context2.stop();
         }

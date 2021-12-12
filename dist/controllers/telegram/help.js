@@ -9,6 +9,8 @@ exports.fetchHelp = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
+
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _telegraf = require("telegraf");
@@ -19,7 +21,10 @@ var _settings = _interopRequireDefault(require("../../config/settings"));
 
 var _models = _interopRequireDefault(require("../../models"));
 
-/* eslint-disable import/prefer-default-export */
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2["default"])(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
 var fetchHelp = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(ctx, io) {
     var activity, user;
@@ -33,10 +38,12 @@ var fetchHelp = /*#__PURE__*/function () {
             }
 
             _context.next = 3;
-            return ctx.reply("i have send you a direct message");
+            return ctx.reply("i have sent you a direct message");
 
           case 3:
-            ctx.telegram.sendMessage(ctx.update.message.from.id, (0, _telegram.helpMessage)(), _telegraf.Markup.inlineKeyboard(_settings["default"].coin.name === 'Runebase' ? [[_telegraf.Markup.button.callback('Balance', 'Balance'), _telegraf.Markup.button.callback('Price', 'Price')], [_telegraf.Markup.button.callback('Exchanges', 'Exchanges'), _telegraf.Markup.button.callback('Deposit', 'Deposit')], [_telegraf.Markup.button.callback('Referral', 'Referral'), _telegraf.Markup.button.callback('Referral Top 10', 'ReferralTop')]] : [[_telegraf.Markup.button.callback('Balance', 'Balance'), _telegraf.Markup.button.callback('Price', 'Price')], [_telegraf.Markup.button.callback('Exchanges', 'Exchanges'), _telegraf.Markup.button.callback('Deposit', 'Deposit')]]));
+            ctx.telegram.sendMessage(ctx.update.message.from.id, (0, _telegram.helpMessage)(), _objectSpread({
+              parse_mode: 'HTML'
+            }, _telegraf.Markup.inlineKeyboard(_settings["default"].coin.setting === 'Runebase' ? [[_telegraf.Markup.button.callback('Balance', 'Balance'), _telegraf.Markup.button.callback('Price', 'Price')], [_telegraf.Markup.button.callback('Info', 'Info'), _telegraf.Markup.button.callback('Deposit', 'Deposit')], [_telegraf.Markup.button.callback('Referral', 'Referral'), _telegraf.Markup.button.callback('Referral Top 10', 'ReferralTop')]] : [[_telegraf.Markup.button.callback('Balance', 'Balance'), _telegraf.Markup.button.callback('Price', 'Price')], [_telegraf.Markup.button.callback('Info', 'Info'), _telegraf.Markup.button.callback('Deposit', 'Deposit')]])));
             _context.next = 6;
             return _models["default"].user.findOne({
               where: {

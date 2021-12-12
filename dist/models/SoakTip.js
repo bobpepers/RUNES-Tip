@@ -24,6 +24,8 @@ module.exports = function (sequelize, DataTypes) {
     SoakTipModel.hasMany(model.activity, {
       as: 'soaktip'
     });
+    SoakTipModel.belongsTo(model.group);
+    SoakTipModel.belongsTo(model.channel);
   };
 
   return SoakTipModel;

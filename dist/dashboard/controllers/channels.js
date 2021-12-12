@@ -72,44 +72,49 @@ exports.banChannel = banChannel;
 
 var fetchChannels = /*#__PURE__*/function () {
   var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(req, res, next) {
-    var userOptions, options;
+    var channelOptions, options;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
             console.log('fetcChannels_____________________________');
-            userOptions = {};
+            console.log(req.body);
+            channelOptions = {};
 
             if (req.body.id !== '') {
-              userOptions.id = Number(req.body.id);
+              channelOptions.id = Number(req.body.id);
             }
 
             if (req.body.channelId !== '') {
-              userOptions.groupId = req.body.channelId;
+              channelOptions.channelId = req.body.channelId;
             }
 
             if (req.body.channelName !== '') {
-              userOptions.channelName = req.body.channelName;
+              channelOptions.channelName = req.body.channelName;
+            }
+
+            if (req.body.serverId !== 'all') {
+              channelOptions.groupId = req.body.serverId;
             }
 
             options = {
               order: [['id', 'DESC']],
               limit: 300,
-              where: userOptions,
+              where: channelOptions,
               include: [{
                 model: _models["default"].group,
                 as: 'group'
               }]
             };
-            _context2.next = 8;
+            _context2.next = 10;
             return _models["default"].channel.findAll(options);
 
-          case 8:
+          case 10:
             res.locals.channels = _context2.sent;
             console.log(res.locals.channels);
             next();
 
-          case 11:
+          case 13:
           case "end":
             return _context2.stop();
         }

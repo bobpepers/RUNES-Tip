@@ -18,12 +18,18 @@ var _models = _interopRequireDefault(require("../../models"));
 /* eslint-disable import/prefer-default-export */
 var updateDiscordGroup = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(client, message) {
-    var group;
+    var group, guildId;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.next = 2;
+            if (message.guild && message.guild.id) {
+              guildId = message.guild.id;
+            } else {
+              guildId = message.guildId;
+            }
+
+            _context2.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -33,20 +39,20 @@ var updateDiscordGroup = /*#__PURE__*/function () {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
-                        if (!message.guildId) {
+                        if (!guildId) {
                           _context.next = 15;
                           break;
                         }
 
                         _context.next = 3;
-                        return client.guilds.cache.get(message.guildId);
+                        return client.guilds.cache.get(guildId);
 
                       case 3:
                         guild = _context.sent;
                         _context.next = 6;
                         return _models["default"].group.findOne({
                           where: {
-                            groupId: "discord-".concat(message.guildId)
+                            groupId: "discord-".concat(guildId)
                           },
                           transaction: t,
                           lock: t.LOCK.UPDATE
@@ -62,7 +68,7 @@ var updateDiscordGroup = /*#__PURE__*/function () {
 
                         _context.next = 10;
                         return _models["default"].group.create({
-                          groupId: "discord-".concat(message.guildId),
+                          groupId: "discord-".concat(guildId),
                           groupName: guild.name,
                           lastActive: Date.now()
                         }, {
@@ -111,10 +117,10 @@ var updateDiscordGroup = /*#__PURE__*/function () {
               console.log(err.message);
             });
 
-          case 2:
+          case 3:
             return _context2.abrupt("return", group);
 
-          case 3:
+          case 4:
           case "end":
             return _context2.stop();
         }

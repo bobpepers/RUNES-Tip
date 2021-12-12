@@ -153,7 +153,7 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                         lastFaucetTip = _context.sent;
                         userId = user.user_id.replace('discord-', '');
                         username = user.ignoreme ? "<@".concat(userId, ">") : "".concat(user.username);
-                        dateFuture = lastFaucetTip && lastFaucetTip.createdAt.getTime() + 1 * 60 * 1000;
+                        dateFuture = lastFaucetTip && lastFaucetTip.createdAt.getTime() + 4 * 60 * 60 * 1000;
                         dateNow = new Date().getTime();
                         distance = dateFuture && dateFuture - dateNow;
                         console.log(distance);

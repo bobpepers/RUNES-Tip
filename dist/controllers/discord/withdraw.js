@@ -9,6 +9,8 @@ exports.withdrawDiscordCreate = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _sequelize = require("sequelize");
@@ -25,202 +27,119 @@ var _settings = _interopRequireDefault(require("../../config/settings"));
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
-/* eslint-disable import/prefer-default-export */
+var _validateAmount = require("../../helpers/discord/validateAmount");
 
-/**
- * Create Withdrawal
- */
+var _userWalletExist = require("../../helpers/discord/userWalletExist");
+
+/* eslint-disable import/prefer-default-export */
 var withdrawDiscordCreate = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(message, filteredMessage) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(discordClient, message, filteredMessage, io, groupTask, channelTask, setting) {
+    var user, activity;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            console.log(filteredMessage);
-
             _logger["default"].info("Start Withdrawal Request: ".concat(message.author.id, "-").concat(message.author.username));
 
-            _context2.next = 4;
+            _context2.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var amount, tipper, isValidAddress, user, wallet, transaction, activity, userId;
+                var _yield$userWalletExis, _yield$userWalletExis2, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, isValidAddress, wallet, fee, transaction, userId;
+
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
-                        amount = 0;
+                        _context.next = 2;
+                        return (0, _userWalletExist.userWalletExist)(message, t, filteredMessage[1].toLowerCase());
 
-                        if (!(filteredMessage[3].toLowerCase() === 'all')) {
+                      case 2:
+                        _yield$userWalletExis = _context.sent;
+                        _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
+                        user = _yield$userWalletExis2[0];
+                        activity = _yield$userWalletExis2[1];
+
+                        if (user) {
                           _context.next = 8;
                           break;
                         }
 
-                        _context.next = 4;
-                        return _models["default"].user.findOne({
-                          where: {
-                            user_id: "discord-".concat(message.author.id)
-                          },
-                          include: [{
-                            model: _models["default"].wallet,
-                            as: 'wallet',
-                            include: [{
-                              model: _models["default"].address,
-                              as: 'addresses'
-                            }]
-                          }],
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
-
-                      case 4:
-                        tipper = _context.sent;
-
-                        if (tipper) {
-                          amount = tipper.wallet.available;
-                        } else {
-                          amount = 0;
-                        }
-
-                        _context.next = 9;
-                        break;
+                        return _context.abrupt("return");
 
                       case 8:
-                        amount = new _bignumber["default"](filteredMessage[3]).times(1e8).toNumber();
+                        _context.next = 10;
+                        return (0, _validateAmount.validateAmount)(message, t, filteredMessage[3], user, setting, filteredMessage[1].toLowerCase());
 
-                      case 9:
-                        if (!(amount < Number(_settings["default"].min.withdrawal))) {
-                          _context.next = 12;
+                      case 10:
+                        _yield$validateAmount = _context.sent;
+                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
+                        activityValiateAmount = _yield$validateAmount2[0];
+                        amount = _yield$validateAmount2[1];
+
+                        if (!activityValiateAmount) {
+                          _context.next = 17;
                           break;
                         }
 
-                        _context.next = 12;
-                        return message.author.send({
-                          embeds: [(0, _discord.minimumWithdrawalMessage)(message)]
-                        });
+                        activity = activityValiateAmount;
+                        return _context.abrupt("return");
 
-                      case 12:
-                        if (!(amount % 1 !== 0)) {
-                          _context.next = 15;
-                          break;
-                        }
-
-                        _context.next = 15;
-                        return message.author.send({
-                          embeds: [(0, _discord.invalidAmountMessage)(message, 'Withdraw')]
-                        });
-
-                      case 15:
+                      case 17:
                         // Add new currencies here (default fallback Runebase)
                         isValidAddress = false;
 
-                        if (!(_settings["default"].coin.name === 'Runebase')) {
-                          _context.next = 22;
+                        if (!(_settings["default"].coin.setting === 'Runebase')) {
+                          _context.next = 24;
                           break;
                         }
 
-                        _context.next = 19;
+                        _context.next = 21;
                         return (0, _rclient.getInstance)().utils.isRunebaseAddress(filteredMessage[2]);
 
-                      case 19:
+                      case 21:
                         isValidAddress = _context.sent;
-                        _context.next = 31;
+                        _context.next = 33;
                         break;
 
-                      case 22:
-                        if (!(_settings["default"].coin.name === 'Pirate')) {
-                          _context.next = 28;
+                      case 24:
+                        if (!(_settings["default"].coin.setting === 'Pirate')) {
+                          _context.next = 30;
                           break;
                         }
 
-                        _context.next = 25;
+                        _context.next = 27;
                         return (0, _rclient.getInstance)().utils.isPirateAddress(filteredMessage[2]);
 
-                      case 25:
+                      case 27:
                         isValidAddress = _context.sent;
-                        _context.next = 31;
+                        _context.next = 33;
                         break;
 
-                      case 28:
-                        _context.next = 30;
+                      case 30:
+                        _context.next = 32;
                         return (0, _rclient.getInstance)().utils.isRunebaseAddress(filteredMessage[2]);
 
-                      case 30:
+                      case 32:
                         isValidAddress = _context.sent;
 
-                      case 31:
+                      case 33:
                         if (isValidAddress) {
-                          _context.next = 34;
+                          _context.next = 37;
                           break;
                         }
 
-                        _context.next = 34;
+                        _context.next = 36;
                         return message.author.send({
                           embeds: [(0, _discord.invalidAddressMessage)(message)]
                         });
 
-                      case 34:
-                        if (!(amount >= Number(_settings["default"].min.withdrawal) && amount % 1 === 0 && isValidAddress)) {
-                          _context.next = 66;
-                          break;
-                        }
-
-                        _context.next = 37;
-                        return _models["default"].user.findOne({
-                          where: {
-                            user_id: "discord-".concat(message.author.id)
-                          },
-                          include: [{
-                            model: _models["default"].wallet,
-                            as: 'wallet',
-                            include: [{
-                              model: _models["default"].address,
-                              as: 'addresses'
-                            }]
-                          }],
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
+                      case 36:
+                        return _context.abrupt("return");
 
                       case 37:
-                        user = _context.sent;
-
-                        if (user) {
-                          _context.next = 41;
-                          break;
-                        }
-
-                        _context.next = 41;
-                        return message.author.send({
-                          embeds: [(0, _discord.userNotFoundMessage)(message, 'Withdraw')]
-                        });
-
-                      case 41:
-                        console.log('5');
-
-                        if (!user) {
-                          _context.next = 66;
-                          break;
-                        }
-
-                        if (!(amount > user.wallet.available)) {
-                          _context.next = 46;
-                          break;
-                        }
-
-                        _context.next = 46;
-                        return message.author.send({
-                          embeds: [(0, _discord.insufficientBalanceMessage)(message, 'Withdraw')]
-                        });
-
-                      case 46:
-                        if (!(amount <= user.wallet.available)) {
-                          _context.next = 66;
-                          break;
-                        }
-
-                        _context.next = 49;
+                        _context.next = 39;
                         return user.wallet.update({
                           available: user.wallet.available - amount,
                           locked: user.wallet.locked + amount
@@ -229,24 +148,25 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 49:
+                      case 39:
                         wallet = _context.sent;
-                        console.log('6');
-                        _context.next = 53;
+                        fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
+                        _context.next = 43;
                         return _models["default"].transaction.create({
                           addressId: wallet.addresses[0].id,
                           phase: 'review',
                           type: 'send',
                           to_from: filteredMessage[2],
-                          amount: amount
+                          amount: amount,
+                          feeAmount: Number(fee)
                         }, {
                           transaction: t,
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 53:
+                      case 43:
                         transaction = _context.sent;
-                        _context.next = 56;
+                        _context.next = 46;
                         return _models["default"].activity.create({
                           spenderId: user.id,
                           type: 'withdrawRequested',
@@ -257,43 +177,43 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 56:
+                      case 46:
                         activity = _context.sent;
                         userId = user.user_id.replace('discord-', '');
 
                         if (!(message.channel.type === 'DM')) {
-                          _context.next = 61;
+                          _context.next = 51;
                           break;
                         }
 
-                        _context.next = 61;
+                        _context.next = 51;
                         return message.author.send({
                           embeds: [(0, _discord.reviewMessage)(message)]
                         });
 
-                      case 61:
+                      case 51:
                         if (!(message.channel.type === 'GUILD_TEXT')) {
-                          _context.next = 66;
+                          _context.next = 56;
                           break;
                         }
 
-                        _context.next = 64;
+                        _context.next = 54;
                         return message.channel.send({
                           embeds: [(0, _discord.warnDirectMessage)(userId, 'Balance')]
                         });
 
-                      case 64:
-                        _context.next = 66;
+                      case 54:
+                        _context.next = 56;
                         return message.author.send({
                           embeds: [(0, _discord.reviewMessage)(message)]
                         });
 
-                      case 66:
+                      case 56:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 67:
+                      case 57:
                       case "end":
                         return _context.stop();
                     }
@@ -301,14 +221,14 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                 }, _callee);
               }));
 
-              return function (_x3) {
+              return function (_x8) {
                 return _ref2.apply(this, arguments);
               };
             }())["catch"](function (err) {
               message.author.send("Something went wrong.");
             });
 
-          case 4:
+          case 3:
           case "end":
             return _context2.stop();
         }
@@ -316,7 +236,7 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
     }, _callee2);
   }));
 
-  return function withdrawDiscordCreate(_x, _x2) {
+  return function withdrawDiscordCreate(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
     return _ref.apply(this, arguments);
   };
 }();
