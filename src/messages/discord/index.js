@@ -734,35 +734,35 @@ Note: Minimal amount to withdraw: ${settings.min.withdrawal / 1e8} ${settings.co
 Tips the @ mentioned user with the desired amount
 example: \`${settings.bot.command.discord} @test123456#7890 1.00\`
 
-\`${settings.bot.command.discord} rain <amount|all>\`
+\`${settings.bot.command.discord} rain <amount|all> [<@role>]\`
 Rains the desired amount onto all online users (optionally, within specified role)
 example: \`${settings.bot.command.discord} rain 10\`
 
-\`${settings.bot.command.discord} soak <amount|all>\`
+\`${settings.bot.command.discord} soak <amount|all> [<@role>]\`
 Soaks the desired amount onto all online and idle users (optionally, within specified role)
 example: \`${settings.bot.command.discord} soak 3.00\`
 
-\`${settings.bot.command.discord} flood <amount|all>\`
+\`${settings.bot.command.discord} flood <amount|all> [<@role>]\`
 Floods the desired amount onto all users (including offline users) (optionally, within specified role)
 example: \`${settings.bot.command.discord} flood 5.00\`
 
-\`${settings.bot.command.discord} sleet <amount|all>\`
+\`${settings.bot.command.discord} sleet <amount|all> [<@role>]\`
 Makes a sleet storm with the desired amount onto all users that have been active in the channel in the last 15 minutes (optionally, within specified role
 
-\`${settings.bot.command.discord} voicerain <amount|all> <@voiceChannel>\`
+\`${settings.bot.command.discord} voicerain <amount|all> <@voiceChannel> [<@role>]\`
 Rains the desired amount onto all listening users in the mentioned voice channel.
 example: \`${settings.bot.command.discord} voicerain 5.00 #General\`
 NOTE: To mention a voice channel, get the channel ID ([read here how](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)) and enclose it with <# and >
 
-\`${settings.bot.command.discord} thunder <amount|all>\`
+\`${settings.bot.command.discord} thunder <amount|all> [<@role>]\`
 Tips a random lucky online user with the amount (optionally, within specified role)
 example: \`${settings.bot.command.discord} thunder 5\`
 
-\`${settings.bot.command.discord} thunderstorm <numberOfUsers> <amount|all>\`
+\`${settings.bot.command.discord} thunderstorm <numberOfUsers> <amount|all> [<@role>]\`
 Tips a specified number (max: 50) random lucky online users with part of the amount (optionally, within specified role)
 example: \`${settings.bot.command.discord} thunderstorm 10 5.00\`
 
-\`${settings.bot.command.discord} hurricane <numberOfUsers> <amount|all>\`
+\`${settings.bot.command.discord} hurricane <numberOfUsers> <amount|all> [<@role>]\`
 Tips a specified number (max: 50) random lucky online and idle users with part of the amount (optionally, within specified role)
 example: \`${settings.bot.command.discord} hurricane 10 5.00\`
 

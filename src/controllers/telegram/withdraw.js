@@ -1,13 +1,8 @@
 import { Transaction } from "sequelize";
-import BigNumber from "bignumber.js";
 import db from '../../models';
 import { getInstance } from '../../services/rclient';
 import {
-  minimumWithdrawalMessage,
-  invalidAmountMessage,
   invalidAddressMessage,
-  userNotFoundMessage,
-  insufficientBalanceMessage,
   generalErrorMessage,
   withdrawalReviewMessage,
 } from '../../messages/telegram';
@@ -25,12 +20,11 @@ export const withdrawTelegramCreate = async (
   setting,
 ) => {
   logger.info(`Start Withdrawal Request: ${ctx.update.message.from.id}-${ctx.update.message.from.username}`);
-  if (ctx.update.message.chat.type !== 'private') {
-    await ctx.reply("i have sent you a direct message");
-  }
+
   let user;
   let activity;
-  // await ctx.telegram.sendMessage(ctx.update.message.from.id, balanceMessage(telegramUserName, user, priceInfo));
+  let isValidAddress = false;
+  let complete = false;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -43,8 +37,6 @@ export const withdrawTelegramCreate = async (
       'withdraw',
     );
     if (!user) return;
-
-    console.log('after user find');
 
     const [
       activityValiateAmount,
@@ -61,10 +53,9 @@ export const withdrawTelegramCreate = async (
       activity = activityValiateAmount;
       return;
     }
-    console.log('after validate amount');
 
     // Add new currencies here (default fallback Runebase)
-    let isValidAddress = false;
+
     if (settings.coin.setting === 'Runebase') {
       isValidAddress = await getInstance().utils.isRunebaseAddress(withdrawalAddress);
     } else if (settings.coin.setting === 'Pirate') {
@@ -74,7 +65,6 @@ export const withdrawTelegramCreate = async (
     }
     //
     if (!isValidAddress) {
-      ctx.telegram.sendMessage(ctx.update.message.from.id, invalidAddressMessage());
       return;
     }
 
@@ -109,12 +99,20 @@ export const withdrawTelegramCreate = async (
         lock: t.LOCK.UPDATE,
       },
     );
-    ctx.telegram.sendMessage(ctx.update.message.from.id, withdrawalReviewMessage());
 
     t.afterCommit(() => {
+      complete = true;
       console.log('done');
     });
   }).catch((err) => {
     ctx.reply(generalErrorMessage());
   });
+  if (ctx.update.message.chat.type !== 'private' && complete) {
+    await ctx.reply("i have sent you a direct message");
+  }
+  if (!isValidAddress) {
+    ctx.telegram.sendMessage(ctx.update.message.from.id, invalidAddressMessage());
+    return;
+  }
+  ctx.telegram.sendMessage(ctx.update.message.from.id, withdrawalReviewMessage());
 };
