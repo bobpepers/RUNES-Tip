@@ -23,6 +23,7 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
+var settings = (0, _settings["default"])();
 var referralRunesReward = 20 * 1e8; // eslint-disable-next-line import/prefer-default-export
 
 var createReferral = /*#__PURE__*/function () {
@@ -154,7 +155,7 @@ var createReferral = /*#__PURE__*/function () {
                         console.log(updatedUser);
                         console.log(updatedUserWallet);
                         _context.next = 33;
-                        return bot.telegram.sendMessage(runesGroup, "Congratulations ".concat(user.username, ", you added ").concat(updatedUser.referral_count, " users in total to Runebase Telegram group,\nwe added ").concat(referralRunesReward / 1e8, " ").concat(_settings["default"].coin.ticker, " to your wallet as a reward."));
+                        return bot.telegram.sendMessage(runesGroup, "Congratulations ".concat(user.username, ", you added ").concat(updatedUser.referral_count, " users in total to Runebase Telegram group,\nwe added ").concat(referralRunesReward / 1e8, " ").concat(settings.coin.ticker, " to your wallet as a reward."));
 
                       case 33:
                         _context.next = 3;

@@ -25,6 +25,8 @@ function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (O
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2["default"])(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
+var settings = (0, _settings["default"])();
+
 var fetchHelp = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(ctx, io) {
     var withdraw, activity, user;
@@ -53,7 +55,7 @@ var fetchHelp = /*#__PURE__*/function () {
             withdraw = _context.sent;
             ctx.telegram.sendMessage(ctx.update.message.from.id, (0, _telegram.helpMessage)(withdraw), _objectSpread({
               parse_mode: 'HTML'
-            }, _telegraf.Markup.inlineKeyboard(_settings["default"].coin.setting === 'Runebase' ? [[_telegraf.Markup.button.callback('Balance', 'Balance'), _telegraf.Markup.button.callback('Price', 'Price')], [_telegraf.Markup.button.callback('Info', 'Info'), _telegraf.Markup.button.callback('Deposit', 'Deposit')], [_telegraf.Markup.button.callback('Referral', 'Referral'), _telegraf.Markup.button.callback('Referral Top 10', 'ReferralTop')]] : [[_telegraf.Markup.button.callback('Balance', 'Balance'), _telegraf.Markup.button.callback('Price', 'Price')], [_telegraf.Markup.button.callback('Info', 'Info'), _telegraf.Markup.button.callback('Deposit', 'Deposit')]])));
+            }, _telegraf.Markup.inlineKeyboard(settings.coin.setting === 'Runebase' ? [[_telegraf.Markup.button.callback('Balance', 'Balance'), _telegraf.Markup.button.callback('Price', 'Price')], [_telegraf.Markup.button.callback('Info', 'Info'), _telegraf.Markup.button.callback('Deposit', 'Deposit')], [_telegraf.Markup.button.callback('Referral', 'Referral'), _telegraf.Markup.button.callback('Referral Top 10', 'ReferralTop')]] : [[_telegraf.Markup.button.callback('Balance', 'Balance'), _telegraf.Markup.button.callback('Price', 'Price')], [_telegraf.Markup.button.callback('Info', 'Info'), _telegraf.Markup.button.callback('Deposit', 'Deposit')]])));
             _context.next = 9;
             return _models["default"].user.findOne({
               where: {

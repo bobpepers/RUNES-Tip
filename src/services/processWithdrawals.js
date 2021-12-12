@@ -10,7 +10,10 @@ import { processWithdrawal } from "./processWithdrawal";
 
 config();
 
-export const processWithdrawals = async (telegramClient, discordClient) => {
+export const processWithdrawals = async (
+  telegramClient,
+  discordClient,
+) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {

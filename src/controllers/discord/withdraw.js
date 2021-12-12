@@ -1,21 +1,18 @@
 /* eslint-disable import/prefer-default-export */
 import { Transaction } from "sequelize";
-import BigNumber from "bignumber.js";
 import db from '../../models';
 import { getInstance } from '../../services/rclient';
 import {
-  minimumWithdrawalMessage,
-  invalidAmountMessage,
   invalidAddressMessage,
-  userNotFoundMessage,
-  insufficientBalanceMessage,
   reviewMessage,
   warnDirectMessage,
 } from '../../messages/discord';
-import settings from '../../config/settings';
+import getCoinSettings from '../../config/settings';
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { userWalletExist } from "../../helpers/discord/userWalletExist";
+
+const settings = getCoinSettings();
 
 export const withdrawDiscordCreate = async (
   discordClient,

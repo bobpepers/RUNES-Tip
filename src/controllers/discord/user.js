@@ -2,7 +2,9 @@ import { Transaction } from "sequelize";
 import db from '../../models';
 
 import { getInstance } from "../../services/rclient";
-import settings from '../../config/settings';
+import getCoinSettings from '../../config/settings';
+
+const settings = getCoinSettings();
 /**
  * Fetch Wallet
  */

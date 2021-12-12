@@ -1,12 +1,11 @@
 /* eslint-disable import/prefer-default-export */
 import db from '../../models';
 import {
-  walletNotFoundMessage,
   AfterSuccessMessage,
   NotInDirectMessage,
 } from '../../messages/discord';
 
-import { Transaction, Op } from "sequelize";
+import { Transaction } from "sequelize";
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { mapMembers } from "../../helpers/discord/mapMembers";

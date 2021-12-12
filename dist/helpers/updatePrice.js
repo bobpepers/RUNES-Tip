@@ -19,7 +19,8 @@ var _models = _interopRequireDefault(require("../models"));
 
 var _settings = _interopRequireDefault(require("../config/settings"));
 
-// import { Sequelize, Transaction, Op } from "sequelize";
+var settings = (0, _settings["default"])(); // import { Sequelize, Transaction, Op } from "sequelize";
+
 (0, _dotenv.config)();
 
 var updatePrice = /*#__PURE__*/function () {
@@ -53,7 +54,7 @@ var updatePrice = /*#__PURE__*/function () {
 
 
             _context5.next = 7;
-            return _axios["default"].get("https://api.coinpaprika.com/v1/tickers/".concat(_settings["default"].coin.ticker.toLowerCase(), "-").concat(_settings["default"].coin.name.toLowerCase()));
+            return _axios["default"].get("https://api.coinpaprika.com/v1/tickers/".concat(settings.coin.ticker.toLowerCase(), "-").concat(settings.coin.name.toLowerCase()));
 
           case 7:
             data = _context5.sent;

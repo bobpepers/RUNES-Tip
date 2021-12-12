@@ -19,8 +19,6 @@ var _models = _interopRequireDefault(require("../../models"));
 
 var _telegram = require("../../messages/telegram");
 
-var _settings = _interopRequireDefault(require("../../config/settings"));
-
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
 var fetchWalletDepositAddress = /*#__PURE__*/function () {

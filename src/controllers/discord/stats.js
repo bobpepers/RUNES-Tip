@@ -3,10 +3,12 @@
 import {
   warnDirectMessage,
   statsMessage,
-  serverStatsMessage,
+  // serverStatsMessage,
 } from '../../messages/discord';
 import db from '../../models';
-import settings from '../../config/settings';
+import getCoinSettings from '../../config/settings';
+
+const settings = getCoinSettings();
 
 const { Op } = require('sequelize');
 

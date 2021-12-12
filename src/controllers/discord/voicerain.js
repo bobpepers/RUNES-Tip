@@ -2,7 +2,6 @@
 import { Transaction } from "sequelize";
 import db from '../../models';
 import {
-  walletNotFoundMessage,
   AfterSuccessMessage,
   NotInDirectMessage,
 } from '../../messages/discord';

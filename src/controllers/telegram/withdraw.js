@@ -6,11 +6,13 @@ import {
   generalErrorMessage,
   withdrawalReviewMessage,
 } from '../../messages/telegram';
-import settings from '../../config/settings';
+import getCoinSettings from '../../config/settings';
 import { validateAmount } from "../../helpers/telegram/validateAmount";
 import { userWalletExist } from "../../helpers/telegram/userWalletExist";
 
 import logger from "../../helpers/logger";
+
+const settings = getCoinSettings();
 
 export const withdrawTelegramCreate = async (
   ctx,

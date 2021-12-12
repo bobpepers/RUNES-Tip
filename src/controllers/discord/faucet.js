@@ -6,8 +6,10 @@ import {
   faucetClaimedMessage,
 } from '../../messages/discord';
 import db from '../../models';
-import settings from '../../config/settings';
+import getCoinSettings from '../../config/settings';
 import { userWalletExist } from "../../helpers/discord/userWalletExist";
+
+const settings = getCoinSettings();
 
 export const discordFaucetClaim = async (
   message,

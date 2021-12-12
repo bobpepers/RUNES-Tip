@@ -1,5 +1,7 @@
 /* eslint-disable import/prefer-default-export */
-import settings from '../../config/settings';
+import getCoinSettings from '../../config/settings';
+
+const settings = getCoinSettings();
 
 export const featureDisabledServerMessage = () => {
   const result = `This feature has been disabled for this server`;

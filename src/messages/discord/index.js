@@ -1,6 +1,8 @@
 import { MessageEmbed } from "discord.js";
-import settings from "../../config/settings";
+import getCoinSettings from '../../config/settings';
 import pjson from "../../../package.json";
+
+const settings = getCoinSettings();
 
 const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
 

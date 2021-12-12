@@ -15,8 +15,6 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _sequelize = require("sequelize");
 
-var _bignumber = _interopRequireDefault(require("bignumber.js"));
-
 var _models = _interopRequireDefault(require("../../models"));
 
 var _rclient = require("../../services/rclient");
@@ -32,6 +30,8 @@ var _validateAmount = require("../../helpers/discord/validateAmount");
 var _userWalletExist = require("../../helpers/discord/userWalletExist");
 
 /* eslint-disable import/prefer-default-export */
+var settings = (0, _settings["default"])();
+
 var withdrawDiscordCreate = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(discordClient, message, filteredMessage, io, groupTask, channelTask, setting) {
     var user, activity;
@@ -90,7 +90,7 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                         // Add new currencies here (default fallback Runebase)
                         isValidAddress = false;
 
-                        if (!(_settings["default"].coin.setting === 'Runebase')) {
+                        if (!(settings.coin.setting === 'Runebase')) {
                           _context.next = 24;
                           break;
                         }
@@ -104,7 +104,7 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                         break;
 
                       case 24:
-                        if (!(_settings["default"].coin.setting === 'Pirate')) {
+                        if (!(settings.coin.setting === 'Pirate')) {
                           _context.next = 30;
                           break;
                         }

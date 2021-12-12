@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { config } from "dotenv";
 import db from '../models';
-import settings from '../config/settings';
+import getCoinSettings from '../config/settings';
+
+const settings = getCoinSettings();
 // import { Sequelize, Transaction, Op } from "sequelize";
 config();
 export const updatePrice = async () => {
@@ -43,7 +45,7 @@ export const updatePrice = async () => {
         price: newPrice.toFixed(8).toString(),
       });
 
-      const currencies = await db.currency.findAll({ });
+      const currencies = await db.currency.findAll({});
 
       currencies.forEach(async (currency) => {
         if (currency.iso !== null || currency.iso !== "USD") {

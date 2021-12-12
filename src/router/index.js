@@ -7,7 +7,7 @@ import {
   discordIncomingDepositMessage,
 } from '../messages/discord';
 
-import settings from '../config/settings';
+import getCoinSettings from '../config/settings';
 
 import logger from "../helpers/logger";
 
@@ -15,6 +15,8 @@ import { startRunebaseSync } from "../services/syncRunebase";
 import { startPirateSync } from "../services/syncPirate";
 import { discordRouter } from './discord';
 import { telegramRouter } from './telegram';
+
+const settings = getCoinSettings();
 
 config();
 

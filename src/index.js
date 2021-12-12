@@ -29,7 +29,9 @@ import { patchPirateDeposits } from "./helpers/pirate/patcher";
 import { reactDropMessage } from "./messages/discord";
 import { listenReactDrop } from "./controllers/discord/reactdrop";
 import db from "./models";
-import settings from "./config/settings";
+import getCoinSettings from './config/settings';
+
+const settings = getCoinSettings();
 
 import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";

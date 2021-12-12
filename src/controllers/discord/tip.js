@@ -1,13 +1,12 @@
 /* eslint-disable import/prefer-default-export */
 import _ from "lodash";
-import { Transaction, Op } from "sequelize";
+import { Transaction } from "sequelize";
 import db from '../../models';
 import {
   tipSuccessMessage,
   NotInDirectMessage,
   userNotFoundMessage,
 } from '../../messages/discord';
-// import settings from '../../config/settings';
 import { validateAmount } from "../../helpers/discord/validateAmount";
 
 import logger from "../../helpers/logger";

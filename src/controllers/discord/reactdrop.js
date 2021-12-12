@@ -2,8 +2,7 @@
 import { svg2png } from 'svg-png-converter';
 
 import svgCaptcha from "svg-captcha";
-import BigNumber from "bignumber.js";
-import { Transaction, Op } from "sequelize";
+import { Transaction } from "sequelize";
 import {
   MessageAttachment,
   // MessageCollector,
@@ -11,7 +10,7 @@ import {
   MessageButton,
 } from "discord.js";
 import { AlgebraicCaptcha } from "algebraic-captcha";
-import settings from '../../config/settings';
+import getCoinSettings from '../../config/settings';
 import {
   reactDropMessage,
   userNotFoundMessage,
@@ -26,6 +25,8 @@ import db from '../../models';
 import emojiCompact from "../../config/emoji";
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/discord/validateAmount";
+
+const settings = getCoinSettings();
 
 function shuffle(array) {
   let currentIndex = array.length; let

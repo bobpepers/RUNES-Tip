@@ -29,6 +29,8 @@ var _userWalletExist = require("../../helpers/telegram/userWalletExist");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
+var settings = (0, _settings["default"])();
+
 var withdrawTelegramCreate = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(ctx, withdrawalAddress, withdrawalAmount, io, setting) {
     var user, activity, isValidAddress, complete;
@@ -86,7 +88,7 @@ var withdrawTelegramCreate = /*#__PURE__*/function () {
                         return _context.abrupt("return");
 
                       case 17:
-                        if (!(_settings["default"].coin.setting === 'Runebase')) {
+                        if (!(settings.coin.setting === 'Runebase')) {
                           _context.next = 23;
                           break;
                         }
@@ -100,7 +102,7 @@ var withdrawTelegramCreate = /*#__PURE__*/function () {
                         break;
 
                       case 23:
-                        if (!(_settings["default"].coin.setting === 'Pirate')) {
+                        if (!(settings.coin.setting === 'Pirate')) {
                           _context.next = 29;
                           break;
                         }

@@ -3,7 +3,6 @@ import db from '../../models';
 import {
   balanceMessage,
 } from '../../messages/telegram';
-// import settings from '../../config/settings';
 
 import logger from "../../helpers/logger";
 

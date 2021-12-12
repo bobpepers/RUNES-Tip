@@ -15,6 +15,8 @@ var _models = _interopRequireDefault(require("../../models"));
 
 var _settings = _interopRequireDefault(require("../../config/settings"));
 
+var settings = (0, _settings["default"])();
+
 var fetchPriceInfo = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(ctx, io) {
     var priceRecord, replyString, activity, user;
@@ -28,7 +30,7 @@ var fetchPriceInfo = /*#__PURE__*/function () {
 
           case 3:
             priceRecord = _context.sent;
-            replyString = "<b><u>".concat(_settings["default"].coin.ticker, " PRICE</u></b>\n");
+            replyString = "<b><u>".concat(settings.coin.ticker, " PRICE</u></b>\n");
             replyString += priceRecord.map(function (a) {
               return "".concat(a.currency, ": ").concat(a.price);
             }).join('\n');

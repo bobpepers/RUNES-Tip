@@ -19,9 +19,11 @@ var _rclient = require("../../services/rclient");
 
 var _settings = _interopRequireDefault(require("../../config/settings"));
 
+var settings = (0, _settings["default"])();
 /**
  * Fetch Wallet
  */
+
 var createUpdateDiscordUser = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(message) {
     return _regenerator["default"].wrap(function _callee2$(_context2) {
@@ -160,7 +162,7 @@ var createUpdateDiscordUser = /*#__PURE__*/function () {
 
                       case 30:
                         address = _context.sent;
-                        message.author.send("Welcome ".concat(message.author.username, ", we created a wallet for you.\nType \"").concat(_settings["default"].bot.command.discord, " help\" for usage info")); // ctx.reply(``);
+                        message.author.send("Welcome ".concat(message.author.username, ", we created a wallet for you.\nType \"").concat(settings.bot.command.discord, " help\" for usage info")); // ctx.reply(``);
 
                       case 32:
                         t.afterCommit(function () {

@@ -19,7 +19,6 @@ var _telegram = require("../../messages/telegram");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
-// import settings from '../../config/settings';
 var fetchWalletBalance = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(ctx, telegramUserId, telegramUserName, io) {
     var user, activity;

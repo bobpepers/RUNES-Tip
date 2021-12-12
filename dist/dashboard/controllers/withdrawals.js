@@ -17,8 +17,6 @@ var _sequelize = require("sequelize");
 
 var _models = _interopRequireDefault(require("../../models"));
 
-var _settings = _interopRequireDefault(require("../../config/settings"));
-
 var _discord = require("../../messages/discord");
 
 var _telegram = require("../../messages/telegram");

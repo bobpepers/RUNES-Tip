@@ -27,6 +27,8 @@ var _userWalletExist = require("../../helpers/telegram/userWalletExist");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
+var settings = (0, _settings["default"])();
+
 var tipRunesToUser = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(ctx, tipTo, tipAmount, bot, runesGroup, io, groupTask, setting) {
     var user, activity;
@@ -184,7 +186,7 @@ var tipRunesToUser = /*#__PURE__*/function () {
                         activity = _context.sent;
                         ctx.reply((0, _telegram.tipSuccessMessage)(user, amount, findUserToTip));
 
-                        _logger["default"].info("Success tip Requested by: ".concat(ctx.update.message.from.id, "-").concat(ctx.update.message.from.username, " to ").concat(findUserToTip.username, " with ").concat(amount / 1e8, " ").concat(_settings["default"].coin.ticker));
+                        _logger["default"].info("Success tip Requested by: ".concat(ctx.update.message.from.id, "-").concat(ctx.update.message.from.username, " to ").concat(findUserToTip.username, " with ").concat(amount / 1e8, " ").concat(settings.coin.ticker));
 
                         t.afterCommit(function () {
                           console.log('done');

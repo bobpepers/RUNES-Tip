@@ -1,4 +1,4 @@
-export const runebaseSettings = {
+module.exports = {
   startSyncBlock: 500000,
   bot: {
     name: "PirateTipBot",

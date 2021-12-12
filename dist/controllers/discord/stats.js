@@ -22,6 +22,8 @@ var _settings = _interopRequireDefault(require("../../config/settings"));
 /* eslint-disable guard-for-in */
 
 /* eslint-disable import/prefer-default-export */
+var settings = (0, _settings["default"])();
+
 var _require = require('sequelize'),
     Op = _require.Op;
 
@@ -417,53 +419,53 @@ var discordStats = /*#__PURE__*/function () {
             // Spend
             spendTips = mergedObject[serverObj].spend && mergedObject[serverObj].spend.tips && "".concat(mergedObject[serverObj].spend.tips.length, " tips for ").concat(mergedObject[serverObj].spend.tips.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(_settings["default"].coin.ticker);
+            }, 0) / 1e8, " ").concat(settings.coin.ticker);
             spendFloods = mergedObject[serverObj].spend && mergedObject[serverObj].spend.floods && "".concat(mergedObject[serverObj].spend.floods.length, " floods for ").concat(mergedObject[serverObj].spend.floods.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(_settings["default"].coin.ticker);
+            }, 0) / 1e8, " ").concat(settings.coin.ticker);
             spendRains = mergedObject[serverObj].spend && mergedObject[serverObj].spend.rains && "".concat(mergedObject[serverObj].spend.rains.length, " rains for ").concat(mergedObject[serverObj].spend.rains.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(_settings["default"].coin.ticker);
+            }, 0) / 1e8, " ").concat(settings.coin.ticker);
             spendSoaks = mergedObject[serverObj].spend && mergedObject[serverObj].spend.soaks && "".concat(mergedObject[serverObj].spend.soaks.length, " soaks for ").concat(mergedObject[serverObj].spend.soaks.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(_settings["default"].coin.ticker);
+            }, 0) / 1e8, " ").concat(settings.coin.ticker);
             spendHurricanes = mergedObject[serverObj].spend && mergedObject[serverObj].spend.hurricanes && "".concat(mergedObject[serverObj].spend.hurricanes.length, " hurricanes for ").concat(mergedObject[serverObj].spend.hurricanes.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(_settings["default"].coin.ticker);
+            }, 0) / 1e8, " ").concat(settings.coin.ticker);
             spendThunders = mergedObject[serverObj].spend && mergedObject[serverObj].spend.thunders && "".concat(mergedObject[serverObj].spend.thunders.length, " thunders for ").concat(mergedObject[serverObj].spend.thunders.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(_settings["default"].coin.ticker);
+            }, 0) / 1e8, " ").concat(settings.coin.ticker);
             spendThunderstorms = mergedObject[serverObj].spend && mergedObject[serverObj].spend.thunderstorms && "".concat(mergedObject[serverObj].spend.thunderstorms.length, " thunderstorms for ").concat(mergedObject[serverObj].spend.thunderstorms.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(_settings["default"].coin.ticker);
+            }, 0) / 1e8, " ").concat(settings.coin.ticker);
             spendReactDrops = mergedObject[serverObj].spend && mergedObject[serverObj].spend.reactdrops && "".concat(mergedObject[serverObj].spend.reactdrops.length, " reactdrops for ").concat(mergedObject[serverObj].spend.reactdrops.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(_settings["default"].coin.ticker); // Earned
+            }, 0) / 1e8, " ").concat(settings.coin.ticker); // Earned
 
             earnedTips = mergedObject[serverObj].earned && mergedObject[serverObj].earned.tips && "".concat(mergedObject[serverObj].earned.tips.length, " tips for ").concat(mergedObject[serverObj].earned.tips.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(_settings["default"].coin.ticker);
+            }, 0) / 1e8, " ").concat(settings.coin.ticker);
             earnedFloods = mergedObject[serverObj].earned && mergedObject[serverObj].earned.floods && "".concat(mergedObject[serverObj].earned.floods.length, " floods for ").concat(mergedObject[serverObj].earned.floods.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(_settings["default"].coin.ticker);
+            }, 0) / 1e8, " ").concat(settings.coin.ticker);
             earnedRains = mergedObject[serverObj].earned && mergedObject[serverObj].earned.rains && "".concat(mergedObject[serverObj].earned.rains.length, " rains for ").concat(mergedObject[serverObj].earned.rains.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(_settings["default"].coin.ticker);
+            }, 0) / 1e8, " ").concat(settings.coin.ticker);
             earnedSoaks = mergedObject[serverObj].earned && mergedObject[serverObj].earned.soaks && "".concat(mergedObject[serverObj].earned.soaks.length, " soaks for ").concat(mergedObject[serverObj].earned.soaks.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(_settings["default"].coin.ticker);
+            }, 0) / 1e8, " ").concat(settings.coin.ticker);
             earnedHurricanes = mergedObject[serverObj].earned && mergedObject[serverObj].earned.hurricanes && "".concat(mergedObject[serverObj].earned.hurricanes.length, " hurricanes for ").concat(mergedObject[serverObj].earned.hurricanes.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(_settings["default"].coin.ticker);
+            }, 0) / 1e8, " ").concat(settings.coin.ticker);
             earnedThunders = mergedObject[serverObj].earned && mergedObject[serverObj].earned.thunders && "".concat(mergedObject[serverObj].earned.thunders.length, " thunders for ").concat(mergedObject[serverObj].earned.thunders.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(_settings["default"].coin.ticker);
+            }, 0) / 1e8, " ").concat(settings.coin.ticker);
             earnedThunderstorms = mergedObject[serverObj].earned && mergedObject[serverObj].earned.thunderstorms && "".concat(mergedObject[serverObj].earned.thunderstorms.length, " thunderstorms for ").concat(mergedObject[serverObj].earned.thunderstorms.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(_settings["default"].coin.ticker);
+            }, 0) / 1e8, " ").concat(settings.coin.ticker);
             earnedReactDrops = mergedObject[serverObj].earned && mergedObject[serverObj].earned.reactdrops && "".concat(mergedObject[serverObj].earned.reactdrops.length, " reactdrops for ").concat(mergedObject[serverObj].earned.reactdrops.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(_settings["default"].coin.ticker);
+            }, 0) / 1e8, " ").concat(settings.coin.ticker);
             serverString = "_**".concat(serverObj, "**_\n    \n").concat(mergedObject[serverObj].spend ? '_Spend_\n' : '', "\n").concat(spendTips ? "Tips: ".concat(spendTips, "\n") : '').concat(spendRains ? "Rains: ".concat(spendRains, "\n") : '').concat(spendFloods ? "Floods: ".concat(spendFloods, "\n") : '').concat(spendSoaks ? "Soaks: ".concat(spendSoaks, "\n") : '').concat(spendHurricanes ? "Hurricanes: ".concat(spendHurricanes, "\n") : '').concat(spendThunders ? "Thunders: ".concat(spendThunders, "\n") : '').concat(spendThunderstorms ? "Thunderstorms: ".concat(spendThunderstorms, "\n") : '').concat(spendReactDrops ? "ReactDrops: ".concat(spendReactDrops, "\n") : '', "\n  \n").concat(mergedObject[serverObj].earned ? '_Earned_\n' : '', "\n").concat(earnedTips ? "Tips: ".concat(earnedTips, "\n") : '').concat(earnedRains ? "Rains: ".concat(earnedRains, "\n") : '').concat(earnedFloods ? "Floods: ".concat(earnedFloods, "\n") : '').concat(earnedSoaks ? "Soaks: ".concat(earnedSoaks, "\n") : '').concat(earnedHurricanes ? "Hurricanes: ".concat(earnedHurricanes, "\n") : '').concat(earnedThunders ? "Thunders: ".concat(earnedThunders, "\n") : '').concat(earnedThunderstorms ? "Thunderstorms: ".concat(earnedThunderstorms, "\n") : '').concat(earnedReactDrops ? "ReactDrops: ".concat(earnedReactDrops, "\n") : '');
             _context.next = 54;
             return message.author.send({

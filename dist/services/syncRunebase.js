@@ -31,6 +31,7 @@ function _asyncIterator(iterable) { var method, async, sync, retry = 2; if (type
 
 function AsyncFromSyncIterator(s) { AsyncFromSyncIterator = function AsyncFromSyncIterator(s) { this.s = s; this.n = s.next; }; AsyncFromSyncIterator.prototype = { s: null, n: null, next: function next() { return AsyncFromSyncIteratorContinuation(this.n.apply(this.s, arguments)); }, "return": function _return(value) { var ret = this.s["return"]; if (ret === undefined) { return Promise.resolve({ value: value, done: true }); } return AsyncFromSyncIteratorContinuation(ret.apply(this.s, arguments)); }, "throw": function _throw(value) { var thr = this.s["return"]; if (thr === undefined) return Promise.reject(value); return AsyncFromSyncIteratorContinuation(thr.apply(this.s, arguments)); } }; function AsyncFromSyncIteratorContinuation(r) { if (Object(r) !== r) { return Promise.reject(new TypeError(r + " is not an object.")); } var done = r.done; return Promise.resolve(r.value).then(function (value) { return { value: value, done: done }; }); } return new AsyncFromSyncIterator(s); }
 
+var settings = (0, _settings["default"])();
 var queue = new _pQueue["default"]({
   concurrency: 1
 });
@@ -198,7 +199,7 @@ var syncTransactions = /*#__PURE__*/function () {
                                           case 2:
                                             wallet = _context3.sent;
 
-                                            if (!(transaction.confirmations < Number(_settings["default"].min.confirmations))) {
+                                            if (!(transaction.confirmations < Number(settings.min.confirmations))) {
                                               _context3.next = 7;
                                               break;
                                             }
@@ -215,7 +216,7 @@ var syncTransactions = /*#__PURE__*/function () {
                                             updatedTransaction = _context3.sent;
 
                                           case 7:
-                                            if (!(transaction.confirmations >= Number(_settings["default"].min.confirmations))) {
+                                            if (!(transaction.confirmations >= Number(settings.min.confirmations))) {
                                               _context3.next = 50;
                                               break;
                                             }
@@ -651,7 +652,7 @@ var sync = /*#__PURE__*/function () {
           case 3:
             _context11.t1 = _context11.sent;
             currentBlockCount = _context11.t0.max.call(_context11.t0, 0, _context11.t1);
-            startBlock = Number(_settings["default"].startSyncBlock);
+            startBlock = Number(settings.startSyncBlock);
             _context11.next = 8;
             return _models["default"].block.findAll({
               limit: 1,

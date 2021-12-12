@@ -1,6 +1,8 @@
 import { config } from "dotenv";
 import { getInstance } from "./rclient";
-import settings from '../config/settings';
+import getCoinSettings from '../config/settings';
+
+const settings = getCoinSettings();
 
 config();
 

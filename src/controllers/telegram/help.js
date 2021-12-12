@@ -1,8 +1,10 @@
 /* eslint-disable import/prefer-default-export */
 import { Markup } from "telegraf";
 import { helpMessage } from '../../messages/telegram';
-import settings from '../../config/settings';
+import getCoinSettings from '../../config/settings';
 import db from '../../models';
+
+const settings = getCoinSettings();
 
 export const fetchHelp = async (ctx, io) => {
   if (ctx.update.message.chat.type !== 'private') {

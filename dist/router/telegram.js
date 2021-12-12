@@ -43,7 +43,8 @@ var _settings2 = require("../controllers/telegram/settings");
 
 var _isMaintenanceOrDisabled = require("../helpers/isMaintenanceOrDisabled");
 
-// import logger from "../helpers/logger";
+var settings = (0, _settings["default"])(); // import logger from "../helpers/logger";
+
 (0, _dotenv.config)();
 var queue = new _pQueue["default"]({
   concurrency: 1
@@ -853,7 +854,7 @@ var telegramRouter = function telegramRouter(telegramClient, io, telegrafGetChat
     };
   }());
 
-  if (_settings["default"].coin.setting === 'Runebase') {
+  if (settings.coin.setting === 'Runebase') {
     telegramClient.command('referral', function (ctx) {
       (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee15() {
         var maintenance, groupTask, telegramUserId, telegramUserName, task;
@@ -1109,7 +1110,7 @@ var telegramRouter = function telegramRouter(telegramClient, io, telegrafGetChat
               });
 
             case 10:
-              if (!(_settings["default"].coin.setting === 'Runebase')) {
+              if (!(settings.coin.setting === 'Runebase')) {
                 _context19.next = 17;
                 break;
               }
@@ -1204,7 +1205,7 @@ var telegramRouter = function telegramRouter(telegramClient, io, telegrafGetChat
               telegramUserId = ctx.update.message.from.id;
               telegramUserName = ctx.update.message.from.username; // console.log(filteredMessageTelegram);
 
-              if (!(filteredMessageTelegram[0].toLowerCase() === _settings["default"].bot.command.telegram)) {
+              if (!(filteredMessageTelegram[0].toLowerCase() === settings.bot.command.telegram)) {
                 _context20.next = 154;
                 break;
               }
@@ -1273,7 +1274,7 @@ var telegramRouter = function telegramRouter(telegramClient, io, telegrafGetChat
               });
 
             case 51:
-              if (!(_settings["default"].coin.setting === 'Runebase')) {
+              if (!(settings.coin.setting === 'Runebase')) {
                 _context20.next = 64;
                 break;
               }

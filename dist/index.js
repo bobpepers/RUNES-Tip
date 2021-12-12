@@ -62,6 +62,8 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 require('dotenv').config();
 
+var settings = (0, _settings["default"])();
+
 var telegrafGetChatMembers = require('telegraf-getchatmembers');
 
 var socketIo = require("socket.io");
@@ -195,7 +197,7 @@ server.listen(port);
           return (0, _initDatabaseRecords.initDatabaseRecords)();
 
         case 6:
-          if (!(_settings["default"].coin.setting === 'Runebase')) {
+          if (!(settings.coin.setting === 'Runebase')) {
             _context4.next = 14;
             break;
           }
@@ -215,7 +217,7 @@ server.listen(port);
           break;
 
         case 14:
-          if (!(_settings["default"].coin.setting === 'Pirate')) {
+          if (!(settings.coin.setting === 'Pirate')) {
             _context4.next = 25;
             break;
           }

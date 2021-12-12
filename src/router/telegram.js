@@ -31,9 +31,11 @@ import fetchPriceInfo from '../controllers/telegram/price';
 import {
   fetchInfo,
 } from '../controllers/telegram/info';
-import settings from '../config/settings';
+import getCoinSettings from '../config/settings';
 import { telegramSettings } from '../controllers/telegram/settings';
 import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
+
+const settings = getCoinSettings();
 
 // import logger from "../helpers/logger";
 

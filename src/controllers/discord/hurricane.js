@@ -1,7 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import db from '../../models';
 import {
-  walletNotFoundMessage,
   AfterHurricaneSuccess,
   hurricaneMaxUserAmountMessage,
   hurricaneInvalidUserAmount,
@@ -14,7 +13,7 @@ import { userWalletExist } from "../../helpers/discord/userWalletExist";
 
 import _ from "lodash";
 
-import { Transaction, Op } from "sequelize";
+import { Transaction } from "sequelize";
 import logger from "../../helpers/logger";
 
 export const discordHurricane = async (

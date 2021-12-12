@@ -5,7 +5,6 @@ import {
   depositAddressMessage,
   depositAddressNotFoundMessage,
 } from '../../messages/telegram';
-import settings from '../../config/settings';
 
 import logger from "../../helpers/logger";
 

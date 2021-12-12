@@ -1,4 +1,4 @@
-export const runebaseSettings = {
+module.exports = {
   startSyncBlock: 500000,
   bot: {
     name: "RunesTipBot",
@@ -38,7 +38,7 @@ export const runebaseSettings = {
       "https://stakecenter.co/client/exchange/RDD/RUNES",
       "https://www.localrunes.com",
     ],
-    exampleAddress: '123',
+    exampleAddress: 'ReU2nhYXamYRd2VBk4auwresov6jwLEuSg',
   },
   faucet: 50, // (50 = 0,5% / 100 = 1% / ...) percentage of total per claim
   min: {

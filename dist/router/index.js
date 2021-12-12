@@ -33,6 +33,7 @@ var _discord2 = require("./discord");
 
 var _telegram2 = require("./telegram");
 
+var settings = (0, _settings["default"])();
 (0, _dotenv.config)();
 
 var localhostOnly = function localhostOnly(req, res, next) {
@@ -49,16 +50,16 @@ var router = function router(app, discordClient, telegramClient, io, telegrafGet
   app.post('/api/chaininfo/block', localhostOnly, function (req, res) {
     console.log('new block found');
 
-    if (_settings["default"].coin.setting === 'Runebase') {
+    if (settings.coin.setting === 'Runebase') {
       (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient);
-    } else if (_settings["default"].coin.setting === 'Pirate') {
+    } else if (settings.coin.setting === 'Pirate') {
       (0, _syncPirate.startPirateSync)(discordClient, telegramClient);
     } else {
       (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient);
     }
   });
 
-  if (_settings["default"].coin.setting === 'Pirate') {
+  if (settings.coin.setting === 'Pirate') {
     app.post('/api/rpc/walletnotify', localhostOnly, _walletNotify2["default"], /*#__PURE__*/function () {
       var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res) {
         var myClient;

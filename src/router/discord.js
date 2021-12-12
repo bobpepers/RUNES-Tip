@@ -68,10 +68,12 @@ import {
 import { discordStats } from '../controllers/discord/stats';
 import { discordPublicStats } from '../controllers/discord/publicstats';
 import { discordLeaderboard } from '../controllers/discord/leaderboard';
-import settings from '../config/settings';
+import getCoinSettings from '../config/settings';
 import { discordSettings } from '../controllers/discord/settings';
 import { executeTipFunction } from '../helpers/discord/executeTips';
 import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
+
+const settings = getCoinSettings();
 
 config();
 

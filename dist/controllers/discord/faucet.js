@@ -24,6 +24,8 @@ var _settings = _interopRequireDefault(require("../../config/settings"));
 var _userWalletExist = require("../../helpers/discord/userWalletExist");
 
 /* eslint-disable import/prefer-default-export */
+var settings = (0, _settings["default"])();
+
 var discordFaucetClaim = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(message, filteredMessage, io) {
     var user, activity;
@@ -155,7 +157,7 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                         return _context.abrupt("return");
 
                       case 41:
-                        amountToTip = Number((faucet.amount / 100 * (_settings["default"].faucet / 1e2)).toFixed(0));
+                        amountToTip = Number((faucet.amount / 100 * (settings.faucet / 1e2)).toFixed(0));
                         _context.next = 44;
                         return _models["default"].faucettip.create({
                           amount: amountToTip,

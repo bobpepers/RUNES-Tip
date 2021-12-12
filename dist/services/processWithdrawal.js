@@ -17,6 +17,7 @@ var _rclient = require("./rclient");
 
 var _settings = _interopRequireDefault(require("../config/settings"));
 
+var settings = (0, _settings["default"])();
 (0, _dotenv.config)();
 
 var processWithdrawal = /*#__PURE__*/function () {
@@ -28,7 +29,7 @@ var processWithdrawal = /*#__PURE__*/function () {
           case 0:
             amount = (transaction.amount - Number(transaction.feeAmount)) / 1e8; // Add New Currency here (default fallback is Runebase)
 
-            if (!(_settings["default"].coin.setting === 'Runebase')) {
+            if (!(settings.coin.setting === 'Runebase')) {
               _context.next = 7;
               break;
             }
@@ -42,7 +43,7 @@ var processWithdrawal = /*#__PURE__*/function () {
             break;
 
           case 7:
-            if (!(_settings["default"].coin.setting === 'Pirate')) {
+            if (!(settings.coin.setting === 'Pirate')) {
               _context.next = 27;
               break;
             }

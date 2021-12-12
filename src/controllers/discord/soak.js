@@ -1,7 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import db from '../../models';
 import {
-  walletNotFoundMessage,
   AfterSuccessMessage,
   NotInDirectMessage,
 } from '../../messages/discord';

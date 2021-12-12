@@ -73,6 +73,7 @@ var _executeTips = require("../helpers/discord/executeTips");
 
 var _isMaintenanceOrDisabled = require("../helpers/isMaintenanceOrDisabled");
 
+var settings = (0, _settings["default"])();
 (0, _dotenv.config)();
 var queue = new _pQueue["default"]({
   concurrency: 1
@@ -200,7 +201,7 @@ var discordRouter = function discordRouter(discordClient, io) {
               });
 
             case 30:
-              if (!(!message.content.startsWith(_settings["default"].bot.command.discord) || message.author.bot)) {
+              if (!(!message.content.startsWith(settings.bot.command.discord) || message.author.bot)) {
                 _context2.next = 32;
                 break;
               }
@@ -208,7 +209,7 @@ var discordRouter = function discordRouter(discordClient, io) {
               return _context2.abrupt("return");
 
             case 32:
-              if (!message.content.startsWith(_settings["default"].bot.command.discord)) {
+              if (!message.content.startsWith(settings.bot.command.discord)) {
                 _context2.next = 45;
                 break;
               }

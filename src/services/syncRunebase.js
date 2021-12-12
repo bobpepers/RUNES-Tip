@@ -10,8 +10,10 @@ import {
 import {
   discordDepositConfirmedMessage,
 } from '../messages/discord';
-import settings from '../config/settings';
+import getCoinSettings from '../config/settings';
 import { getInstance } from "./rclient";
+
+const settings = getCoinSettings();
 
 const queue = new PQueue({ concurrency: 1 });
 
