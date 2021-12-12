@@ -71,6 +71,7 @@ import { discordLeaderboard } from '../controllers/discord/leaderboard';
 import settings from '../config/settings';
 import { discordSettings } from '../controllers/discord/settings';
 import { executeTipFunction } from '../helpers/discord/executeTips';
+import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
 
 config();
 
@@ -95,6 +96,9 @@ export const discordRouter = (discordClient, io) => {
     let channelTaskId;
     let lastSeenDiscordTask;
     if (!message.author.bot) {
+      const maintenance = await isMaintenanceOrDisabled(message, 'discord');
+      await queue.add(() => maintenance);
+      if (maintenance.maintenance || !maintenance.enabled) return;
       const walletExists = await createUpdateDiscordUser(message);
       await queue.add(() => walletExists);
       groupTask = await updateDiscordGroup(discordClient, message);

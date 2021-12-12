@@ -1,6 +1,30 @@
 import db from '../models';
 
 export const initDatabaseRecords = async () => {
+  // Discord bot setting
+  const discordBotSetting = await db.bots.findOne({
+    where: {
+      name: 'discord',
+    },
+  });
+  if (!discordBotSetting) {
+    await db.bots.create({
+      name: 'discord',
+    });
+  }
+
+  // Telegram bot setting
+  const telegramBotSetting = await db.bots.findOne({
+    where: {
+      name: 'telegram',
+    },
+  });
+  if (!telegramBotSetting) {
+    await db.bots.create({
+      name: 'telegram',
+    });
+  }
+
   // Flood
   const autoWithdrawalSetting = await db.features.findOne({
     where: {

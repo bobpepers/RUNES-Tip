@@ -12,6 +12,10 @@ import { isAdmin } from './controllers/admin';
 
 import { fetchLiability } from './controllers/liability';
 import { fetchBalance } from './controllers/balance';
+import {
+  fetchBotSettings,
+  updateBotSettings,
+} from './controllers/bots';
 
 import { insertIp } from './controllers/ip';
 
@@ -285,9 +289,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
         });
       } else {
         res.status(401).send({
-          error: {
-            message: "Error",
-          },
+          error: "ERROR",
         });
       }
     },
@@ -307,9 +309,47 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
         });
       } else {
         res.status(401).send({
-          error: {
-            message: "Error",
-          },
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/bot/settings/update',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    updateBotSettings,
+    (req, res) => {
+      if (res.locals.settings) {
+        res.json({
+          settings: res.locals.settings,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/bot/settings',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    fetchBotSettings,
+    (req, res) => {
+      if (res.locals.settings) {
+        res.json({
+          settings: res.locals.settings,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
         });
       }
     },
@@ -329,9 +369,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
         });
       } else {
         res.status(401).send({
-          error: {
-            message: "Error",
-          },
+          error: "ERROR",
         });
       }
     },
@@ -351,9 +389,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
         });
       } else {
         res.status(401).send({
-          error: {
-            message: "Error",
-          },
+          error: "ERROR",
         });
       }
     },
@@ -373,9 +409,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
         });
       } else {
         res.status(401).send({
-          error: {
-            message: "Error",
-          },
+          error: "ERROR",
         });
       }
     },
@@ -395,9 +429,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
         });
       } else {
         res.status(401).send({
-          error: {
-            message: "Error",
-          },
+          error: "ERROR",
         });
       }
     },
@@ -417,9 +449,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
         });
       } else {
         res.status(401).send({
-          error: {
-            message: "Error",
-          },
+          error: "ERROR",
         });
       }
     },
@@ -438,9 +468,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
         });
       } else {
         res.status(401).send({
-          error: {
-            message: "Error",
-          },
+          error: "ERROR",
         });
       }
     },
@@ -460,9 +488,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
         });
       } else {
         res.status(401).send({
-          error: {
-            message: "Error",
-          },
+          error: "ERROR",
         });
       }
     },
@@ -483,9 +509,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
         });
       } else {
         res.status(401).send({
-          error: {
-            message: "Error",
-          },
+          error: "ERROR",
         });
       }
     },
