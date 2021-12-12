@@ -71,9 +71,9 @@ export const withdrawDiscordCreate = async (
 
     // Add new currencies here (default fallback Runebase)
     let isValidAddress = false;
-    if (settings.coin.name === 'Runebase') {
+    if (settings.coin.setting === 'Runebase') {
       isValidAddress = await getInstance().utils.isRunebaseAddress(filteredMessage[2]);
-    } else if (settings.coin.name === 'Pirate') {
+    } else if (settings.coin.setting === 'Pirate') {
       isValidAddress = await getInstance().utils.isPirateAddress(filteredMessage[2]);
     } else {
       isValidAddress = await getInstance().utils.isRunebaseAddress(filteredMessage[2]);

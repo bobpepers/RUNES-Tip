@@ -15,7 +15,13 @@ import settings from '../../config/settings';
 
 import logger from "../../helpers/logger";
 
-export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalAmount, io) => {
+export const withdrawTelegramCreate = async (
+  ctx,
+  withdrawalAddress,
+  withdrawalAmount,
+  io,
+  setting,
+) => {
   logger.info(`Start Withdrawal Request: ${ctx.update.message.from.id}-${ctx.update.message.from.username}`);
   if (ctx.update.message.chat.type !== 'private') {
     await ctx.reply("i have sent you a direct message");
@@ -26,11 +32,13 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     const amount = new BigNumber(withdrawalAmount).times(1e8).toNumber();
-    if (amount < Number(settings.min.withdrawal)) {
+    if (amount < Number(setting.min)) {
       ctx.reply(minimumWithdrawalMessage());
+      return;
     }
     if (amount % 1 !== 0) {
       ctx.reply(invalidAmountMessage());
+      return;
     }
 
     // Add new currencies here (default fallback Runebase)
@@ -45,69 +53,68 @@ export const withdrawTelegramCreate = async (ctx, withdrawalAddress, withdrawalA
     //
     if (!isValidAddress) {
       ctx.telegram.sendMessage(ctx.update.message.from.id, invalidAddressMessage());
+      return;
     }
 
-    if (amount >= Number(settings.min.withdrawal) && amount % 1 === 0 && isValidAddress) {
-      const user = await db.user.findOne({
-        where: {
-          user_id: `telegram-${ctx.update.message.from.id}`,
+    const user = await db.user.findOne({
+      where: {
+        user_id: `telegram-${ctx.update.message.from.id}`,
+      },
+      include: [
+        {
+          model: db.wallet,
+          as: 'wallet',
+          include: [
+            {
+              model: db.address,
+              as: 'addresses',
+            },
+          ],
         },
-        include: [
-          {
-            model: db.wallet,
-            as: 'wallet',
-            include: [
-              {
-                model: db.address,
-                as: 'addresses',
-              },
-            ],
-          },
-        ],
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      if (!user) {
-        ctx.telegram.sendMessage(ctx.update.message.from.id, userNotFoundMessage());
-      }
-      if (user) {
-        if (amount > user.wallet.available) {
-          ctx.telegram.sendMessage(ctx.update.message.from.id, insufficientBalanceMessage());
-        }
-        if (amount <= user.wallet.available) {
-          const wallet = await user.wallet.update({
-            available: user.wallet.available - amount,
-            locked: user.wallet.locked + amount,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
-          const transaction = await db.transaction.create({
-            addressId: wallet.addresses[0].id,
-            phase: 'review',
-            type: 'send',
-            to_from: withdrawalAddress,
-            amount,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
-          const activity = await db.activity.create(
-            {
-              spenderId: user.id,
-              type: 'withdrawRequested',
-              amount,
-              transactionId: transaction.id,
-            },
-            {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            },
-          );
-          ctx.telegram.sendMessage(ctx.update.message.from.id, withdrawalReviewMessage());
-        }
-      }
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    if (!user) {
+      ctx.telegram.sendMessage(ctx.update.message.from.id, userNotFoundMessage());
+      return;
     }
+
+    if (amount > user.wallet.available) {
+      ctx.telegram.sendMessage(ctx.update.message.from.id, insufficientBalanceMessage());
+      return;
+    }
+    const wallet = await user.wallet.update({
+      available: user.wallet.available - amount,
+      locked: user.wallet.locked + amount,
+    }, {
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    });
+    const transaction = await db.transaction.create({
+      addressId: wallet.addresses[0].id,
+      phase: 'review',
+      type: 'send',
+      to_from: withdrawalAddress,
+      amount,
+    }, {
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    });
+    const activity = await db.activity.create(
+      {
+        spenderId: user.id,
+        type: 'withdrawRequested',
+        amount,
+        transactionId: transaction.id,
+      },
+      {
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      },
+    );
+    ctx.telegram.sendMessage(ctx.update.message.from.id, withdrawalReviewMessage());
+
     t.afterCommit(() => {
       console.log('done');
     });

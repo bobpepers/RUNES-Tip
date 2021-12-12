@@ -1,20 +1,27 @@
 import { Transaction } from "sequelize";
-import BigNumber from "bignumber.js";
 import db from '../../models';
 import {
-  invalidAmountMessage,
   userNotFoundMessage,
   unableToFindUserMessage,
   insufficientBalanceMessage,
-  minimumTipMessage,
   tipSuccessMessage,
   generalErrorMessage,
 } from '../../messages/telegram';
 import settings from '../../config/settings';
+import { validateAmount } from "../../helpers/discord/validateAmount";
 
 import logger from "../../helpers/logger";
 
-export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io, groupTask, setting) => {
+export const tipRunesToUser = async (
+  ctx,
+  tipTo,
+  tipAmount,
+  bot,
+  runesGroup,
+  io,
+  groupTask,
+  setting,
+) => {
   let activity;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -42,27 +49,19 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io,
       ctx.reply(userNotFoundMessage());
       return;
     }
-    const amount = new BigNumber(tipAmount).times(1e8).toNumber();
-    if (amount < Number(setting.min)) {
-      activity = await db.activity.create({
-        type: 'tip_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      ctx.reply(minimumTipMessage(setting));
-      return;
-    }
-    if (amount % 1 !== 0) {
-      activity = await db.activity.create({
-        type: 'tip_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      ctx.reply(invalidAmountMessage());
+    const [
+      activityValiateAmount,
+      amount,
+    ] = await validateAmount(
+      ctx,
+      t,
+      tipAmount,
+      user,
+      setting,
+      'tip',
+    );
+    if (activityValiateAmount) {
+      activity = activityValiateAmount;
       return;
     }
 
@@ -98,70 +97,58 @@ export const tipRunesToUser = async (ctx, tipTo, tipAmount, bot, runesGroup, io,
       return;
     }
 
-    if (amount >= Number(setting.min) && amount % 1 === 0 && findUserToTip) {
-      if (user) {
-        if (amount > user.wallet.available) {
-          activity = await db.activity.create({
-            type: 'tip_i',
-            spenderId: user.id,
-            amount,
-          }, {
-            lock: t.LOCK.UPDATE,
-            transaction: t,
-          });
-          ctx.reply(insufficientBalanceMessage());
-        }
-        if (amount <= user.wallet.available) {
-          const wallet = await user.wallet.update({
-            available: user.wallet.available - amount,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
-          const updatedFindUserToTip = findUserToTip.wallet.update({
-            available: findUserToTip.wallet.available + amount,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
+    const wallet = await user.wallet.update({
+      available: user.wallet.available - amount,
+    }, {
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    });
+    const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
+    const userTipAmount = (amount - Number(fee));
 
-          const tipTransaction = await db.tip.create({
-            userId: user.id,
-            amount,
-            type: 'split',
-            userCount: 1,
-            groupId: groupTask.id,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
-          const tiptipTransaction = await db.tiptip.create({
-            userId: findUserToTip.id,
-            tipId: tipTransaction.id,
-            amount,
-            groupId: groupTask.id,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
+    const updatedFindUserToTip = findUserToTip.wallet.update({
+      available: findUserToTip.wallet.available + userTipAmount,
+    }, {
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    });
 
-          activity = await db.activity.create({
-            amount,
-            type: 'tip_s',
-            earnerId: findUserToTip.id,
-            spenderId: user.id,
-            earner_balance: updatedFindUserToTip.available + updatedFindUserToTip.locked,
-            spender_balance: wallet.available + wallet.locked,
-          }, {
-            lock: t.LOCK.UPDATE,
-            transaction: t,
-          });
+    const tipTransaction = await db.tip.create({
+      feeAmount: Number(fee),
+      userId: user.id,
+      amount,
+      type: 'split',
+      userCount: 1,
+      groupId: groupTask.id,
+    }, {
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    });
+    const tiptipTransaction = await db.tiptip.create({
+      userId: findUserToTip.id,
+      tipId: tipTransaction.id,
+      amount: Number(userTipAmount),
+      groupId: groupTask.id,
+    }, {
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    });
 
-          ctx.reply(tipSuccessMessage(user, amount, findUserToTip));
-          logger.info(`Success tip Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} to ${findUserToTip.username} with ${amount / 1e8} ${settings.coin.ticker}`);
-        }
-      }
-    }
+    activity = await db.activity.create({
+      amount,
+      type: 'tip_s',
+      earnerId: findUserToTip.id,
+      spenderId: user.id,
+      earner_balance: updatedFindUserToTip.available + updatedFindUserToTip.locked,
+      spender_balance: wallet.available + wallet.locked,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    ctx.reply(tipSuccessMessage(user, amount, findUserToTip));
+    logger.info(`Success tip Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} to ${findUserToTip.username} with ${amount / 1e8} ${settings.coin.ticker}`);
+
     t.afterCommit(() => {
       console.log('done');
     });
