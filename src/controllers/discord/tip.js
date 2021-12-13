@@ -6,6 +6,7 @@ import {
   tipSuccessMessage,
   NotInDirectMessage,
   userNotFoundMessage,
+  notEnoughUsersToTip,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/discord/validateAmount";
 
@@ -98,7 +99,9 @@ export const tipRunesToDiscordUser = async (
       if (userExist) {
         const userIdTest = userExist.user_id.replace('discord-', '');
         if (userIdTest !== message.author.id) {
-          usersToTip.push(userExist);
+          if (!usersToTip.find((o) => o.id === userExist.id)) {
+            usersToTip.push(userExist);
+          }
         }
       }
       // usersToTip.push(filteredMessage[AmountPosition]);
@@ -107,6 +110,12 @@ export const tipRunesToDiscordUser = async (
         AmountPositionEnded = true;
       }
     }
+
+    if (usersToTip.length < 1) {
+      await message.channel.send({ embeds: [notEnoughUsersToTip(message)] });
+      return;
+    }
+
     if (filteredMessage[AmountPosition + 1] && filteredMessage[AmountPosition + 1].toLowerCase() === 'each') {
       type = 'each';
     }

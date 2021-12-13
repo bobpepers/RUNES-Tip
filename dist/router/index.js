@@ -13,6 +13,8 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _dotenv = require("dotenv");
 
+var _pQueue = _interopRequireDefault(require("p-queue"));
+
 var _walletNotify = _interopRequireDefault(require("../helpers/runebase/walletNotify"));
 
 var _walletNotify2 = _interopRequireDefault(require("../helpers/pirate/walletNotify"));
@@ -31,6 +33,12 @@ var _discord2 = require("./discord");
 
 var _telegram2 = require("./telegram");
 
+var queue = new _pQueue["default"]({
+  concurrency: 1,
+  timeout: 1000000000 // intervalCap: 1,
+  // interval: 500,
+
+});
 (0, _dotenv.config)();
 
 var localhostOnly = function localhostOnly(req, res, next) {
@@ -166,8 +174,8 @@ var router = function router(app, discordClient, telegramClient, io, settings) {
     }());
   }
 
-  (0, _discord2.discordRouter)(discordClient, io, settings);
-  (0, _telegram2.telegramRouter)(telegramClient, io, settings);
+  (0, _discord2.discordRouter)(discordClient, queue, io, settings);
+  (0, _telegram2.telegramRouter)(telegramClient, queue, io, settings);
 };
 
 exports.router = router;

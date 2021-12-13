@@ -134,7 +134,7 @@ export const maxTimeReactdropMessage = (message) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Reactdrop')
-    .setDescription(`Maxiumum time is 2 weeks`)
+    .setDescription(`Maxiumum time is 2 days`)
     .setTimestamp()
     .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
 
@@ -675,6 +675,18 @@ export const enablePublicStatsMeMessage = (message) => {
   return result;
 };
 
+export const notEnoughUsersToTip = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(`Statistics`)
+    .setDescription(`<@${message.author.id}>, Not enough users to tip`)
+    .setThumbnail(settings.coin.logo)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
 export const statsMessage = (message, statsMessage) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
@@ -728,7 +740,7 @@ Displays server leaderboard
 Enable/Disable public statistics (determines if you want to be shown on the leaderboards) 
 default: disabled
 
-\`${settings.bot.command.discord} withdraw <address> <amount|all> \`
+\`${settings.bot.command.discord} withdraw <address> <amount|all>\`
 Withdraws the entered amount to a ${settings.coin.name} address of your choice
 example: \`${settings.bot.command.discord} withdraw ${settings.coin.exampleAddress} 5.20 \`
 Note: Minimal amount to withdraw: ${withdraw.min / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${withdraw.fee / 1e2}% ${settings.coin.ticker}. half of the withdrawal fee will be automatically deducted from the amount and will be donated to the common faucet pot.
@@ -737,9 +749,13 @@ Note: Minimal amount to withdraw: ${withdraw.min / 1e8} ${settings.coin.ticker}.
 Tips the @ mentioned user with the desired amount
 example: \`${settings.bot.command.discord} @test123456#7890 1.00\`
 
+\`${settings.bot.command.discord} <@user> <@user> <@user> <amount|all> [split|each]\`
+Tips the @ mentioned users with the desired amount
+example: \`${settings.bot.command.discord} @test123456#7890 @test123457#7890 1.00 each\`
+
 \`${settings.bot.command.discord} rain <amount|all> [<@role>]\`
 Rains the desired amount onto all online users (optionally, within specified role)
-example: \`${settings.bot.command.discord} rain 10\`
+example: \`${settings.bot.command.discord} rain 10\`, \`${settings.bot.command.discord} rain 10 @supporters\`
 
 \`${settings.bot.command.discord} soak <amount|all> [<@role>]\`
 Soaks the desired amount onto all online and idle users (optionally, within specified role)
@@ -747,27 +763,28 @@ example: \`${settings.bot.command.discord} soak 3.00\`
 
 \`${settings.bot.command.discord} flood <amount|all> [<@role>]\`
 Floods the desired amount onto all users (including offline users) (optionally, within specified role)
-example: \`${settings.bot.command.discord} flood 5.00\`
+example: \`${settings.bot.command.discord} flood 5.00\`, \`${settings.bot.command.discord} flood 5.00 @supporters\`
 
 \`${settings.bot.command.discord} sleet <amount|all> [<@role>]\`
 Makes a sleet storm with the desired amount onto all users that have been active in the channel in the last 15 minutes (optionally, within specified role
+example: \`${settings.bot.command.discord} sleet 5.00\`, \`${settings.bot.command.discord} sleet 5.00 @supporters\`
 
 \`${settings.bot.command.discord} voicerain <amount|all> <@voiceChannel> [<@role>]\`
 Rains the desired amount onto all listening users in the mentioned voice channel.
-example: \`${settings.bot.command.discord} voicerain 5.00 #General\`
+example: \`${settings.bot.command.discord} voicerain 5.00 #General\`, \`${settings.bot.command.discord} voicerain 5.00 #General @supporters\`
 NOTE: To mention a voice channel, get the channel ID ([read here how](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)) and enclose it with <# and >
 
 \`${settings.bot.command.discord} thunder <amount|all> [<@role>]\`
 Tips a random lucky online user with the amount (optionally, within specified role)
-example: \`${settings.bot.command.discord} thunder 5\`
+example: \`${settings.bot.command.discord} thunder 5\`, \`${settings.bot.command.discord} thunder 5 @supporters\`
 
 \`${settings.bot.command.discord} thunderstorm <numberOfUsers> <amount|all> [<@role>]\`
 Tips a specified number (max: 50) random lucky online users with part of the amount (optionally, within specified role)
-example: \`${settings.bot.command.discord} thunderstorm 10 5.00\`
+example: \`${settings.bot.command.discord} thunderstorm 10 5.00\`, \`${settings.bot.command.discord} thunderstorm 10 5.00 @supporters\`
 
 \`${settings.bot.command.discord} hurricane <numberOfUsers> <amount|all> [<@role>]\`
 Tips a specified number (max: 50) random lucky online and idle users with part of the amount (optionally, within specified role)
-example: \`${settings.bot.command.discord} hurricane 10 5.00\`
+example: \`${settings.bot.command.discord} hurricane 10 5.00\`, \`${settings.bot.command.discord} hurricane 10 5.00 @supporters\`
 
 \`${settings.bot.command.discord} faucet\`
 Gets an amount from the faucet (applicable every 4 hours)

@@ -25,7 +25,7 @@ var updateDiscordChannel = /*#__PURE__*/function () {
             if (message.type && message.type === "GUILD_VOICE") {
               console.log('GUILD_VOICE');
               channelId = message.id;
-            } else {
+            } else if (message.guildId && message.channelId) {
               channelId = message.channelId;
             }
 
@@ -39,17 +39,16 @@ var updateDiscordChannel = /*#__PURE__*/function () {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
-                        _context.next = 2;
-                        return message.guild.channels.cache.get(channelId);
-
-                      case 2:
-                        channel = _context.sent;
-
                         if (!channelId) {
                           _context.next = 15;
                           break;
                         }
 
+                        _context.next = 3;
+                        return message.guild.channels.cache.get(channelId);
+
+                      case 3:
+                        channel = _context.sent;
                         _context.next = 6;
                         return _models["default"].channel.findOne({
                           where: {

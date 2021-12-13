@@ -1,21 +1,28 @@
 import { Transaction } from "sequelize";
 import db from '../../models';
 
-export const updateDiscordChannel = async (client, message, group) => {
+export const updateDiscordChannel = async (
+  client,
+  message,
+  group,
+) => {
   let channelId;
+  let channelRecord;
+
   if (message.type && message.type === "GUILD_VOICE") {
     console.log('GUILD_VOICE');
     channelId = message.id;
-  } else {
+  } else if (message.guildId && message.channelId) {
     channelId = message.channelId;
   }
-  let channelRecord;
+
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    // const channel = await client.channels.cache.get(message.channelId);
-    const channel = await message.guild.channels.cache.get(channelId);
     if (channelId) {
+      // const channel = await client.channels.cache.get(message.channelId);
+      const channel = await message.guild.channels.cache.get(channelId);
+
       channelRecord = await db.channel.findOne(
         {
           where: {

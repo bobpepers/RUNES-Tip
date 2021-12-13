@@ -1,6 +1,4 @@
 import { config } from "dotenv";
-import PQueue from 'p-queue';
-
 import { fetchWalletBalance } from '../controllers/telegram/balance';
 import { fetchWalletDepositAddress } from '../controllers/telegram/deposit';
 import { withdrawTelegramCreate } from '../controllers/telegram/withdraw';
@@ -41,12 +39,11 @@ const settings = getCoinSettings();
 
 config();
 
-const queue = new PQueue({ concurrency: 1 });
-
 const runesGroup = process.env.TELEGRAM_RUNES_GROUP;
 
 export const telegramRouter = (
   telegramClient,
+  queue,
   io,
   settings,
 ) => {

@@ -1,4 +1,5 @@
 import { config } from "dotenv";
+import PQueue from 'p-queue';
 import walletNotifyRunebase from '../helpers/runebase/walletNotify';
 import walletNotifyPirate from '../helpers/pirate/walletNotify';
 
@@ -8,12 +9,17 @@ import {
 } from '../messages/discord';
 
 import logger from "../helpers/logger";
-
 import { startRunebaseSync } from "../services/syncRunebase";
 import { startPirateSync } from "../services/syncPirate";
 import { discordRouter } from './discord';
 import { telegramRouter } from './telegram';
 
+const queue = new PQueue({
+  concurrency: 1,
+  timeout: 1000000000,
+  // intervalCap: 1,
+  // interval: 500,
+});
 config();
 
 const localhostOnly = (req, res, next) => {
@@ -88,6 +94,6 @@ export const router = (
     );
   }
 
-  discordRouter(discordClient, io, settings);
-  telegramRouter(telegramClient, io, settings);
+  discordRouter(discordClient, queue, io, settings);
+  telegramRouter(telegramClient, queue, io, settings);
 };

@@ -5,9 +5,10 @@ import db from '../../models';
 export const updateDiscordGroup = async (client, message) => {
   let group;
   let guildId;
+
   if (message.guild && message.guild.id) {
     guildId = message.guild.id;
-  } else {
+  } else if (message.guildId) {
     guildId = message.guildId;
   }
 

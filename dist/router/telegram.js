@@ -13,8 +13,6 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _dotenv = require("dotenv");
 
-var _pQueue = _interopRequireDefault(require("p-queue"));
-
 var _balance = require("../controllers/telegram/balance");
 
 var _deposit = require("../controllers/telegram/deposit");
@@ -46,12 +44,9 @@ var _isMaintenanceOrDisabled = require("../helpers/isMaintenanceOrDisabled");
 var settings = (0, _settings["default"])(); // import logger from "../helpers/logger";
 
 (0, _dotenv.config)();
-var queue = new _pQueue["default"]({
-  concurrency: 1
-});
 var runesGroup = process.env.TELEGRAM_RUNES_GROUP;
 
-var telegramRouter = function telegramRouter(telegramClient, io, settings) {
+var telegramRouter = function telegramRouter(telegramClient, queue, io, settings) {
   telegramClient.command('help', function (ctx) {
     (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
       var maintenance, task;

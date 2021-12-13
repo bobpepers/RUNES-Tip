@@ -1,5 +1,5 @@
 module.exports = {
-  startSyncBlock: 1690400,
+  startSyncBlock: 1690401,
   bot: {
     name: "PirateTipBot",
     color: "#BB9645",

@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import PQueue from 'p-queue';
+
 import { fetchDiscordWalletBalance } from '../controllers/discord/balance';
 import { fetchDiscordWalletDepositAddress } from '../controllers/discord/deposit';
 import { withdrawDiscordCreate } from '../controllers/discord/withdraw';
@@ -74,10 +74,9 @@ import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
 
 config();
 
-const queue = new PQueue({ concurrency: 1 });
-
 export const discordRouter = (
   discordClient,
+  queue,
   io,
   settings,
 ) => {

@@ -98,86 +98,94 @@ Type "${settings.bot.command.discord} help" for usage info`);
   }).catch((err) => {
     console.log(err.message);
   });
+  return true;
 };
 
 export const updateDiscordLastSeen = async (client, message) => {
   let updatedUser;
-  await db.sequelize.transaction({
-    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-  }, async (t) => {
-    const user = await db.user.findOne(
-      {
-        where: {
-          user_id: `discord-${message.author.id}`,
-        },
-        transaction: t,
-        lock: t.LOCK.UPDATE,
-      },
-    );
-    const group = await db.group.findOne(
-      {
-        where: {
-          groupId: `discord-${message.guildId}`,
-        },
-        transaction: t,
-        lock: t.LOCK.UPDATE,
-      },
-    );
-    const active = await db.active.findOne(
-      {
-        where: {
-          userId: user.id,
-          groupId: group.id,
-        },
-        transaction: t,
-        lock: t.LOCK.UPDATE,
-      },
-    );
-    if (group) {
-      if (user) {
-        if (active) {
-          const updatedActive = await active.update(
-            {
-              lastSeen: new Date(Date.now()),
-            },
-            {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            },
-          );
-        }
-        if (!active) {
-          const updatedActive = await db.active.create(
-            {
-              groupId: group.id,
-              userId: user.id,
-              lastSeen: new Date(Date.now()),
-            },
-            {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            },
-          );
-        }
-      }
-    }
-    if (user) {
-      updatedUser = await user.update(
+  let guildId;
+  if (message.guildId) {
+    guildId = message.guildId;
+  }
+  if (guildId) {
+    await db.sequelize.transaction({
+      isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+    }, async (t) => {
+      const user = await db.user.findOne(
         {
-          lastSeen: new Date(Date.now()),
-        },
-        {
+          where: {
+            user_id: `discord-${message.author.id}`,
+          },
           transaction: t,
           lock: t.LOCK.UPDATE,
         },
       );
-    }
+      const group = await db.group.findOne(
+        {
+          where: {
+            groupId: `discord-${guildId}`,
+          },
+          transaction: t,
+          lock: t.LOCK.UPDATE,
+        },
+      );
+      const active = await db.active.findOne(
+        {
+          where: {
+            userId: user.id,
+            groupId: group.id,
+          },
+          transaction: t,
+          lock: t.LOCK.UPDATE,
+        },
+      );
+      if (group) {
+        if (user) {
+          if (active) {
+            const updatedActive = await active.update(
+              {
+                lastSeen: new Date(Date.now()),
+              },
+              {
+                transaction: t,
+                lock: t.LOCK.UPDATE,
+              },
+            );
+          }
+          if (!active) {
+            const updatedActive = await db.active.create(
+              {
+                groupId: group.id,
+                userId: user.id,
+                lastSeen: new Date(Date.now()),
+              },
+              {
+                transaction: t,
+                lock: t.LOCK.UPDATE,
+              },
+            );
+          }
+        }
+      }
+      if (user) {
+        updatedUser = await user.update(
+          {
+            lastSeen: new Date(Date.now()),
+          },
+          {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          },
+        );
+      }
 
-    t.afterCommit(() => {
-      console.log('done');
+      t.afterCommit(() => {
+        console.log('done');
+      });
+    }).catch((err) => {
+      console.log(err.message);
     });
-  }).catch((err) => {
-    console.log(err.message);
-  });
+  }
+
   return updatedUser;
 };

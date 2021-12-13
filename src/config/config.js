@@ -12,6 +12,9 @@ module.exports = {
     dialectOptions: {
       bigNumberStrings: true,
     },
+    pool: {
+      acquire: 120000,
+    },
   },
   test: {
     username: process.env.DB_USER,
@@ -22,6 +25,9 @@ module.exports = {
     dialect: 'mysql',
     dialectOptions: {
       bigNumberStrings: true,
+    },
+    pool: {
+      acquire: 120000,
     },
   },
   production: {
@@ -36,6 +42,9 @@ module.exports = {
       // ssl: {
       //  ca: fs.readFileSync(`${__dirname}/mysql-ca-master.crt`),
       // },
+    },
+    pool: {
+      acquire: 120000,
     },
   },
 };

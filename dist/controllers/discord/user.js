@@ -185,6 +185,9 @@ var createUpdateDiscordUser = /*#__PURE__*/function () {
             });
 
           case 2:
+            return _context2.abrupt("return", true);
+
+          case 3:
           case "end":
             return _context2.stop();
         }
@@ -201,12 +204,21 @@ exports.createUpdateDiscordUser = createUpdateDiscordUser;
 
 var updateDiscordLastSeen = /*#__PURE__*/function () {
   var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(client, message) {
-    var updatedUser;
+    var updatedUser, guildId;
     return _regenerator["default"].wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            _context4.next = 2;
+            if (message.guildId) {
+              guildId = message.guildId;
+            }
+
+            if (!guildId) {
+              _context4.next = 4;
+              break;
+            }
+
+            _context4.next = 4;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -231,7 +243,7 @@ var updateDiscordLastSeen = /*#__PURE__*/function () {
                         _context3.next = 5;
                         return _models["default"].group.findOne({
                           where: {
-                            groupId: "discord-".concat(message.guildId)
+                            groupId: "discord-".concat(guildId)
                           },
                           transaction: t,
                           lock: t.LOCK.UPDATE
@@ -334,10 +346,10 @@ var updateDiscordLastSeen = /*#__PURE__*/function () {
               console.log(err.message);
             });
 
-          case 2:
+          case 4:
             return _context4.abrupt("return", updatedUser);
 
-          case 3:
+          case 5:
           case "end":
             return _context4.stop();
         }

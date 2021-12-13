@@ -13,8 +13,6 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _dotenv = require("dotenv");
 
-var _pQueue = _interopRequireDefault(require("p-queue"));
-
 var _balance = require("../controllers/discord/balance");
 
 var _deposit = require("../controllers/discord/deposit");
@@ -72,11 +70,8 @@ var _executeTips = require("../helpers/discord/executeTips");
 var _isMaintenanceOrDisabled = require("../helpers/isMaintenanceOrDisabled");
 
 (0, _dotenv.config)();
-var queue = new _pQueue["default"]({
-  concurrency: 1
-});
 
-var discordRouter = function discordRouter(discordClient, io, settings) {
+var discordRouter = function discordRouter(discordClient, queue, io, settings) {
   discordClient.on('ready', function () {
     console.log("Logged in as ".concat(discordClient.user.tag, "!"));
   });

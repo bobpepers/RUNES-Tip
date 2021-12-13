@@ -25,7 +25,7 @@ var updateDiscordGroup = /*#__PURE__*/function () {
           case 0:
             if (message.guild && message.guild.id) {
               guildId = message.guild.id;
-            } else {
+            } else if (message.guildId) {
               guildId = message.guildId;
             }
 

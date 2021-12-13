@@ -540,8 +540,9 @@ export const discordReactDrop = async (
         });
         await message.channel.send({ embeds: [invalidEmojiMessage(message, 'Reactdrop')] });
       } else {
-        if (Number(cutNumberTime) * 24 * 60 * 60 * 1000 > 1209600000) {
+        if (Number(cutNumberTime) * 24 * 60 * 60 * 1000 > 172800000) {
           await message.channel.send({ embeds: [maxTimeReactdropMessage(message)] });
+          return;
         }
         let dateObj = await new Date().getTime();
         if (cutLastTimeLetter === 'd') {
