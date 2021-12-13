@@ -1,6 +1,7 @@
 import { Rweb3 } from "rweb3";
 import { ARRRweb3 } from "arrrweb3";
 import { config } from "dotenv";
+
 import getCoinSettings from '../config/settings';
 
 const settings = getCoinSettings();

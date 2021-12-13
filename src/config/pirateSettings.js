@@ -1,11 +1,11 @@
 module.exports = {
-  startSyncBlock: 500000,
+  startSyncBlock: 1690400,
   bot: {
     name: "PirateTipBot",
     color: "#BB9645",
     url: {
       telegram: "",
-      discord: "https://discord.com/oauth2/authorize?client_id=906563045248094249&scope=bot&permissions=523328",
+      discord: "https://discord.com/oauth2/authorize?client_id=919753481894633474&scope=bot&permissions=523328",
     },
     command: {
       discord: "!piratetip",
