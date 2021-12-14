@@ -540,22 +540,31 @@ export const discordReactDrop = async (
         });
         await message.channel.send({ embeds: [invalidEmojiMessage(message, 'Reactdrop')] });
       } else {
-        if (Number(cutNumberTime) * 24 * 60 * 60 * 1000 > 172800000) {
+        const timeDay = Number(cutNumberTime) * 24 * 60 * 60 * 1000;
+        const timeHour = Number(cutNumberTime) * 60 * 60 * 1000;
+        const timeMinute = Number(cutNumberTime) * 60 * 1000;
+        const timeSecond = Number(cutNumberTime) * 1000;
+        if (
+          (cutLastTimeLetter === 'd' && timeDay > 172800000)
+          || (cutLastTimeLetter === 'h' && timeHour > 172800000)
+          || (cutLastTimeLetter === 'm' && timeMinute > 172800000)
+          || (cutLastTimeLetter === 's' && timeSecond > 172800000)
+        ) {
           await message.channel.send({ embeds: [maxTimeReactdropMessage(message)] });
           return;
         }
         let dateObj = await new Date().getTime();
         if (cutLastTimeLetter === 'd') {
-          dateObj += Number(cutNumberTime) * 24 * 60 * 60 * 1000;
+          dateObj += timeDay;
         }
         if (cutLastTimeLetter === 'h') {
-          dateObj += Number(cutNumberTime) * 60 * 60 * 1000;
+          dateObj += timeHour;
         }
         if (cutLastTimeLetter === 'm') {
-          dateObj += Number(cutNumberTime) * 60 * 1000;
+          dateObj += timeMinute;
         }
         if (cutLastTimeLetter === 's') {
-          dateObj += Number(cutNumberTime) * 1000;
+          dateObj += timeSecond;
         }
         dateObj = await new Date(dateObj);
         const countDownDate = await dateObj.getTime();
