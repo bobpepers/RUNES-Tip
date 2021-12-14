@@ -790,7 +790,7 @@ example: \`${settings.bot.command.discord} hurricane 10 5.00\`, \`${settings.bot
 Gets an amount from the faucet (applicable every 4 hours)
 
 \`${settings.bot.command.discord} reactdrop <amount> [<time>] [<emoji>]\`
-Performs a react airdrop with the amount, optionally within custom time, optionally using a custom-supplied emoji. <time> parameter accepts time interval expressions in the form of:\`60s\`, \`5m\`, \`1h\`. Default time interval is \`5m\`(5minutes), e.g. \`!arrrtip reactdrop 10 20m\`, \`!arrrtip reactdrop 10 3h 😃\`
+Performs a react airdrop with the amount, optionally within custom time, optionally using a custom-supplied emoji. <time> parameter accepts time interval expressions in the form of:\`60s\`, \`5m\`, \`1h\`. Default time interval is \`5m\`(5minutes), e.g. \`${settings.bot.command.discord} reactdrop 10 20m\`, \`${settings.bot.command.discord} reactdrop 10 3h 😃\`
 
 \`${settings.bot.command.discord} ignoreme\`
 Turns @mentioning you during mass operations on/off
