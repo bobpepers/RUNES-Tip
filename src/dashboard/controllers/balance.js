@@ -1,10 +1,23 @@
+import getCoinSettings from '../../config/settings';
+
 const { getInstance } = require('../../services/rclient');
+
+const settings = getCoinSettings();
 
 export const fetchBalance = async (req, res, next) => {
   try {
-    const response = await getInstance().getWalletInfo();
-    console.log(response);
-    res.locals.balance = response.balance;
+    let response;
+    if (settings.coin.setting === 'Runebase') {
+      response = await getInstance().getWalletInfo();
+      res.locals.balance = response.balance;
+    } else if (settings.coin.setting === 'Pirate') {
+      response = await getInstance().zGetBalances();
+      res.locals.balance = response.reduce((n, { balance }) => n + balance, 0);
+    } else {
+      response = await getInstance().getWalletInfo();
+      res.locals.balance = response.balance;
+    }
+
     // console.log(req.body);
     next();
   } catch (error) {

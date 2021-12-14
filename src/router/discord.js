@@ -97,6 +97,7 @@ export const discordRouter = (
     let channelTask;
     let channelTaskId;
     let lastSeenDiscordTask;
+
     if (!message.author.bot) {
       const maintenance = await isMaintenanceOrDisabled(message, 'discord');
       await queue.add(() => maintenance);
@@ -112,6 +113,7 @@ export const discordRouter = (
       lastSeenDiscordTask = await updateDiscordLastSeen(discordClient, message);
       await queue.add(() => lastSeenDiscordTask);
     }
+
     if (!message.content.startsWith(settings.bot.command.discord) || message.author.bot) return;
     if (message.content.startsWith(settings.bot.command.discord)) {
       if (groupTask && groupTask.banned) {
@@ -239,22 +241,24 @@ export const discordRouter = (
       );
     }
 
-    if (filteredMessageDiscord.length > 1 && filteredMessageDiscord[1].startsWith('<@!')) {
+    if (
+      filteredMessageDiscord.length > 1 && filteredMessageDiscord[1].startsWith('<@')
+    ) {
       const setting = await discordSettings(message, 'tip', groupTaskId, channelTaskId);
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitTip(message);
       await queue.add(() => limited);
       if (limited) return;
-
       let AmountPosition = 1;
       let AmountPositionEnded = false;
       while (!AmountPositionEnded) {
         AmountPosition += 1;
-        if (!filteredMessageDiscord[AmountPosition].startsWith('<@!')) {
+        if (!filteredMessageDiscord[AmountPosition].startsWith('<@')) {
           AmountPositionEnded = true;
         }
       }
+      console.log(`amount position: ${AmountPosition}`);
 
       //
       await executeTipFunction(
@@ -269,6 +273,7 @@ export const discordRouter = (
         channelTask,
         setting,
       );
+      console.log('done executing tips');
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'voicerain') {

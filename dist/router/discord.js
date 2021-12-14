@@ -669,8 +669,8 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               return (0, _executeTips.executeTipFunction)(_withdraw.withdrawDiscordCreate, queue, filteredMessageDiscord[3], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting);
 
             case 201:
-              if (!(filteredMessageDiscord.length > 1 && filteredMessageDiscord[1].startsWith('<@!'))) {
-                _context2.next = 221;
+              if (!(filteredMessageDiscord.length > 1 && filteredMessageDiscord[1].startsWith('<@'))) {
+                _context2.next = 223;
                 break;
               }
 
@@ -718,439 +718,443 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               while (!AmountPositionEnded) {
                 AmountPosition += 1;
 
-                if (!filteredMessageDiscord[AmountPosition].startsWith('<@!')) {
+                if (!filteredMessageDiscord[AmountPosition].startsWith('<@')) {
                   AmountPositionEnded = true;
                 }
-              } //
+              }
 
+              console.log("amount position: ".concat(AmountPosition)); //
 
-              _context2.next = 221;
+              _context2.next = 222;
               return (0, _executeTips.executeTipFunction)(_tip.tipRunesToDiscordUser, queue, filteredMessageDiscord[AmountPosition], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting2);
 
-            case 221:
+            case 222:
+              console.log('done executing tips');
+
+            case 223:
               if (!(filteredMessageDiscord[1].toLowerCase() === 'voicerain')) {
-                _context2.next = 238;
+                _context2.next = 240;
                 break;
               }
 
-              _context2.next = 224;
+              _context2.next = 226;
               return (0, _settings.discordSettings)(message, 'voicerain', groupTaskId, channelTaskId);
 
-            case 224:
+            case 226:
               _setting3 = _context2.sent;
-              _context2.next = 227;
+              _context2.next = 229;
               return queue.add(function () {
                 return _setting3;
               });
 
-            case 227:
+            case 229:
               if (_setting3) {
-                _context2.next = 229;
+                _context2.next = 231;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 229:
-              _context2.next = 231;
+            case 231:
+              _context2.next = 233;
               return (0, _rateLimit.limitRain)(message);
 
-            case 231:
+            case 233:
               _limited12 = _context2.sent;
-              _context2.next = 234;
+              _context2.next = 236;
               return queue.add(function () {
                 return _limited12;
               });
 
-            case 234:
+            case 236:
               if (!_limited12) {
-                _context2.next = 236;
+                _context2.next = 238;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 236:
-              _context2.next = 238;
+            case 238:
+              _context2.next = 240;
               return (0, _executeTips.executeTipFunction)(_voicerain.discordVoiceRain, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting3);
 
-            case 238:
+            case 240:
               if (!(filteredMessageDiscord[1].toLowerCase() === 'rain')) {
-                _context2.next = 255;
+                _context2.next = 257;
                 break;
               }
 
-              _context2.next = 241;
+              _context2.next = 243;
               return (0, _settings.discordSettings)(message, 'rain', groupTaskId, channelTaskId);
 
-            case 241:
+            case 243:
               _setting4 = _context2.sent;
-              _context2.next = 244;
+              _context2.next = 246;
               return queue.add(function () {
                 return _setting4;
               });
 
-            case 244:
+            case 246:
               if (_setting4) {
-                _context2.next = 246;
+                _context2.next = 248;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 246:
-              _context2.next = 248;
+            case 248:
+              _context2.next = 250;
               return (0, _rateLimit.limitRain)(message);
 
-            case 248:
+            case 250:
               _limited13 = _context2.sent;
-              _context2.next = 251;
+              _context2.next = 253;
               return queue.add(function () {
                 return _limited13;
               });
 
-            case 251:
+            case 253:
               if (!_limited13) {
-                _context2.next = 253;
+                _context2.next = 255;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 253:
-              _context2.next = 255;
+            case 255:
+              _context2.next = 257;
               return (0, _executeTips.executeTipFunction)(_rain.discordRain, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting4);
 
-            case 255:
+            case 257:
               if (!(filteredMessageDiscord[1].toLowerCase() === 'flood')) {
-                _context2.next = 272;
+                _context2.next = 274;
                 break;
               }
 
-              _context2.next = 258;
+              _context2.next = 260;
               return (0, _settings.discordSettings)(message, 'flood', groupTaskId, channelTaskId);
 
-            case 258:
+            case 260:
               _setting5 = _context2.sent;
-              _context2.next = 261;
+              _context2.next = 263;
               return queue.add(function () {
                 return _setting5;
               });
 
-            case 261:
+            case 263:
               if (_setting5) {
-                _context2.next = 263;
+                _context2.next = 265;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 263:
-              _context2.next = 265;
+            case 265:
+              _context2.next = 267;
               return (0, _rateLimit.limitFlood)(message);
 
-            case 265:
+            case 267:
               _limited14 = _context2.sent;
-              _context2.next = 268;
+              _context2.next = 270;
               return queue.add(function () {
                 return _limited14;
               });
 
-            case 268:
+            case 270:
               if (!_limited14) {
-                _context2.next = 270;
+                _context2.next = 272;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 270:
-              _context2.next = 272;
+            case 272:
+              _context2.next = 274;
               return (0, _executeTips.executeTipFunction)(_flood.discordFlood, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting5);
 
-            case 272:
+            case 274:
               if (!(filteredMessageDiscord[1].toLowerCase() === 'thunder')) {
-                _context2.next = 289;
+                _context2.next = 291;
                 break;
               }
 
-              _context2.next = 275;
+              _context2.next = 277;
               return (0, _settings.discordSettings)(message, 'thunder', groupTaskId, channelTaskId);
 
-            case 275:
+            case 277:
               _setting6 = _context2.sent;
-              _context2.next = 278;
+              _context2.next = 280;
               return queue.add(function () {
                 return _setting6;
               });
 
-            case 278:
+            case 280:
               if (_setting6) {
-                _context2.next = 280;
+                _context2.next = 282;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 280:
-              _context2.next = 282;
+            case 282:
+              _context2.next = 284;
               return (0, _rateLimit.limitThunder)(message);
 
-            case 282:
+            case 284:
               _limited15 = _context2.sent;
-              _context2.next = 285;
+              _context2.next = 287;
               return queue.add(function () {
                 return _limited15;
               });
 
-            case 285:
+            case 287:
               if (!_limited15) {
-                _context2.next = 287;
+                _context2.next = 289;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 287:
-              _context2.next = 289;
+            case 289:
+              _context2.next = 291;
               return (0, _executeTips.executeTipFunction)(_thunder.discordThunder, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting6);
 
-            case 289:
+            case 291:
               if (!(filteredMessageDiscord[1].toLowerCase() === 'thunderstorm')) {
-                _context2.next = 306;
+                _context2.next = 308;
                 break;
               }
 
-              _context2.next = 292;
+              _context2.next = 294;
               return (0, _settings.discordSettings)(message, 'thunderstorm', groupTaskId, channelTaskId);
 
-            case 292:
+            case 294:
               _setting7 = _context2.sent;
-              _context2.next = 295;
+              _context2.next = 297;
               return queue.add(function () {
                 return _setting7;
               });
 
-            case 295:
+            case 297:
               if (_setting7) {
-                _context2.next = 297;
+                _context2.next = 299;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 297:
-              _context2.next = 299;
+            case 299:
+              _context2.next = 301;
               return (0, _rateLimit.limitThunderStorm)(message);
 
-            case 299:
+            case 301:
               _limited16 = _context2.sent;
-              _context2.next = 302;
+              _context2.next = 304;
               return queue.add(function () {
                 return _limited16;
               });
 
-            case 302:
+            case 304:
               if (!_limited16) {
-                _context2.next = 304;
+                _context2.next = 306;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 304:
-              _context2.next = 306;
+            case 306:
+              _context2.next = 308;
               return (0, _executeTips.executeTipFunction)(_thunderstorm.discordThunderStorm, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting7);
 
-            case 306:
+            case 308:
               if (!(filteredMessageDiscord[1].toLowerCase() === 'hurricane')) {
-                _context2.next = 323;
+                _context2.next = 325;
                 break;
               }
 
-              _context2.next = 309;
+              _context2.next = 311;
               return (0, _settings.discordSettings)(message, 'hurricane', groupTaskId, channelTaskId);
 
-            case 309:
+            case 311:
               _setting8 = _context2.sent;
-              _context2.next = 312;
+              _context2.next = 314;
               return queue.add(function () {
                 return _setting8;
               });
 
-            case 312:
+            case 314:
               if (_setting8) {
-                _context2.next = 314;
+                _context2.next = 316;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 314:
-              _context2.next = 316;
+            case 316:
+              _context2.next = 318;
               return (0, _rateLimit.limitHurricane)(message);
 
-            case 316:
+            case 318:
               _limited17 = _context2.sent;
-              _context2.next = 319;
+              _context2.next = 321;
               return queue.add(function () {
                 return _limited17;
               });
 
-            case 319:
+            case 321:
               if (!_limited17) {
-                _context2.next = 321;
+                _context2.next = 323;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 321:
-              _context2.next = 323;
+            case 323:
+              _context2.next = 325;
               return (0, _executeTips.executeTipFunction)(_hurricane.discordHurricane, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting8);
 
-            case 323:
+            case 325:
               if (!(filteredMessageDiscord[1].toLowerCase() === 'soak')) {
-                _context2.next = 340;
+                _context2.next = 342;
                 break;
               }
 
-              _context2.next = 326;
+              _context2.next = 328;
               return (0, _settings.discordSettings)(message, 'soak', groupTaskId, channelTaskId);
 
-            case 326:
+            case 328:
               _setting9 = _context2.sent;
-              _context2.next = 329;
+              _context2.next = 331;
               return queue.add(function () {
                 return _setting9;
               });
 
-            case 329:
+            case 331:
               if (_setting9) {
-                _context2.next = 331;
+                _context2.next = 333;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 331:
-              _context2.next = 333;
+            case 333:
+              _context2.next = 335;
               return (0, _rateLimit.limitSoak)(message);
 
-            case 333:
+            case 335:
               _limited18 = _context2.sent;
-              _context2.next = 336;
+              _context2.next = 338;
               return queue.add(function () {
                 return _limited18;
               });
 
-            case 336:
+            case 338:
               if (!_limited18) {
-                _context2.next = 338;
+                _context2.next = 340;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 338:
-              _context2.next = 340;
+            case 340:
+              _context2.next = 342;
               return (0, _executeTips.executeTipFunction)(_soak.discordSoak, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting9);
 
-            case 340:
+            case 342:
               if (!(filteredMessageDiscord[1].toLowerCase() === 'sleet')) {
-                _context2.next = 357;
+                _context2.next = 359;
                 break;
               }
 
-              _context2.next = 343;
+              _context2.next = 345;
               return (0, _settings.discordSettings)(message, 'sleet', groupTaskId, channelTaskId);
 
-            case 343:
+            case 345:
               _setting10 = _context2.sent;
-              _context2.next = 346;
+              _context2.next = 348;
               return queue.add(function () {
                 return _setting10;
               });
 
-            case 346:
+            case 348:
               if (_setting10) {
-                _context2.next = 348;
+                _context2.next = 350;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 348:
-              _context2.next = 350;
+            case 350:
+              _context2.next = 352;
               return (0, _rateLimit.limitSleet)(message);
 
-            case 350:
+            case 352:
               _limited19 = _context2.sent;
-              _context2.next = 353;
+              _context2.next = 355;
               return queue.add(function () {
                 return _limited19;
               });
 
-            case 353:
+            case 355:
               if (!_limited19) {
-                _context2.next = 355;
+                _context2.next = 357;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 355:
-              _context2.next = 357;
+            case 357:
+              _context2.next = 359;
               return (0, _executeTips.executeTipFunction)(_sleet.discordSleet, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting10);
 
-            case 357:
+            case 359:
               if (!(filteredMessageDiscord[1].toLowerCase() === 'reactdrop')) {
-                _context2.next = 374;
+                _context2.next = 376;
                 break;
               }
 
-              _context2.next = 360;
+              _context2.next = 362;
               return (0, _settings.discordSettings)(message, 'reactdrop', groupTaskId, channelTaskId);
 
-            case 360:
+            case 362:
               _setting11 = _context2.sent;
-              _context2.next = 363;
+              _context2.next = 365;
               return queue.add(function () {
                 return _setting11;
               });
 
-            case 363:
+            case 365:
               if (_setting11) {
-                _context2.next = 365;
+                _context2.next = 367;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 365:
-              _context2.next = 367;
+            case 367:
+              _context2.next = 369;
               return (0, _rateLimit.limitReactDrop)(message);
 
-            case 367:
+            case 369:
               _limited20 = _context2.sent;
-              _context2.next = 370;
+              _context2.next = 372;
               return queue.add(function () {
                 return _limited20;
               });
 
-            case 370:
+            case 372:
               if (!_limited20) {
-                _context2.next = 372;
+                _context2.next = 374;
                 break;
               }
 
               return _context2.abrupt("return");
 
-            case 372:
-              _context2.next = 374;
+            case 374:
+              _context2.next = 376;
               return (0, _executeTips.executeTipFunction)(_reactdrop.discordReactDrop, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting11);
 
-            case 374:
+            case 376:
             case "end":
               return _context2.stop();
           }

@@ -55,6 +55,7 @@ export const tipRunesToDiscordUser = async (
       transaction: t,
     });
     if (!user) {
+      console.log('user not found');
       activity = await db.activity.create({
         type: 'tip_f',
         spenderId: user.id,
@@ -71,8 +72,16 @@ export const tipRunesToDiscordUser = async (
 
     // make users to tip array
     while (!AmountPositionEnded) {
-      console.log(filteredMessage[AmountPosition]);
-      const discordId = filteredMessage[AmountPosition].slice(3).slice(0, -1);
+      let discordId;
+      if (filteredMessage[AmountPosition].startsWith('<@!')) {
+        discordId = filteredMessage[AmountPosition].slice(3).slice(0, -1);
+      } else if (
+        filteredMessage[AmountPosition].startsWith('<@')
+        && !filteredMessage[AmountPosition].startsWith('<@!')
+      ) {
+        discordId = filteredMessage[AmountPosition].slice(2).slice(0, -1);
+      }
+
       console.log(discordId);
       // eslint-disable-next-line no-await-in-loop
       const userExist = await db.user.findOne({
@@ -106,7 +115,7 @@ export const tipRunesToDiscordUser = async (
       }
       // usersToTip.push(filteredMessage[AmountPosition]);
       AmountPosition += 1;
-      if (!filteredMessage[AmountPosition].startsWith('<@!')) {
+      if (!filteredMessage[AmountPosition].startsWith('<@')) {
         AmountPositionEnded = true;
       }
     }
@@ -119,7 +128,6 @@ export const tipRunesToDiscordUser = async (
     if (filteredMessage[AmountPosition + 1] && filteredMessage[AmountPosition + 1].toLowerCase() === 'each') {
       type = 'each';
     }
-
     // verify amount
     const [
       activityValiateAmount,
