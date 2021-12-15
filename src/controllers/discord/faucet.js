@@ -60,6 +60,9 @@ export const discordFaucetClaim = async (
       return;
     }
     const lastFaucetTip = await db.faucettip.findOne({
+      where: {
+        userId: user.id,
+      },
       lock: t.LOCK.UPDATE,
       transaction: t,
       order: [

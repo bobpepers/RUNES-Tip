@@ -57,7 +57,35 @@ export const acceptWithdrawal = async (req, res, next) => {
       next();
     }
     if (transaction) {
-      const response = await processWithdrawal(transaction);
+      const [
+        response,
+        responseStatus,
+      ] = await processWithdrawal(transaction);
+      if (responseStatus === 500) {
+        updatedTrans = await transaction.update(
+          {
+            // txid: response,
+            phase: 'failed',
+            type: 'send',
+          },
+          {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          },
+        );
+        const activityF = await db.activity.create(
+          {
+            spenderId: transaction.address.wallet.userId,
+            type: 'withdraw_f',
+            transactionId: transaction.id,
+          },
+          {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          },
+        );
+        return;
+      }
       if (response) {
         res.locals.withdrawal = await transaction.update(
           {

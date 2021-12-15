@@ -109,8 +109,12 @@ const syncTransactions = async (discordClient, telegramClient) => {
           if (detail.category === 'send' && trans.type === 'send') {
             // console.log(detail.amount);
             // console.log(((detail.amount * 1e8)));
+            console.log(detail.amount);
             const prepareLockedAmount = ((detail.amount * 1e8) - Number(trans.feeAmount));
+            console.log(prepareLockedAmount);
             const removeLockedAmount = Math.abs(prepareLockedAmount);
+            console.log(removeLockedAmount);
+            console.log('send complete');
 
             // console.log(removeLockedAmount);
             updatedWallet = await wallet.update({

@@ -92,14 +92,14 @@ var processWithdrawals = /*#__PURE__*/function () {
                         response = _yield$processWithdra2[0];
                         responseStatus = _yield$processWithdra2[1];
 
-                        if (!(responseStatus === 500)) {
+                        if (!(responseStatus && responseStatus === 500)) {
                           _context2.next = 21;
                           break;
                         }
 
                         _context2.next = 16;
                         return transaction.update({
-                          txid: response,
+                          // txid: response,
                           phase: 'failed',
                           type: 'send'
                         }, {

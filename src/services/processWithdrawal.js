@@ -8,7 +8,7 @@ config();
 
 export const processWithdrawal = async (transaction) => {
   let response;
-  let reponseStatus;
+  let responseStatus;
   const amount = ((transaction.amount - Number(transaction.feeAmount)) / 1e8);
 
   // Add New Currency here (default fallback is Runebase)
@@ -16,7 +16,8 @@ export const processWithdrawal = async (transaction) => {
     try {
       response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
     } catch (e) {
-      reponseStatus = e.reponse.status;
+      console.log(e);
+      responseStatus = e.reponse.status;
     }
   } else if (settings.coin.setting === 'Pirate') {
     try {
@@ -34,19 +35,19 @@ export const processWithdrawal = async (transaction) => {
       }
       response = opStatus[0].result.txid;
     } catch (e) {
-      reponseStatus = e.response.status;
+      responseStatus = e.response.status;
       console.log(e);
     }
   } else {
     try {
       response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
     } catch (e) {
-      reponseStatus = e.reponse.status;
+      responseStatus = e.reponse.status;
     }
   }
 
   return [
     response,
-    reponseStatus,
+    responseStatus,
   ];
 };

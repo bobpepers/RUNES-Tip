@@ -71,14 +71,10 @@ const syncTransactions = async (discordClient, telegramClient) => {
       }],
     }],
   });
-  // console.log('transactions');
 
-  // console.log(transactions);
   // eslint-disable-next-line no-restricted-syntax
   for await (const trans of transactions) {
     const transaction = await getInstance().getTransaction(trans.txid);
-    // eslint-disable-next-line no-restricted-syntax
-    // for await (const detail of transaction.details) {
     // eslint-disable-next-line no-await-in-loop
     await db.sequelize.transaction({
       isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -92,11 +88,8 @@ const syncTransactions = async (discordClient, telegramClient) => {
         lock: t.LOCK.UPDATE,
       });
 
-      // console.log('update transaction');
-      // console.log(transaction);
       let updatedTransaction;
       let updatedWallet;
-      // console.log(transaction.confirmations);
       if (transaction.confirmations < Number(settings.min.confirmations)) {
         updatedTransaction = await trans.update({
           confirmations: transaction.confirmations,
@@ -106,16 +99,9 @@ const syncTransactions = async (discordClient, telegramClient) => {
         });
       }
       if (transaction.confirmations >= Number(settings.min.confirmations)) {
-        // transaction.details.forEach(async (detail) => {
-
         if (transaction.sent.length > 0 && trans.type === 'send') {
-          // console.log(transaction.sent[0].value);
-          // console.log(((transaction.sent[0].value * 1e8)));
-          const prepareLockedAmount = ((transaction.sent[0].value * 1e8) - Number(trans.feeAmount));
+          const prepareLockedAmount = ((transaction.sent[0].value * 1e8) + Number(trans.feeAmount));
           const removeLockedAmount = Math.abs(prepareLockedAmount);
-
-          // console.log('removeLockedAmount');
-          // console.log(removeLockedAmount);
 
           updatedWallet = await wallet.update({
             locked: wallet.locked - removeLockedAmount,
@@ -210,9 +196,7 @@ const syncTransactions = async (discordClient, telegramClient) => {
         console.log('done');
       });
     });
-    // }
   }
-  // console.log(transactions.length);
   return true;
 };
 
@@ -281,15 +265,10 @@ const sync = async (discordClient, telegramClient) => {
     numOfIterations,
     async (loop) => {
       const endBlock = Math.min((startBlock + 1) - 1, currentBlockCount);
-
-      // await syncTransactions(startBlock, endBlock);
       await queue.add(() => syncTransactions(discordClient, telegramClient));
-
       const { insertBlockPromises } = await getInsertBlockPromises(startBlock, endBlock);
       await queue.add(() => Promise.all(insertBlockPromises));
-      // await Promise.all(insertBlockPromises);
       console.log('Inserted Blocks');
-
       startBlock = endBlock + 1;
       await loop.next();
     },

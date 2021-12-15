@@ -119,6 +119,9 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                       case 25:
                         _context.next = 27;
                         return _models["default"].faucettip.findOne({
+                          where: {
+                            userId: user.id
+                          },
                           lock: t.LOCK.UPDATE,
                           transaction: t,
                           order: [['id', 'DESC']]

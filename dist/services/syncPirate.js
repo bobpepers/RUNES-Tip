@@ -146,8 +146,6 @@ var syncTransactions = /*#__PURE__*/function () {
 
           case 2:
             transactions = _context5.sent;
-            // console.log('transactions');
-            // console.log(transactions);
             // eslint-disable-next-line no-restricted-syntax
             _iteratorAbruptCompletion = false;
             _didIteratorError = false;
@@ -215,12 +213,8 @@ var syncTransactions = /*#__PURE__*/function () {
                                     break;
                                   }
 
-                                  // console.log(transaction.sent[0].value);
-                                  // console.log(((transaction.sent[0].value * 1e8)));
-                                  prepareLockedAmount = transaction.sent[0].value * 1e8 - Number(trans.feeAmount);
-                                  removeLockedAmount = Math.abs(prepareLockedAmount); // console.log('removeLockedAmount');
-                                  // console.log(removeLockedAmount);
-
+                                  prepareLockedAmount = transaction.sent[0].value * 1e8 + Number(trans.feeAmount);
+                                  removeLockedAmount = Math.abs(prepareLockedAmount);
                                   _context3.next = 13;
                                   return wallet.update({
                                     locked: wallet.locked - removeLockedAmount
@@ -602,8 +596,7 @@ var sync = /*#__PURE__*/function () {
                   while (1) {
                     switch (_context8.prev = _context8.next) {
                       case 0:
-                        endBlock = Math.min(startBlock + 1 - 1, currentBlockCount); // await syncTransactions(startBlock, endBlock);
-
+                        endBlock = Math.min(startBlock + 1 - 1, currentBlockCount);
                         _context8.next = 3;
                         return queue.add(function () {
                           return syncTransactions(discordClient, telegramClient);
@@ -622,7 +615,6 @@ var sync = /*#__PURE__*/function () {
                         });
 
                       case 9:
-                        // await Promise.all(insertBlockPromises);
                         console.log('Inserted Blocks');
                         startBlock = endBlock + 1;
                         _context8.next = 13;

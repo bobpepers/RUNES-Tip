@@ -11,6 +11,8 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _sequelize = require("sequelize");
@@ -35,7 +37,8 @@ var acceptWithdrawal = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(t) {
-                var updatedTrans, transaction, settings, response, activity;
+                var updatedTrans, transaction, settings, _yield$processWithdra, _yield$processWithdra2, response, responseStatus, activityF, activity;
+
                 return _regenerator["default"].wrap(function _callee2$(_context2) {
                   while (1) {
                     switch (_context2.prev = _context2.next) {
@@ -87,7 +90,7 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                         }
 
                         if (!transaction) {
-                          _context2.next = 19;
+                          _context2.next = 30;
                           break;
                         }
 
@@ -95,14 +98,49 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                         return (0, _processWithdrawal.processWithdrawal)(transaction);
 
                       case 11:
-                        response = _context2.sent;
+                        _yield$processWithdra = _context2.sent;
+                        _yield$processWithdra2 = (0, _slicedToArray2["default"])(_yield$processWithdra, 2);
+                        response = _yield$processWithdra2[0];
+                        responseStatus = _yield$processWithdra2[1];
 
-                        if (!response) {
-                          _context2.next = 19;
+                        if (!(responseStatus === 500)) {
+                          _context2.next = 23;
                           break;
                         }
 
-                        _context2.next = 15;
+                        _context2.next = 18;
+                        return transaction.update({
+                          // txid: response,
+                          phase: 'failed',
+                          type: 'send'
+                        }, {
+                          transaction: t,
+                          lock: t.LOCK.UPDATE
+                        });
+
+                      case 18:
+                        updatedTrans = _context2.sent;
+                        _context2.next = 21;
+                        return _models["default"].activity.create({
+                          spenderId: transaction.address.wallet.userId,
+                          type: 'withdraw_f',
+                          transactionId: transaction.id
+                        }, {
+                          transaction: t,
+                          lock: t.LOCK.UPDATE
+                        });
+
+                      case 21:
+                        activityF = _context2.sent;
+                        return _context2.abrupt("return");
+
+                      case 23:
+                        if (!response) {
+                          _context2.next = 30;
+                          break;
+                        }
+
+                        _context2.next = 26;
                         return transaction.update({
                           txid: response,
                           phase: 'confirming',
@@ -112,9 +150,9 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 15:
+                      case 26:
                         res.locals.withdrawal = _context2.sent;
-                        _context2.next = 18;
+                        _context2.next = 29;
                         return _models["default"].activity.create({
                           spenderId: transaction.address.wallet.userId,
                           type: 'withdrawAccepted',
@@ -124,10 +162,10 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 18:
+                      case 29:
                         activity = _context2.sent;
 
-                      case 19:
+                      case 30:
                         t.afterCommit( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
                           var userDiscordId, myClient, userTelegramId;
                           return _regenerator["default"].wrap(function _callee$(_context) {
@@ -173,7 +211,7 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                           }, _callee);
                         })));
 
-                      case 20:
+                      case 31:
                       case "end":
                         return _context2.stop();
                     }

@@ -53,10 +53,10 @@ export const processWithdrawals = async (
         responseStatus,
       ] = await processWithdrawal(transaction);
 
-      if (responseStatus === 500) {
+      if (responseStatus && responseStatus === 500) {
         updatedTrans = await transaction.update(
           {
-            txid: response,
+            // txid: response,
             phase: 'failed',
             type: 'send',
           },
