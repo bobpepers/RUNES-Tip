@@ -48,7 +48,36 @@ export const processWithdrawals = async (
       // ctx.reply('Transaction not found');
     }
     if (transaction) {
-      const response = await processWithdrawal(transaction);
+      const [
+        response,
+        responseStatus,
+      ] = await processWithdrawal(transaction);
+
+      if (responseStatus === 500) {
+        updatedTrans = await transaction.update(
+          {
+            txid: response,
+            phase: 'failed',
+            type: 'send',
+          },
+          {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          },
+        );
+        const activityF = await db.activity.create(
+          {
+            spenderId: transaction.address.wallet.userId,
+            type: 'withdraw_f',
+            transactionId: transaction.id,
+          },
+          {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          },
+        );
+        return;
+      }
 
       if (response) {
         updatedTrans = await transaction.update(
@@ -91,6 +120,7 @@ export const processWithdrawals = async (
       }
     });
   }).catch((err) => {
+    console.log(err);
     telegramClient.telegram.sendMessage(Number(process.env.TELEGRAM_ADMIN_ID), `Something went wrong`);
   });
 };

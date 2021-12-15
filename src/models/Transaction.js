@@ -43,6 +43,7 @@ module.exports = (sequelize, DataTypes) => {
         'confirming',
         'confirmed',
         'rejected',
+        'failed',
       ],
     },
     to_from: {
@@ -61,6 +62,7 @@ module.exports = (sequelize, DataTypes) => {
     TransactionModel.hasMany(model.activity, { as: 'transaction' });
     TransactionModel.belongsTo(model.address, { as: 'address' });
     TransactionModel.belongsTo(model.block, { as: 'block' });
+    TransactionModel.belongsTo(model.addressExternal, { as: 'addressExternal' });
   };
 
   return TransactionModel;

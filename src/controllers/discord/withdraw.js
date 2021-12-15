@@ -70,6 +70,47 @@ export const withdrawDiscordCreate = async (
       return;
     }
 
+    let addressExternal;
+    let UserExternalAddressMnMAssociation;
+
+    addressExternal = await db.addressExternal.findOne({
+      where: {
+        address: filteredMessage[2],
+      },
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    });
+
+    if (!addressExternal) {
+      console.log('notfound');
+      console.log(filteredMessage[2]);
+      addressExternal = await db.addressExternal.create({
+        address: filteredMessage[2],
+      }, {
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      });
+    }
+    console.log('after');
+    UserExternalAddressMnMAssociation = await db.UserAddressExternal.findOne({
+      where: {
+        addressExternalId: addressExternal.id,
+        userId: user.id,
+      },
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    });
+    console.log('after2');
+    if (!UserExternalAddressMnMAssociation) {
+      UserExternalAddressMnMAssociation = await db.UserAddressExternal.create({
+        addressExternalId: addressExternal.id,
+        userId: user.id,
+      }, {
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      });
+    }
+
     const wallet = await user.wallet.update({
       available: user.wallet.available - amount,
       locked: user.wallet.locked + amount,
@@ -81,6 +122,7 @@ export const withdrawDiscordCreate = async (
     const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
     const transaction = await db.transaction.create({
       addressId: wallet.addresses[0].id,
+      addressExternalId: addressExternal.id,
       phase: 'review',
       type: 'send',
       to_from: filteredMessage[2],
@@ -117,6 +159,7 @@ export const withdrawDiscordCreate = async (
       console.log('done');
     });
   }).catch((err) => {
+    console.log(err);
     message.author.send("Something went wrong.");
   });
 };
