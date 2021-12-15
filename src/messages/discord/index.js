@@ -98,7 +98,7 @@ export const AfterReactDropSuccessMessage = (endReactDrop, amountEach, initiator
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Reactdrop')
-    .setDescription(`:tada:React airdrop started by <@${initiator}> has finished!:tada:
+    .setDescription(`:tada:[React airdrop](https://discord.com/channels/${endReactDrop.group.groupId.replace("discord-", "")}/${endReactDrop.channel.channelId.replace("discord-", "")}/${endReactDrop.discordMessageId}) started by <@${initiator}> has finished!:tada:
     
 :money_with_wings:${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)!:money_with_wings:`)
     .setTimestamp()

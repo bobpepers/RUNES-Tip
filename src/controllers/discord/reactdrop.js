@@ -168,8 +168,6 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop, io) => 
             await db.sequelize.transaction({
               isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
             }, async (t) => {
-              console.log(m.content);
-              console.log(findReactTip.solution);
               if (m.content === findReactTip.solution) {
                 await findReactTip.update(
                   {
@@ -297,6 +295,14 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop, io) => 
           id: reactDrop.id,
         },
         include: [
+          {
+            model: db.group,
+            as: 'group',
+          },
+          {
+            model: db.channel,
+            as: 'channel',
+          },
           {
             model: db.reactdroptip,
             as: 'reactdroptips',

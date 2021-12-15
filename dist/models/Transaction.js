@@ -36,7 +36,7 @@ module.exports = function (sequelize, DataTypes) {
     },
     phase: {
       type: DataTypes.ENUM,
-      values: ['review', 'pending', 'confirming', 'confirmed', 'rejected']
+      values: ['review', 'pending', 'confirming', 'confirmed', 'rejected', 'failed']
     },
     to_from: {
       type: DataTypes.STRING,
@@ -57,6 +57,9 @@ module.exports = function (sequelize, DataTypes) {
     });
     TransactionModel.belongsTo(model.block, {
       as: 'block'
+    });
+    TransactionModel.belongsTo(model.addressExternal, {
+      as: 'addressExternal'
     });
   };
 

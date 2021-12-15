@@ -71,6 +71,9 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'userId',
       as: 'active'
     });
+    UserModel.belongsToMany(model.addressExternal, {
+      through: 'UserAddressExternal'
+    });
     UserModel.hasMany(model.tip);
     UserModel.hasMany(model.rain);
     UserModel.hasMany(model.reactdrop);
