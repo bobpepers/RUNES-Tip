@@ -147,7 +147,7 @@ export const telegramRouter = (
       (async () => {
         const groupTask = await updateGroup(ctx);
         await queue.add(() => groupTask);
-        const groupTaskId = groupTask.id;
+        const groupTaskId = groupTask && groupTask.id;
         const setting = await telegramSettings(ctx, 'tip', groupTaskId);
         await queue.add(() => setting);
         if (!setting) return;
@@ -173,7 +173,7 @@ export const telegramRouter = (
       (async () => {
         const groupTask = await updateGroup(ctx);
         await queue.add(() => groupTask);
-        const groupTaskId = groupTask.id;
+        const groupTaskId = groupTask && groupTask.id;
         const setting = await telegramSettings(ctx, 'rain', groupTaskId);
         await queue.add(() => setting);
         if (!setting) return;
@@ -230,7 +230,7 @@ export const telegramRouter = (
     const groupTask = await updateGroup(ctx);
     await queue.add(() => groupTask);
     console.log(groupTask);
-    const groupTaskId = groupTask ? groupTask.id : null;
+    const groupTaskId = groupTask && groupTask.id;
     const setting = await telegramSettings(ctx, 'withdraw', groupTaskId);
     await queue.add(() => setting);
     if (!setting) return;
@@ -380,7 +380,7 @@ export const telegramRouter = (
         }
         const groupTask = await updateGroup(ctx);
         await queue.add(() => groupTask);
-        const groupTaskId = groupTask.id;
+        const groupTaskId = groupTask && groupTask.id;
         const setting = await telegramSettings(ctx, 'withdraw', groupTaskId);
         await queue.add(() => setting);
         if (!setting) return;
@@ -407,7 +407,7 @@ export const telegramRouter = (
 
         const groupTask = await updateGroup(ctx);
         await queue.add(() => groupTask);
-        const groupTaskId = groupTask.id;
+        const groupTaskId = groupTask && groupTask.id;
         const setting = await telegramSettings(ctx, 'tip', groupTaskId);
         await queue.add(() => setting);
         if (!setting) return;

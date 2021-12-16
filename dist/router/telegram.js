@@ -469,7 +469,7 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
                           });
 
                         case 5:
-                          groupTaskId = groupTask.id;
+                          groupTaskId = groupTask && groupTask.id;
                           _context8.next = 8;
                           return (0, _settings2.telegramSettings)(ctx, 'tip', groupTaskId);
 
@@ -578,7 +578,7 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
                           });
 
                         case 5:
-                          groupTaskId = groupTask.id;
+                          groupTaskId = groupTask && groupTask.id;
                           _context10.next = 8;
                           return (0, _settings2.telegramSettings)(ctx, 'rain', groupTaskId);
 
@@ -803,7 +803,7 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
 
             case 19:
               console.log(groupTask);
-              groupTaskId = groupTask ? groupTask.id : null;
+              groupTaskId = groupTask && groupTask.id;
               _context14.next = 23;
               return (0, _settings2.telegramSettings)(ctx, 'withdraw', groupTaskId);
 
@@ -1372,7 +1372,7 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
               });
 
             case 88:
-              groupTaskId = _groupTask.id;
+              groupTaskId = _groupTask && _groupTask.id;
               _context20.next = 91;
               return (0, _settings2.telegramSettings)(ctx, 'withdraw', groupTaskId);
 
@@ -1439,7 +1439,7 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
               });
 
             case 115:
-              _groupTaskId = _groupTask2.id;
+              _groupTaskId = _groupTask2 && _groupTask2.id;
               _context20.next = 118;
               return (0, _settings2.telegramSettings)(ctx, 'tip', _groupTaskId);
 
