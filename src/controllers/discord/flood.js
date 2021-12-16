@@ -26,19 +26,18 @@ export const discordFlood = async (
   }
 
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  const onlineMembers = members.filter((member) =>
-    member.presence?.status === "online"
-    || member.presence?.status === "idle"
-    || member.presence?.status === "dnd"
-    || member.presence?.status === "offline"
-  );
+  console.log(members);
+  console.log(members.size);
+  const onlineMembers = members.filter((member) => {
+    console.log(member.presence);
+    return member;
+  });
 
   let user;
   let activity;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-
     [
       user,
       activity,
@@ -121,11 +120,11 @@ export const discordFlood = async (
       include: [
         {
           model: db.flood,
-          as: 'flood'
+          as: 'flood',
         },
         {
           model: db.user,
-          as: 'spender'
+          as: 'spender',
         },
       ],
       lock: t.LOCK.UPDATE,
@@ -180,29 +179,28 @@ export const discordFlood = async (
         include: [
           {
             model: db.user,
-            as: 'earner'
+            as: 'earner',
           },
           {
             model: db.user,
-            as: 'spender'
+            as: 'spender',
           },
           {
             model: db.flood,
-            as: 'flood'
+            as: 'flood',
           },
           {
             model: db.floodtip,
-            as: 'floodtip'
+            as: 'floodtip',
           },
         ],
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      //console.log(tipActivity);
+      // console.log(tipActivity);
       io.to('admin').emit('updateActivity', {
         activity: tipActivity,
       });
-
     }
 
     const newStringListUsers = listOfUsersRained.join(", ");

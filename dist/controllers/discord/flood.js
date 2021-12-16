@@ -61,12 +61,13 @@ var discordFlood = /*#__PURE__*/function () {
 
           case 6:
             members = _context2.sent;
+            console.log(members);
+            console.log(members.size);
             onlineMembers = members.filter(function (member) {
-              var _member$presence, _member$presence2, _member$presence3, _member$presence4;
-
-              return ((_member$presence = member.presence) === null || _member$presence === void 0 ? void 0 : _member$presence.status) === "online" || ((_member$presence2 = member.presence) === null || _member$presence2 === void 0 ? void 0 : _member$presence2.status) === "idle" || ((_member$presence3 = member.presence) === null || _member$presence3 === void 0 ? void 0 : _member$presence3.status) === "dnd" || ((_member$presence4 = member.presence) === null || _member$presence4 === void 0 ? void 0 : _member$presence4.status) === "offline";
+              console.log(member.presence);
+              return member;
             });
-            _context2.next = 10;
+            _context2.next = 12;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -288,7 +289,7 @@ var discordFlood = /*#__PURE__*/function () {
 
                       case 60:
                         tipActivity = _context.sent;
-                        //console.log(tipActivity);
+                        // console.log(tipActivity);
                         io.to('admin').emit('updateActivity', {
                           activity: tipActivity
                         });
@@ -384,12 +385,12 @@ var discordFlood = /*#__PURE__*/function () {
               message.channel.send('something went wrong');
             });
 
-          case 10:
+          case 12:
             io.to('admin').emit('updateActivity', {
               activity: activity
             });
 
-          case 11:
+          case 13:
           case "end":
             return _context2.stop();
         }
