@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { svg2png } from 'svg-png-converter';
-
+import _ from 'lodash';
 import svgCaptcha from "svg-captcha";
 import { Transaction } from "sequelize";
 import {
@@ -533,7 +533,7 @@ export const discordReactDrop = async (
         allEmojis.push(`<:${customEmoji.name}:${customEmoji.id}>`);
       });
       if (!filteredMessage[4]) {
-        filteredMessage[4] = '❤️';
+        filteredMessage[4] = _.sample(allEmojis);
       }
 
       if (!allEmojis.includes(filteredMessage[4])) {
@@ -587,7 +587,7 @@ export const discordReactDrop = async (
 
         const shuffeledEmojisArray = await shuffle(useEmojis);
 
-        console.log(shuffeledEmojisArray);
+        // console.log(shuffeledEmojisArray);
         const findGroup = await db.group.findOne({
           where: {
             groupId: `discord-${message.guildId}`,
@@ -674,6 +674,7 @@ export const discordReactDrop = async (
           // eslint-disable-next-line no-restricted-syntax
           for (const shufEmoji of shuffeledEmojisArray) {
             // eslint-disable-next-line no-await-in-loop
+            // console.log(shufEmoji);
             await reactMessage.react(shufEmoji);
           }
 
