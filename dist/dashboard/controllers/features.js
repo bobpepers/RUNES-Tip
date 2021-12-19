@@ -21,15 +21,26 @@ var _require = require('sequelize'),
 
 var updateFeature = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
-    var amount, fee, feature, updatedFeature;
+    var amount, fee, maxSampleSize, feature, updatedFeature;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             amount = new _bignumber["default"](req.body.min).times(1e8).toNumber();
             fee = new _bignumber["default"](req.body.fee).times(1e2).toNumber();
+            maxSampleSize = Number(req.body.maxSampleSize);
             console.log(fee);
             console.log('fee'); // Validate Fee
+
+            if (maxSampleSize % 1 !== 0) {
+              res.locals.error = "invalid number";
+              next();
+            }
+
+            if (maxSampleSize > 8000) {
+              res.locals.error = "Max Sample Size is 8000";
+              next();
+            }
 
             if (fee % 1 !== 0) {
               res.locals.error = "invalid number";
@@ -57,26 +68,27 @@ var updateFeature = /*#__PURE__*/function () {
               next();
             }
 
-            _context.next = 11;
+            _context.next = 14;
             return _models["default"].features.findOne({
               where: {
                 id: req.body.id
               }
             });
 
-          case 11:
+          case 14:
             feature = _context.sent;
-            _context.next = 14;
+            _context.next = 17;
             return feature.update({
               min: amount,
               fee: fee,
+              maxSampleSize: maxSampleSize,
               dashboardUserId: req.user.id,
               enabled: req.body.enabled
             });
 
-          case 14:
+          case 17:
             updatedFeature = _context.sent;
-            _context.next = 17;
+            _context.next = 20;
             return _models["default"].features.findOne({
               where: {
                 id: updatedFeature.id
@@ -96,11 +108,11 @@ var updateFeature = /*#__PURE__*/function () {
               }]
             });
 
-          case 17:
+          case 20:
             res.locals.feature = _context.sent;
             next();
 
-          case 19:
+          case 22:
           case "end":
             return _context.stop();
         }

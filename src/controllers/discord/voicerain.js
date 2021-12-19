@@ -68,6 +68,7 @@ export const discordVoiceRain = async (
       t,
       filteredMessage[4],
       onlineMembers,
+      setting,
     );
 
     const [

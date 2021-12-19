@@ -139,7 +139,7 @@ var discordThunderStorm = /*#__PURE__*/function () {
 
                       case 8:
                         _context.next = 10;
-                        return (0, _mapMembers.mapMembers)(message, t, filteredMessage[4], onlineMembers);
+                        return (0, _mapMembers.mapMembers)(message, t, filteredMessage[4], onlineMembers, setting);
 
                       case 10:
                         preWithoutBots = _context.sent;

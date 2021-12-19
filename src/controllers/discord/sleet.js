@@ -8,7 +8,6 @@ import {
   NotInDirectMessage,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/discord/validateAmount";
-import { mapMembers } from "../../helpers/discord/mapMembers";
 import { userWalletExist } from "../../helpers/discord/userWalletExist";
 
 import logger from "../../helpers/logger";

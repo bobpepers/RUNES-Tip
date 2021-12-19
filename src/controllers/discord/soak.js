@@ -52,6 +52,7 @@ export const discordSoak = async (
       t,
       filteredMessage[3],
       onlineMembers,
+      setting,
     );
 
     const [

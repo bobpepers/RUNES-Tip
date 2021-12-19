@@ -28,6 +28,11 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0,
     },
+    maxSampleSize: {
+      type: DataTypes.BIGINT,
+      allowNull: false,
+      defaultValue: 400,
+    },
     enabled: {
       type: DataTypes.BOOLEAN,
       allowNull: false,

@@ -7,9 +7,18 @@ const { Op } = require('sequelize');
 export const updateFeature = async (req, res, next) => {
   const amount = new BigNumber(req.body.min).times(1e8).toNumber();
   const fee = new BigNumber(req.body.fee).times(1e2).toNumber();
+  const maxSampleSize = Number(req.body.maxSampleSize);
   console.log(fee);
   console.log('fee');
   // Validate Fee
+  if (maxSampleSize % 1 !== 0) {
+    res.locals.error = "invalid number";
+    next();
+  }
+  if (maxSampleSize > 8000) {
+    res.locals.error = "Max Sample Size is 8000";
+    next();
+  }
   if (fee % 1 !== 0) {
     res.locals.error = "invalid number";
     next();
@@ -40,6 +49,7 @@ export const updateFeature = async (req, res, next) => {
   const updatedFeature = await feature.update({
     min: amount,
     fee,
+    maxSampleSize,
     dashboardUserId: req.user.id,
     enabled: req.body.enabled,
   });

@@ -16,6 +16,8 @@ import {
   updateDiscordLastSeen,
 } from '../controllers/discord/user';
 
+import { fetchFeeSchedule } from '../controllers/discord/fees';
+
 import { updateDiscordChannel } from '../controllers/discord/channel';
 
 import { updateDiscordGroup } from '../controllers/discord/group';
@@ -173,6 +175,14 @@ export const discordRouter = (
       const task = await discordHelp(message, io);
       await queue.add(() => task);
     }
+    if (filteredMessageDiscord[1].toLowerCase() === 'fees') {
+      const limited = await limitHelp(message);
+      await queue.add(() => limited);
+      if (limited) return;
+      const task = await fetchFeeSchedule(message, io, groupTaskId, channelTaskId);
+      await queue.add(() => task);
+    }
+
     if (filteredMessageDiscord[1].toLowerCase() === 'stats') {
       const limited = await limitStats(message);
       await queue.add(() => limited);

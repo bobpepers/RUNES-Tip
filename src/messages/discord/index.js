@@ -239,6 +239,23 @@ Estimated value of <@${userId}>'s balance: $${(((user.wallet.available + user.wa
   return result;
 };
 
+export const DiscordFeeMessage = (message, fee) => {
+  let feeString = '';
+  for (const key in fee) {
+    feeString += `${key}: ${fee[key].fee / 1e2}% (${fee[key].type})
+`;
+  }
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Fee Schedule')
+    .setDescription(`${feeString}`)
+    .setThumbnail(settings.coin.logo)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
 export const ReactdropCaptchaMessage = (userId) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
@@ -733,8 +750,8 @@ Displays your tip statistics
 \`${settings.bot.command.discord} deposit\`
 Displays your deposit address
 
-\`${settings.bot.command.discord} leaderboard\`
-Displays server leaderboard
+\`${settings.bot.command.discord} fees\`
+Displays fee schedule
 
 \`${settings.bot.command.discord} publicstats\`
 Enable/Disable public statistics (determines if you want to be shown on the leaderboards) 

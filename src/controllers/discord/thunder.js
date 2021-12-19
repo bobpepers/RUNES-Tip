@@ -52,6 +52,7 @@ export const discordThunder = async (
       t,
       filteredMessage[3],
       onlineMembers,
+      setting,
     );
     const withoutBots = _.sampleSize(preWithoutBots, 1);
 

@@ -66,6 +66,7 @@ export const discordThunderStorm = async (
       t,
       filteredMessage[4],
       onlineMembers,
+      setting,
     );
     const withoutBots = _.sampleSize(preWithoutBots, Number(filteredMessage[2]));
 

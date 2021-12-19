@@ -51,6 +51,7 @@ export const discordRain = async (
       t,
       filteredMessage[3],
       onlineMembers,
+      setting,
     );
 
     const [

@@ -53,6 +53,7 @@ export const discordFlood = async (
       t,
       filteredMessage[3],
       onlineMembers,
+      setting,
     );
 
     const [

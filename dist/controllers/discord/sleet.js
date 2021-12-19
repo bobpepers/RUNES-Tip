@@ -23,8 +23,6 @@ var _discord = require("../../messages/discord");
 
 var _validateAmount = require("../../helpers/discord/validateAmount");
 
-var _mapMembers = require("../../helpers/discord/mapMembers");
-
 var _userWalletExist = require("../../helpers/discord/userWalletExist");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));

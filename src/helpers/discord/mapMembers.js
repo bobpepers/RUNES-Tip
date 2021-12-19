@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import db from '../../models';
 
 export const mapMembers = async (
@@ -5,6 +6,7 @@ export const mapMembers = async (
   t,
   optionalRoleMessage,
   onlineMembers,
+  setting,
 ) => {
   let roleId;
   let mappedMembersArray;
@@ -14,10 +16,13 @@ export const mapMembers = async (
     roleId = optionalRoleMessage.substr(3).slice(0, -1);
   }
   if (roleId) {
-    const filterWithRoles = onlineMembers.filter((product) => product._roles.includes(roleId));
+    const filterWithRoles = onlineMembers.filter((member) => member._roles.includes(roleId));
     mappedMembersArray = filterWithRoles.map((a) => a.user);
   } else {
     mappedMembersArray = onlineMembers.map((a) => a.user);
+  }
+  if (mappedMembersArray.length > setting.maxSampleSize) {
+    mappedMembersArray = _.sampleSize(mappedMembersArray, setting.maxSampleSize);
   }
 
   // eslint-disable-next-line no-restricted-syntax
