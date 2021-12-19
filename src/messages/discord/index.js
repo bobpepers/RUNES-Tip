@@ -134,7 +134,7 @@ export const maxTimeReactdropMessage = (message) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Reactdrop')
-    .setDescription(`Maxiumum time is 2 days`)
+    .setDescription(`Maximum time is 2 days`)
     .setTimestamp()
     .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
 
@@ -183,7 +183,7 @@ export const discordIncomingDepositMessage = (res) => {
     .setTitle('Deposit')
     .setDescription(`incoming deposit detected for ${res.locals.amount} ${settings.coin.ticker}
 Balance will be reflected in your wallet in ~${settings.min.confirmations}+ confirmations
-${settings.coin.explorer}/tx/${res.locals.transaction[0].txid}`)
+${settings.coin.explorer}tx/${res.locals.transaction[0].txid}`)
     .setTimestamp()
     .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
 
