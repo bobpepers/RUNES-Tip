@@ -16,11 +16,6 @@ var _telegram = require("../../messages/telegram");
 var _models = _interopRequireDefault(require("../../models"));
 
 /* eslint-disable import/prefer-default-export */
-var capitalize = function capitalize(s) {
-  return s && s[0].toUpperCase() + s.slice(1);
-}; // Upper case first letter
-
-
 var telegramSettings = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(ctx, name) {
     var groupId,

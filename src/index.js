@@ -228,10 +228,11 @@ server.listen(port);
       patchPirateDeposits();
     });
 
-    await consolidatePirate();
-    const consolidatePirateCoins = schedule.scheduleJob('10 */1 * * *', () => {
-      consolidatePirate();
-    });
+    // We're using buildin consolidation function pirate node offers
+    // await consolidatePirate();
+    // const consolidatePirateCoins = schedule.scheduleJob('10 */1 * * *', () => {
+    //  consolidatePirate();
+    // });
   } else {
     await startRunebaseSync(discordClient, telegramClient);
     await patchRunebaseDeposits();

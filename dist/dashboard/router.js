@@ -269,6 +269,11 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
+  app.post('/api/deposits/patch', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _deposits.patchDeposits, function (req, res) {
+    res.json({
+      deposits: 'true'
+    });
+  });
   app.post('/api/users', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _users.fetchUsers, function (req, res) {
     if (res.locals.users) {
       res.json({

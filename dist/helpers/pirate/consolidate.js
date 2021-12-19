@@ -48,60 +48,62 @@ function _consolidatePirate() {
 
           case 6:
             if ((_step = _iterator.n()).done) {
-              _context.next = 16;
+              _context.next = 18;
               break;
             }
 
             balance = _step.value;
 
             if (!(balance.address !== process.env.PIRATE_MAIN_ADDRESS)) {
-              _context.next = 14;
+              _context.next = 16;
               break;
             }
 
             if (!(balance.unconfirmed === 0)) {
-              _context.next = 14;
+              _context.next = 16;
               break;
             }
 
+            console.log(balance);
             sendAmount = balance.balance - 0.0001; // eslint-disable-next-line no-await-in-loop
 
-            _context.next = 13;
+            _context.next = 14;
             return (0, _rclient.getInstance)().zSendMany(balance.address, [{
               address: process.env.PIRATE_MAIN_ADDRESS,
               amount: sendAmount
             }], 1, 0.0001);
 
-          case 13:
-            result = _context.sent;
-
           case 14:
+            result = _context.sent;
+            console.log(result);
+
+          case 16:
             _context.next = 6;
             break;
 
-          case 16:
-            _context.next = 21;
+          case 18:
+            _context.next = 23;
             break;
 
-          case 18:
-            _context.prev = 18;
+          case 20:
+            _context.prev = 20;
             _context.t0 = _context["catch"](4);
 
             _iterator.e(_context.t0);
 
-          case 21:
-            _context.prev = 21;
+          case 23:
+            _context.prev = 23;
 
             _iterator.f();
 
-            return _context.finish(21);
+            return _context.finish(23);
 
-          case 24:
+          case 26:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[4, 18, 21, 24]]);
+    }, _callee, null, [[4, 20, 23, 26]]);
   }));
   return _consolidatePirate.apply(this, arguments);
 }

@@ -802,41 +802,40 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
               });
 
             case 19:
-              console.log(groupTask);
               groupTaskId = groupTask && groupTask.id;
-              _context14.next = 23;
+              _context14.next = 22;
               return (0, _settings2.telegramSettings)(ctx, 'withdraw', groupTaskId);
 
-            case 23:
+            case 22:
               setting = _context14.sent;
-              _context14.next = 26;
+              _context14.next = 25;
               return queue.add(function () {
                 return setting;
               });
 
-            case 26:
+            case 25:
               if (setting) {
-                _context14.next = 28;
+                _context14.next = 27;
                 break;
               }
 
               return _context14.abrupt("return");
 
-            case 28:
+            case 27:
               withdrawalAddress = filteredMessageTelegram[1];
               withdrawalAmount = filteredMessageTelegram[2];
               console.log('before withdrawal create');
-              _context14.next = 33;
+              _context14.next = 32;
               return (0, _withdraw.withdrawTelegramCreate)(ctx, withdrawalAddress, withdrawalAmount, io, setting);
 
-            case 33:
+            case 32:
               task = _context14.sent;
-              _context14.next = 36;
+              _context14.next = 35;
               return queue.add(function () {
                 return task;
               });
 
-            case 36:
+            case 35:
             case "end":
               return _context14.stop();
           }

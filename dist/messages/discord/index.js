@@ -98,7 +98,7 @@ var minimumTimeReactDropMessage = function minimumTimeReactDropMessage(message) 
 exports.minimumTimeReactDropMessage = minimumTimeReactDropMessage;
 
 var maxTimeReactdropMessage = function maxTimeReactdropMessage(message) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Reactdrop').setDescription("Maxiumum time is 2 days").setTimestamp().setFooter("".concat(settings.bot.name, " v").concat(_package["default"].version), settings.coin.logo);
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Reactdrop').setDescription("Maximum time is 2 days").setTimestamp().setFooter("".concat(settings.bot.name, " v").concat(_package["default"].version), settings.coin.logo);
   return result;
 };
 
@@ -126,7 +126,7 @@ var discordDepositConfirmedMessage = function discordDepositConfirmedMessage(amo
 exports.discordDepositConfirmedMessage = discordDepositConfirmedMessage;
 
 var discordIncomingDepositMessage = function discordIncomingDepositMessage(res) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Deposit').setDescription("incoming deposit detected for ".concat(res.locals.amount, " ").concat(settings.coin.ticker, "\nBalance will be reflected in your wallet in ~").concat(settings.min.confirmations, "+ confirmations\n").concat(settings.coin.explorer, "/tx/").concat(res.locals.transaction[0].txid)).setTimestamp().setFooter("".concat(settings.bot.name, " v").concat(_package["default"].version), settings.coin.logo);
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Deposit').setDescription("incoming deposit detected for ".concat(res.locals.amount, " ").concat(settings.coin.ticker, "\nBalance will be reflected in your wallet in ~").concat(settings.min.confirmations, "+ confirmations\n").concat(settings.coin.explorer, "tx/").concat(res.locals.transaction[0].txid)).setTimestamp().setFooter("".concat(settings.bot.name, " v").concat(_package["default"].version), settings.coin.logo);
   return result;
 };
 

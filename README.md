@@ -57,7 +57,7 @@ ROOT_URL=localhost
 #CONFIG (RUNEBASE / PIRATE)
 CONFIG_FILE=PIRATE
 
-#PIRATE ONLY (replace with address from current pirate wallet)
+#PIRATE ONLY (has to be the same address used for consolidating pirate on node config)
 PIRATE_MAIN_ADDRESS=zs1gk4gus9ya7f4rr3jr2v2rjsqrh8n67534u5dtnu3cjvcqw867ft3ewfeqg6fsakeh8vyqe2xyrg
 
 ```
