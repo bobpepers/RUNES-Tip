@@ -51,7 +51,10 @@ import { verifyMyCaptcha } from './controllers/recaptcha';
 import {
   fetchDashboardUsers,
 } from './controllers/dashboardUsers';
-import { fetchDeposits } from './controllers/deposits';
+import {
+  fetchDeposits,
+  patchDeposits,
+} from './controllers/deposits';
 import {
   fetchChannels,
   banChannel,
@@ -432,6 +435,20 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
           error: "ERROR",
         });
       }
+    },
+  );
+
+  app.post(
+    '/api/deposits/patch',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    patchDeposits,
+    (req, res) => {
+      res.json({
+        deposits: 'true',
+      });
     },
   );
 

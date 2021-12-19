@@ -229,7 +229,6 @@ export const telegramRouter = (
 
     const groupTask = await updateGroup(ctx);
     await queue.add(() => groupTask);
-    console.log(groupTask);
     const groupTaskId = groupTask && groupTask.id;
     const setting = await telegramSettings(ctx, 'withdraw', groupTaskId);
     await queue.add(() => setting);

@@ -222,12 +222,13 @@ server.listen(port);
     });
   } else if (settings.coin.setting === 'Pirate') {
     await startPirateSync(discordClient, telegramClient);
-    await patchPirateDeposits();
-    await consolidatePirate();
 
+    await patchPirateDeposits();
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
       patchPirateDeposits();
     });
+
+    await consolidatePirate();
     const consolidatePirateCoins = schedule.scheduleJob('10 */1 * * *', () => {
       consolidatePirate();
     });

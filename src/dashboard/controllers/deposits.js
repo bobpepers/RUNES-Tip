@@ -1,7 +1,14 @@
 // import { parseDomain } from "parse-domain";
 import db from '../../models';
+import { patchPirateDeposits } from "../../helpers/pirate/patcher";
 
 const { Op } = require('sequelize');
+
+export const patchDeposits = async (req, res, next) => {
+  await patchPirateDeposits();
+  console.log('done patchDeposits');
+  next();
+};
 
 export const fetchDeposits = async (req, res, next) => {
   console.log(req.body);

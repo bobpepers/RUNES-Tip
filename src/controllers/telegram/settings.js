@@ -5,9 +5,11 @@ import {
 } from '../../messages/telegram';
 import db from '../../models';
 
-const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1); // Upper case first letter
-
-export const telegramSettings = async (ctx, name, groupId = null) => {
+export const telegramSettings = async (
+  ctx,
+  name,
+  groupId = null,
+) => {
   let setting;
 
   setting = await db.features.findOne({
