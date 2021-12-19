@@ -179,7 +179,7 @@ telegramClient.use(telegrafGetChatMembers);
 (0, _router2.dashboardRouter)(app, io, discordClient, telegramClient);
 server.listen(port);
 (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
-  var schedulePatchDeposits, _schedulePatchDeposits, consolidatePirateCoins, _schedulePatchDeposits2, allRunningReactDrops, _iterator, _step, _loop;
+  var allRunningReactDrops, _iterator, _step, _loop, schedulePatchDeposits, _schedulePatchDeposits, consolidatePirateCoins, _schedulePatchDeposits2;
 
   return _regenerator["default"].wrap(function _callee3$(_context4) {
     while (1) {
@@ -197,67 +197,7 @@ server.listen(port);
           return (0, _initDatabaseRecords.initDatabaseRecords)();
 
         case 6:
-          if (!(settings.coin.setting === 'Runebase')) {
-            _context4.next = 14;
-            break;
-          }
-
-          _context4.next = 9;
-          return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient);
-
-        case 9:
-          _context4.next = 11;
-          return (0, _patcher.patchRunebaseDeposits)();
-
-        case 11:
-          schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
-            (0, _patcher.patchRunebaseDeposits)();
-          });
-          _context4.next = 30;
-          break;
-
-        case 14:
-          if (!(settings.coin.setting === 'Pirate')) {
-            _context4.next = 25;
-            break;
-          }
-
-          _context4.next = 17;
-          return (0, _syncPirate.startPirateSync)(discordClient, telegramClient);
-
-        case 17:
-          _context4.next = 19;
-          return (0, _patcher2.patchPirateDeposits)();
-
-        case 19:
-          _context4.next = 21;
-          return (0, _consolidate.consolidatePirate)();
-
-        case 21:
-          _schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
-            (0, _patcher2.patchPirateDeposits)();
-          });
-          consolidatePirateCoins = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
-            (0, _consolidate.consolidatePirate)();
-          });
-          _context4.next = 30;
-          break;
-
-        case 25:
-          _context4.next = 27;
-          return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient);
-
-        case 27:
-          _context4.next = 29;
-          return (0, _patcher.patchRunebaseDeposits)();
-
-        case 29:
-          _schedulePatchDeposits2 = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
-            (0, _patcher.patchRunebaseDeposits)();
-          });
-
-        case 30:
-          _context4.next = 32;
+          _context4.next = 8;
           return _models["default"].reactdrop.findAll({
             where: {
               ended: false
@@ -274,11 +214,11 @@ server.listen(port);
             }]
           });
 
-        case 32:
+        case 8:
           allRunningReactDrops = _context4.sent;
           // eslint-disable-next-line no-restricted-syntax
           _iterator = _createForOfIteratorHelper(allRunningReactDrops);
-          _context4.prev = 34;
+          _context4.prev = 10;
           _loop = /*#__PURE__*/_regenerator["default"].mark(function _loop() {
             var runningReactDrop, actualChannelId, actualGroupId, actualUserId, reactMessage, countDownDate, now, distance, updateMessage;
             return _regenerator["default"].wrap(function _loop$(_context3) {
@@ -344,41 +284,101 @@ server.listen(port);
 
           _iterator.s();
 
-        case 37:
+        case 13:
           if ((_step = _iterator.n()).done) {
-            _context4.next = 41;
+            _context4.next = 17;
             break;
           }
 
-          return _context4.delegateYield(_loop(), "t0", 39);
+          return _context4.delegateYield(_loop(), "t0", 15);
 
-        case 39:
-          _context4.next = 37;
+        case 15:
+          _context4.next = 13;
           break;
 
-        case 41:
-          _context4.next = 46;
+        case 17:
+          _context4.next = 22;
           break;
 
-        case 43:
-          _context4.prev = 43;
-          _context4.t1 = _context4["catch"](34);
+        case 19:
+          _context4.prev = 19;
+          _context4.t1 = _context4["catch"](10);
 
           _iterator.e(_context4.t1);
 
-        case 46:
-          _context4.prev = 46;
+        case 22:
+          _context4.prev = 22;
 
           _iterator.f();
 
-          return _context4.finish(46);
+          return _context4.finish(22);
+
+        case 25:
+          if (!(settings.coin.setting === 'Runebase')) {
+            _context4.next = 33;
+            break;
+          }
+
+          _context4.next = 28;
+          return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient);
+
+        case 28:
+          _context4.next = 30;
+          return (0, _patcher.patchRunebaseDeposits)();
+
+        case 30:
+          schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
+            (0, _patcher.patchRunebaseDeposits)();
+          });
+          _context4.next = 49;
+          break;
+
+        case 33:
+          if (!(settings.coin.setting === 'Pirate')) {
+            _context4.next = 44;
+            break;
+          }
+
+          _context4.next = 36;
+          return (0, _syncPirate.startPirateSync)(discordClient, telegramClient);
+
+        case 36:
+          _context4.next = 38;
+          return (0, _patcher2.patchPirateDeposits)();
+
+        case 38:
+          _context4.next = 40;
+          return (0, _consolidate.consolidatePirate)();
+
+        case 40:
+          _schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
+            (0, _patcher2.patchPirateDeposits)();
+          });
+          consolidatePirateCoins = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
+            (0, _consolidate.consolidatePirate)();
+          });
+          _context4.next = 49;
+          break;
+
+        case 44:
+          _context4.next = 46;
+          return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient);
+
+        case 46:
+          _context4.next = 48;
+          return (0, _patcher.patchRunebaseDeposits)();
+
+        case 48:
+          _schedulePatchDeposits2 = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
+            (0, _patcher.patchRunebaseDeposits)();
+          });
 
         case 49:
         case "end":
           return _context4.stop();
       }
     }
-  }, _callee3, null, [[34, 43, 46, 49]]);
+  }, _callee3, null, [[10, 19, 22, 25]]);
 }))();
 (0, _updatePrice.updatePrice)();
 

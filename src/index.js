@@ -163,32 +163,7 @@ server.listen(port);
   await telegramClient.launch();
   await discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
   await initDatabaseRecords();
-  if (settings.coin.setting === 'Runebase') {
-    await startRunebaseSync(discordClient, telegramClient);
-    await patchRunebaseDeposits();
 
-    const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
-      patchRunebaseDeposits();
-    });
-  } else if (settings.coin.setting === 'Pirate') {
-    await startPirateSync(discordClient, telegramClient);
-    await patchPirateDeposits();
-    await consolidatePirate();
-
-    const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
-      patchPirateDeposits();
-    });
-    const consolidatePirateCoins = schedule.scheduleJob('10 */1 * * *', () => {
-      consolidatePirate();
-    });
-  } else {
-    await startRunebaseSync(discordClient, telegramClient);
-    await patchRunebaseDeposits();
-
-    const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
-      patchRunebaseDeposits();
-    });
-  }
   // recover reactdrops here listenReactDrop = async (reactMessage, distance, reactDrop)
   const allRunningReactDrops = await db.reactdrop.findAll({
     where: {
@@ -235,6 +210,34 @@ server.listen(port);
         clearInterval(updateMessage);
       }
     }, 5000);
+  }
+
+  // patch deposits and sync
+  if (settings.coin.setting === 'Runebase') {
+    await startRunebaseSync(discordClient, telegramClient);
+    await patchRunebaseDeposits();
+
+    const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
+      patchRunebaseDeposits();
+    });
+  } else if (settings.coin.setting === 'Pirate') {
+    await startPirateSync(discordClient, telegramClient);
+    await patchPirateDeposits();
+    await consolidatePirate();
+
+    const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
+      patchPirateDeposits();
+    });
+    const consolidatePirateCoins = schedule.scheduleJob('10 */1 * * *', () => {
+      consolidatePirate();
+    });
+  } else {
+    await startRunebaseSync(discordClient, telegramClient);
+    await patchRunebaseDeposits();
+
+    const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
+      patchRunebaseDeposits();
+    });
   }
 }());
 
