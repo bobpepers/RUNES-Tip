@@ -366,6 +366,11 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
             });
 
           case 10:
+            io.to('admin').emit('updateActivity', {
+              activity: activity
+            });
+
+          case 11:
           case "end":
             return _context3.stop();
         }

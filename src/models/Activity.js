@@ -80,6 +80,7 @@ module.exports = (sequelize, DataTypes) => {
         'withdraw_i',
         'withdraw_f',
         'waterFaucet',
+        'tiptip_s',
       ],
     },
     amount: {

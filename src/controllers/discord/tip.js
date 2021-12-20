@@ -218,4 +218,7 @@ export const tipRunesToDiscordUser = async (
   }).catch((err) => {
     message.channel.send('something went wrong');
   });
+  io.to('admin').emit('updateActivity', {
+    activity,
+  });
 };
