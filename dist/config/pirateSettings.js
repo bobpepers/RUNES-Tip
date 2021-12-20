@@ -16,7 +16,7 @@ module.exports = {
   },
   coin: {
     setting: "Pirate",
-    // Supported names for setting (Runebase, Pirate) // default fallback settings are Runebase
+    // Supported names for setting (Runebase, Pirate, KmdSmart) // default fallback settings are Runebase // KmdSmart is for any komodo smartchains
     name: "Pirate",
     ticker: "ARRR",
     logo: "https://pirate.black/wp-content/uploads/2019/04/Pirate_Logo_Ship_Gold.png",

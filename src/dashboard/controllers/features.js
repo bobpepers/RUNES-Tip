@@ -27,8 +27,8 @@ export const updateFeature = async (req, res, next) => {
     res.locals.error = "minimum fee is 0.00%";
     next();
   }
-  if (fee > 200) {
-    res.locals.error = "maximum fee is 2%";
+  if (fee > 5000) {
+    res.locals.error = "maximum fee is 50%";
     next();
   }
 

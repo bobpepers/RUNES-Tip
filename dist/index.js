@@ -10,6 +10,8 @@ var _discord = require("discord.js");
 
 var _telegraf = require("telegraf");
 
+var _pQueue = _interopRequireDefault(require("p-queue"));
+
 var _express = _interopRequireDefault(require("express"));
 
 var _http = _interopRequireDefault(require("http"));
@@ -52,8 +54,6 @@ var _syncPirate = require("./services/syncPirate");
 
 var _processWithdrawals = require("./services/processWithdrawals");
 
-var _consolidate = require("./helpers/pirate/consolidate");
-
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -63,6 +63,12 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 require('dotenv').config();
 
 var settings = (0, _settings["default"])();
+var queue = new _pQueue["default"]({
+  concurrency: 1,
+  timeout: 1000000000 // intervalCap: 1,
+  // interval: 500,
+
+});
 
 var telegrafGetChatMembers = require('telegraf-getchatmembers');
 
@@ -175,7 +181,7 @@ var discordClient = new _discord.Client({
 });
 var telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 telegramClient.use(telegrafGetChatMembers);
-(0, _router.router)(app, discordClient, telegramClient, io, settings);
+(0, _router.router)(app, discordClient, telegramClient, io, settings, queue);
 (0, _router2.dashboardRouter)(app, io, discordClient, telegramClient);
 server.listen(port);
 (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
@@ -245,7 +251,7 @@ server.listen(port);
                     console.log('recover listenReactDrop'); // eslint-disable-next-line no-await-in-loop
 
                     _context3.next = 15;
-                    return (0, _reactdrop.listenReactDrop)(reactMessage, distance, runningReactDrop, io);
+                    return (0, _reactdrop.listenReactDrop)(reactMessage, distance, runningReactDrop, io, queue);
 
                   case 15:
                     // eslint-disable-next-line no-loop-func
@@ -349,12 +355,7 @@ server.listen(port);
         case 38:
           _schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher2.patchPirateDeposits)();
-          }); // We're using buildin consolidation function pirate node offers
-          // await consolidatePirate();
-          // const consolidatePirateCoins = schedule.scheduleJob('10 */1 * * *', () => {
-          //  consolidatePirate();
-          // });
-
+          });
           _context4.next = 46;
           break;
 

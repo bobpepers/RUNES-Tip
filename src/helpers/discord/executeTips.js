@@ -17,6 +17,7 @@ export const executeTipFunction = async (
   groupTask,
   channelTask,
   setting,
+  faucetSetting,
 ) => {
   if (amount.toLowerCase() === 'all') {
     message.channel.send({ embeds: [confirmAllAmoutMessageDiscord(message, filteredMessageDiscord[1])] }).then(async () => {
@@ -49,6 +50,8 @@ export const executeTipFunction = async (
             groupTask,
             channelTask,
             setting,
+            faucetSetting,
+            queue,
           );
           await queue.add(() => task);
         } else if (
@@ -70,6 +73,8 @@ export const executeTipFunction = async (
       groupTask,
       channelTask,
       setting,
+      faucetSetting,
+      queue,
     );
     await queue.add(() => task);
   }

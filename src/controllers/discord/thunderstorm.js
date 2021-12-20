@@ -15,6 +15,7 @@ import _ from "lodash";
 
 import { Transaction } from "sequelize";
 import logger from "../../helpers/logger";
+import { waterFaucet } from "../../helpers/discord/waterFaucet";
 
 export const discordThunderStorm = async (
   discordClient,
@@ -24,6 +25,8 @@ export const discordThunderStorm = async (
   groupTask,
   channelTask,
   setting,
+  faucetSetting,
+  queue,
 ) => {
   if (!groupTask || !channelTask) {
     await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
@@ -107,6 +110,12 @@ export const discordThunderStorm = async (
 
     const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
     const amountPerUser = (((amount - Number(fee)) / withoutBots.length).toFixed(0));
+
+    const faucetWatered = await waterFaucet(
+      t,
+      Number(fee),
+      faucetSetting
+    );
     const thunderstormRecord = await db.thunderstorm.create({
       feeAmount: fee,
       amount,

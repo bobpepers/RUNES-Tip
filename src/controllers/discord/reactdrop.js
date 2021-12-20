@@ -25,6 +25,7 @@ import db from '../../models';
 import emojiCompact from "../../config/emoji";
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/discord/validateAmount";
+import { waterFaucet } from "../../helpers/discord/waterFaucet";
 
 const settings = getCoinSettings();
 
@@ -46,10 +47,19 @@ function shuffle(array) {
   return array;
 }
 
-export const listenReactDrop = async (reactMessage, distance, reactDrop, io) => {
+export const listenReactDrop = async (
+  reactMessage,
+  distance,
+  reactDrop,
+  io,
+  queue,
+) => {
   const filter = () => true;
   const collector = reactMessage.createReactionCollector({ filter, time: distance });
-  collector.on('collect', async (reaction, collector) => {
+  collector.on('collect', async (
+    reaction,
+    collector,
+  ) => {
     if (!collector.bot) {
       const findReactUser = await db.user.findOne({
         where: {
@@ -294,6 +304,8 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop, io) => 
         where: {
           id: reactDrop.id,
         },
+        lock: t.LOCK.UPDATE,
+        transaction: t,
         include: [
           {
             model: db.group,
@@ -335,15 +347,64 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop, io) => 
             where: {
               userId: endReactDrop.userId,
             },
+            lock: t.LOCK.UPDATE,
+            transaction: t,
           });
           const updatedWallet = await returnWallet.update({
             available: returnWallet.available + endReactDrop.amount,
+          }, {
+            lock: t.LOCK.UPDATE,
+            transaction: t,
           });
           await endReactDrop.update({
             ended: true,
+          }, {
+            lock: t.LOCK.UPDATE,
+            transaction: t,
           });
           reactMessage.channel.send('Nobody claimed, returning funds to reactdrop initiator');
         } else {
+          // Get Faucet Settings
+          let faucetSetting;
+          faucetSetting = await db.features.findOne({
+            where: {
+              type: 'local',
+              name: 'faucet',
+              groupId: endReactDrop.group.id,
+              channelId: endReactDrop.channel.id,
+            },
+            lock: t.LOCK.UPDATE,
+            transaction: t,
+          });
+          if (!faucetSetting) {
+            faucetSetting = await db.features.findOne({
+              where: {
+                type: 'local',
+                name: 'faucet',
+                groupId: endReactDrop.group.id,
+                channelId: null,
+              },
+              lock: t.LOCK.UPDATE,
+              transaction: t,
+            });
+          }
+          if (!faucetSetting) {
+            faucetSetting = await db.features.findOne({
+              where: {
+                type: 'global',
+                name: 'faucet',
+              },
+              lock: t.LOCK.UPDATE,
+              transaction: t,
+            });
+          }
+          // water the faucet
+          const faucetWatered = await waterFaucet(
+            t,
+            Number(endReactDrop.feeAmount),
+            faucetSetting,
+          );
+          //
           const amountEach = ((Number(endReactDrop.amount) - Number(endReactDrop.feeAmount)) / Number(endReactDrop.reactdroptips.length)).toFixed(0);
 
           console.log("amountEach");
@@ -351,6 +412,9 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop, io) => 
           await endReactDrop.update({
             ended: true,
             userCount: Number(endReactDrop.reactdroptips.length),
+          }, {
+            lock: t.LOCK.UPDATE,
+            transaction: t,
           });
 
           const listOfUsersRained = [];
@@ -359,6 +423,9 @@ export const listenReactDrop = async (reactMessage, distance, reactDrop, io) => 
             // eslint-disable-next-line no-await-in-loop
             const earnerWallet = await receiver.user.wallet.update({
               available: receiver.user.wallet.available + Number(amountEach),
+            }, {
+              lock: t.LOCK.UPDATE,
+              transaction: t,
             });
 
             if (receiver.user.ignoreMe) {
@@ -443,6 +510,8 @@ export const discordReactDrop = async (
   groupTask,
   channelTask,
   setting,
+  faucetSetting,
+  queue,
 ) => {
   let activity;
   let user;
@@ -669,7 +738,13 @@ export const discordReactDrop = async (
             .channels.cache.get(sendReactDropMessage.channelId)
             .messages.fetch(sendReactDropMessage.id);
 
-          listenReactDrop(reactMessage, distance, newReactDrop, io);
+          listenReactDrop(
+            reactMessage,
+            distance,
+            newReactDrop,
+            io,
+            queue,
+          );
 
           // eslint-disable-next-line no-restricted-syntax
           for (const shufEmoji of shuffeledEmojisArray) {

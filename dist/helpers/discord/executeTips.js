@@ -18,7 +18,7 @@ var _models = _interopRequireDefault(require("../../models"));
 var _discord = require("../../messages/discord");
 
 var executeTipFunction = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(tipFunction, queue, amount, discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, setting) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(tipFunction, queue, amount, discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, setting, faucetSetting) {
     var task;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
@@ -62,7 +62,7 @@ var executeTipFunction = /*#__PURE__*/function () {
                                   }
 
                                   _context.next = 4;
-                                  return tipFunction(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, setting);
+                                  return tipFunction(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, setting, faucetSetting, queue);
 
                                 case 4:
                                   task = _context.sent;
@@ -90,7 +90,7 @@ var executeTipFunction = /*#__PURE__*/function () {
                           }, _callee);
                         }));
 
-                        return function (_x11) {
+                        return function (_x12) {
                           return _ref3.apply(this, arguments);
                         };
                       }())["catch"](function (collected) {
@@ -111,7 +111,7 @@ var executeTipFunction = /*#__PURE__*/function () {
 
           case 4:
             _context3.next = 6;
-            return tipFunction(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, setting);
+            return tipFunction(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, setting, faucetSetting, queue);
 
           case 6:
             task = _context3.sent;
@@ -128,7 +128,7 @@ var executeTipFunction = /*#__PURE__*/function () {
     }, _callee3);
   }));
 
-  return function executeTipFunction(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9, _x10) {
+  return function executeTipFunction(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9, _x10, _x11) {
     return _ref.apply(this, arguments);
   };
 }();

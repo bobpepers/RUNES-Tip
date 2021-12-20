@@ -10,6 +10,7 @@ import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { mapMembers } from "../../helpers/discord/mapMembers";
 import { userWalletExist } from "../../helpers/discord/userWalletExist";
+import { waterFaucet } from "../../helpers/discord/waterFaucet";
 
 export const discordFlood = async (
   discordClient,
@@ -19,6 +20,8 @@ export const discordFlood = async (
   groupTask,
   channelTask,
   setting,
+  faucetSetting,
+  queue,
 ) => {
   if (!groupTask || !channelTask) {
     await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
@@ -93,6 +96,11 @@ export const discordFlood = async (
     const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
     const amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
 
+    const faucetWatered = await waterFaucet(
+      t,
+      Number(fee),
+      faucetSetting,
+    );
     const floodRecord = await db.flood.create({
       feeAmount: fee,
       amount,

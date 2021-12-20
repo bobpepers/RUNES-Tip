@@ -58,3 +58,38 @@ export const discordSettings = async (message, name, groupId = null, channelId =
   console.log(setting);
   return setting;
 };
+
+export const discordwaterFaucetSettings = async (
+  groupId = null,
+  channelId = null,
+) => {
+  let setting;
+  setting = await db.features.findOne({
+    where: {
+      type: 'local',
+      name: 'faucet',
+      groupId,
+      channelId,
+    },
+  });
+  if (!setting) {
+    setting = await db.features.findOne({
+      where: {
+        type: 'local',
+        name: 'faucet',
+        groupId,
+        channelId: null,
+      },
+    });
+  }
+  if (!setting) {
+    setting = await db.features.findOne({
+      where: {
+        type: 'global',
+        name: 'faucet',
+      },
+    });
+  }
+
+  return setting;
+};

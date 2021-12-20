@@ -29,6 +29,8 @@ var _mapMembers = require("../../helpers/discord/mapMembers");
 
 var _userWalletExist = require("../../helpers/discord/userWalletExist");
 
+var _waterFaucet = require("../../helpers/discord/waterFaucet");
+
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -36,7 +38,7 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var discordThunder = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(discordClient, message, filteredMessage, io, groupTask, channelTask, setting) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(discordClient, message, filteredMessage, io, groupTask, channelTask, setting, faucetSetting, queue) {
     var members, onlineMembers, activity, user;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
@@ -73,7 +75,7 @@ var discordThunder = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, preWithoutBots, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, updatedBalance, fee, amountPerUser, thunderRecord, listOfUsersRained, _iterator, _step, thunderee, thundereeWallet, thundertipRecord, userIdReceivedRain, tipActivity, _i, _listOfUsersRained, userThunder;
+                var _yield$userWalletExis, _yield$userWalletExis2, preWithoutBots, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, updatedBalance, fee, amountPerUser, faucetWatered, thunderRecord, listOfUsersRained, _iterator, _step, thunderee, thundereeWallet, thundertipRecord, userIdReceivedRain, tipActivity, _i, _listOfUsersRained, userThunder;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -144,7 +146,7 @@ var discordThunder = /*#__PURE__*/function () {
 
                       case 28:
                         if (!(withoutBots.length === 1)) {
-                          _context.next = 84;
+                          _context.next = 87;
                           break;
                         }
 
@@ -161,6 +163,11 @@ var discordThunder = /*#__PURE__*/function () {
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
                         _context.next = 36;
+                        return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
+
+                      case 36:
+                        faucetWatered = _context.sent;
+                        _context.next = 39;
                         return _models["default"].thunder.create({
                           feeAmount: fee,
                           amount: amount,
@@ -173,9 +180,9 @@ var discordThunder = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 36:
+                      case 39:
                         thunderRecord = _context.sent;
-                        _context.next = 39;
+                        _context.next = 42;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'thunder_s',
@@ -187,9 +194,9 @@ var discordThunder = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 39:
+                      case 42:
                         activity = _context.sent;
-                        _context.next = 42;
+                        _context.next = 45;
                         return _models["default"].activity.findOne({
                           where: {
                             id: activity.id
@@ -205,24 +212,24 @@ var discordThunder = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 42:
+                      case 45:
                         activity = _context.sent;
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(withoutBots);
-                        _context.prev = 45;
+                        _context.prev = 48;
 
                         _iterator.s();
 
-                      case 47:
+                      case 50:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 67;
+                          _context.next = 70;
                           break;
                         }
 
                         thunderee = _step.value;
-                        _context.next = 51;
+                        _context.next = 54;
                         return thunderee.wallet.update({
                           available: thunderee.wallet.available + Number(amountPerUser)
                         }, {
@@ -230,9 +237,9 @@ var discordThunder = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 51:
+                      case 54:
                         thundereeWallet = _context.sent;
-                        _context.next = 54;
+                        _context.next = 57;
                         return _models["default"].thundertip.create({
                           amount: amountPerUser,
                           userId: thunderee.id,
@@ -244,7 +251,7 @@ var discordThunder = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 54:
+                      case 57:
                         thundertipRecord = _context.sent;
 
                         if (thunderee.ignoreMe) {
@@ -255,7 +262,7 @@ var discordThunder = /*#__PURE__*/function () {
                         }
 
                         tipActivity = void 0;
-                        _context.next = 59;
+                        _context.next = 62;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
                           type: 'thundertip_s',
@@ -270,9 +277,9 @@ var discordThunder = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 59:
+                      case 62:
                         tipActivity = _context.sent;
-                        _context.next = 62;
+                        _context.next = 65;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -294,71 +301,71 @@ var discordThunder = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 62:
+                      case 65:
                         tipActivity = _context.sent;
                         console.log(tipActivity);
                         io.to('admin').emit('updateActivity', {
                           activity: tipActivity
                         });
 
-                      case 65:
-                        _context.next = 47;
+                      case 68:
+                        _context.next = 50;
                         break;
 
-                      case 67:
-                        _context.next = 72;
+                      case 70:
+                        _context.next = 75;
                         break;
-
-                      case 69:
-                        _context.prev = 69;
-                        _context.t0 = _context["catch"](45);
-
-                        _iterator.e(_context.t0);
 
                       case 72:
                         _context.prev = 72;
+                        _context.t0 = _context["catch"](48);
+
+                        _iterator.e(_context.t0);
+
+                      case 75:
+                        _context.prev = 75;
 
                         _iterator.f();
 
-                        return _context.finish(72);
+                        return _context.finish(75);
 
-                      case 75:
+                      case 78:
                         _i = 0, _listOfUsersRained = listOfUsersRained;
 
-                      case 76:
+                      case 79:
                         if (!(_i < _listOfUsersRained.length)) {
-                          _context.next = 83;
+                          _context.next = 86;
                           break;
                         }
 
                         userThunder = _listOfUsersRained[_i];
-                        _context.next = 80;
+                        _context.next = 83;
                         return message.channel.send({
                           embeds: [(0, _discord.AfterThunderSuccess)(message, amount, userThunder)]
                         });
 
-                      case 80:
+                      case 83:
                         _i++;
-                        _context.next = 76;
+                        _context.next = 79;
                         break;
 
-                      case 83:
+                      case 86:
                         _logger["default"].info("Success Thunder Requested by: ".concat(message.author.id, "-").concat(message.author.username, " for ").concat(amount / 1e8));
 
-                      case 84:
+                      case 87:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 85:
+                      case 88:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[45, 69, 72, 75]]);
+                }, _callee, null, [[48, 72, 75, 78]]);
               }));
 
-              return function (_x8) {
+              return function (_x10) {
                 return _ref2.apply(this, arguments);
               };
             }())["catch"](function (err) {
@@ -378,7 +385,7 @@ var discordThunder = /*#__PURE__*/function () {
     }, _callee2);
   }));
 
-  return function discordThunder(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
+  return function discordThunder(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9) {
     return _ref.apply(this, arguments);
   };
 }();

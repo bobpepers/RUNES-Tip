@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.discordSettings = void 0;
+exports.discordwaterFaucetSettings = exports.discordSettings = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -145,3 +145,81 @@ var discordSettings = /*#__PURE__*/function () {
 }();
 
 exports.discordSettings = discordSettings;
+
+var discordwaterFaucetSettings = /*#__PURE__*/function () {
+  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
+    var groupId,
+        channelId,
+        setting,
+        _args2 = arguments;
+    return _regenerator["default"].wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            groupId = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : null;
+            channelId = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : null;
+            _context2.next = 4;
+            return _models["default"].features.findOne({
+              where: {
+                type: 'local',
+                name: 'faucet',
+                groupId: groupId,
+                channelId: channelId
+              }
+            });
+
+          case 4:
+            setting = _context2.sent;
+
+            if (setting) {
+              _context2.next = 9;
+              break;
+            }
+
+            _context2.next = 8;
+            return _models["default"].features.findOne({
+              where: {
+                type: 'local',
+                name: 'faucet',
+                groupId: groupId,
+                channelId: null
+              }
+            });
+
+          case 8:
+            setting = _context2.sent;
+
+          case 9:
+            if (setting) {
+              _context2.next = 13;
+              break;
+            }
+
+            _context2.next = 12;
+            return _models["default"].features.findOne({
+              where: {
+                type: 'global',
+                name: 'faucet'
+              }
+            });
+
+          case 12:
+            setting = _context2.sent;
+
+          case 13:
+            return _context2.abrupt("return", setting);
+
+          case 14:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  }));
+
+  return function discordwaterFaucetSettings() {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+exports.discordwaterFaucetSettings = discordwaterFaucetSettings;

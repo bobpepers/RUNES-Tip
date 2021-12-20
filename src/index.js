@@ -4,7 +4,7 @@ import {
   Intents,
 } from "discord.js";
 import { Telegraf } from "telegraf";
-
+import PQueue from 'p-queue';
 import express from "express";
 import http from "http";
 import bodyParser from "body-parser";
@@ -37,7 +37,12 @@ import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";
 import { processWithdrawals } from "./services/processWithdrawals";
 
-import { consolidatePirate } from "./helpers/pirate/consolidate";
+const queue = new PQueue({
+  concurrency: 1,
+  timeout: 1000000000,
+  // intervalCap: 1,
+  // interval: 500,
+});
 
 const telegrafGetChatMembers = require('telegraf-getchatmembers');
 
@@ -154,8 +159,14 @@ router(
   telegramClient,
   io,
   settings,
+  queue,
 );
-dashboardRouter(app, io, discordClient, telegramClient);
+dashboardRouter(
+  app,
+  io,
+  discordClient,
+  telegramClient,
+);
 
 server.listen(port);
 
@@ -200,7 +211,13 @@ server.listen(port);
     let distance = countDownDate - now;
     console.log('recover listenReactDrop');
     // eslint-disable-next-line no-await-in-loop
-    await listenReactDrop(reactMessage, distance, runningReactDrop, io);
+    await listenReactDrop(
+      reactMessage,
+      distance,
+      runningReactDrop,
+      io,
+      queue,
+    );
     // eslint-disable-next-line no-loop-func
     const updateMessage = setInterval(async () => {
       now = new Date().getTime();
@@ -227,12 +244,6 @@ server.listen(port);
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
       patchPirateDeposits();
     });
-
-    // We're using buildin consolidation function pirate node offers
-    // await consolidatePirate();
-    // const consolidatePirateCoins = schedule.scheduleJob('10 */1 * * *', () => {
-    //  consolidatePirate();
-    // });
   } else {
     await startRunebaseSync(discordClient, telegramClient);
     await patchRunebaseDeposits();

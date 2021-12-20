@@ -23,6 +23,8 @@ var _mapMembers = require("../../helpers/discord/mapMembers");
 
 var _userWalletExist = require("../../helpers/discord/userWalletExist");
 
+var _waterFaucet = require("../../helpers/discord/waterFaucet");
+
 var _lodash = _interopRequireDefault(require("lodash"));
 
 var _sequelize = require("sequelize");
@@ -36,7 +38,7 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var discordHurricane = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(discordClient, message, filteredMessage, io, groupTask, channelTask, setting) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(discordClient, message, filteredMessage, io, groupTask, channelTask, setting, faucetSetting, queue) {
     var members, onlineMembers, activity, user;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
@@ -115,7 +117,7 @@ var discordHurricane = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, preWithoutBots, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, updatedBalance, fee, amountPerUser, hurricaneRecord, listOfUsersRained, _iterator, _step, hurricaneee, hurricaneeeWallet, hurricanetipRecord, userIdReceivedRain, tipActivity;
+                var _yield$userWalletExis, _yield$userWalletExis2, preWithoutBots, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, updatedBalance, fee, amountPerUser, faucetWatered, hurricaneRecord, listOfUsersRained, _iterator, _step, hurricaneee, hurricaneeeWallet, hurricanetipRecord, userIdReceivedRain, tipActivity;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -198,6 +200,11 @@ var discordHurricane = /*#__PURE__*/function () {
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
                         _context.next = 35;
+                        return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
+
+                      case 35:
+                        faucetWatered = _context.sent;
+                        _context.next = 38;
                         return _models["default"].hurricane.create({
                           amount: amount,
                           feeAmount: fee,
@@ -210,9 +217,9 @@ var discordHurricane = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 35:
+                      case 38:
                         hurricaneRecord = _context.sent;
-                        _context.next = 38;
+                        _context.next = 41;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'hurricane_s',
@@ -224,9 +231,9 @@ var discordHurricane = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 38:
+                      case 41:
                         activity = _context.sent;
-                        _context.next = 41;
+                        _context.next = 44;
                         return _models["default"].activity.findOne({
                           where: {
                             id: activity.id
@@ -242,24 +249,24 @@ var discordHurricane = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 41:
+                      case 44:
                         activity = _context.sent;
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(withoutBots);
-                        _context.prev = 44;
+                        _context.prev = 47;
 
                         _iterator.s();
 
-                      case 46:
+                      case 49:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 69;
+                          _context.next = 72;
                           break;
                         }
 
                         hurricaneee = _step.value;
-                        _context.next = 50;
+                        _context.next = 53;
                         return hurricaneee.wallet.update({
                           available: hurricaneee.wallet.available + Number(amountPerUser)
                         }, {
@@ -267,13 +274,13 @@ var discordHurricane = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 50:
+                      case 53:
                         hurricaneeeWallet = _context.sent;
                         // eslint-disable-next-line no-await-in-loop
                         console.log(amountPerUser);
                         console.log(hurricaneee.id);
                         console.log(hurricaneRecord.id);
-                        _context.next = 56;
+                        _context.next = 59;
                         return _models["default"].hurricanetip.create({
                           amount: amountPerUser,
                           userId: hurricaneee.id,
@@ -285,7 +292,7 @@ var discordHurricane = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 56:
+                      case 59:
                         hurricanetipRecord = _context.sent;
 
                         if (hurricaneee.ignoreMe) {
@@ -297,7 +304,7 @@ var discordHurricane = /*#__PURE__*/function () {
                         }
 
                         tipActivity = void 0;
-                        _context.next = 61;
+                        _context.next = 64;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
                           type: 'hurricanetip_s',
@@ -312,9 +319,9 @@ var discordHurricane = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 61:
+                      case 64:
                         tipActivity = _context.sent;
-                        _context.next = 64;
+                        _context.next = 67;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -336,56 +343,56 @@ var discordHurricane = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 64:
+                      case 67:
                         tipActivity = _context.sent;
                         console.log(tipActivity);
                         io.to('admin').emit('updateActivity', {
                           activity: tipActivity
                         });
 
-                      case 67:
-                        _context.next = 46;
+                      case 70:
+                        _context.next = 49;
                         break;
 
-                      case 69:
-                        _context.next = 74;
+                      case 72:
+                        _context.next = 77;
                         break;
-
-                      case 71:
-                        _context.prev = 71;
-                        _context.t0 = _context["catch"](44);
-
-                        _iterator.e(_context.t0);
 
                       case 74:
                         _context.prev = 74;
+                        _context.t0 = _context["catch"](47);
+
+                        _iterator.e(_context.t0);
+
+                      case 77:
+                        _context.prev = 77;
 
                         _iterator.f();
 
-                        return _context.finish(74);
+                        return _context.finish(77);
 
-                      case 77:
-                        _context.next = 79;
+                      case 80:
+                        _context.next = 82;
                         return message.channel.send({
                           embeds: [(0, _discord.AfterHurricaneSuccess)(message, amount, amountPerUser, listOfUsersRained)]
                         });
 
-                      case 79:
+                      case 82:
                         _logger["default"].info("Success Hurricane Requested by: ".concat(message.author.id, "-").concat(message.author.username, " for ").concat(amount / 1e8));
 
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 81:
+                      case 84:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[44, 71, 74, 77]]);
+                }, _callee, null, [[47, 74, 77, 80]]);
               }));
 
-              return function (_x8) {
+              return function (_x10) {
                 return _ref2.apply(this, arguments);
               };
             }())["catch"](function (err) {
@@ -405,7 +412,7 @@ var discordHurricane = /*#__PURE__*/function () {
     }, _callee2);
   }));
 
-  return function discordHurricane(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
+  return function discordHurricane(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9) {
     return _ref.apply(this, arguments);
   };
 }();

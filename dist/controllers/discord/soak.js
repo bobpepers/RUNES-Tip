@@ -27,6 +27,8 @@ var _mapMembers = require("../../helpers/discord/mapMembers");
 
 var _userWalletExist = require("../../helpers/discord/userWalletExist");
 
+var _waterFaucet = require("../../helpers/discord/waterFaucet");
+
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -34,7 +36,7 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var discordSoak = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(discordClient, message, filteredMessage, io, groupTask, channelTask, setting) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(discordClient, message, filteredMessage, io, groupTask, channelTask, setting, faucetSetting, queue) {
     var members, onlineMembers, activity, user;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
@@ -71,7 +73,7 @@ var discordSoak = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, updatedBalance, fee, amountPerUser, soakRecord, listOfUsersRained, _iterator, _step, soakee, soakeeWallet, soaktipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, updatedBalance, fee, amountPerUser, faucetWatered, soakRecord, listOfUsersRained, _iterator, _step, soakee, soakeeWallet, soaktipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -153,6 +155,11 @@ var discordSoak = /*#__PURE__*/function () {
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
                         _context.next = 34;
+                        return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
+
+                      case 34:
+                        faucetWatered = _context.sent;
+                        _context.next = 37;
                         return _models["default"].soak.create({
                           feeAmount: fee,
                           amount: amount,
@@ -165,9 +172,9 @@ var discordSoak = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 34:
+                      case 37:
                         soakRecord = _context.sent;
-                        _context.next = 37;
+                        _context.next = 40;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'soak_s',
@@ -179,9 +186,9 @@ var discordSoak = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 37:
+                      case 40:
                         activity = _context.sent;
-                        _context.next = 40;
+                        _context.next = 43;
                         return _models["default"].activity.findOne({
                           where: {
                             id: activity.id
@@ -197,24 +204,24 @@ var discordSoak = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 40:
+                      case 43:
                         activity = _context.sent;
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(withoutBots);
-                        _context.prev = 43;
+                        _context.prev = 46;
 
                         _iterator.s();
 
-                      case 45:
+                      case 48:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 65;
+                          _context.next = 68;
                           break;
                         }
 
                         soakee = _step.value;
-                        _context.next = 49;
+                        _context.next = 52;
                         return soakee.wallet.update({
                           available: soakee.wallet.available + Number(amountPerUser)
                         }, {
@@ -222,9 +229,9 @@ var discordSoak = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 49:
+                      case 52:
                         soakeeWallet = _context.sent;
-                        _context.next = 52;
+                        _context.next = 55;
                         return _models["default"].soaktip.create({
                           amount: amountPerUser,
                           userId: soakee.id,
@@ -236,7 +243,7 @@ var discordSoak = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 52:
+                      case 55:
                         soaktipRecord = _context.sent;
 
                         if (soakee.ignoreMe) {
@@ -247,7 +254,7 @@ var discordSoak = /*#__PURE__*/function () {
                         }
 
                         tipActivity = void 0;
-                        _context.next = 57;
+                        _context.next = 60;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
                           type: 'soaktip_s',
@@ -262,9 +269,9 @@ var discordSoak = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 57:
+                      case 60:
                         tipActivity = _context.sent;
-                        _context.next = 60;
+                        _context.next = 63;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -286,98 +293,98 @@ var discordSoak = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 60:
+                      case 63:
                         tipActivity = _context.sent;
                         console.log(tipActivity);
                         io.to('admin').emit('updateActivity', {
                           activity: tipActivity
                         });
 
-                      case 63:
-                        _context.next = 45;
+                      case 66:
+                        _context.next = 48;
                         break;
 
-                      case 65:
-                        _context.next = 70;
+                      case 68:
+                        _context.next = 73;
                         break;
-
-                      case 67:
-                        _context.prev = 67;
-                        _context.t0 = _context["catch"](43);
-
-                        _iterator.e(_context.t0);
 
                       case 70:
                         _context.prev = 70;
+                        _context.t0 = _context["catch"](46);
+
+                        _iterator.e(_context.t0);
+
+                      case 73:
+                        _context.prev = 73;
 
                         _iterator.f();
 
-                        return _context.finish(70);
+                        return _context.finish(73);
 
-                      case 73:
+                      case 76:
                         newStringListUsers = listOfUsersRained.join(", ");
                         console.log(newStringListUsers);
                         cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                        _context.prev = 77;
+                        _context.prev = 80;
 
                         _iterator2.s();
 
-                      case 79:
+                      case 82:
                         if ((_step2 = _iterator2.n()).done) {
-                          _context.next = 85;
+                          _context.next = 88;
                           break;
                         }
 
                         element = _step2.value;
-                        _context.next = 83;
+                        _context.next = 86;
                         return message.channel.send(element);
 
-                      case 83:
-                        _context.next = 79;
+                      case 86:
+                        _context.next = 82;
                         break;
 
-                      case 85:
-                        _context.next = 90;
+                      case 88:
+                        _context.next = 93;
                         break;
-
-                      case 87:
-                        _context.prev = 87;
-                        _context.t1 = _context["catch"](77);
-
-                        _iterator2.e(_context.t1);
 
                       case 90:
                         _context.prev = 90;
+                        _context.t1 = _context["catch"](80);
+
+                        _iterator2.e(_context.t1);
+
+                      case 93:
+                        _context.prev = 93;
 
                         _iterator2.f();
 
-                        return _context.finish(90);
+                        return _context.finish(93);
 
-                      case 93:
-                        _context.next = 95;
+                      case 96:
+                        _context.next = 98;
                         return message.channel.send({
                           embeds: [(0, _discord.AfterSuccessMessage)(message, amount, withoutBots, amountPerUser, 'Soak', 'soaked')]
                         });
 
-                      case 95:
+                      case 98:
                         _logger["default"].info("Success Soak Requested by: ".concat(message.author.id, "-").concat(message.author.username, " for ").concat(amount / 1e8));
 
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 97:
+                      case 100:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[43, 67, 70, 73], [77, 87, 90, 93]]);
+                }, _callee, null, [[46, 70, 73, 76], [80, 90, 93, 96]]);
               }));
 
-              return function (_x8) {
+              return function (_x10) {
                 return _ref2.apply(this, arguments);
               };
             }())["catch"](function (err) {
@@ -397,7 +404,7 @@ var discordSoak = /*#__PURE__*/function () {
     }, _callee2);
   }));
 
-  return function discordSoak(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
+  return function discordSoak(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9) {
     return _ref.apply(this, arguments);
   };
 }();

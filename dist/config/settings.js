@@ -13,6 +13,8 @@ var _runebaseSettings = _interopRequireDefault(require("./runebaseSettings"));
 
 var _pirateSettings = _interopRequireDefault(require("./pirateSettings"));
 
+var _dustSettings = _interopRequireDefault(require("./dustSettings"));
+
 (0, _dotenv.config)();
 
 var getCoinSettings = function getCoinSettings() {
@@ -22,6 +24,10 @@ var getCoinSettings = function getCoinSettings() {
 
   if (process.env.CONFIG_FILE === 'PIRATE') {
     return _pirateSettings["default"];
+  }
+
+  if (process.env.CONFIG_FILE === 'DUST') {
+    return _dustSettings["default"];
   }
 };
 

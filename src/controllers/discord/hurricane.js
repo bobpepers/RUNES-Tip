@@ -10,6 +10,7 @@ import {
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { mapMembers } from "../../helpers/discord/mapMembers";
 import { userWalletExist } from "../../helpers/discord/userWalletExist";
+import { waterFaucet } from "../../helpers/discord/waterFaucet";
 
 import _ from "lodash";
 
@@ -24,6 +25,8 @@ export const discordHurricane = async (
   groupTask,
   channelTask,
   setting,
+  faucetSetting,
+  queue,
 ) => {
   if (!groupTask || !channelTask) {
     await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
@@ -109,6 +112,11 @@ export const discordHurricane = async (
     const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
     const amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
 
+    const faucetWatered = await waterFaucet(
+      t,
+      Number(fee),
+      faucetSetting
+    );
     const hurricaneRecord = await db.hurricane.create({
       amount,
       feeAmount: fee,

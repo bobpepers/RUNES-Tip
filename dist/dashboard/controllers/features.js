@@ -52,8 +52,8 @@ var updateFeature = /*#__PURE__*/function () {
               next();
             }
 
-            if (fee > 200) {
-              res.locals.error = "maximum fee is 2%";
+            if (fee > 5000) {
+              res.locals.error = "maximum fee is 50%";
               next();
             } // validate Amount
 

@@ -23,6 +23,8 @@ var _discord = require("../../messages/discord");
 
 var _validateAmount = require("../../helpers/discord/validateAmount");
 
+var _waterFaucet = require("../../helpers/discord/waterFaucet");
+
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -32,7 +34,7 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var tipRunesToDiscordUser = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(discordClient, message, filteredMessage, io, groupTask, channelTask, setting) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(discordClient, message, filteredMessage, io, groupTask, channelTask, setting, faucetSetting, queue) {
     var activity, user, AmountPosition, AmountPositionEnded, usersToTip, type;
     return _regenerator["default"].wrap(function _callee2$(_context3) {
       while (1) {
@@ -61,7 +63,7 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _loop, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, updatedBalance, fee, userTipAmount, tipRecord, listOfUsersRained, _iterator, _step, tipee, tipeeWallet, tiptipRecord, userIdReceivedRain;
+                var _loop, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, updatedBalance, fee, userTipAmount, faucetWatered, tipRecord, listOfUsersRained, _iterator, _step, tipee, tipeeWallet, tiptipRecord, userIdReceivedRain;
 
                 return _regenerator["default"].wrap(function _callee$(_context2) {
                   while (1) {
@@ -246,6 +248,11 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         userTipAmount = (amount - Number(fee)) / usersToTip.length;
                         _context2.next = 40;
+                        return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
+
+                      case 40:
+                        faucetWatered = _context2.sent;
+                        _context2.next = 43;
                         return _models["default"].tip.create({
                           feeAmount: fee,
                           amount: amount,
@@ -259,24 +266,24 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 40:
+                      case 43:
                         tipRecord = _context2.sent;
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(usersToTip);
-                        _context2.prev = 43;
+                        _context2.prev = 46;
 
                         _iterator.s();
 
-                      case 45:
+                      case 48:
                         if ((_step = _iterator.n()).done) {
-                          _context2.next = 56;
+                          _context2.next = 59;
                           break;
                         }
 
                         tipee = _step.value;
-                        _context2.next = 49;
+                        _context2.next = 52;
                         return tipee.wallet.update({
                           available: tipee.wallet.available + Number(userTipAmount)
                         }, {
@@ -284,9 +291,9 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 49:
+                      case 52:
                         tipeeWallet = _context2.sent;
-                        _context2.next = 52;
+                        _context2.next = 55;
                         return _models["default"].tiptip.create({
                           amount: Number(userTipAmount),
                           userId: tipee.id,
@@ -298,7 +305,7 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 52:
+                      case 55:
                         tiptipRecord = _context2.sent;
 
                         if (tipee.ignoreMe) {
@@ -308,34 +315,34 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                           listOfUsersRained.push("<@".concat(userIdReceivedRain, ">"));
                         }
 
-                      case 54:
-                        _context2.next = 45;
+                      case 57:
+                        _context2.next = 48;
                         break;
 
-                      case 56:
-                        _context2.next = 61;
+                      case 59:
+                        _context2.next = 64;
                         break;
-
-                      case 58:
-                        _context2.prev = 58;
-                        _context2.t1 = _context2["catch"](43);
-
-                        _iterator.e(_context2.t1);
 
                       case 61:
                         _context2.prev = 61;
+                        _context2.t1 = _context2["catch"](46);
+
+                        _iterator.e(_context2.t1);
+
+                      case 64:
+                        _context2.prev = 64;
 
                         _iterator.f();
 
-                        return _context2.finish(61);
+                        return _context2.finish(64);
 
-                      case 64:
-                        _context2.next = 66;
+                      case 67:
+                        _context2.next = 69;
                         return message.channel.send({
                           embeds: [(0, _discord.tipSuccessMessage)(message, listOfUsersRained, userTipAmount, type)]
                         });
 
-                      case 66:
+                      case 69:
                         // await message.channel.send({ embeds: [AfterThunderStormSuccess(message, amount, amountPerUser, listOfUsersRained)] });
                         _logger["default"].info("Success Tip Requested by: ".concat(message.author.id, "-").concat(message.author.username, " for ").concat(amount / 1e8));
 
@@ -343,15 +350,15 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                           console.log('done');
                         });
 
-                      case 68:
+                      case 71:
                       case "end":
                         return _context2.stop();
                     }
                   }
-                }, _callee, null, [[43, 58, 61, 64]]);
+                }, _callee, null, [[46, 61, 64, 67]]);
               }));
 
-              return function (_x8) {
+              return function (_x10) {
                 return _ref2.apply(this, arguments);
               };
             }())["catch"](function (err) {
@@ -366,7 +373,7 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
     }, _callee2);
   }));
 
-  return function tipRunesToDiscordUser(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
+  return function tipRunesToDiscordUser(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9) {
     return _ref.apply(this, arguments);
   };
 }();

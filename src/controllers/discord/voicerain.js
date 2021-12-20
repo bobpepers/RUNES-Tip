@@ -8,6 +8,7 @@ import {
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { mapMembers } from "../../helpers/discord/mapMembers";
 import { userWalletExist } from "../../helpers/discord/userWalletExist";
+import { waterFaucet } from "../../helpers/discord/waterFaucet";
 
 import logger from "../../helpers/logger";
 
@@ -19,6 +20,8 @@ export const discordVoiceRain = async (
   groupTask,
   channelTask,
   setting,
+  faucetSetting,
+  queue,
 ) => {
   if (!groupTask || !channelTask) {
     await message.channel.send({ embeds: [NotInDirectMessage(message, 'Voicerain')] });
@@ -109,6 +112,11 @@ export const discordVoiceRain = async (
     const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
     const amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
 
+    const faucetWatered = await waterFaucet(
+      t,
+      Number(fee),
+      faucetSetting,
+    );
     const rainRecord = await db.voicerain.create({
       amount: Number(amount),
       feeAmount: Number(fee),

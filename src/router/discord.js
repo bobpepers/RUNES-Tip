@@ -71,7 +71,10 @@ import {
 import { discordStats } from '../controllers/discord/stats';
 import { discordPublicStats } from '../controllers/discord/publicstats';
 import { discordLeaderboard } from '../controllers/discord/leaderboard';
-import { discordSettings } from '../controllers/discord/settings';
+import {
+  discordSettings,
+  discordwaterFaucetSettings,
+} from '../controllers/discord/settings';
 import { executeTipFunction } from '../helpers/discord/executeTips';
 import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
 
@@ -124,6 +127,7 @@ export const discordRouter = (
     let channelTask;
     let channelTaskId;
     let lastSeenDiscordTask;
+    let faucetSetting;
 
     if (!message.author.bot) {
       const maintenance = await isMaintenanceOrDisabled(message, 'discord');
@@ -139,6 +143,12 @@ export const discordRouter = (
       channelTaskId = channelTask && channelTask.id;
       lastSeenDiscordTask = await updateDiscordLastSeen(discordClient, message);
       await queue.add(() => lastSeenDiscordTask);
+      faucetSetting = await discordwaterFaucetSettings(
+        groupTaskId,
+        channelTaskId,
+      );
+      await queue.add(() => faucetSetting);
+      if (!faucetSetting) return;
     }
 
     if (!message.content.startsWith(settings.bot.command.discord) || message.author.bot) return;
@@ -273,6 +283,7 @@ export const discordRouter = (
         groupTask,
         channelTask,
         setting,
+        faucetSetting,
       );
     }
 
@@ -307,6 +318,7 @@ export const discordRouter = (
         groupTask,
         channelTask,
         setting,
+        faucetSetting,
       );
       console.log('done executing tips');
     }
@@ -330,6 +342,7 @@ export const discordRouter = (
         groupTask,
         channelTask,
         setting,
+        faucetSetting,
       );
     }
 
@@ -352,6 +365,7 @@ export const discordRouter = (
         groupTask,
         channelTask,
         setting,
+        faucetSetting,
       );
     }
 
@@ -374,6 +388,7 @@ export const discordRouter = (
         groupTask,
         channelTask,
         setting,
+        faucetSetting,
       );
     }
 
@@ -396,6 +411,7 @@ export const discordRouter = (
         groupTask,
         channelTask,
         setting,
+        faucetSetting,
       );
     }
 
@@ -418,6 +434,7 @@ export const discordRouter = (
         groupTask,
         channelTask,
         setting,
+        faucetSetting,
       );
     }
 
@@ -440,6 +457,7 @@ export const discordRouter = (
         groupTask,
         channelTask,
         setting,
+        faucetSetting,
       );
     }
 
@@ -462,6 +480,7 @@ export const discordRouter = (
         groupTask,
         channelTask,
         setting,
+        faucetSetting,
       );
     }
 
@@ -484,6 +503,7 @@ export const discordRouter = (
         groupTask,
         channelTask,
         setting,
+        faucetSetting,
       );
     }
 
@@ -506,6 +526,7 @@ export const discordRouter = (
         groupTask,
         channelTask,
         setting,
+        faucetSetting,
       );
     }
   });

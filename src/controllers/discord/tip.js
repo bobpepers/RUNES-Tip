@@ -9,6 +9,7 @@ import {
   notEnoughUsersToTip,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/discord/validateAmount";
+import { waterFaucet } from "../../helpers/discord/waterFaucet";
 
 import logger from "../../helpers/logger";
 
@@ -20,6 +21,8 @@ export const tipRunesToDiscordUser = async (
   groupTask,
   channelTask,
   setting,
+  faucetSetting,
+  queue,
 ) => {
   if (!groupTask || !channelTask) {
     await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] });
@@ -156,6 +159,12 @@ export const tipRunesToDiscordUser = async (
     });
     const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
     const userTipAmount = (amount - Number(fee)) / usersToTip.length;
+
+    const faucetWatered = await waterFaucet(
+      t,
+      Number(fee),
+      faucetSetting,
+    );
     const tipRecord = await db.tip.create({
       feeAmount: fee,
       amount,
