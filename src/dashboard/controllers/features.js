@@ -23,8 +23,8 @@ export const updateFeature = async (req, res, next) => {
     res.locals.error = "invalid number";
     next();
   }
-  if (fee < 1) {
-    res.locals.error = "minimum fee is 0.01%";
+  if (fee < 0) {
+    res.locals.error = "minimum fee is 0.00%";
     next();
   }
   if (fee > 200) {
