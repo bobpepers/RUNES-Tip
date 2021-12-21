@@ -7,7 +7,7 @@ import db from '../../models';
 import logger from "../../helpers/logger";
 
 export const fetchDiscordWalletBalance = async (message, io) => {
-  let activity;
+  const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -55,7 +55,7 @@ export const fetchDiscordWalletBalance = async (message, io) => {
         await message.channel.send({ embeds: [warnDirectMessage(userId, 'Balance')] });
         await message.author.send({ embeds: [balanceMessage(userId, user, priceInfo)] });
       }
-      activity = await db.activity.create({
+      const createActivity = await db.activity.create({
         type: 'balance',
         earnerId: user.id,
       }, {
@@ -63,9 +63,9 @@ export const fetchDiscordWalletBalance = async (message, io) => {
         transaction: t,
       });
 
-      activity = await db.activity.findOne({
+      const findActivity = await db.activity.findOne({
         where: {
-          id: activity.id,
+          id: createActivity.id,
         },
         include: [
           {
@@ -76,15 +76,16 @@ export const fetchDiscordWalletBalance = async (message, io) => {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      activity.unshift(findActivity);
     }
 
     t.afterCommit(() => {
-      io.to('admin').emit('updateActivity', {
-        activity,
-      });
       logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
     });
   }).catch((err) => {
     logger.error(`Error Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
+  });
+  io.to('admin').emit('updateActivity', {
+    activity,
   });
 };

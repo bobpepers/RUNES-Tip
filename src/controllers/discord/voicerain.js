@@ -50,7 +50,8 @@ export const discordVoiceRain = async (
 
   const onlineMembers = await discordClient.channels.cache.get(voiceChannelId).members;
 
-  let activity;
+  const activity = [];
+  let userActivity;
   let user;
 
   await db.sequelize.transaction({
@@ -58,12 +59,15 @@ export const discordVoiceRain = async (
   }, async (t) => {
     [
       user,
-      activity,
+      userActivity,
     ] = await userWalletExist(
       message,
       t,
       filteredMessage[1].toLowerCase(),
     );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
     if (!user) return;
 
     const withoutBots = await mapMembers(
@@ -86,18 +90,19 @@ export const discordVoiceRain = async (
       filteredMessage[1].toLowerCase(),
     );
     if (activityValiateAmount) {
-      activity = activityValiateAmount;
+      activity.unshift(activityValiateAmount);
       return;
     }
 
     if (withoutBots.length < 2) {
-      activity = await db.activity.create({
+      const failActivity = await db.activity.create({
         type: 'voicerain_f',
         spenderId: user.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      activity.unshift(failActivity);
       await message.channel.send('Not enough users');
       return;
     }
@@ -129,7 +134,7 @@ export const discordVoiceRain = async (
       transaction: t,
     });
 
-    activity = await db.activity.create({
+    const preActivity = await db.activity.create({
       amount,
       type: 'voicerain_s',
       spenderId: user.id,
@@ -139,9 +144,9 @@ export const discordVoiceRain = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    activity = await db.activity.findOne({
+    const finalActivity = await db.activity.findOne({
       where: {
-        id: activity.id,
+        id: preActivity.id,
       },
       include: [
         {
@@ -155,8 +160,8 @@ export const discordVoiceRain = async (
       ],
       lock: t.LOCK.UPDATE,
       transaction: t,
-
     });
+    activity.unshift(finalActivity);
     const listOfUsersRained = [];
 
     // eslint-disable-next-line no-restricted-syntax
@@ -227,10 +232,7 @@ export const discordVoiceRain = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      console.log(tipActivity);
-      io.to('admin').emit('updateActivity', {
-        activity: tipActivity,
-      });
+      activity.unshift(finalActivity);
     }
 
     const newStringListUsers = listOfUsersRained.join(", ");

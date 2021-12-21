@@ -29,26 +29,29 @@ export const discordFlood = async (
   }
 
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  console.log(members);
-  console.log(members.size);
+
   const onlineMembers = members.filter((member) => {
     console.log(member.presence);
     return member;
   });
 
   let user;
-  let activity;
+  let userActivity;
+  const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     [
       user,
-      activity,
+      userActivity,
     ] = await userWalletExist(
       message,
       t,
       filteredMessage[1].toLowerCase(),
     );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
     if (!user) return;
 
     const withoutBots = await mapMembers(
@@ -71,18 +74,19 @@ export const discordFlood = async (
       filteredMessage[1].toLowerCase(),
     );
     if (activityValiateAmount) {
-      activity = activityValiateAmount;
+      activity.unshift(activityValiateAmount);
       return;
     }
 
     if (withoutBots.length < 2) {
-      activity = await db.activity.create({
+      const factivity = await db.activity.create({
         type: 'flood_f',
         spenderId: user.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      activity.unshift(factivity);
       await message.channel.send('Not enough online users');
       return;
     }
@@ -112,7 +116,7 @@ export const discordFlood = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    activity = await db.activity.create({
+    const cactivity = await db.activity.create({
       amount,
       type: 'flood_s',
       spenderId: user.id,
@@ -122,9 +126,9 @@ export const discordFlood = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    activity = await db.activity.findOne({
+    const activityCreate = await db.activity.findOne({
       where: {
-        id: activity.id,
+        id: cactivity.id,
       },
       include: [
         {
@@ -140,6 +144,7 @@ export const discordFlood = async (
       transaction: t,
 
     });
+    activity.unshift(activityCreate);
     const listOfUsersRained = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const floodee of withoutBots) {
@@ -168,6 +173,7 @@ export const discordFlood = async (
         listOfUsersRained.push(`<@${userIdReceivedRain}>`);
       }
       let tipActivity;
+      // eslint-disable-next-line no-await-in-loop
       tipActivity = await db.activity.create({
         amount: Number(amountPerUser),
         type: 'floodtip_s',
@@ -181,6 +187,7 @@ export const discordFlood = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      // eslint-disable-next-line no-await-in-loop
       tipActivity = await db.activity.findOne({
         where: {
           id: tipActivity.id,
@@ -206,10 +213,11 @@ export const discordFlood = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      activity.unshift(tipActivity);
       // console.log(tipActivity);
-      io.to('admin').emit('updateActivity', {
-        activity: tipActivity,
-      });
+      // io.to('admin').emit('updateActivity', {
+      //  activity: tipActivity,
+      // });
     }
 
     const newStringListUsers = listOfUsersRained.join(", ");

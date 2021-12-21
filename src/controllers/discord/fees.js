@@ -45,6 +45,38 @@ export const fetchFeeSchedule = async (
   channelId = null,
 ) => {
   const fee = {};
+  const activity = [];
+  const user = await db.user.findOne({
+    where: {
+      user_id: `discord-${message.author.id}`,
+    },
+  });
+
+  if (!user) {
+    const preActivityFail = await db.activity.create({
+      type: 'fees_f',
+      earnerId: user.id,
+    });
+    const finalActivityFail = await db.activity.findOne({
+      where: {
+        id: preActivityFail.id,
+      },
+      include: [
+        {
+          model: db.user,
+          as: 'earner',
+        },
+      ],
+    });
+    activity.unshift(finalActivityFail);
+    await message.author.send("User not found!");
+  }
+
+  fee.tip = await findFee(
+    'tip',
+    guildId,
+    channelId,
+  );
 
   fee.reactdrop = await findFee(
     'reactdrop',
@@ -100,6 +132,22 @@ export const fetchFeeSchedule = async (
     channelId,
   );
   console.log(fee);
+  const preActivity = await db.activity.create({
+    type: 'fees_s',
+    earnerId: user.id,
+  });
+  const finalActivity = await db.activity.findOne({
+    where: {
+      id: preActivity.id,
+    },
+    include: [
+      {
+        model: db.user,
+        as: 'earner',
+      },
+    ],
+  });
+  activity.unshift(finalActivity);
 
   await message.reply({
     embeds: [
@@ -109,5 +157,8 @@ export const fetchFeeSchedule = async (
       ),
     ],
   });
-  console.log(fee);
+
+  io.to('admin').emit('updateActivity', {
+    activity,
+  });
 };

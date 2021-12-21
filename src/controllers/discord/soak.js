@@ -34,7 +34,8 @@ export const discordSoak = async (
     || member.presence?.status === "dnd"
   );
 
-  let activity;
+  const activity = [];
+  let userActivity;
   let user;
 
   await db.sequelize.transaction({
@@ -42,12 +43,15 @@ export const discordSoak = async (
   }, async (t) => {
     [
       user,
-      activity,
+      userActivity,
     ] = await userWalletExist(
       message,
       t,
       filteredMessage[1].toLowerCase(),
     );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
     if (!user) return;
 
     const withoutBots = await mapMembers(
@@ -70,18 +74,19 @@ export const discordSoak = async (
       filteredMessage[1].toLowerCase(),
     );
     if (activityValiateAmount) {
-      activity = activityValiateAmount;
+      activity.unshift(activityValiateAmount);
       return;
     }
 
     if (withoutBots.length < 2) {
-      activity = await db.activity.create({
+      const failActivity = await db.activity.create({
         type: 'soak_f',
         spenderId: user.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      activity.unshift(failActivity);
       await message.channel.send('Not enough online users');
       return;
     }
@@ -110,7 +115,7 @@ export const discordSoak = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    activity = await db.activity.create({
+    const preActivity = await db.activity.create({
       amount,
       type: 'soak_s',
       spenderId: user.id,
@@ -120,9 +125,9 @@ export const discordSoak = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    activity = await db.activity.findOne({
+    const finalActivity = await db.activity.findOne({
       where: {
-        id: activity.id,
+        id: preActivity.id,
       },
       include: [
         {
@@ -138,6 +143,7 @@ export const discordSoak = async (
       transaction: t,
 
     });
+    activity.unshift(finalActivity);
     const listOfUsersRained = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const soakee of withoutBots) {
@@ -204,11 +210,7 @@ export const discordSoak = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      console.log(tipActivity);
-      io.to('admin').emit('updateActivity', {
-        activity: tipActivity,
-      });
-
+      activity.unshift(tipActivity);
     }
 
     const newStringListUsers = listOfUsersRained.join(", ");
@@ -227,6 +229,7 @@ export const discordSoak = async (
       console.log('done');
     });
   }).catch((err) => {
+    console.log(err);
     message.channel.send('something went wrong');
   });
   io.to('admin').emit('updateActivity', {

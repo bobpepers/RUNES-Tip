@@ -35,19 +35,23 @@ export const discordThunder = async (
   );
 
 
-  let activity;
+  const activity = [];
+  let userActivity;
   let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     [
       user,
-      activity,
+      userActivity,
     ] = await userWalletExist(
       message,
       t,
       filteredMessage[1].toLowerCase(),
     );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
     if (!user) return;
 
     const preWithoutBots = await mapMembers(
@@ -71,18 +75,19 @@ export const discordThunder = async (
       filteredMessage[1].toLowerCase(),
     );
     if (activityValiateAmount) {
-      activity = activityValiateAmount;
+      activity.unshift(activityValiateAmount);
       return;
     }
 
     if (withoutBots.length < 1) {
-      activity = await db.activity.create({
+      const failActivity = await db.activity.create({
         type: 'thunder_f',
         spenderId: user.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      activity.unshift(failActivity);
       await message.channel.send('Not enough online users');
       return;
     }
@@ -113,7 +118,7 @@ export const discordThunder = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      activity = await db.activity.create({
+      const preActivity = await db.activity.create({
         amount,
         type: 'thunder_s',
         spenderId: user.id,
@@ -123,9 +128,9 @@ export const discordThunder = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      activity = await db.activity.findOne({
+      const finalActivity = await db.activity.findOne({
         where: {
-          id: activity.id,
+          id: preActivity.id,
         },
         include: [
           {
@@ -139,8 +144,8 @@ export const discordThunder = async (
         ],
         lock: t.LOCK.UPDATE,
         transaction: t,
-
       });
+      activity.unshift(finalActivity);
       const listOfUsersRained = [];
       // eslint-disable-next-line no-restricted-syntax
       for (const thunderee of withoutBots) {
@@ -208,23 +213,19 @@ export const discordThunder = async (
           lock: t.LOCK.UPDATE,
           transaction: t,
         });
-        console.log(tipActivity);
-        io.to('admin').emit('updateActivity', {
-          activity: tipActivity,
-        });
+        activity.unshift(tipActivity);
       }
       for (const userThunder of listOfUsersRained) {
         // eslint-disable-next-line no-await-in-loop
         await message.channel.send({ embeds: [AfterThunderSuccess(message, amount, userThunder)] });
       }
-
       logger.info(`Success Thunder Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
     }
-
     t.afterCommit(() => {
       console.log('done');
     });
   }).catch((err) => {
+    console.log(err);
     message.channel.send('something went wrong');
   });
   io.to('admin').emit('updateActivity', {

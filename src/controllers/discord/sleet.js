@@ -28,19 +28,23 @@ export const discordSleet = async (
     await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
     return;
   }
-  let activity;
+  const activity = [];
+  let userActivity;
   let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     [
       user,
-      activity,
+      userActivity,
     ] = await userWalletExist(
       message,
       t,
       filteredMessage[1].toLowerCase(),
     );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
     if (!user) return;
 
     const [
@@ -55,7 +59,7 @@ export const discordSleet = async (
       filteredMessage[1].toLowerCase(),
     );
     if (activityValiateAmount) {
-      activity = activityValiateAmount;
+      activity.unshift(activityValiateAmount);
       return;
     }
 
@@ -67,13 +71,14 @@ export const discordSleet = async (
       transaction: t,
     });
     if (!group) {
-      activity = await db.activity.create({
+      const groupFailActivity = await db.activity.create({
         type: 'sleet_f',
         spenderId: user.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      activity.unshift(groupFailActivity);
       await message.channel.send("Group not found");
       return;
     }
@@ -113,13 +118,14 @@ export const discordSleet = async (
       transaction: t,
     });
     if (usersToRain.length < 2) {
-      activity = await db.activity.create({
+      const failActivity = await db.activity.create({
         type: 'sleet_f',
         spenderId: user.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      activity.unshift(failActivity);
       await message.channel.send({ embeds: [notEnoughActiveUsersMessage(message, 'Sleet')] });
       return;
     }
@@ -149,7 +155,7 @@ export const discordSleet = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      activity = await db.activity.create({
+      const preActivity = await db.activity.create({
         amount,
         type: 'sleet_s',
         spenderId: user.id,
@@ -159,9 +165,9 @@ export const discordSleet = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      activity = await db.activity.findOne({
+      const finalActivity = await db.activity.findOne({
         where: {
-          id: activity.id,
+          id: preActivity.id,
         },
         include: [
           {
@@ -175,8 +181,8 @@ export const discordSleet = async (
         ],
         lock: t.LOCK.UPDATE,
         transaction: t,
-
       });
+      activity.push(finalActivity);
       const listOfUsersRained = [];
       // eslint-disable-next-line no-restricted-syntax
       for (const sleetee of usersToRain) {
@@ -246,10 +252,7 @@ export const discordSleet = async (
           lock: t.LOCK.UPDATE,
           transaction: t,
         });
-        console.log(tipActivity);
-        io.to('admin').emit('updateActivity', {
-          activity: tipActivity,
-        });
+        activity.unshift(tipActivity);
       }
       const newStringListUsers = listOfUsersRained.join(", ");
       const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
@@ -267,6 +270,7 @@ export const discordSleet = async (
       console.log('done');
     });
   }).catch((err) => {
+    console.log(err);
     message.channel.send("Something went wrong.");
   });
   io.to('admin').emit('updateActivity', {

@@ -8,6 +8,7 @@ import {
 import db from '../../models';
 
 export const setIgnoreMe = async (message, io) => {
+  const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -19,6 +20,14 @@ export const setIgnoreMe = async (message, io) => {
       transaction: t,
     });
     if (!user) {
+      const activityA = await db.activity.create({
+        type: 'ignoreme_f',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      activity.unshift(activityA);
       await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Ignore me')] });
       return;
     }
@@ -42,11 +51,31 @@ export const setIgnoreMe = async (message, io) => {
       message.channel.send({ embeds: [ignoreMeMessage(message)] });
       return;
     }
+    const preActivity = await db.activity.create({
+      type: 'ignoreme_s',
+      earnerId: user.id,
+    });
+    const finalActivity = await db.activity.findOne({
+      where: {
+        id: preActivity.id,
+      },
+      include: [
+        {
+          model: db.user,
+          as: 'earner',
+        },
+      ],
+    });
+    activity.unshift(finalActivity);
 
     t.afterCommit(() => {
       console.log('done');
     });
   }).catch((err) => {
     console.log(err);
+    message.channel.send('something went wrong');
+  });
+  io.to('admin').emit('updateActivity', {
+    activity,
   });
 };

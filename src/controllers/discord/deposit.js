@@ -9,6 +9,7 @@ import {
 import logger from "../../helpers/logger";
 
 export const fetchDiscordWalletDepositAddress = async (message, io) => {
+  const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -55,17 +56,17 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
           files: [new MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')],
         });
       }
-      let activity;
-      activity = await db.activity.create({
+
+      const preActivity = await db.activity.create({
         type: 'deposit',
         earnerId: user.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      activity = await db.activity.findOne({
+      const finalActivity = await db.activity.findOne({
         where: {
-          id: activity.id,
+          id: preActivity.id,
         },
         include: [
           {
@@ -76,15 +77,17 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      io.to('admin').emit('updateActivity', {
-        activity,
-      });
+      activity.unshift(finalActivity);
     }
 
     t.afterCommit(() => {
       logger.info(`Success Deposit Address Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
     });
   }).catch((err) => {
+    console.log(err);
     logger.error(`Error Deposit Address Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
+  });
+  io.to('admin').emit('updateActivity', {
+    activity,
   });
 };

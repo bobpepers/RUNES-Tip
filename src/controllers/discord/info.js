@@ -19,20 +19,20 @@ export const discordCoinInfo = async (message, io) => {
     message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Coin Info')] });
     message.author.send({ embeds: [coinInfoMessage(blockHeight.id, priceInfo)] });
   }
-  let activity;
+  const activity = [];
   const user = await db.user.findOne({
     where: {
       user_id: `discord-${message.author.id}`,
     },
   });
-  activity = await db.activity.create({
+  const preActivity = await db.activity.create({
     type: 'info',
     earnerId: user.id,
   });
 
-  activity = await db.activity.findOne({
+  const finalActivity = await db.activity.findOne({
     where: {
-      id: activity.id,
+      id: preActivity.id,
     },
     include: [
       {
@@ -41,6 +41,7 @@ export const discordCoinInfo = async (message, io) => {
       },
     ],
   });
+  activity.unshift(finalActivity);
   io.to('admin').emit('updateActivity', {
     activity,
   });

@@ -513,7 +513,7 @@ export const discordReactDrop = async (
   faucetSetting,
   queue,
 ) => {
-  let activity;
+  let activity = [];
   let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -532,12 +532,13 @@ export const discordReactDrop = async (
       transaction: t,
     });
     if (!user) {
-      activity = await db.activity.create({
+      const failActivity = await db.activity.create({
         type: 'reactdrop_f',
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      activity.unshift(failActivity);
       await message.channel.send({ embeds: [userNotFoundMessage(message, 'ReactDrop')] });
       return;
     }
@@ -579,22 +580,24 @@ export const discordReactDrop = async (
         && cutLastTimeLetter !== 'm'
         && cutLastTimeLetter !== 's')
     ) {
-      activity = await db.activity.create({
+      const timeFailActivity = await db.activity.create({
         type: 'reactdrop_f',
         spenderId: user.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      activity.unshift(timeFailActivity);
       await message.channel.send({ embeds: [invalidTimeMessage(message, 'Reactdrop')] });
     } else if (cutLastTimeLetter === 's' && Number(cutNumberTime) < 60) {
-      activity = await db.activity.create({
+      const timeFailActivity = await db.activity.create({
         type: 'reactdrop_f',
         spenderId: user.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      activity.unshift(timeFailActivity);
       await message.channel.send({ embeds: [minimumTimeReactDropMessage(message)] });
     } else {
       const allEmojis = emojiCompact;
@@ -606,13 +609,14 @@ export const discordReactDrop = async (
       }
 
       if (!allEmojis.includes(filteredMessage[4])) {
-        activity = await db.activity.create({
+        const failEmojiActivity = await db.activity.create({
           type: 'reactdrop_f',
           spenderId: user.id,
         }, {
           lock: t.LOCK.UPDATE,
           transaction: t,
         });
+        activity.unshift(failEmojiActivity);
         await message.channel.send({ embeds: [invalidEmojiMessage(message, 'Reactdrop')] });
       } else {
         const timeDay = Number(cutNumberTime) * 24 * 60 * 60 * 1000;
@@ -705,7 +709,7 @@ export const discordReactDrop = async (
             lock: t.LOCK.UPDATE,
           });
 
-          activity = await db.activity.create({
+          const preActivity = await db.activity.create({
             amount,
             type: 'reactdrop_s',
             spenderId: user.id,
@@ -715,9 +719,9 @@ export const discordReactDrop = async (
             lock: t.LOCK.UPDATE,
             transaction: t,
           });
-          activity = await db.activity.findOne({
+          const finalActivity = await db.activity.findOne({
             where: {
-              id: activity.id,
+              id: preActivity.id,
             },
             include: [
               {
@@ -731,8 +735,8 @@ export const discordReactDrop = async (
             ],
             lock: t.LOCK.UPDATE,
             transaction: t,
-
           });
+          activity.unshift(finalActivity);
 
           const reactMessage = await discordClient.guilds.cache.get(sendReactDropMessage.guildId)
             .channels.cache.get(sendReactDropMessage.channelId)

@@ -3,6 +3,8 @@
 import {
   warnDirectMessage,
   statsMessage,
+  invalidTimeMessage,
+  walletNotFoundMessage,
   // serverStatsMessage,
 } from '../../messages/discord';
 import db from '../../models';
@@ -36,12 +38,28 @@ function group(arr, type, whichGroup) {
 }
 
 export const discordStats = async (message, filteredMessageDiscord, io, groupTask, channelTask) => {
+  const activity = [];
   const parentWhereOptions = {};
   const childWhereOptions = {};
   let textTime;
   let cutLastTimeLetter;
   let cutNumberTime;
   let isnum;
+  let user = await db.user.findOne({
+    where: {
+      user_id: `discord-${message.author.id}`,
+    },
+  });
+  if (!user) {
+    const activityA = await db.activity.create({
+      type: 'stats_f',
+      spenderId: user.id,
+    });
+    activity.unshift(activityA);
+    await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Ignore me')] });
+    return;
+  }
+
   if (filteredMessageDiscord[2]) {
     textTime = filteredMessageDiscord[2];
     cutLastTimeLetter = textTime.substring(textTime.length - 1, textTime.length).toLowerCase();
@@ -59,6 +77,12 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
       || cutLastTimeLetter !== 's')
   ) {
     console.log('not pass');
+    const activityA = await db.activity.create({
+      type: 'stats_i',
+      spenderId: user.id,
+    });
+    activity.unshift(activityA);
+    await message.channel.send({ embeds: [invalidTimeMessage(message, 'Stats')] });
     return;
   }
 
@@ -100,7 +124,7 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
     // message.author.send({ embeds: [statsMessage(message, serverString)] });
   }
 
-  const user = await db.user.findOne({
+  user = await db.user.findOne({
     where: parentWhereOptions,
     include: [
       // Spend
@@ -485,27 +509,24 @@ ${earnedTips ? `Tips: ${earnedTips}\n` : ''}${earnedRains ? `Rains: ${earnedRain
     await message.author.send({ embeds: [statsMessage(message, serverString)] });
   }
 
-  let activity;
-
-  // activity = await db.activity.create({
-  //  type: 'help',
-  //  earnerId: user.id,
-  // });
-
-  // activity = await db.activity.findOne({
-  //  where: {
-  // id: activity.id,
-  // },
-  //  include: [
-  //  {
-  //  model: db.user,
-  //      as: 'earner',
-  //     },
-  //   ],
-  // });
-  // io.to('admin').emit('updateActivity', {
-  //  activity,
-  // });
-
+  const preActivity = await db.activity.create({
+    type: 'stats_s',
+    earnerId: user.id,
+  });
+  const finalActivity = await db.activity.findOne({
+    where: {
+      id: preActivity.id,
+    },
+    include: [
+      {
+        model: db.user,
+        as: 'earner',
+      },
+    ],
+  });
+  activity.unshift(finalActivity);
+  io.to('admin').emit('updateActivity', {
+    activity,
+  });
   return true;
 };

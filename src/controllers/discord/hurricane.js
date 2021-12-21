@@ -51,19 +51,23 @@ export const discordHurricane = async (
     || member.presence?.status === "dnd"
   );
 
-  let activity;
+  const activity = [];
+  let userActivity;
   let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     [
       user,
-      activity,
+      userActivity,
     ] = await userWalletExist(
       message,
       t,
       filteredMessage[1].toLowerCase(),
     );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
     if (!user) return;
 
     const preWithoutBots = await mapMembers(
@@ -87,18 +91,19 @@ export const discordHurricane = async (
       filteredMessage[1].toLowerCase(),
     );
     if (activityValiateAmount) {
-      activity = activityValiateAmount;
+      activity.unshift(activityValiateAmount);
       return;
     }
 
     if (withoutBots.length < 1) {
-      activity = await db.activity.create({
+      const activityA = await db.activity.create({
         type: 'hurricane_f',
         spenderId: user.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      activity.unshift(activityA);
       await message.channel.send('Not enough online users');
       return;
     }
@@ -128,7 +133,7 @@ export const discordHurricane = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    activity = await db.activity.create({
+    const factivity = await db.activity.create({
       amount,
       type: 'hurricane_s',
       spenderId: user.id,
@@ -138,9 +143,9 @@ export const discordHurricane = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    activity = await db.activity.findOne({
+    const activityC = await db.activity.findOne({
       where: {
-        id: activity.id,
+        id: factivity.id,
       },
       include: [
         {
@@ -154,8 +159,8 @@ export const discordHurricane = async (
       ],
       lock: t.LOCK.UPDATE,
       transaction: t,
-
     });
+    activity.unshift(activityC);
     const listOfUsersRained = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const hurricaneee of withoutBots) {
@@ -167,10 +172,6 @@ export const discordHurricane = async (
         transaction: t,
       });
       // eslint-disable-next-line no-await-in-loop
-      console.log(amountPerUser);
-      console.log(hurricaneee.id);
-      console.log(hurricaneRecord.id);
-
       const hurricanetipRecord = await db.hurricanetip.create({
         amount: amountPerUser,
         userId: hurricaneee.id,
@@ -227,10 +228,8 @@ export const discordHurricane = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      console.log(tipActivity);
-      io.to('admin').emit('updateActivity', {
-        activity: tipActivity,
-      });
+      console.log('1');
+      activity.unshift(tipActivity);
     }
     await message.channel.send({ embeds: [AfterHurricaneSuccess(message, amount, amountPerUser, listOfUsersRained)] });
 
@@ -240,6 +239,7 @@ export const discordHurricane = async (
       console.log('done');
     });
   }).catch((err) => {
+    console.log(err);
     message.channel.send('something went wrong');
   });
   io.to('admin').emit('updateActivity', {

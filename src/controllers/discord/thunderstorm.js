@@ -49,19 +49,23 @@ export const discordThunderStorm = async (
     member.presence?.status === "online"
   );
 
-  let activity;
+  const activity = [];
+  let userActivity;
   let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     [
       user,
-      activity,
+      userActivity,
     ] = await userWalletExist(
       message,
       t,
       filteredMessage[1].toLowerCase(),
     );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
     if (!user) return;
 
     const preWithoutBots = await mapMembers(
@@ -85,18 +89,19 @@ export const discordThunderStorm = async (
       'thunderstorm',
     );
     if (activityValiateAmount) {
-      activity = activityValiateAmount;
+      activity.unshift(activityValiateAmount);
       return;
     }
 
     if (withoutBots.length < 1) {
-      activity = await db.activity.create({
+      const failActivity = await db.activity.create({
         type: 'thunderstorm_f',
         spenderId: user.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      activity.unshift(failActivity);
       await message.channel.send('Not enough online users');
       return;
     }
@@ -127,7 +132,7 @@ export const discordThunderStorm = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    activity = await db.activity.create({
+    const preActivity = await db.activity.create({
       amount,
       type: 'thunderstorm_s',
       spenderId: user.id,
@@ -137,9 +142,9 @@ export const discordThunderStorm = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    activity = await db.activity.findOne({
+    const finalActivity = await db.activity.findOne({
       where: {
-        id: activity.id,
+        id: preActivity.id,
       },
       include: [
         {
@@ -154,6 +159,7 @@ export const discordThunderStorm = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+    activity.unshift(finalActivity);
     const listOfUsersRained = [];
     // eslint-disable-next-line no-restricted-syntax
     for (const thunderstormee of withoutBots) {
@@ -183,10 +189,6 @@ export const discordThunderStorm = async (
         listOfUsersRained.push(`<@${userIdReceivedRain}>`);
       }
       let tipActivity;
-      console.log(user);
-      console.log(thunderstormee);
-      console.log(thunderstormRecord);
-      console.log(thunderstormeeWallet);
       tipActivity = await db.activity.create({
         amount: Number(amountPerUser),
         type: 'thunderstormtip_s',
@@ -225,10 +227,7 @@ export const discordThunderStorm = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      console.log(tipActivity);
-      io.to('admin').emit('updateActivity', {
-        activity: tipActivity,
-      });
+      activity.unshift(tipActivity);
     }
     await message.channel.send({ embeds: [AfterThunderStormSuccess(message, amount, amountPerUser, listOfUsersRained)] });
 
@@ -238,6 +237,7 @@ export const discordThunderStorm = async (
       console.log('done');
     });
   }).catch((err) => {
+    console.log(err);
     message.channel.send('something went wrong');
   });
   io.to('admin').emit('updateActivity', {

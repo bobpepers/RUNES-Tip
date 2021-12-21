@@ -23,7 +23,7 @@ export const discordHelp = async (message, io) => {
     message.author.send({ embeds: [helpMessage(withdraw)] });
   }
 
-  let activity;
+  const activity = [];
   const user = await db.user.findOne({
     where: {
       user_id: `discord-${message.author.id}`,
@@ -34,14 +34,14 @@ export const discordHelp = async (message, io) => {
     return;
   }
 
-  activity = await db.activity.create({
+  const preActivity = await db.activity.create({
     type: 'help',
     earnerId: user.id,
   });
 
-  activity = await db.activity.findOne({
+  const finalActivity = await db.activity.findOne({
     where: {
-      id: activity.id,
+      id: preActivity.id,
     },
     include: [
       {
@@ -50,6 +50,7 @@ export const discordHelp = async (message, io) => {
       },
     ],
   });
+  activity.unshift(finalActivity);
   io.to('admin').emit('updateActivity', {
     activity,
   });

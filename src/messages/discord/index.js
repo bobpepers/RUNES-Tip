@@ -533,7 +533,7 @@ export const AfterHurricaneSuccess = (message, amount, amountPerUser, listOfUser
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Hurricane')
-    .setDescription(`${listOfUsersRained.map((user) => `⛈ ${user} has been hit by hurricane with ${amountPerUser / 1e8} ${settings.coin.ticker} ⛈`).join("\n")}`)
+    .setDescription(`${listOfUsersRained.map((user) => `⛈ ${user} has been hit with ${amountPerUser / 1e8} ${settings.coin.ticker} ⛈`).join("\n")}`)
     // .setDescription(`⛈ ${userThunder} has been thunderstruck with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
     .setTimestamp()
     .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
@@ -548,7 +548,7 @@ export const AfterThunderStormSuccess = (message, amount, amountPerUser, listOfU
     .setDescription(`${listOfUsersRained.map((user) => {
       console.log('user');
       console.log(user);
-      return `⛈ ${user} has been thunderstruck with ${amountPerUser / 1e8} ${settings.coin.ticker} ⛈`;
+      return `⛈ ${user} has been hit with ${amountPerUser / 1e8} ${settings.coin.ticker} ⛈`;
     }).join("\n")}`)
     // .setDescription(`⛈ ${userThunder} has been thunderstruck with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
     .setTimestamp()
@@ -561,7 +561,7 @@ export const AfterThunderSuccess = (message, amount, userThunder) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Thunder')
-    .setDescription(`⛈ ${userThunder} has been thunderstruck with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
+    .setDescription(`⛈ ${userThunder} has been hit with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
     .setTimestamp()
     .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
 

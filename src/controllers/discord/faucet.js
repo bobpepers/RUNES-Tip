@@ -17,18 +17,22 @@ export const discordFaucetClaim = async (
   io,
 ) => {
   let user;
-  let activity;
+  let userActivity;
+  let activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     [
       user,
-      activity,
+      userActivity,
     ] = await userWalletExist(
       message,
       t,
       filteredMessage[1].toLowerCase(),
     );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
     if (!user) return;
 
     const faucet = await db.faucet.findOne({
@@ -50,12 +54,13 @@ export const discordFaucetClaim = async (
     }
 
     if (Number(faucet.amount) < 10000) {
-      activity = await db.activity.create({
+      const fActivity = await db.activity.create({
         type: 'faucettip_i',
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      activity.push(fActivity);
       await message.channel.send({ embeds: [dryFaucetMessage(message)] });
       return;
     }
@@ -79,13 +84,13 @@ export const discordFaucetClaim = async (
     if (distance
       && distance > 0
     ) {
-      activity = await db.activity.create({
+      const activityT = await db.activity.create({
         type: 'faucettip_t',
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-
+      activity.push(activityT);
       await message.channel.send({ embeds: [claimTooFactFaucetMessage(message, username, distance)] });
       return;
     }
@@ -114,7 +119,7 @@ export const discordFaucetClaim = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    activity = await db.activity.create({
+    const preActivity = await db.activity.create({
       type: 'faucettip_s',
       earnerId: user.id,
       faucettipId: faucetTip.id,
@@ -123,9 +128,9 @@ export const discordFaucetClaim = async (
       transaction: t,
     });
 
-    activity = await db.activity.findOne({
+    const finalActivity = await db.activity.findOne({
       where: {
-        id: activity.id,
+        id: preActivity.id,
       },
       include: [
         {
@@ -136,8 +141,10 @@ export const discordFaucetClaim = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+    activity.push(finalActivity);
     await message.channel.send({ embeds: [faucetClaimedMessage(message, username, amountToTip)] });
   }).catch((err) => {
+    console.log(err);
     message.channel.send('something went wrong');
   });
   io.to('admin').emit('updateActivity', {

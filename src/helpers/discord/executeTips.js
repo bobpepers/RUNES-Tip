@@ -19,7 +19,7 @@ export const executeTipFunction = async (
   setting,
   faucetSetting,
 ) => {
-  if (amount.toLowerCase() === 'all') {
+  if (amount && amount.toLowerCase() === 'all') {
     message.channel.send({ embeds: [confirmAllAmoutMessageDiscord(message, filteredMessageDiscord[1])] }).then(async () => {
       const msgFilter = (m) => {
         const filtered = m.author.id === message.author.id

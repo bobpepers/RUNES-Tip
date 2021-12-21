@@ -5,11 +5,11 @@ import db from '../../models';
 import {
   tipSuccessMessage,
   NotInDirectMessage,
-  userNotFoundMessage,
   notEnoughUsersToTip,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { waterFaucet } from "../../helpers/discord/waterFaucet";
+import { userWalletExist } from "../../helpers/discord/userWalletExist";
 
 import logger from "../../helpers/logger";
 
@@ -28,47 +28,29 @@ export const tipRunesToDiscordUser = async (
     await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] });
     return;
   }
-  let activity;
+  const activity = [];
   let user;
   let AmountPosition = 1;
   let AmountPositionEnded = false;
   const usersToTip = [];
   let type = 'split';
+  let userActivity;
 
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    user = await db.user.findOne({
-      where: {
-        user_id: `discord-${message.author.id}`,
-      },
-      include: [
-        {
-          model: db.wallet,
-          as: 'wallet',
-          include: [
-            {
-              model: db.address,
-              as: 'addresses',
-            },
-          ],
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-    if (!user) {
-      console.log('user not found');
-      activity = await db.activity.create({
-        type: 'tip_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      await message.channel.send({ embeds: [userNotFoundMessage(message, 'Tip')] });
-      return;
+    [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      message,
+      t,
+      filteredMessage[1].toLowerCase(),
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
     }
+    if (!user) return;
     console.log(usersToTip);
     console.log(AmountPosition);
     console.log(type);
@@ -146,7 +128,7 @@ export const tipRunesToDiscordUser = async (
       usersToTip,
     );
     if (activityValiateAmount) {
-      activity = activityValiateAmount;
+      activity.unshift(activityValiateAmount);
       return;
     }
 
@@ -177,6 +159,34 @@ export const tipRunesToDiscordUser = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+    const preActivity = await db.activity.create({
+      amount,
+      type: 'tip_s',
+      spenderId: user.id,
+      tipId: tipRecord.id,
+      spender_balance: updatedBalance.available + updatedBalance.locked,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    const finalActivity = await db.activity.findOne({
+      where: {
+        id: preActivity.id,
+      },
+      include: [
+        {
+          model: db.tip,
+          as: 'tip',
+        },
+        {
+          model: db.user,
+          as: 'spender',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    activity.unshift(finalActivity);
 
     const listOfUsersRained = [];
     // eslint-disable-next-line no-restricted-syntax
@@ -199,6 +209,48 @@ export const tipRunesToDiscordUser = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      let tipActivity;
+      // eslint-disable-next-line no-await-in-loop
+      tipActivity = await db.activity.create({
+        amount: Number(userTipAmount),
+        type: 'tiptip_s',
+        spenderId: user.id,
+        earnerId: tipee.id,
+        tipId: tipRecord.id,
+        tiptipId: tiptipRecord.id,
+        earner_balance: tipeeWallet.available + tipeeWallet.locked,
+        spender_balance: updatedBalance.available + updatedBalance.locked,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      // eslint-disable-next-line no-await-in-loop
+      tipActivity = await db.activity.findOne({
+        where: {
+          id: tipActivity.id,
+        },
+        include: [
+          {
+            model: db.user,
+            as: 'earner',
+          },
+          {
+            model: db.user,
+            as: 'spender',
+          },
+          {
+            model: db.tip,
+            as: 'tip',
+          },
+          {
+            model: db.tiptip,
+            as: 'tiptip',
+          },
+        ],
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      activity.unshift(tipActivity);
       if (tipee.ignoreMe) {
         listOfUsersRained.push(`${tipee.username}`);
       } else {
@@ -216,6 +268,7 @@ export const tipRunesToDiscordUser = async (
       console.log('done');
     });
   }).catch((err) => {
+    console.log(err);
     message.channel.send('something went wrong');
   });
   io.to('admin').emit('updateActivity', {

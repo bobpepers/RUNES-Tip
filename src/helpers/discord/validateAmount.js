@@ -20,8 +20,23 @@ export const validateAmount = async (
 ) => {
   let activity;
   const capType = capitalize(type);
-
   let amount = 0;
+
+  if (!preAmount) {
+    activity = await db.activity.create({
+      type: `${type}_f`,
+      spenderId: user.id,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    await message.channel.send({ embeds: [invalidAmountMessage(message, capType)] });
+    return [
+      activity,
+      amount,
+    ];
+  }
+
   if (preAmount.toLowerCase() === 'all') {
     amount = user.wallet.available;
   } else {
