@@ -10,6 +10,7 @@ import {
 
 import { isAdmin } from './controllers/admin';
 
+import { fetchFaucetBalance } from './controllers/faucet';
 import { fetchLiability } from './controllers/liability';
 import { fetchBalance } from './controllers/balance';
 import {
@@ -539,6 +540,31 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isDashboardUserBanned,
     ensuretfa,
     fetchBalance,
+    (req, res) => {
+      if (res.locals.error) {
+        res.status(401).send({
+          error: {
+            message: res.locals.error,
+            resend: false,
+          },
+        });
+      }
+      if (res.locals.balance) {
+        console.log(res.locals.balance);
+        res.json({
+          balance: res.locals.balance,
+        });
+      }
+    },
+  );
+
+  app.get(
+    '/api/faucet/balance',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    ensuretfa,
+    fetchFaucetBalance,
     (req, res) => {
       if (res.locals.error) {
         res.status(401).send({

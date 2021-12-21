@@ -133,7 +133,7 @@ export const listenReactDrop = async (
               background: randomBackground,
               noise: Math.floor(Math.random() * (8 - 4 + 1)) + 4,
               minValue: 1,
-              maxValue: 20,
+              maxValue: 9,
               operandAmount: Math.floor((Math.random() * 2) + 1),
               operandTypes: ['+', '-'],
               mode: modes[Math.round(Math.random())],

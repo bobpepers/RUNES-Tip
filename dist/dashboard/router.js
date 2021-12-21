@@ -13,6 +13,8 @@ var _auth = require("./controllers/auth");
 
 var _admin = require("./controllers/admin");
 
+var _faucet = require("./controllers/faucet");
+
 var _liability = require("./controllers/liability");
 
 var _balance = require("./controllers/balance");
@@ -320,6 +322,23 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
     }
   });
   app.get('/api/balance', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, _balance.fetchBalance, function (req, res) {
+    if (res.locals.error) {
+      res.status(401).send({
+        error: {
+          message: res.locals.error,
+          resend: false
+        }
+      });
+    }
+
+    if (res.locals.balance) {
+      console.log(res.locals.balance);
+      res.json({
+        balance: res.locals.balance
+      });
+    }
+  });
+  app.get('/api/faucet/balance', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, _faucet.fetchFaucetBalance, function (req, res) {
     if (res.locals.error) {
       res.status(401).send({
         error: {
