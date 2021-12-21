@@ -175,7 +175,7 @@ export const listenReactDrop = async (
           });
           const Ccollector = await awaitCaptchaMessage.channel.createMessageCollector({ filter, time: 60000, max: 1 });
           Ccollector.on('collect', async (m) => {
-            await db.sequelize.transaction({
+            const collectReactdrop = await db.sequelize.transaction({
               isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
             }, async (t) => {
               if (m.content === findReactTip.solution) {
@@ -254,9 +254,11 @@ export const listenReactDrop = async (
             }).catch((err) => {
               console.log('failed');
             });
+            await queue.add(() => collectReactdrop);
           });
+
           Ccollector.on('end', async (collected) => {
-            await db.sequelize.transaction({
+            const endingCollectReactdrop = await db.sequelize.transaction({
               isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
             }, async (t) => {
               const findReactUserTwo = await db.user.findOne({
@@ -285,19 +287,20 @@ export const listenReactDrop = async (
               }
               t.afterCommit(() => {
                 console.log('done');
-                // collector.send('Out of time');
               });
             }).catch((err) => {
               console.log(err);
               collector.send('Something went wrong');
             });
+            await queue.add(() => endingCollectReactdrop);
           });
         }
       }
     }
   });
   collector.on('end', async () => {
-    await db.sequelize.transaction({
+    const activity = [];
+    const endingReactdrop = await db.sequelize.transaction({
       isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
     }, async (t) => {
       const endReactDrop = await db.reactdrop.findOne({
@@ -407,8 +410,6 @@ export const listenReactDrop = async (
           //
           const amountEach = ((Number(endReactDrop.amount) - Number(endReactDrop.feeAmount)) / Number(endReactDrop.reactdroptips.length)).toFixed(0);
 
-          console.log("amountEach");
-          console.log(amountEach);
           await endReactDrop.update({
             ended: true,
             userCount: Number(endReactDrop.reactdroptips.length),
@@ -474,10 +475,7 @@ export const listenReactDrop = async (
               lock: t.LOCK.UPDATE,
               transaction: t,
             });
-            console.log(tipActivity);
-            io.to('admin').emit('updateActivity', {
-              activity: tipActivity,
-            });
+            activity.unshift(tipActivity);
           }
           const newStringListUsers = listOfUsersRained.join(", ");
           // console.log(newStringListUsers);
@@ -489,7 +487,6 @@ export const listenReactDrop = async (
           }
           const initiator = endReactDrop.user.user_id.replace('discord-', '');
           reactMessage.channel.send({ embeds: [AfterReactDropSuccessMessage(endReactDrop, amountEach, initiator)] });
-          // reactMessage.channel.send(`${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${process.env.CURRENCY_SYMBOL} (${amountEach / 1e8} each)`);
         }
       }
 
@@ -497,7 +494,12 @@ export const listenReactDrop = async (
         console.log('done');
       });
     }).catch((err) => {
+      console.log(err);
       console.log('error');
+    });
+    await queue.add(() => endingReactdrop);
+    io.to('admin').emit('updateActivity', {
+      activity,
     });
   });
 };
