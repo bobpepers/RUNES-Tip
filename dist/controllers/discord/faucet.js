@@ -28,17 +28,18 @@ var settings = (0, _settings["default"])();
 
 var discordFaucetClaim = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(message, filteredMessage, io) {
-    var user, activity;
+    var user, userActivity, activity;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.next = 2;
+            activity = [];
+            _context2.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, faucet, lastFaucetTip, userId, username, dateFuture, dateNow, distance, amountToTip, faucetTip, updateFaucet, updateWallet;
+                var _yield$userWalletExis, _yield$userWalletExis2, faucet, fActivity, lastFaucetTip, userId, username, dateFuture, dateNow, distance, activityT, amountToTip, faucetTip, updateFaucet, updateWallet, preActivity, finalActivity;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -51,32 +52,36 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                         _yield$userWalletExis = _context.sent;
                         _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
                         user = _yield$userWalletExis2[0];
-                        activity = _yield$userWalletExis2[1];
+                        userActivity = _yield$userWalletExis2[1];
+
+                        if (userActivity) {
+                          activity.unshift(userActivity);
+                        }
 
                         if (user) {
-                          _context.next = 8;
+                          _context.next = 9;
                           break;
                         }
 
                         return _context.abrupt("return");
 
-                      case 8:
-                        _context.next = 10;
+                      case 9:
+                        _context.next = 11;
                         return _models["default"].faucet.findOne({
                           order: [['id', 'DESC']],
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 10:
+                      case 11:
                         faucet = _context.sent;
 
                         if (faucet) {
-                          _context.next = 18;
+                          _context.next = 19;
                           break;
                         }
 
-                        _context.next = 14;
+                        _context.next = 15;
                         return _models["default"].activity.create({
                           type: 'faucettip_f'
                         }, {
@@ -84,21 +89,21 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 14:
+                      case 15:
                         activity = _context.sent;
-                        _context.next = 17;
+                        _context.next = 18;
                         return message.channel.send('faucet not found');
 
-                      case 17:
+                      case 18:
                         return _context.abrupt("return");
 
-                      case 18:
+                      case 19:
                         if (!(Number(faucet.amount) < 10000)) {
-                          _context.next = 25;
+                          _context.next = 27;
                           break;
                         }
 
-                        _context.next = 21;
+                        _context.next = 22;
                         return _models["default"].activity.create({
                           type: 'faucettip_i'
                         }, {
@@ -106,18 +111,19 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 21:
-                        activity = _context.sent;
-                        _context.next = 24;
+                      case 22:
+                        fActivity = _context.sent;
+                        activity.push(fActivity);
+                        _context.next = 26;
                         return message.channel.send({
                           embeds: [(0, _discord.dryFaucetMessage)(message)]
                         });
 
-                      case 24:
+                      case 26:
                         return _context.abrupt("return");
 
-                      case 25:
-                        _context.next = 27;
+                      case 27:
+                        _context.next = 29;
                         return _models["default"].faucettip.findOne({
                           where: {
                             userId: user.id
@@ -127,7 +133,7 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                           order: [['id', 'DESC']]
                         });
 
-                      case 27:
+                      case 29:
                         lastFaucetTip = _context.sent;
                         userId = user.user_id.replace('discord-', '');
                         username = user.ignoreme ? "<@".concat(userId, ">") : "".concat(user.username);
@@ -137,11 +143,11 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                         console.log(distance);
 
                         if (!(distance && distance > 0)) {
-                          _context.next = 41;
+                          _context.next = 44;
                           break;
                         }
 
-                        _context.next = 37;
+                        _context.next = 39;
                         return _models["default"].activity.create({
                           type: 'faucettip_t'
                         }, {
@@ -149,19 +155,20 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 37:
-                        activity = _context.sent;
-                        _context.next = 40;
+                      case 39:
+                        activityT = _context.sent;
+                        activity.push(activityT);
+                        _context.next = 43;
                         return message.channel.send({
                           embeds: [(0, _discord.claimTooFactFaucetMessage)(message, username, distance)]
                         });
 
-                      case 40:
+                      case 43:
                         return _context.abrupt("return");
 
-                      case 41:
+                      case 44:
                         amountToTip = Number((faucet.amount / 100 * (settings.faucet / 1e2)).toFixed(0));
-                        _context.next = 44;
+                        _context.next = 47;
                         return _models["default"].faucettip.create({
                           amount: amountToTip,
                           faucetId: faucet.id,
@@ -171,9 +178,9 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 44:
+                      case 47:
                         faucetTip = _context.sent;
-                        _context.next = 47;
+                        _context.next = 50;
                         return faucet.update({
                           amount: Number(faucet.amount) - Number(amountToTip),
                           claims: faucet.claims + 1,
@@ -183,11 +190,11 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 47:
+                      case 50:
                         updateFaucet = _context.sent;
                         console.log(Number(user.wallet.available));
                         console.log(amountToTip);
-                        _context.next = 52;
+                        _context.next = 55;
                         return user.wallet.update({
                           available: Number(user.wallet.available) + amountToTip
                         }, {
@@ -195,9 +202,9 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 52:
+                      case 55:
                         updateWallet = _context.sent;
-                        _context.next = 55;
+                        _context.next = 58;
                         return _models["default"].activity.create({
                           type: 'faucettip_s',
                           earnerId: user.id,
@@ -207,12 +214,12 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 55:
-                        activity = _context.sent;
-                        _context.next = 58;
+                      case 58:
+                        preActivity = _context.sent;
+                        _context.next = 61;
                         return _models["default"].activity.findOne({
                           where: {
-                            id: activity.id
+                            id: preActivity.id
                           },
                           include: [{
                             model: _models["default"].user,
@@ -222,14 +229,15 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 58:
-                        activity = _context.sent;
-                        _context.next = 61;
+                      case 61:
+                        finalActivity = _context.sent;
+                        activity.push(finalActivity);
+                        _context.next = 65;
                         return message.channel.send({
                           embeds: [(0, _discord.faucetClaimedMessage)(message, username, amountToTip)]
                         });
 
-                      case 61:
+                      case 65:
                       case "end":
                         return _context.stop();
                     }
@@ -241,16 +249,17 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                 return _ref2.apply(this, arguments);
               };
             }())["catch"](function (err) {
+              console.log(err);
               message.channel.send('something went wrong');
             });
 
-          case 2:
+          case 3:
             io.to('admin').emit('updateActivity', {
               activity: activity
             });
             return _context2.abrupt("return", true);
 
-          case 4:
+          case 5:
           case "end":
             return _context2.stop();
         }

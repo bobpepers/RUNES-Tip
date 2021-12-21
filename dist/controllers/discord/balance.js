@@ -26,12 +26,13 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.next = 2;
+            activity = [];
+            _context2.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var user, priceInfo, userId;
+                var user, priceInfo, userId, createActivity, findActivity;
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
@@ -77,7 +78,7 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
 
                       case 9:
                         if (!(user && user.wallet)) {
-                          _context.next = 25;
+                          _context.next = 26;
                           break;
                         }
 
@@ -121,11 +122,11 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
                         });
 
                       case 21:
-                        activity = _context.sent;
+                        createActivity = _context.sent;
                         _context.next = 24;
                         return _models["default"].activity.findOne({
                           where: {
-                            id: activity.id
+                            id: createActivity.id
                           },
                           include: [{
                             model: _models["default"].user,
@@ -136,18 +137,15 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
                         });
 
                       case 24:
-                        activity = _context.sent;
+                        findActivity = _context.sent;
+                        activity.unshift(findActivity);
 
-                      case 25:
+                      case 26:
                         t.afterCommit(function () {
-                          io.to('admin').emit('updateActivity', {
-                            activity: activity
-                          });
-
                           _logger["default"].info("Success Discord Balance Requested by: ".concat(message.author.id, "-").concat(message.author.username, "#").concat(message.author.discriminator));
                         });
 
-                      case 26:
+                      case 27:
                       case "end":
                         return _context.stop();
                     }
@@ -162,7 +160,12 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
               _logger["default"].error("Error Discord Balance Requested by: ".concat(message.author.id, "-").concat(message.author.username, "#").concat(message.author.discriminator, " - ").concat(err));
             });
 
-          case 2:
+          case 3:
+            io.to('admin').emit('updateActivity', {
+              activity: activity
+            });
+
+          case 4:
           case "end":
             return _context2.stop();
         }

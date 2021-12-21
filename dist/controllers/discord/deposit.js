@@ -25,16 +25,18 @@ var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
 var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(message, io) {
+    var activity;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.next = 2;
+            activity = [];
+            _context2.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var user, depositQr, depositQrFixed, userId, activity;
+                var user, depositQr, depositQrFixed, userId, preActivity, finalActivity;
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
@@ -121,11 +123,11 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                         });
 
                       case 22:
-                        activity = _context.sent;
+                        preActivity = _context.sent;
                         _context.next = 25;
                         return _models["default"].activity.findOne({
                           where: {
-                            id: activity.id
+                            id: preActivity.id
                           },
                           include: [{
                             model: _models["default"].user,
@@ -136,10 +138,8 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                         });
 
                       case 25:
-                        activity = _context.sent;
-                        io.to('admin').emit('updateActivity', {
-                          activity: activity
-                        });
+                        finalActivity = _context.sent;
+                        activity.unshift(finalActivity);
 
                       case 27:
                         t.afterCommit(function () {
@@ -158,10 +158,17 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                 return _ref2.apply(this, arguments);
               };
             }())["catch"](function (err) {
+              console.log(err);
+
               _logger["default"].error("Error Deposit Address Requested by: ".concat(message.author.id, "-").concat(message.author.username, "#").concat(message.author.discriminator, " - ").concat(err));
             });
 
-          case 2:
+          case 3:
+            io.to('admin').emit('updateActivity', {
+              activity: activity
+            });
+
+          case 4:
           case "end":
             return _context2.stop();
         }

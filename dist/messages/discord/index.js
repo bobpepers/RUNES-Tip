@@ -348,7 +348,7 @@ exports.thunderstormUserZeroAmountMessage = thunderstormUserZeroAmountMessage;
 
 var AfterHurricaneSuccess = function AfterHurricaneSuccess(message, amount, amountPerUser, listOfUsersRained) {
   var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Hurricane').setDescription("".concat(listOfUsersRained.map(function (user) {
-    return "\u26C8 ".concat(user, " has been hit by hurricane with ").concat(amountPerUser / 1e8, " ").concat(settings.coin.ticker, " \u26C8");
+    return "\u26C8 ".concat(user, " has been hit with ").concat(amountPerUser / 1e8, " ").concat(settings.coin.ticker, " \u26C8");
   }).join("\n"))) // .setDescription(`⛈ ${userThunder} has been thunderstruck with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
   .setTimestamp().setFooter("".concat(settings.bot.name, " v").concat(_package["default"].version), settings.coin.logo);
   return result;
@@ -360,7 +360,7 @@ var AfterThunderStormSuccess = function AfterThunderStormSuccess(message, amount
   var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('ThunderStorm').setDescription("".concat(listOfUsersRained.map(function (user) {
     console.log('user');
     console.log(user);
-    return "\u26C8 ".concat(user, " has been thunderstruck with ").concat(amountPerUser / 1e8, " ").concat(settings.coin.ticker, " \u26C8");
+    return "\u26C8 ".concat(user, " has been hit with ").concat(amountPerUser / 1e8, " ").concat(settings.coin.ticker, " \u26C8");
   }).join("\n"))) // .setDescription(`⛈ ${userThunder} has been thunderstruck with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
   .setTimestamp().setFooter("".concat(settings.bot.name, " v").concat(_package["default"].version), settings.coin.logo);
   return result;
@@ -369,7 +369,7 @@ var AfterThunderStormSuccess = function AfterThunderStormSuccess(message, amount
 exports.AfterThunderStormSuccess = AfterThunderStormSuccess;
 
 var AfterThunderSuccess = function AfterThunderSuccess(message, amount, userThunder) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Thunder').setDescription("\u26C8 ".concat(userThunder, " has been thunderstruck with ").concat(amount / 1e8, " ").concat(settings.coin.ticker, " \u26C8")).setTimestamp().setFooter("".concat(settings.bot.name, " v").concat(_package["default"].version), settings.coin.logo);
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Thunder').setDescription("\u26C8 ".concat(userThunder, " has been hit with ").concat(amount / 1e8, " ").concat(settings.coin.ticker, " \u26C8")).setTimestamp().setFooter("".concat(settings.bot.name, " v").concat(_package["default"].version), settings.coin.logo);
   return result;
 };
 

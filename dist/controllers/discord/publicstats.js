@@ -20,16 +20,18 @@ var _models = _interopRequireDefault(require("../../models"));
 /* eslint-disable import/prefer-default-export */
 var discordPublicStats = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(message, io) {
+    var activity;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.next = 2;
+            activity = [];
+            _context2.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var user;
+                var user, activityA, preActivity, finalActivity;
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
@@ -47,25 +49,37 @@ var discordPublicStats = /*#__PURE__*/function () {
                         user = _context.sent;
 
                         if (user) {
-                          _context.next = 7;
+                          _context.next = 11;
                           break;
                         }
 
                         _context.next = 6;
+                        return _models["default"].activity.create({
+                          type: 'publicstats_f',
+                          spenderId: user.id
+                        }, {
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 6:
+                        activityA = _context.sent;
+                        activity.unshift(activityA);
+                        _context.next = 10;
                         return message.channel.send({
                           embeds: [(0, _discord.walletNotFoundMessage)(message, 'Ignore me')]
                         });
 
-                      case 6:
+                      case 10:
                         return _context.abrupt("return");
 
-                      case 7:
+                      case 11:
                         if (!user.publicStats) {
-                          _context.next = 12;
+                          _context.next = 15;
                           break;
                         }
 
-                        _context.next = 10;
+                        _context.next = 14;
                         return user.update({
                           publicStats: false
                         }, {
@@ -73,19 +87,18 @@ var discordPublicStats = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 10:
+                      case 14:
                         message.channel.send({
                           embeds: [(0, _discord.disablePublicStatsMessage)(message)]
                         });
-                        return _context.abrupt("return");
 
-                      case 12:
+                      case 15:
                         if (user.publicStats) {
-                          _context.next = 17;
+                          _context.next = 19;
                           break;
                         }
 
-                        _context.next = 15;
+                        _context.next = 18;
                         return user.update({
                           publicStats: true
                         }, {
@@ -93,18 +106,39 @@ var discordPublicStats = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 15:
+                      case 18:
                         message.channel.send({
                           embeds: [(0, _discord.enablePublicStatsMeMessage)(message)]
                         });
-                        return _context.abrupt("return");
 
-                      case 17:
+                      case 19:
+                        _context.next = 21;
+                        return _models["default"].activity.create({
+                          type: 'publicstats_s',
+                          earnerId: user.id
+                        });
+
+                      case 21:
+                        preActivity = _context.sent;
+                        _context.next = 24;
+                        return _models["default"].activity.findOne({
+                          where: {
+                            id: preActivity.id
+                          },
+                          include: [{
+                            model: _models["default"].user,
+                            as: 'earner'
+                          }]
+                        });
+
+                      case 24:
+                        finalActivity = _context.sent;
+                        activity.unshift(finalActivity);
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 18:
+                      case 27:
                       case "end":
                         return _context.stop();
                     }
@@ -117,9 +151,15 @@ var discordPublicStats = /*#__PURE__*/function () {
               };
             }())["catch"](function (err) {
               console.log(err);
+              message.channel.send('something went wrong');
             });
 
-          case 2:
+          case 3:
+            io.to('admin').emit('updateActivity', {
+              activity: activity
+            });
+
+          case 4:
           case "end":
             return _context2.stop();
         }

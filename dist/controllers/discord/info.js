@@ -18,7 +18,7 @@ var _models = _interopRequireDefault(require("../../models"));
 /* eslint-disable import/prefer-default-export */
 var discordCoinInfo = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(message, io) {
-    var blockHeight, priceInfo, activity, user;
+    var blockHeight, priceInfo, activity, user, preActivity, finalActivity;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -53,27 +53,28 @@ var discordCoinInfo = /*#__PURE__*/function () {
               });
             }
 
-            _context.next = 10;
+            activity = [];
+            _context.next = 11;
             return _models["default"].user.findOne({
               where: {
                 user_id: "discord-".concat(message.author.id)
               }
             });
 
-          case 10:
+          case 11:
             user = _context.sent;
-            _context.next = 13;
+            _context.next = 14;
             return _models["default"].activity.create({
               type: 'info',
               earnerId: user.id
             });
 
-          case 13:
-            activity = _context.sent;
-            _context.next = 16;
+          case 14:
+            preActivity = _context.sent;
+            _context.next = 17;
             return _models["default"].activity.findOne({
               where: {
-                id: activity.id
+                id: preActivity.id
               },
               include: [{
                 model: _models["default"].user,
@@ -81,14 +82,15 @@ var discordCoinInfo = /*#__PURE__*/function () {
               }]
             });
 
-          case 16:
-            activity = _context.sent;
+          case 17:
+            finalActivity = _context.sent;
+            activity.unshift(finalActivity);
             io.to('admin').emit('updateActivity', {
               activity: activity
             });
             return _context.abrupt("return", true);
 
-          case 19:
+          case 21:
           case "end":
             return _context.stop();
         }

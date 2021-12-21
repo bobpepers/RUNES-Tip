@@ -80,14 +80,48 @@ function group(arr, type, whichGroup) {
 
 var discordStats = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(message, filteredMessageDiscord, io, groupTask, channelTask) {
-    var parentWhereOptions, childWhereOptions, textTime, cutLastTimeLetter, cutNumberTime, isnum, dateObj, user, groupedTips, groupedTipTips, groupedReactdrops, groupedFloods, groupedSoaks, groupedHurricanes, groupedThunderStorms, groupedThunders, groupedSleets, groupedReactdropTips, groupedFloodTips, groupedSoakTips, groupedHurricaneTips, groupedThunderStormTips, groupedThunderTips, groupedSleetTips, mergedObject, serverObj, spendTips, spendFloods, spendRains, spendSoaks, spendHurricanes, spendThunders, spendThunderstorms, spendReactDrops, earnedTips, earnedFloods, earnedRains, earnedSoaks, earnedHurricanes, earnedThunders, earnedThunderstorms, earnedReactDrops, serverString, activity;
+    var activity, parentWhereOptions, childWhereOptions, textTime, cutLastTimeLetter, cutNumberTime, isnum, user, activityA, _activityA, dateObj, groupedTips, groupedTipTips, groupedReactdrops, groupedFloods, groupedSoaks, groupedHurricanes, groupedThunderStorms, groupedThunders, groupedSleets, groupedReactdropTips, groupedFloodTips, groupedSoakTips, groupedHurricaneTips, groupedThunderStormTips, groupedThunderTips, groupedSleetTips, mergedObject, serverObj, spendTips, spendFloods, spendRains, spendSoaks, spendHurricanes, spendThunders, spendThunderstorms, spendReactDrops, earnedTips, earnedFloods, earnedRains, earnedSoaks, earnedHurricanes, earnedThunders, earnedThunderstorms, earnedReactDrops, serverString, preActivity, finalActivity;
+
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
+            activity = [];
             parentWhereOptions = {};
             childWhereOptions = {};
+            _context.next = 5;
+            return _models["default"].user.findOne({
+              where: {
+                user_id: "discord-".concat(message.author.id)
+              }
+            });
 
+          case 5:
+            user = _context.sent;
+
+            if (user) {
+              _context.next = 14;
+              break;
+            }
+
+            _context.next = 9;
+            return _models["default"].activity.create({
+              type: 'stats_f',
+              spenderId: user.id
+            });
+
+          case 9:
+            activityA = _context.sent;
+            activity.unshift(activityA);
+            _context.next = 13;
+            return message.channel.send({
+              embeds: [(0, _discord.walletNotFoundMessage)(message, 'Ignore me')]
+            });
+
+          case 13:
+            return _context.abrupt("return");
+
+          case 14:
             if (filteredMessageDiscord[2]) {
               textTime = filteredMessageDiscord[2];
               cutLastTimeLetter = textTime.substring(textTime.length - 1, textTime.length).toLowerCase();
@@ -97,24 +131,39 @@ var discordStats = /*#__PURE__*/function () {
 
             if (!(filteredMessageDiscord[2] && !isnum // && Number(cutNumberTime) < 0
             && (cutLastTimeLetter !== 'd' || cutLastTimeLetter !== 'h' || cutLastTimeLetter !== 'm' || cutLastTimeLetter !== 's'))) {
-              _context.next = 6;
+              _context.next = 24;
               break;
             }
 
             console.log('not pass');
+            _context.next = 19;
+            return _models["default"].activity.create({
+              type: 'stats_i',
+              spenderId: user.id
+            });
+
+          case 19:
+            _activityA = _context.sent;
+            activity.unshift(_activityA);
+            _context.next = 23;
+            return message.channel.send({
+              embeds: [(0, _discord.invalidTimeMessage)(message, 'Stats')]
+            });
+
+          case 23:
             return _context.abrupt("return");
 
-          case 6:
+          case 24:
             if (!(filteredMessageDiscord[2] && isnum // && Number(cutNumberTime) < 0
             && (cutLastTimeLetter === 'd' || cutLastTimeLetter === 'h' || cutLastTimeLetter === 'm' || cutLastTimeLetter === 's'))) {
-              _context.next = 18;
+              _context.next = 36;
               break;
             }
 
-            _context.next = 9;
+            _context.next = 27;
             return new Date().getTime();
 
-          case 9:
+          case 27:
             dateObj = _context.sent;
 
             if (cutLastTimeLetter === 'd') {
@@ -133,14 +182,14 @@ var discordStats = /*#__PURE__*/function () {
               dateObj -= Number(cutNumberTime) * 1000;
             }
 
-            _context.next = 16;
+            _context.next = 34;
             return new Date(dateObj);
 
-          case 16:
+          case 34:
             dateObj = _context.sent;
             childWhereOptions.createdAt = (0, _defineProperty2["default"])({}, Op.gte, dateObj);
 
-          case 18:
+          case 36:
             parentWhereOptions.user_id = "discord-".concat(message.author.id);
 
             if (message.channel.type === 'DM') {// message.author.send({ embeds: [statsMessage(message)] });
@@ -153,7 +202,7 @@ var discordStats = /*#__PURE__*/function () {
               }); // message.author.send({ embeds: [statsMessage(message, serverString)] });
             }
 
-            _context.next = 23;
+            _context.next = 41;
             return _models["default"].user.findOne({
               where: parentWhereOptions,
               include: [// Spend
@@ -337,17 +386,17 @@ var discordStats = /*#__PURE__*/function () {
               }]
             });
 
-          case 23:
+          case 41:
             user = _context.sent;
 
             if (user) {
-              _context.next = 26;
+              _context.next = 44;
               break;
             }
 
             return _context.abrupt("return");
 
-          case 26:
+          case 44:
             if (message.channel.type === 'DM') {
               // spend
               groupedTips = user.tips ? groupGlobal(user.tips, 'spend', 'tips') : {};
@@ -397,21 +446,21 @@ var discordStats = /*#__PURE__*/function () {
             groupedTipTips, groupedReactdropTips, groupedFloodTips, groupedSoakTips, groupedHurricaneTips, groupedThunderStormTips, groupedThunderTips, groupedSleetTips);
 
             if (!_.isEmpty(mergedObject)) {
-              _context.next = 32;
+              _context.next = 50;
               break;
             }
 
-            _context.next = 32;
+            _context.next = 50;
             return message.author.send({
               embeds: [(0, _discord.statsMessage)(message, "No data found!")]
             });
 
-          case 32:
+          case 50:
             _context.t0 = _regenerator["default"].keys(mergedObject);
 
-          case 33:
+          case 51:
             if ((_context.t1 = _context.t0()).done) {
-              _context.next = 56;
+              _context.next = 74;
               break;
             }
 
@@ -467,19 +516,44 @@ var discordStats = /*#__PURE__*/function () {
               return +a + +b.amount;
             }, 0) / 1e8, " ").concat(settings.coin.ticker);
             serverString = "_**".concat(serverObj, "**_\n    \n").concat(mergedObject[serverObj].spend ? '_Spend_\n' : '', "\n").concat(spendTips ? "Tips: ".concat(spendTips, "\n") : '').concat(spendRains ? "Rains: ".concat(spendRains, "\n") : '').concat(spendFloods ? "Floods: ".concat(spendFloods, "\n") : '').concat(spendSoaks ? "Soaks: ".concat(spendSoaks, "\n") : '').concat(spendHurricanes ? "Hurricanes: ".concat(spendHurricanes, "\n") : '').concat(spendThunders ? "Thunders: ".concat(spendThunders, "\n") : '').concat(spendThunderstorms ? "Thunderstorms: ".concat(spendThunderstorms, "\n") : '').concat(spendReactDrops ? "ReactDrops: ".concat(spendReactDrops, "\n") : '', "\n  \n").concat(mergedObject[serverObj].earned ? '_Earned_\n' : '', "\n").concat(earnedTips ? "Tips: ".concat(earnedTips, "\n") : '').concat(earnedRains ? "Rains: ".concat(earnedRains, "\n") : '').concat(earnedFloods ? "Floods: ".concat(earnedFloods, "\n") : '').concat(earnedSoaks ? "Soaks: ".concat(earnedSoaks, "\n") : '').concat(earnedHurricanes ? "Hurricanes: ".concat(earnedHurricanes, "\n") : '').concat(earnedThunders ? "Thunders: ".concat(earnedThunders, "\n") : '').concat(earnedThunderstorms ? "Thunderstorms: ".concat(earnedThunderstorms, "\n") : '').concat(earnedReactDrops ? "ReactDrops: ".concat(earnedReactDrops, "\n") : '');
-            _context.next = 54;
+            _context.next = 72;
             return message.author.send({
               embeds: [(0, _discord.statsMessage)(message, serverString)]
             });
 
-          case 54:
-            _context.next = 33;
+          case 72:
+            _context.next = 51;
             break;
 
-          case 56:
+          case 74:
+            _context.next = 76;
+            return _models["default"].activity.create({
+              type: 'stats_s',
+              earnerId: user.id
+            });
+
+          case 76:
+            preActivity = _context.sent;
+            _context.next = 79;
+            return _models["default"].activity.findOne({
+              where: {
+                id: preActivity.id
+              },
+              include: [{
+                model: _models["default"].user,
+                as: 'earner'
+              }]
+            });
+
+          case 79:
+            finalActivity = _context.sent;
+            activity.unshift(finalActivity);
+            io.to('admin').emit('updateActivity', {
+              activity: activity
+            });
             return _context.abrupt("return", true);
 
-          case 57:
+          case 83:
           case "end":
             return _context.stop();
         }

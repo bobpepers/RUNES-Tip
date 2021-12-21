@@ -24,7 +24,7 @@ var executeTipFunction = /*#__PURE__*/function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            if (!(amount.toLowerCase() === 'all')) {
+            if (!(amount && amount.toLowerCase() === 'all')) {
               _context3.next = 4;
               break;
             }

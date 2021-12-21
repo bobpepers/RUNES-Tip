@@ -92,6 +92,12 @@ var fetchFeeSchedule = /*#__PURE__*/function () {
     var guildId,
         channelId,
         fee,
+        activity,
+        user,
+        preActivityFail,
+        finalActivityFail,
+        preActivity,
+        finalActivity,
         _args2 = arguments;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
@@ -100,66 +106,137 @@ var fetchFeeSchedule = /*#__PURE__*/function () {
             guildId = _args2.length > 2 && _args2[2] !== undefined ? _args2[2] : null;
             channelId = _args2.length > 3 && _args2[3] !== undefined ? _args2[3] : null;
             fee = {};
-            _context2.next = 5;
-            return findFee('reactdrop', guildId, channelId);
+            activity = [];
+            _context2.next = 6;
+            return _models["default"].user.findOne({
+              where: {
+                user_id: "discord-".concat(message.author.id)
+              }
+            });
 
-          case 5:
-            fee.reactdrop = _context2.sent;
-            _context2.next = 8;
-            return findFee('soak', guildId, channelId);
+          case 6:
+            user = _context2.sent;
 
-          case 8:
-            fee.soak = _context2.sent;
-            _context2.next = 11;
-            return findFee('rain', guildId, channelId);
+            if (user) {
+              _context2.next = 17;
+              break;
+            }
 
-          case 11:
-            fee.rain = _context2.sent;
-            _context2.next = 14;
-            return findFee('voicerain', guildId, channelId);
+            _context2.next = 10;
+            return _models["default"].activity.create({
+              type: 'fees_f',
+              earnerId: user.id
+            });
 
-          case 14:
-            fee.voicerain = _context2.sent;
+          case 10:
+            preActivityFail = _context2.sent;
+            _context2.next = 13;
+            return _models["default"].activity.findOne({
+              where: {
+                id: preActivityFail.id
+              },
+              include: [{
+                model: _models["default"].user,
+                as: 'earner'
+              }]
+            });
+
+          case 13:
+            finalActivityFail = _context2.sent;
+            activity.unshift(finalActivityFail);
             _context2.next = 17;
-            return findFee('thunder', guildId, channelId);
+            return message.author.send("User not found!");
 
           case 17:
+            _context2.next = 19;
+            return findFee('tip', guildId, channelId);
+
+          case 19:
+            fee.tip = _context2.sent;
+            _context2.next = 22;
+            return findFee('reactdrop', guildId, channelId);
+
+          case 22:
+            fee.reactdrop = _context2.sent;
+            _context2.next = 25;
+            return findFee('soak', guildId, channelId);
+
+          case 25:
+            fee.soak = _context2.sent;
+            _context2.next = 28;
+            return findFee('rain', guildId, channelId);
+
+          case 28:
+            fee.rain = _context2.sent;
+            _context2.next = 31;
+            return findFee('voicerain', guildId, channelId);
+
+          case 31:
+            fee.voicerain = _context2.sent;
+            _context2.next = 34;
+            return findFee('thunder', guildId, channelId);
+
+          case 34:
             fee.thunder = _context2.sent;
-            _context2.next = 20;
+            _context2.next = 37;
             return findFee('thunderstorm', guildId, channelId);
 
-          case 20:
+          case 37:
             fee.thunderstorm = _context2.sent;
-            _context2.next = 23;
+            _context2.next = 40;
             return findFee('hurricane', guildId, channelId);
 
-          case 23:
+          case 40:
             fee.hurricane = _context2.sent;
-            _context2.next = 26;
+            _context2.next = 43;
             return findFee('flood', guildId, channelId);
 
-          case 26:
+          case 43:
             fee.flood = _context2.sent;
-            _context2.next = 29;
+            _context2.next = 46;
             return findFee('sleet', guildId, channelId);
 
-          case 29:
+          case 46:
             fee.sleet = _context2.sent;
-            _context2.next = 32;
+            _context2.next = 49;
             return findFee('withdraw', guildId, channelId);
 
-          case 32:
+          case 49:
             fee.withdraw = _context2.sent;
             console.log(fee);
-            _context2.next = 36;
+            _context2.next = 53;
+            return _models["default"].activity.create({
+              type: 'fees_s',
+              earnerId: user.id
+            });
+
+          case 53:
+            preActivity = _context2.sent;
+            _context2.next = 56;
+            return _models["default"].activity.findOne({
+              where: {
+                id: preActivity.id
+              },
+              include: [{
+                model: _models["default"].user,
+                as: 'earner'
+              }]
+            });
+
+          case 56:
+            finalActivity = _context2.sent;
+            activity.unshift(finalActivity);
+            _context2.next = 60;
             return message.reply({
               embeds: [(0, _discord.DiscordFeeMessage)(message, fee)]
             });
 
-          case 36:
-            console.log(fee);
+          case 60:
+            io.to('admin').emit('updateActivity', {
+              activity: activity
+            });
 
-          case 37:
+          case 61:
           case "end":
             return _context2.stop();
         }

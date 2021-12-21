@@ -38,6 +38,31 @@ var validateAmount = /*#__PURE__*/function () {
             capType = capitalize(type);
             amount = 0;
 
+            if (preAmount) {
+              _context.next = 11;
+              break;
+            }
+
+            _context.next = 7;
+            return _models["default"].activity.create({
+              type: "".concat(type, "_f"),
+              spenderId: user.id
+            }, {
+              lock: t.LOCK.UPDATE,
+              transaction: t
+            });
+
+          case 7:
+            activity = _context.sent;
+            _context.next = 10;
+            return message.channel.send({
+              embeds: [(0, _discord.invalidAmountMessage)(message, capType)]
+            });
+
+          case 10:
+            return _context.abrupt("return", [activity, amount]);
+
+          case 11:
             if (preAmount.toLowerCase() === 'all') {
               amount = user.wallet.available;
             } else {
@@ -45,11 +70,11 @@ var validateAmount = /*#__PURE__*/function () {
             }
 
             if (!(amount < setting.min)) {
-              _context.next = 12;
+              _context.next = 19;
               break;
             }
 
-            _context.next = 8;
+            _context.next = 15;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
               spenderId: user.id
@@ -58,47 +83,22 @@ var validateAmount = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 8:
+          case 15:
             activity = _context.sent;
-            _context.next = 11;
+            _context.next = 18;
             return message.channel.send({
               embeds: [(0, _discord.minimumMessage)(message, setting, capType)]
             });
 
-          case 11:
+          case 18:
             return _context.abrupt("return", [activity, amount]);
 
-          case 12:
+          case 19:
             if (tipType === 'each' && preAmount.toLowerCase() !== 'all') {
               amount *= usersToTip.length;
             }
 
             if (!(amount % 1 !== 0)) {
-              _context.next = 20;
-              break;
-            }
-
-            _context.next = 16;
-            return _models["default"].activity.create({
-              type: "".concat(type, "_f"),
-              spenderId: user.id
-            }, {
-              lock: t.LOCK.UPDATE,
-              transaction: t
-            });
-
-          case 16:
-            activity = _context.sent;
-            _context.next = 19;
-            return message.channel.send({
-              embeds: [(0, _discord.invalidAmountMessage)(message, capType)]
-            });
-
-          case 19:
-            return _context.abrupt("return", [activity, amount]);
-
-          case 20:
-            if (!(amount <= 0)) {
               _context.next = 27;
               break;
             }
@@ -123,16 +123,15 @@ var validateAmount = /*#__PURE__*/function () {
             return _context.abrupt("return", [activity, amount]);
 
           case 27:
-            if (!(user.wallet.available < amount)) {
+            if (!(amount <= 0)) {
               _context.next = 34;
               break;
             }
 
             _context.next = 30;
             return _models["default"].activity.create({
-              type: "".concat(type, "_i"),
-              spenderId: user.id,
-              amount: amount
+              type: "".concat(type, "_f"),
+              spenderId: user.id
             }, {
               lock: t.LOCK.UPDATE,
               transaction: t
@@ -142,17 +141,43 @@ var validateAmount = /*#__PURE__*/function () {
             activity = _context.sent;
             _context.next = 33;
             return message.channel.send({
-              embeds: [(0, _discord.insufficientBalanceMessage)(message, capType)]
+              embeds: [(0, _discord.invalidAmountMessage)(message, capType)]
             });
 
           case 33:
             return _context.abrupt("return", [activity, amount]);
 
           case 34:
+            if (!(user.wallet.available < amount)) {
+              _context.next = 41;
+              break;
+            }
+
+            _context.next = 37;
+            return _models["default"].activity.create({
+              type: "".concat(type, "_i"),
+              spenderId: user.id,
+              amount: amount
+            }, {
+              lock: t.LOCK.UPDATE,
+              transaction: t
+            });
+
+          case 37:
+            activity = _context.sent;
+            _context.next = 40;
+            return message.channel.send({
+              embeds: [(0, _discord.insufficientBalanceMessage)(message, capType)]
+            });
+
+          case 40:
+            return _context.abrupt("return", [activity, amount]);
+
+          case 41:
             console.log("amount: ".concat(amount));
             return _context.abrupt("return", [activity, amount]);
 
-          case 36:
+          case 43:
           case "end":
             return _context.stop();
         }

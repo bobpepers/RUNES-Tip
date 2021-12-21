@@ -18,7 +18,7 @@ var _models = _interopRequireDefault(require("../../models"));
 /* eslint-disable import/prefer-default-export */
 var discordHelp = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(message, io) {
-    var withdraw, activity, user;
+    var withdraw, activity, user, preActivity, finalActivity;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -50,36 +50,37 @@ var discordHelp = /*#__PURE__*/function () {
               });
             }
 
-            _context.next = 8;
+            activity = [];
+            _context.next = 9;
             return _models["default"].user.findOne({
               where: {
                 user_id: "discord-".concat(message.author.id)
               }
             });
 
-          case 8:
+          case 9:
             user = _context.sent;
 
             if (user) {
-              _context.next = 11;
+              _context.next = 12;
               break;
             }
 
             return _context.abrupt("return");
 
-          case 11:
-            _context.next = 13;
+          case 12:
+            _context.next = 14;
             return _models["default"].activity.create({
               type: 'help',
               earnerId: user.id
             });
 
-          case 13:
-            activity = _context.sent;
-            _context.next = 16;
+          case 14:
+            preActivity = _context.sent;
+            _context.next = 17;
             return _models["default"].activity.findOne({
               where: {
-                id: activity.id
+                id: preActivity.id
               },
               include: [{
                 model: _models["default"].user,
@@ -87,14 +88,15 @@ var discordHelp = /*#__PURE__*/function () {
               }]
             });
 
-          case 16:
-            activity = _context.sent;
+          case 17:
+            finalActivity = _context.sent;
+            activity.unshift(finalActivity);
             io.to('admin').emit('updateActivity', {
               activity: activity
             });
             return _context.abrupt("return", true);
 
-          case 19:
+          case 21:
           case "end":
             return _context.stop();
         }
