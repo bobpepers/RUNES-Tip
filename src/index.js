@@ -173,7 +173,7 @@ server.listen(port);
 (async function () {
   await telegramClient.launch();
   await discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
-  await initDatabaseRecords();
+  await initDatabaseRecords(discordClient, telegramClient);
 
   // recover reactdrops here listenReactDrop = async (reactMessage, distance, reactDrop)
   const allRunningReactDrops = await db.reactdrop.findAll({

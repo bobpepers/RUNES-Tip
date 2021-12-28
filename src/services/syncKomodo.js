@@ -103,20 +103,11 @@ const syncTransactions = async (discordClient, telegramClient) => {
         });
       }
       if (transaction.confirmations >= Number(settings.min.confirmations)) {
-        // transaction.details.forEach(async (detail) => {
-
         if (transaction.details[1] && transaction.details[1].category === 'send' && trans.type === 'send') {
-          // console.log(detail.amount);
-          // console.log(((detail.amount * 1e8)));
 
-          console.log(transaction.details[1].amount);
           const prepareLockedAmount = ((transaction.details[1].amount * 1e8) - Number(trans.feeAmount));
-          console.log(prepareLockedAmount);
           const removeLockedAmount = Math.abs(prepareLockedAmount);
-          console.log(removeLockedAmount);
-          console.log('send complete');
 
-          // console.log(removeLockedAmount);
           updatedWallet = await wallet.update({
             locked: wallet.locked - removeLockedAmount,
           }, {
@@ -211,7 +202,6 @@ const syncTransactions = async (discordClient, telegramClient) => {
       });
     });
   }
-  // console.log(transactions.length);
   return true;
 };
 

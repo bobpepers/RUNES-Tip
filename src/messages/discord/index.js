@@ -314,6 +314,17 @@ export const featureDisabledGlobalMessage = (name) => {
   return result;
 };
 
+export const tipFaucetSuccessMessage = (message, amount) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Tip')
+    .setDescription(`<@${message.author.id}> tipped ${amount / 1e8} ${settings.coin.ticker} to Faucet`)
+    .setTimestamp()
+    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+
+  return result;
+};
+
 export const tipSuccessMessage = (message, listOfUsersRained, amount, type) => {
   const userText = listOfUsersRained.join(", ");
   const result = new MessageEmbed()
@@ -328,6 +339,7 @@ export const tipSuccessMessage = (message, listOfUsersRained, amount, type) => {
 
   return result;
 };
+
 export const unableToFindUserTipMessage = (message, amount) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)

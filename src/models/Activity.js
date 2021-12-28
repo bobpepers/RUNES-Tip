@@ -90,6 +90,8 @@ module.exports = (sequelize, DataTypes) => {
         'stats_i',
         'stats_f',
         'stats_s',
+        'tip_faucet_s',
+        'tiptip_faucet_s',
       ],
     },
     amount: {

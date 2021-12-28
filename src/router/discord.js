@@ -1,6 +1,5 @@
 import { config } from "dotenv";
 
-import { Op } from "sequelize";
 import { fetchDiscordWalletBalance } from '../controllers/discord/balance';
 import { fetchDiscordWalletDepositAddress } from '../controllers/discord/deposit';
 import { withdrawDiscordCreate } from '../controllers/discord/withdraw';
@@ -9,7 +8,10 @@ import { discordVoiceRain } from '../controllers/discord/voicerain';
 import { discordRain } from '../controllers/discord/rain';
 import { discordSleet } from '../controllers/discord/sleet';
 import { discordFlood } from '../controllers/discord/flood';
-import { tipRunesToDiscordUser } from '../controllers/discord/tip';
+import {
+  tipCoinsToDiscordFaucet,
+  tipRunesToDiscordUser,
+} from '../controllers/discord/tip';
 
 import {
   createUpdateDiscordUser,
@@ -115,11 +117,8 @@ export const discordRouter = (
   });
 
   discordClient.on("presenceUpdate", (oldMember, newMember) => {
-    const { username } = newMember.user;
-    // const { status } = newMember.user.presence;
-    // userStatus.push(username, status);
-    // console.log(newMember);
-    // console.log(`${username} is now ${newMember.status}`);
+    //const { username } = newMember.user;
+    console.log('presenceUpdate');
   });
 
   discordClient.on('voiceStateUpdate', async (oldMember, newMember) => {
@@ -205,7 +204,13 @@ export const discordRouter = (
       const limited = await limitStats(message);
       await queue.add(() => limited);
       if (limited) return;
-      const task = await discordStats(message, filteredMessageDiscord, io, groupTask, channelTask);
+      const task = await discordStats(
+        message,
+        filteredMessageDiscord,
+        io,
+        groupTask,
+        channelTask
+      );
       await queue.add(() => task);
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'leaderboard') {
@@ -236,7 +241,6 @@ export const discordRouter = (
       const task = await setIgnoreMe(message, io);
       await queue.add(() => task);
     }
-    // console.log(filteredMessageDiscord);
     if (filteredMessageDiscord[1].toLowerCase() === 'balance') {
       const limited = await limitBalance(message);
       await queue.add(() => limited);
@@ -273,7 +277,12 @@ export const discordRouter = (
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'withdraw') {
-      const setting = await discordSettings(message, 'withdraw', groupTaskId, channelTaskId);
+      const setting = await discordSettings(
+        message,
+        'withdraw',
+        groupTaskId,
+        channelTaskId
+      );
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitWithdraw(message);
@@ -296,39 +305,61 @@ export const discordRouter = (
     }
 
     if (
-      filteredMessageDiscord.length > 1 && filteredMessageDiscord[1].startsWith('<@')
+      filteredMessageDiscord.length > 1
+      && filteredMessageDiscord[1].startsWith('<@')
     ) {
-      const setting = await discordSettings(message, 'tip', groupTaskId, channelTaskId);
+      const setting = await discordSettings(
+        message,
+        'tip',
+        groupTaskId,
+        channelTaskId
+      );
       await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitTip(message);
       await queue.add(() => limited);
       if (limited) return;
-      let AmountPosition = 1;
-      let AmountPositionEnded = false;
-      while (!AmountPositionEnded) {
-        AmountPosition += 1;
-        if (!filteredMessageDiscord[AmountPosition].startsWith('<@')) {
-          AmountPositionEnded = true;
-        }
-      }
-      console.log(`amount position: ${AmountPosition}`);
 
-      //
-      await executeTipFunction(
-        tipRunesToDiscordUser,
-        queue,
-        filteredMessageDiscord[AmountPosition],
-        discordClient,
-        message,
-        filteredMessageDiscord,
-        io,
-        groupTask,
-        channelTask,
-        setting,
-        faucetSetting,
-      );
-      console.log('done executing tips');
+      if (
+        filteredMessageDiscord[1].substr(3).slice(0, -1) === discordClient.user.id
+      ) {
+        await executeTipFunction(
+          tipCoinsToDiscordFaucet,
+          queue,
+          filteredMessageDiscord[2],
+          discordClient,
+          message,
+          filteredMessageDiscord,
+          io,
+          groupTask,
+          channelTask,
+          setting,
+          faucetSetting,
+        );
+      } else {
+        let AmountPosition = 1;
+        let AmountPositionEnded = false;
+        while (!AmountPositionEnded) {
+          AmountPosition += 1;
+          if (!filteredMessageDiscord[AmountPosition].startsWith('<@')) {
+            AmountPositionEnded = true;
+          }
+        }
+
+        await executeTipFunction(
+          tipRunesToDiscordUser,
+          queue,
+          filteredMessageDiscord[AmountPosition],
+          discordClient,
+          message,
+          filteredMessageDiscord,
+          io,
+          groupTask,
+          channelTask,
+          setting,
+          faucetSetting,
+        );
+      }
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'voicerain') {

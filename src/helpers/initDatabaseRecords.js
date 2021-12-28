@@ -1,6 +1,21 @@
 import db from '../models';
 
-export const initDatabaseRecords = async () => {
+export const initDatabaseRecords = async (
+  discordClient,
+  telegramClient,
+) => {
+  // Create Bot user for tagging
+  const discordBotUser = await db.user.findOne({
+    where: {
+      user_id: `discord-${discordClient.user.id}`
+    }
+  });
+  if (!discordBotUser) {
+    await db.user.create({
+      username: discordClient.user.username,
+      user_id: `discord-${discordClient.user.id}`
+    });
+  }
   // Discord bot setting
   const discordBotSetting = await db.bots.findOne({
     where: {

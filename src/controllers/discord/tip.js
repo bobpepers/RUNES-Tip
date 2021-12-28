@@ -6,6 +6,7 @@ import {
   tipSuccessMessage,
   NotInDirectMessage,
   notEnoughUsersToTip,
+  tipFaucetSuccessMessage,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { waterFaucet } from "../../helpers/discord/waterFaucet";
@@ -263,6 +264,220 @@ export const tipRunesToDiscordUser = async (
     // await message.channel.send({ embeds: [AfterThunderStormSuccess(message, amount, amountPerUser, listOfUsersRained)] });
 
     logger.info(`Success Tip Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+
+    t.afterCommit(() => {
+      console.log('done');
+    });
+  }).catch((err) => {
+    console.log(err);
+    message.channel.send('something went wrong');
+  });
+  io.to('admin').emit('updateActivity', {
+    activity,
+  });
+};
+
+
+export const tipCoinsToDiscordFaucet = async (
+  discordClient,
+  message,
+  filteredMessage,
+  io,
+  groupTask,
+  channelTask,
+  setting,
+  faucetSetting,
+  queue,
+) => {
+  if (!groupTask || !channelTask) {
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] });
+    return;
+  }
+  const activity = [];
+  let user;
+  const usersToTip = [];
+  let userActivity;
+
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      message,
+      t,
+      filteredMessage[1].toLowerCase(),
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
+    if (!user) return;
+    //console.lgo(discordClient);
+
+    const userExist = await db.user.findOne({
+      where: {
+        user_id: `discord-${discordClient.user.id}`,
+      },
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    if (userExist) {
+      usersToTip.push(userExist);
+    }
+
+    if (usersToTip.length < 1) {
+      await message.channel.send({ embeds: [notEnoughUsersToTip(message)] });
+      return;
+    }
+
+    // verify amount
+    const [
+      activityValiateAmount,
+      amount,
+    ] = await validateAmount(
+      message,
+      t,
+      filteredMessage[2],
+      user,
+      setting,
+      'tip',
+      'each',
+      usersToTip,
+    );
+
+    if (activityValiateAmount) {
+      activity.unshift(activityValiateAmount);
+      return;
+    }
+
+    const updatedBalance = await user.wallet.update({
+      available: user.wallet.available - amount,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    const userTipAmount = Number(amount);
+
+    const tipRecord = await db.tip.create({
+      feeAmount: 0,
+      amount,
+      type: 'each',
+      userCount: usersToTip.length,
+      userId: user.id,
+      groupId: groupTask.id,
+      channelId: channelTask.id,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    const preActivity = await db.activity.create({
+      amount,
+      type: 'tip_faucet_s',
+      spenderId: user.id,
+      tipId: tipRecord.id,
+      spender_balance: updatedBalance.available + updatedBalance.locked,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    const finalActivity = await db.activity.findOne({
+      where: {
+        id: preActivity.id,
+      },
+      include: [
+        {
+          model: db.tip,
+          as: 'tip',
+        },
+        {
+          model: db.user,
+          as: 'spender',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    activity.unshift(finalActivity);
+
+    const faucet = await db.faucet.findOne({
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    const updatedFaucet = await faucet.update({
+      amount: faucet.amount + Number(userTipAmount),
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    const listOfUsersRained = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const tipee of usersToTip) {
+      // eslint-disable-next-line no-await-in-loop
+      const tiptipRecord = await db.tiptip.create({
+        amount: Number(userTipAmount),
+        userId: tipee.id,
+        tipId: tipRecord.id,
+        groupId: groupTask.id,
+        channelId: channelTask.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      let tipActivity;
+      // eslint-disable-next-line no-await-in-loop
+      tipActivity = await db.activity.create({
+        amount: Number(userTipAmount),
+        type: 'tiptip_faucet_s',
+        spenderId: user.id,
+        earnerId: tipee.id,
+        tipId: tipRecord.id,
+        tiptipId: tiptipRecord.id,
+        earner_balance: updatedFaucet.amount,
+        spender_balance: updatedBalance.available + updatedBalance.locked,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      // eslint-disable-next-line no-await-in-loop
+      tipActivity = await db.activity.findOne({
+        where: {
+          id: tipActivity.id,
+        },
+        include: [
+          {
+            model: db.user,
+            as: 'earner',
+          },
+          {
+            model: db.user,
+            as: 'spender',
+          },
+          {
+            model: db.tip,
+            as: 'tip',
+          },
+          {
+            model: db.tiptip,
+            as: 'tiptip',
+          },
+        ],
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      activity.unshift(tipActivity);
+      if (tipee.ignoreMe) {
+        listOfUsersRained.push(`${tipee.username}`);
+      } else {
+        const userIdReceivedRain = tipee.user_id.replace('discord-', '');
+        listOfUsersRained.push(`<@${userIdReceivedRain}>`);
+      }
+    }
+    await message.channel.send({ embeds: [tipFaucetSuccessMessage(message, userTipAmount)] });
 
     t.afterCommit(() => {
       console.log('done');
