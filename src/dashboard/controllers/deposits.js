@@ -1,16 +1,36 @@
 // import { parseDomain } from "parse-domain";
 import db from '../../models';
 import { patchPirateDeposits } from "../../helpers/pirate/patcher";
+import { patchRunebaseDeposits } from "../../helpers/runebase/patcher";
+import { patchKomodoDeposits } from "../../helpers/komodo/patcher";
+import getCoinSettings from '../../config/settings';
+
+const settings = getCoinSettings();
 
 const { Op } = require('sequelize');
 
-export const patchDeposits = async (req, res, next) => {
-  await patchPirateDeposits();
-  console.log('done patchDeposits');
+export const patchDeposits = async (
+  req,
+  res,
+  next,
+) => {
+  if (settings.coin.setting === 'Runebase') {
+    await patchRunebaseDeposits();
+  } else if (settings.coin.setting === 'Pirate') {
+    await patchPirateDeposits();
+  } else if (settings.coin.setting === 'Komodo') {
+    await patchKomodoDeposits();
+  } else {
+    await patchRunebaseDeposits();
+  }
   next();
 };
 
-export const fetchDeposits = async (req, res, next) => {
+export const fetchDeposits = async (
+  req,
+  res,
+  next,
+) => {
   console.log(req.body);
   const transactionOptions = {
     type: 'receive',

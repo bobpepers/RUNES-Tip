@@ -13,7 +13,11 @@ import {
 
 import { processWithdrawal } from '../../services/processWithdrawal';
 
-export const acceptWithdrawal = async (req, res, next) => {
+export const acceptWithdrawal = async (
+  req,
+  res,
+  next
+) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {

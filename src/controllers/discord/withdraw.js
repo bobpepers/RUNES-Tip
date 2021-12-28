@@ -60,6 +60,8 @@ export const withdrawDiscordCreate = async (
       isValidAddress = await getInstance().utils.isRunebaseAddress(filteredMessage[2]);
     } else if (settings.coin.setting === 'Pirate') {
       isValidAddress = await getInstance().utils.isPirateAddress(filteredMessage[2]);
+    } else if (settings.coin.setting === 'Komodo') {
+      isValidAddress = await getInstance().utils.isKomodoAddress(filteredMessage[2]);
     } else {
       isValidAddress = await getInstance().utils.isRunebaseAddress(filteredMessage[2]);
     }

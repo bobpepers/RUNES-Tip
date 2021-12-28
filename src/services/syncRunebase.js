@@ -114,7 +114,7 @@ const syncTransactions = async (discordClient, telegramClient) => {
             console.log(prepareLockedAmount);
             const removeLockedAmount = Math.abs(prepareLockedAmount);
             console.log(removeLockedAmount);
-            console.log('send complete');
+            console.log('send complete runes');
 
             // console.log(removeLockedAmount);
             updatedWallet = await wallet.update({

@@ -174,7 +174,7 @@ export const listenReactDrop = async (
             files: [new MessageAttachment(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')],
           });
           const Ccollector = await awaitCaptchaMessage.channel.createMessageCollector({ filter, time: 60000, max: 1 });
-          Ccollector.on('collect', async (m) => {
+          await Ccollector.on('collect', async (m) => {
             const collectReactdrop = await db.sequelize.transaction({
               isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
             }, async (t) => {
@@ -245,7 +245,7 @@ export const listenReactDrop = async (
                     .setStyle('LINK')
                     .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`),
                 );
-                m.react('❌');
+                await m.react('❌');
                 await collector.send({ content: '\u200b', components: [row] });
               }
               t.afterCommit(() => {
@@ -257,7 +257,7 @@ export const listenReactDrop = async (
             await queue.add(() => collectReactdrop);
           });
 
-          Ccollector.on('end', async (collected) => {
+          await Ccollector.on('end', async (collected) => {
             const endingCollectReactdrop = await db.sequelize.transaction({
               isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
             }, async (t) => {

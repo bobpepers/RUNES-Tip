@@ -1,11 +1,11 @@
 /* eslint-disable import/prefer-default-export */
+import { Transaction } from "sequelize";
 import db from '../../models';
 import {
   AfterSuccessMessage,
   NotInDirectMessage,
 } from '../../messages/discord';
 
-import { Transaction } from "sequelize";
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { mapMembers } from "../../helpers/discord/mapMembers";
@@ -27,10 +27,16 @@ export const discordRain = async (
     await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
     return;
   }
+
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  const onlineMembers = members.filter((member) =>
-    member.presence?.status === "online"
-  );
+  const onlineMembers = await members.filter((member) => {
+    const memberStatus = member
+      && member.presence
+      && member.presence.status;
+    return (
+      memberStatus === "online"
+    );
+  });
 
   const activity = [];
   let userActivity;
@@ -103,7 +109,7 @@ export const discordRain = async (
     const faucetWatered = await waterFaucet(
       t,
       Number(fee),
-      faucetSetting
+      faucetSetting,
     );
 
     const rainRecord = await db.rain.create({
@@ -134,11 +140,11 @@ export const discordRain = async (
       include: [
         {
           model: db.rain,
-          as: 'rain'
+          as: 'rain',
         },
         {
           model: db.user,
-          as: 'spender'
+          as: 'spender',
         },
       ],
       lock: t.LOCK.UPDATE,
@@ -194,19 +200,19 @@ export const discordRain = async (
         include: [
           {
             model: db.user,
-            as: 'earner'
+            as: 'earner',
           },
           {
             model: db.user,
-            as: 'spender'
+            as: 'spender',
           },
           {
             model: db.rain,
-            as: 'rain'
+            as: 'rain',
           },
           {
             model: db.raintip,
-            as: 'raintip'
+            as: 'raintip',
           },
         ],
         lock: t.LOCK.UPDATE,

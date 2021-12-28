@@ -6,7 +6,10 @@ import {
 import db from '../../models';
 import logger from "../../helpers/logger";
 
-export const fetchDiscordWalletBalance = async (message, io) => {
+export const fetchDiscordWalletBalance = async (
+  message,
+  io,
+) => {
   const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,

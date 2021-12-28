@@ -19,6 +19,13 @@ export const processWithdrawal = async (transaction) => {
       console.log(e);
       responseStatus = e.reponse.status;
     }
+  } else if (settings.coin.setting === 'Komodo') {
+    try {
+      response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
+    } catch (e) {
+      console.log(e);
+      responseStatus = e.reponse.status;
+    }
   } else if (settings.coin.setting === 'Pirate') {
     try {
       const preResponse = await getInstance().zSendMany(

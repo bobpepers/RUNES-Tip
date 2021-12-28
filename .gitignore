@@ -19,3 +19,5 @@ logs/app.log
 .env.development.pirate
 .env.production.runebase
 .env.production.pirate
+.env.development.dust
+.env.production.dust

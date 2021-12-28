@@ -6,9 +6,9 @@ import db from '../../models';
 import logger from "../logger";
 
 /**
- * Notify New Transaction From Runebase Node
+ * Notify New Transaction From Komodo Node
  */
-const walletNotifyRunebase = async (req, res, next) => {
+const walletNotifyKomodo = async (req, res, next) => {
   const txId = req.body.payload;
   const transaction = await getInstance().getTransaction(txId);
 
@@ -91,4 +91,4 @@ const walletNotifyRunebase = async (req, res, next) => {
   });
 };
 
-export default walletNotifyRunebase;
+export default walletNotifyKomodo;

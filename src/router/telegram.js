@@ -351,7 +351,11 @@ export const telegramRouter = (
       }
       if (settings.coin.setting === 'Runebase') {
         if (filteredMessageTelegram[1] === 'referral' && !filteredMessageTelegram[2]) {
-          const task = await fetchReferralCount(ctx, telegramUserId, telegramUserName);
+          const task = await fetchReferralCount(
+            ctx,
+            telegramUserId,
+            telegramUserName,
+          );
           await queue.add(() => task);
         }
         if (filteredMessageTelegram[1] === 'referral' && filteredMessageTelegram[2] === 'top') {
@@ -449,14 +453,6 @@ export const telegramRouter = (
         await queue.add(() => task);
       }
     }
-
-    // Test for holding telegram members on memory
-    // const telegramInfo = await telegrafGetChatMembers.check(ctx.update.message.chat.id);
-    // console.log(telegramInfo);
-    // console.log(telegramInfo[0].user.id);
-    // const chatMemberInfo = await telegramClient.telegram.getChatMember(ctx.update.message.chat.id, telegramInfo[0].user.id);
-    // console.log(chatMemberInfo);
-    // console.log('Users');
   });
 
   telegramClient.on('message', async (ctx) => {

@@ -19,9 +19,24 @@ export const validateAmount = async (
   usersToTip = null,
 ) => {
   let activity;
+  let amount = 0;
   const capType = capitalize(type);
 
-  let amount = 0;
+  if (!preAmount) {
+    activity = await db.activity.create({
+      type: `${type}_f`,
+      spenderId: user.id,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    ctx.reply(invalidAmountMessage());
+    return [
+      activity,
+      amount,
+    ];
+  }
+
   if (preAmount.toLowerCase() === 'all') {
     amount = user.wallet.available;
   } else {

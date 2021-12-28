@@ -114,6 +114,14 @@ export const discordRouter = (
     console.log(`Logged in as ${discordClient.user.tag}!`);
   });
 
+  discordClient.on("presenceUpdate", (oldMember, newMember) => {
+    const { username } = newMember.user;
+    // const { status } = newMember.user.presence;
+    // userStatus.push(username, status);
+    // console.log(newMember);
+    // console.log(`${username} is now ${newMember.status}`);
+  });
+
   discordClient.on('voiceStateUpdate', async (oldMember, newMember) => {
     const groupTask = await updateDiscordGroup(discordClient, newMember);
     await queue.add(() => groupTask);

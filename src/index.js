@@ -22,20 +22,20 @@ import { dashboardRouter } from "./dashboard/router";
 import { updatePrice } from "./helpers/updatePrice";
 import { initDatabaseRecords } from "./helpers/initDatabaseRecords";
 
-// import logger from "./helpers/logger";
-
 import { patchRunebaseDeposits } from "./helpers/runebase/patcher";
 import { patchPirateDeposits } from "./helpers/pirate/patcher";
+import { patchKomodoDeposits } from "./helpers/komodo/patcher";
 import { reactDropMessage } from "./messages/discord";
 import { listenReactDrop } from "./controllers/discord/reactdrop";
 import db from "./models";
 import getCoinSettings from './config/settings';
 
-const settings = getCoinSettings();
-
+import { startKomodoSync } from "./services/syncKomodo";
 import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";
 import { processWithdrawals } from "./services/processWithdrawals";
+
+const settings = getCoinSettings();
 
 const queue = new PQueue({
   concurrency: 1,
@@ -243,6 +243,13 @@ server.listen(port);
     await patchPirateDeposits();
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
       patchPirateDeposits();
+    });
+  } else if (settings.coin.setting === 'Komodo') {
+    await startKomodoSync(discordClient, telegramClient);
+
+    await patchKomodoDeposits();
+    const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
+      patchKomodoDeposits();
     });
   } else {
     await startRunebaseSync(discordClient, telegramClient);

@@ -1,5 +1,6 @@
 import { Rweb3 } from "rweb3";
 import { ARRRweb3 } from "arrrweb3";
+import { KomodoWeb3 } from "komodoweb3";
 import { config } from "dotenv";
 
 import getCoinSettings from '../config/settings';
@@ -15,6 +16,9 @@ export function createInstance() {
   }
   if (settings.coin.setting === 'Pirate') {
     return new ARRRweb3(`http://${process.env.RPC_USER}:${process.env.RPC_PASS}@localhost:${process.env.RPC_PORT}`);
+  }
+  if (settings.coin.setting === 'Komodo') {
+    return new KomodoWeb3(`http://${process.env.RPC_USER}:${process.env.RPC_PASS}@localhost:${process.env.RPC_PORT}`);
   }
 }
 export function getInstance() {
