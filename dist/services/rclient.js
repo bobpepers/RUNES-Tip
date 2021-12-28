@@ -12,6 +12,8 @@ var _rweb = require("rweb3");
 
 var _arrrweb = require("arrrweb3");
 
+var _komodoweb = require("komodoweb3");
+
 var _dotenv = require("dotenv");
 
 var _settings = _interopRequireDefault(require("../config/settings"));
@@ -27,6 +29,10 @@ function createInstance() {
 
   if (settings.coin.setting === 'Pirate') {
     return new _arrrweb.ARRRweb3("http://".concat(process.env.RPC_USER, ":").concat(process.env.RPC_PASS, "@localhost:").concat(process.env.RPC_PORT));
+  }
+
+  if (settings.coin.setting === 'Komodo') {
+    return new _komodoweb.KomodoWeb3("http://".concat(process.env.RPC_USER, ":").concat(process.env.RPC_PASS, "@localhost:").concat(process.env.RPC_PORT));
   }
 }
 

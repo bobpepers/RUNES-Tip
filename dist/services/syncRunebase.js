@@ -233,7 +233,7 @@ var syncTransactions = /*#__PURE__*/function () {
                                             console.log(prepareLockedAmount);
                                             removeLockedAmount = Math.abs(prepareLockedAmount);
                                             console.log(removeLockedAmount);
-                                            console.log('send complete'); // console.log(removeLockedAmount);
+                                            console.log('send complete runes'); // console.log(removeLockedAmount);
 
                                             _context3.next = 17;
                                             return wallet.update({

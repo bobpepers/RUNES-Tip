@@ -26,8 +26,8 @@ var validateAmount = /*#__PURE__*/function () {
     var tipType,
         usersToTip,
         activity,
-        capType,
         amount,
+        capType,
         _args = arguments;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
@@ -35,21 +35,15 @@ var validateAmount = /*#__PURE__*/function () {
           case 0:
             tipType = _args.length > 6 && _args[6] !== undefined ? _args[6] : null;
             usersToTip = _args.length > 7 && _args[7] !== undefined ? _args[7] : null;
-            capType = capitalize(type);
             amount = 0;
+            capType = capitalize(type);
 
-            if (preAmount.toLowerCase() === 'all') {
-              amount = user.wallet.available;
-            } else {
-              amount = new _bignumber["default"](preAmount).times(1e8).toNumber();
-            }
-
-            if (!(amount < Number(setting.min))) {
-              _context.next = 11;
+            if (preAmount) {
+              _context.next = 10;
               break;
             }
 
-            _context.next = 8;
+            _context.next = 7;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
               spenderId: user.id
@@ -58,13 +52,19 @@ var validateAmount = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 8:
+          case 7:
             activity = _context.sent;
-            ctx.reply((0, _telegram.minimumMessage)(setting, capitalize(type)));
+            ctx.reply((0, _telegram.invalidAmountMessage)());
             return _context.abrupt("return", [activity, amount]);
 
-          case 11:
-            if (!(amount % 1 !== 0)) {
+          case 10:
+            if (preAmount.toLowerCase() === 'all') {
+              amount = user.wallet.available;
+            } else {
+              amount = new _bignumber["default"](preAmount).times(1e8).toNumber();
+            }
+
+            if (!(amount < Number(setting.min))) {
               _context.next = 17;
               break;
             }
@@ -80,11 +80,11 @@ var validateAmount = /*#__PURE__*/function () {
 
           case 14:
             activity = _context.sent;
-            ctx.reply((0, _telegram.invalidAmountMessage)());
+            ctx.reply((0, _telegram.minimumMessage)(setting, capitalize(type)));
             return _context.abrupt("return", [activity, amount]);
 
           case 17:
-            if (!(amount <= 0)) {
+            if (!(amount % 1 !== 0)) {
               _context.next = 23;
               break;
             }
@@ -104,12 +104,32 @@ var validateAmount = /*#__PURE__*/function () {
             return _context.abrupt("return", [activity, amount]);
 
           case 23:
-            if (!(user.wallet.available < amount)) {
+            if (!(amount <= 0)) {
               _context.next = 29;
               break;
             }
 
             _context.next = 26;
+            return _models["default"].activity.create({
+              type: "".concat(type, "_f"),
+              spenderId: user.id
+            }, {
+              lock: t.LOCK.UPDATE,
+              transaction: t
+            });
+
+          case 26:
+            activity = _context.sent;
+            ctx.reply((0, _telegram.invalidAmountMessage)());
+            return _context.abrupt("return", [activity, amount]);
+
+          case 29:
+            if (!(user.wallet.available < amount)) {
+              _context.next = 35;
+              break;
+            }
+
+            _context.next = 32;
             return _models["default"].activity.create({
               type: "".concat(type, "_i"),
               spenderId: user.id,
@@ -119,16 +139,16 @@ var validateAmount = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 26:
+          case 32:
             activity = _context.sent;
             ctx.reply((0, _telegram.insufficientBalanceMessage)());
             return _context.abrupt("return", [activity, amount]);
 
-          case 29:
+          case 35:
             console.log("amount: ".concat(amount));
             return _context.abrupt("return", [activity, amount]);
 
-          case 31:
+          case 37:
           case "end":
             return _context.stop();
         }

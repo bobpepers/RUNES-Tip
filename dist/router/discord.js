@@ -141,6 +141,12 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
       }
     }, _callee2);
   })));
+  discordClient.on("presenceUpdate", function (oldMember, newMember) {
+    var username = newMember.user.username; // const { status } = newMember.user.presence;
+    // userStatus.push(username, status);
+    // console.log(newMember);
+    // console.log(`${username} is now ${newMember.status}`);
+  });
   discordClient.on('voiceStateUpdate', /*#__PURE__*/function () {
     var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(oldMember, newMember) {
       var groupTask, channelTask;

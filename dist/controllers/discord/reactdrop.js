@@ -88,7 +88,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                     switch (_context5.prev = _context5.next) {
                       case 0:
                         if (collector.bot) {
-                          _context5.next = 53;
+                          _context5.next = 55;
                           break;
                         }
 
@@ -113,7 +113,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                         findReactTip = _context5.sent;
 
                         if (findReactTip) {
-                          _context5.next = 53;
+                          _context5.next = 55;
                           break;
                         }
 
@@ -242,7 +242,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 42:
-                        _context5.next = 53;
+                        _context5.next = 55;
                         break;
 
                       case 44:
@@ -264,7 +264,8 @@ var listenReactDrop = /*#__PURE__*/function () {
 
                       case 50:
                         Ccollector = _context5.sent;
-                        Ccollector.on('collect', /*#__PURE__*/function () {
+                        _context5.next = 53;
+                        return Ccollector.on('collect', /*#__PURE__*/function () {
                           var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(m) {
                             var collectReactdrop;
                             return _regenerator["default"].wrap(function _callee2$(_context2) {
@@ -326,7 +327,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                                                 });
 
                                               case 11:
-                                                _context.next = 22;
+                                                _context.next = 23;
                                                 break;
 
                                               case 13:
@@ -358,19 +359,22 @@ var listenReactDrop = /*#__PURE__*/function () {
                                               case 17:
                                                 _reactDropRecord = _context.sent;
                                                 _row = new _discord.MessageActionRow().addComponents(new _discord.MessageButton().setLabel('Back to ReactDrop').setStyle('LINK').setURL("https://discord.com/channels/".concat(_reactDropRecord.group.groupId.replace("discord-", ""), "/").concat(_reactDropRecord.channel.channelId.replace("discord-", ""), "/").concat(_reactDropRecord.discordMessageId)));
-                                                m.react('❌');
-                                                _context.next = 22;
+                                                _context.next = 21;
+                                                return m.react('❌');
+
+                                              case 21:
+                                                _context.next = 23;
                                                 return collector.send({
                                                   content: "\u200B",
                                                   components: [_row]
                                                 });
 
-                                              case 22:
+                                              case 23:
                                                 t.afterCommit(function () {
                                                   console.log('done');
                                                 });
 
-                                              case 23:
+                                              case 24:
                                               case "end":
                                                 return _context.stop();
                                             }
@@ -404,7 +408,10 @@ var listenReactDrop = /*#__PURE__*/function () {
                             return _ref4.apply(this, arguments);
                           };
                         }());
-                        Ccollector.on('end', /*#__PURE__*/function () {
+
+                      case 53:
+                        _context5.next = 55;
+                        return Ccollector.on('end', /*#__PURE__*/function () {
                           var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(collected) {
                             var endingCollectReactdrop;
                             return _regenerator["default"].wrap(function _callee4$(_context4) {
@@ -502,7 +509,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                           };
                         }());
 
-                      case 53:
+                      case 55:
                       case "end":
                         return _context5.stop();
                     }

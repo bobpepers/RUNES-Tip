@@ -50,89 +50,114 @@ var processWithdrawal = /*#__PURE__*/function () {
             responseStatus = _context.t0.reponse.status;
 
           case 12:
-            _context.next = 48;
+            _context.next = 61;
             break;
 
           case 14:
-            if (!(settings.coin.setting === 'Pirate')) {
-              _context.next = 39;
+            if (!(settings.coin.setting === 'Komodo')) {
+              _context.next = 27;
               break;
             }
 
             _context.prev = 15;
             _context.next = 18;
+            return (0, _rclient.getInstance)().sendToAddress(transaction.to_from, amount.toFixed(8).toString());
+
+          case 18:
+            response = _context.sent;
+            _context.next = 25;
+            break;
+
+          case 21:
+            _context.prev = 21;
+            _context.t1 = _context["catch"](15);
+            console.log(_context.t1);
+            responseStatus = _context.t1.reponse.status;
+
+          case 25:
+            _context.next = 61;
+            break;
+
+          case 27:
+            if (!(settings.coin.setting === 'Pirate')) {
+              _context.next = 52;
+              break;
+            }
+
+            _context.prev = 28;
+            _context.next = 31;
             return (0, _rclient.getInstance)().zSendMany(process.env.PIRATE_MAIN_ADDRESS, [{
               address: transaction.to_from,
               amount: amount.toFixed(8)
             }], 1, 0.0001);
 
-          case 18:
+          case 31:
             preResponse = _context.sent;
-            _context.next = 21;
+            _context.next = 34;
             return (0, _rclient.getInstance)().zGetOperationStatus([preResponse]);
 
-          case 21:
+          case 34:
             opStatus = _context.sent;
 
-          case 22:
+          case 35:
             if (!(!opStatus || opStatus[0].status === 'executing')) {
-              _context.next = 30;
+              _context.next = 43;
               break;
             }
 
-            _context.next = 25;
+            _context.next = 38;
             return new Promise(function (resolve) {
               return setTimeout(resolve, 1000);
             });
 
-          case 25:
-            _context.next = 27;
+          case 38:
+            _context.next = 40;
             return (0, _rclient.getInstance)().zGetOperationStatus([preResponse]);
 
-          case 27:
+          case 40:
             opStatus = _context.sent;
-            _context.next = 22;
+            _context.next = 35;
             break;
 
-          case 30:
+          case 43:
             response = opStatus[0].result.txid;
-            _context.next = 37;
+            _context.next = 50;
             break;
 
-          case 33:
-            _context.prev = 33;
-            _context.t1 = _context["catch"](15);
-            responseStatus = _context.t1.response.status;
-            console.log(_context.t1);
+          case 46:
+            _context.prev = 46;
+            _context.t2 = _context["catch"](28);
+            responseStatus = _context.t2.response.status;
+            console.log(_context.t2);
 
-          case 37:
-            _context.next = 48;
+          case 50:
+            _context.next = 61;
             break;
 
-          case 39:
-            _context.prev = 39;
-            _context.next = 42;
+          case 52:
+            _context.prev = 52;
+            _context.next = 55;
             return (0, _rclient.getInstance)().sendToAddress(transaction.to_from, amount.toFixed(8).toString());
 
-          case 42:
+          case 55:
             response = _context.sent;
-            _context.next = 48;
+            _context.next = 61;
             break;
 
-          case 45:
-            _context.prev = 45;
-            _context.t2 = _context["catch"](39);
-            responseStatus = _context.t2.reponse.status;
+          case 58:
+            _context.prev = 58;
+            _context.t3 = _context["catch"](52);
+            responseStatus = _context.t3.reponse.status;
 
-          case 48:
+          case 61:
             return _context.abrupt("return", [response, responseStatus]);
 
-          case 49:
+          case 62:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[2, 8], [15, 33], [39, 45]]);
+    }, _callee, null, [[2, 8], [15, 21], [28, 46], [52, 58]]);
   }));
 
   return function processWithdrawal(_x) {

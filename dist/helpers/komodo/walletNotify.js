@@ -20,9 +20,9 @@ var _models = _interopRequireDefault(require("../../models"));
 var _logger = _interopRequireDefault(require("../logger"));
 
 /**
- * Notify New Transaction From Runebase Node
+ * Notify New Transaction From Komodo Node
  */
-var walletNotifyRunebase = /*#__PURE__*/function () {
+var walletNotifyKomodo = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(req, res, next) {
     var txId, transaction;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
@@ -180,10 +180,10 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
     }, _callee3);
   }));
 
-  return function walletNotifyRunebase(_x, _x2, _x3) {
+  return function walletNotifyKomodo(_x, _x2, _x3) {
     return _ref.apply(this, arguments);
   };
 }();
 
-var _default = walletNotifyRunebase;
+var _default = walletNotifyKomodo;
 exports["default"] = _default;

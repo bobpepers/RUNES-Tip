@@ -13,11 +13,11 @@ var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/sli
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _sequelize = require("sequelize");
+
 var _models = _interopRequireDefault(require("../../models"));
 
 var _discord = require("../../messages/discord");
-
-var _sequelize = require("sequelize");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
@@ -63,13 +63,16 @@ var discordRain = /*#__PURE__*/function () {
 
           case 6:
             members = _context2.sent;
-            onlineMembers = members.filter(function (member) {
-              var _member$presence;
-
-              return ((_member$presence = member.presence) === null || _member$presence === void 0 ? void 0 : _member$presence.status) === "online";
+            _context2.next = 9;
+            return members.filter(function (member) {
+              var memberStatus = member && member.presence && member.presence.status;
+              return memberStatus === "online";
             });
+
+          case 9:
+            onlineMembers = _context2.sent;
             activity = [];
-            _context2.next = 11;
+            _context2.next = 13;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -397,12 +400,12 @@ var discordRain = /*#__PURE__*/function () {
               message.channel.send('something went wrong');
             });
 
-          case 11:
+          case 13:
             io.to('admin').emit('updateActivity', {
               activity: activity
             });
 
-          case 12:
+          case 14:
           case "end":
             return _context2.stop();
         }

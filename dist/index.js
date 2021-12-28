@@ -40,6 +40,8 @@ var _patcher = require("./helpers/runebase/patcher");
 
 var _patcher2 = require("./helpers/pirate/patcher");
 
+var _patcher3 = require("./helpers/komodo/patcher");
+
 var _discord2 = require("./messages/discord");
 
 var _reactdrop = require("./controllers/discord/reactdrop");
@@ -47,6 +49,8 @@ var _reactdrop = require("./controllers/discord/reactdrop");
 var _models = _interopRequireDefault(require("./models"));
 
 var _settings = _interopRequireDefault(require("./config/settings"));
+
+var _syncKomodo = require("./services/syncKomodo");
 
 var _syncRunebase = require("./services/syncRunebase");
 
@@ -185,7 +189,7 @@ telegramClient.use(telegrafGetChatMembers);
 (0, _router2.dashboardRouter)(app, io, discordClient, telegramClient);
 server.listen(port);
 (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
-  var allRunningReactDrops, _iterator, _step, _loop, schedulePatchDeposits, _schedulePatchDeposits, _schedulePatchDeposits2;
+  var allRunningReactDrops, _iterator, _step, _loop, schedulePatchDeposits, _schedulePatchDeposits, _schedulePatchDeposits2, _schedulePatchDeposits3;
 
   return _regenerator["default"].wrap(function _callee3$(_context4) {
     while (1) {
@@ -336,7 +340,7 @@ server.listen(port);
           schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher.patchRunebaseDeposits)();
           });
-          _context4.next = 46;
+          _context4.next = 54;
           break;
 
         case 33:
@@ -356,23 +360,43 @@ server.listen(port);
           _schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher2.patchPirateDeposits)();
           });
-          _context4.next = 46;
+          _context4.next = 54;
           break;
 
         case 41:
-          _context4.next = 43;
+          if (!(settings.coin.setting === 'Komodo')) {
+            _context4.next = 49;
+            break;
+          }
+
+          _context4.next = 44;
+          return (0, _syncKomodo.startKomodoSync)(discordClient, telegramClient);
+
+        case 44:
+          _context4.next = 46;
+          return (0, _patcher3.patchKomodoDeposits)();
+
+        case 46:
+          _schedulePatchDeposits2 = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
+            (0, _patcher3.patchKomodoDeposits)();
+          });
+          _context4.next = 54;
+          break;
+
+        case 49:
+          _context4.next = 51;
           return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient);
 
-        case 43:
-          _context4.next = 45;
+        case 51:
+          _context4.next = 53;
           return (0, _patcher.patchRunebaseDeposits)();
 
-        case 45:
-          _schedulePatchDeposits2 = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
+        case 53:
+          _schedulePatchDeposits3 = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher.patchRunebaseDeposits)();
           });
 
-        case 46:
+        case 54:
         case "end":
           return _context4.stop();
       }

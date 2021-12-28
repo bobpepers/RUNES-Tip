@@ -17,7 +17,15 @@ var _models = _interopRequireDefault(require("../../models"));
 
 var _patcher = require("../../helpers/pirate/patcher");
 
+var _patcher2 = require("../../helpers/runebase/patcher");
+
+var _patcher3 = require("../../helpers/komodo/patcher");
+
+var _settings = _interopRequireDefault(require("../../config/settings"));
+
 // import { parseDomain } from "parse-domain";
+var settings = (0, _settings["default"])();
+
 var _require = require('sequelize'),
     Op = _require.Op;
 
@@ -27,14 +35,52 @@ var patchDeposits = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.next = 2;
+            if (!(settings.coin.setting === 'Runebase')) {
+              _context.next = 5;
+              break;
+            }
+
+            _context.next = 3;
+            return (0, _patcher2.patchRunebaseDeposits)();
+
+          case 3:
+            _context.next = 17;
+            break;
+
+          case 5:
+            if (!(settings.coin.setting === 'Pirate')) {
+              _context.next = 10;
+              break;
+            }
+
+            _context.next = 8;
             return (0, _patcher.patchPirateDeposits)();
 
-          case 2:
-            console.log('done patchDeposits');
+          case 8:
+            _context.next = 17;
+            break;
+
+          case 10:
+            if (!(settings.coin.setting === 'Komodo')) {
+              _context.next = 15;
+              break;
+            }
+
+            _context.next = 13;
+            return (0, _patcher3.patchKomodoDeposits)();
+
+          case 13:
+            _context.next = 17;
+            break;
+
+          case 15:
+            _context.next = 17;
+            return (0, _patcher2.patchRunebaseDeposits)();
+
+          case 17:
             next();
 
-          case 4:
+          case 18:
           case "end":
             return _context.stop();
         }

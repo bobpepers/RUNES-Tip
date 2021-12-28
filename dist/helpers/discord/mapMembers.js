@@ -29,49 +29,78 @@ var mapMembers = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
+            mappedMembersArray = [];
             withoutBots = [];
 
             if (optionalRoleMessage && optionalRoleMessage.startsWith('<@&')) {
               roleId = optionalRoleMessage.substr(3).slice(0, -1);
             }
 
-            if (roleId) {
-              filterWithRoles = onlineMembers.filter(function (member) {
-                return member._roles.includes(roleId);
-              });
-              mappedMembersArray = filterWithRoles.map(function (a) {
-                return a.user;
-              });
-            } else {
-              mappedMembersArray = onlineMembers.map(function (a) {
-                return a.user;
-              });
+            if (!roleId) {
+              _context.next = 12;
+              break;
             }
 
-            if (mappedMembersArray.length > setting.maxSampleSize) {
-              mappedMembersArray = _lodash["default"].sampleSize(mappedMembersArray, setting.maxSampleSize);
-            } // eslint-disable-next-line no-restricted-syntax
+            _context.next = 6;
+            return onlineMembers.filter(function (member) {
+              return member._roles.includes(roleId) && !member.user.bot;
+            });
 
+          case 6:
+            filterWithRoles = _context.sent;
+            _context.next = 9;
+            return filterWithRoles.map(function (a) {
+              return a.user;
+            });
 
+          case 9:
+            mappedMembersArray = _context.sent;
+            _context.next = 18;
+            break;
+
+          case 12:
+            _context.next = 14;
+            return onlineMembers.filter(function (a) {
+              return !a.user.bot;
+            });
+
+          case 14:
+            mappedMembersArray = _context.sent;
+            _context.next = 17;
+            return mappedMembersArray.map(function (a) {
+              return a.user;
+            });
+
+          case 17:
+            mappedMembersArray = _context.sent;
+
+          case 18:
+            if (!(mappedMembersArray.length > setting.maxSampleSize)) {
+              _context.next = 22;
+              break;
+            }
+
+            _context.next = 21;
+            return _lodash["default"].sampleSize(mappedMembersArray, setting.maxSampleSize);
+
+          case 21:
+            mappedMembersArray = _context.sent;
+
+          case 22:
+            // eslint-disable-next-line no-restricted-syntax
             _iterator = _createForOfIteratorHelper(mappedMembersArray);
-            _context.prev = 5;
+            _context.prev = 23;
 
             _iterator.s();
 
-          case 7:
+          case 25:
             if ((_step = _iterator.n()).done) {
-              _context.next = 16;
+              _context.next = 39;
               break;
             }
 
             discordUser = _step.value;
-
-            if (!(discordUser.bot === false)) {
-              _context.next = 14;
-              break;
-            }
-
-            _context.next = 12;
+            _context.next = 29;
             return _models["default"].user.findOne({
               where: {
                 user_id: "discord-".concat(discordUser.id)
@@ -90,47 +119,58 @@ var mapMembers = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 12:
+          case 29:
             userExist = _context.sent;
 
-            if (userExist) {
-              userIdTest = userExist.user_id.replace('discord-', '');
-
-              if (userIdTest !== message.author.id) {
-                withoutBots.push(userExist);
-              }
+            if (!userExist) {
+              _context.next = 37;
+              break;
             }
 
-          case 14:
-            _context.next = 7;
+            _context.next = 33;
+            return userExist.user_id.replace('discord-', '');
+
+          case 33:
+            userIdTest = _context.sent;
+
+            if (!(userIdTest !== message.author.id)) {
+              _context.next = 37;
+              break;
+            }
+
+            _context.next = 37;
+            return withoutBots.push(userExist);
+
+          case 37:
+            _context.next = 25;
             break;
 
-          case 16:
-            _context.next = 21;
+          case 39:
+            _context.next = 44;
             break;
 
-          case 18:
-            _context.prev = 18;
-            _context.t0 = _context["catch"](5);
+          case 41:
+            _context.prev = 41;
+            _context.t0 = _context["catch"](23);
 
             _iterator.e(_context.t0);
 
-          case 21:
-            _context.prev = 21;
+          case 44:
+            _context.prev = 44;
 
             _iterator.f();
 
-            return _context.finish(21);
+            return _context.finish(44);
 
-          case 24:
+          case 47:
             return _context.abrupt("return", withoutBots);
 
-          case 25:
+          case 48:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[5, 18, 21, 24]]);
+    }, _callee, null, [[23, 41, 44, 47]]);
   }));
 
   return function mapMembers(_x, _x2, _x3, _x4, _x5) {

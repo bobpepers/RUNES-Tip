@@ -1,24 +1,24 @@
 "use strict";
 
 module.exports = {
-  startSyncBlock: 500000,
+  startSyncBlock: 460912,
   bot: {
-    name: "RunesTipBot",
+    name: "DustTipBot",
     color: "#0099ff",
     url: {
       telegram: "",
-      discord: "https://discord.com/oauth2/authorize?client_id=906563045248094249&scope=bot&permissions=523328"
+      discord: "https://discord.com/oauth2/authorize?client_id=924779779499110443&scope=bot&permissions=523328"
     },
     command: {
-      discord: "!runestip",
-      telegram: "!runestip"
+      discord: "!dusttip",
+      telegram: "!dusttip"
     }
   },
   coin: {
-    setting: "Runebase",
-    // Supported names for setting (Runebase, Pirate) // default fallback settings are Runebase
-    name: "Runebase",
-    ticker: "RUNES",
+    setting: "Komodo",
+    // Supported names for setting (Runebase, Pirate, Komodo) // default fallback settings are Runebase
+    name: "Dragonfairy",
+    ticker: "DUST",
     logo: "https://downloads.runebase.io/logo-512x512.png",
     website: "https://www.runebase.io",
     explorer: "https://explorer.runebase.io",

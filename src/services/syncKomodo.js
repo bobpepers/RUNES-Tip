@@ -105,12 +105,12 @@ const syncTransactions = async (discordClient, telegramClient) => {
       if (transaction.confirmations >= Number(settings.min.confirmations)) {
         // transaction.details.forEach(async (detail) => {
 
-        if (transaction.details[0].category === 'send' && trans.type === 'send') {
+        if (transaction.details[1] && transaction.details[1].category === 'send' && trans.type === 'send') {
           // console.log(detail.amount);
           // console.log(((detail.amount * 1e8)));
 
-          console.log(transaction.details[0].amount);
-          const prepareLockedAmount = ((transaction.details[0].amount * 1e8) + Number(trans.feeAmount));
+          console.log(transaction.details[1].amount);
+          const prepareLockedAmount = ((transaction.details[1].amount * 1e8) - Number(trans.feeAmount));
           console.log(prepareLockedAmount);
           const removeLockedAmount = Math.abs(prepareLockedAmount);
           console.log(removeLockedAmount);
@@ -133,7 +133,7 @@ const syncTransactions = async (discordClient, telegramClient) => {
           const createActivity = await db.activity.create({
             spenderId: updatedWallet.userId,
             type: 'withdrawComplete',
-            amount: transaction.details[0].amount * 1e8,
+            amount: transaction.details[1].amount * 1e8,
             spender_balance: updatedWallet.available + updatedWallet.locked,
             transactionId: updatedTransaction.id,
           }, {
