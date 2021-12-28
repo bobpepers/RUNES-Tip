@@ -14,55 +14,77 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 var _models = _interopRequireDefault(require("../models"));
 
 var initDatabaseRecords = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
-    var discordBotSetting, telegramBotSetting, autoWithdrawalSetting, faucet, floodSetting, withdrawSetting, tipSetting, rainSetting, soakSetting, sleetSetting, voicerainSetting, thunderSetting, thunderstormSetting, hurricaneSetting, faucetSetting, reactdropSetting;
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(discordClient, telegramClient) {
+    var discordBotUser, discordBotSetting, telegramBotSetting, autoWithdrawalSetting, faucet, floodSetting, withdrawSetting, tipSetting, rainSetting, soakSetting, sleetSetting, voicerainSetting, thunderSetting, thunderstormSetting, hurricaneSetting, faucetSetting, reactdropSetting;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return _models["default"].bots.findOne({
+            return _models["default"].user.findOne({
               where: {
-                name: 'discord'
+                user_id: "discord-".concat(discordClient.user.id)
               }
             });
 
           case 2:
-            discordBotSetting = _context.sent;
+            discordBotUser = _context.sent;
 
-            if (discordBotSetting) {
+            if (discordBotUser) {
               _context.next = 6;
               break;
             }
 
             _context.next = 6;
-            return _models["default"].bots.create({
-              name: 'discord'
+            return _models["default"].user.create({
+              username: discordClient.user.username,
+              user_id: "discord-".concat(discordClient.user.id)
             });
 
           case 6:
             _context.next = 8;
             return _models["default"].bots.findOne({
               where: {
-                name: 'telegram'
+                name: 'discord'
               }
             });
 
           case 8:
-            telegramBotSetting = _context.sent;
+            discordBotSetting = _context.sent;
 
-            if (telegramBotSetting) {
+            if (discordBotSetting) {
               _context.next = 12;
               break;
             }
 
             _context.next = 12;
             return _models["default"].bots.create({
-              name: 'telegram'
+              name: 'discord'
             });
 
           case 12:
             _context.next = 14;
+            return _models["default"].bots.findOne({
+              where: {
+                name: 'telegram'
+              }
+            });
+
+          case 14:
+            telegramBotSetting = _context.sent;
+
+            if (telegramBotSetting) {
+              _context.next = 18;
+              break;
+            }
+
+            _context.next = 18;
+            return _models["default"].bots.create({
+              name: 'telegram'
+            });
+
+          case 18:
+            _context.next = 20;
             return _models["default"].features.findOne({
               where: {
                 type: 'global',
@@ -70,62 +92,38 @@ var initDatabaseRecords = /*#__PURE__*/function () {
               }
             });
 
-          case 14:
+          case 20:
             autoWithdrawalSetting = _context.sent;
 
             if (autoWithdrawalSetting) {
-              _context.next = 18;
+              _context.next = 24;
               break;
             }
 
-            _context.next = 18;
+            _context.next = 24;
             return _models["default"].features.create({
               type: 'global',
               name: 'autoWithdrawal',
               enabled: true
             });
 
-          case 18:
-            _context.next = 20;
+          case 24:
+            _context.next = 26;
             return _models["default"].faucet.findOne();
 
-          case 20:
+          case 26:
             faucet = _context.sent;
 
             if (faucet) {
-              _context.next = 24;
-              break;
-            }
-
-            _context.next = 24;
-            return _models["default"].faucet.create({
-              amount: 0,
-              totalAmountClaimed: 0,
-              claims: 0
-            });
-
-          case 24:
-            _context.next = 26;
-            return _models["default"].features.findOne({
-              where: {
-                type: 'global',
-                name: 'flood'
-              }
-            });
-
-          case 26:
-            floodSetting = _context.sent;
-
-            if (floodSetting) {
               _context.next = 30;
               break;
             }
 
             _context.next = 30;
-            return _models["default"].features.create({
-              type: 'global',
-              name: 'flood',
-              enabled: true
+            return _models["default"].faucet.create({
+              amount: 0,
+              totalAmountClaimed: 0,
+              claims: 0
             });
 
           case 30:
@@ -133,14 +131,14 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             return _models["default"].features.findOne({
               where: {
                 type: 'global',
-                name: 'withdraw'
+                name: 'flood'
               }
             });
 
           case 32:
-            withdrawSetting = _context.sent;
+            floodSetting = _context.sent;
 
-            if (withdrawSetting) {
+            if (floodSetting) {
               _context.next = 36;
               break;
             }
@@ -148,7 +146,7 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             _context.next = 36;
             return _models["default"].features.create({
               type: 'global',
-              name: 'withdraw',
+              name: 'flood',
               enabled: true
             });
 
@@ -157,14 +155,14 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             return _models["default"].features.findOne({
               where: {
                 type: 'global',
-                name: 'tip'
+                name: 'withdraw'
               }
             });
 
           case 38:
-            tipSetting = _context.sent;
+            withdrawSetting = _context.sent;
 
-            if (tipSetting) {
+            if (withdrawSetting) {
               _context.next = 42;
               break;
             }
@@ -172,7 +170,7 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             _context.next = 42;
             return _models["default"].features.create({
               type: 'global',
-              name: 'tip',
+              name: 'withdraw',
               enabled: true
             });
 
@@ -181,14 +179,14 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             return _models["default"].features.findOne({
               where: {
                 type: 'global',
-                name: 'rain'
+                name: 'tip'
               }
             });
 
           case 44:
-            rainSetting = _context.sent;
+            tipSetting = _context.sent;
 
-            if (rainSetting) {
+            if (tipSetting) {
               _context.next = 48;
               break;
             }
@@ -196,7 +194,7 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             _context.next = 48;
             return _models["default"].features.create({
               type: 'global',
-              name: 'rain',
+              name: 'tip',
               enabled: true
             });
 
@@ -205,14 +203,14 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             return _models["default"].features.findOne({
               where: {
                 type: 'global',
-                name: 'soak'
+                name: 'rain'
               }
             });
 
           case 50:
-            soakSetting = _context.sent;
+            rainSetting = _context.sent;
 
-            if (soakSetting) {
+            if (rainSetting) {
               _context.next = 54;
               break;
             }
@@ -220,7 +218,7 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             _context.next = 54;
             return _models["default"].features.create({
               type: 'global',
-              name: 'soak',
+              name: 'rain',
               enabled: true
             });
 
@@ -229,14 +227,14 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             return _models["default"].features.findOne({
               where: {
                 type: 'global',
-                name: 'sleet'
+                name: 'soak'
               }
             });
 
           case 56:
-            sleetSetting = _context.sent;
+            soakSetting = _context.sent;
 
-            if (sleetSetting) {
+            if (soakSetting) {
               _context.next = 60;
               break;
             }
@@ -244,7 +242,7 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             _context.next = 60;
             return _models["default"].features.create({
               type: 'global',
-              name: 'sleet',
+              name: 'soak',
               enabled: true
             });
 
@@ -253,14 +251,14 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             return _models["default"].features.findOne({
               where: {
                 type: 'global',
-                name: 'voicerain'
+                name: 'sleet'
               }
             });
 
           case 62:
-            voicerainSetting = _context.sent;
+            sleetSetting = _context.sent;
 
-            if (voicerainSetting) {
+            if (sleetSetting) {
               _context.next = 66;
               break;
             }
@@ -268,7 +266,7 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             _context.next = 66;
             return _models["default"].features.create({
               type: 'global',
-              name: 'voicerain',
+              name: 'sleet',
               enabled: true
             });
 
@@ -277,14 +275,14 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             return _models["default"].features.findOne({
               where: {
                 type: 'global',
-                name: 'thunder'
+                name: 'voicerain'
               }
             });
 
           case 68:
-            thunderSetting = _context.sent;
+            voicerainSetting = _context.sent;
 
-            if (thunderSetting) {
+            if (voicerainSetting) {
               _context.next = 72;
               break;
             }
@@ -292,7 +290,7 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             _context.next = 72;
             return _models["default"].features.create({
               type: 'global',
-              name: 'thunder',
+              name: 'voicerain',
               enabled: true
             });
 
@@ -301,14 +299,14 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             return _models["default"].features.findOne({
               where: {
                 type: 'global',
-                name: 'thunderstorm'
+                name: 'thunder'
               }
             });
 
           case 74:
-            thunderstormSetting = _context.sent;
+            thunderSetting = _context.sent;
 
-            if (thunderstormSetting) {
+            if (thunderSetting) {
               _context.next = 78;
               break;
             }
@@ -316,7 +314,7 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             _context.next = 78;
             return _models["default"].features.create({
               type: 'global',
-              name: 'thunderstorm',
+              name: 'thunder',
               enabled: true
             });
 
@@ -325,14 +323,14 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             return _models["default"].features.findOne({
               where: {
                 type: 'global',
-                name: 'hurricane'
+                name: 'thunderstorm'
               }
             });
 
           case 80:
-            hurricaneSetting = _context.sent;
+            thunderstormSetting = _context.sent;
 
-            if (hurricaneSetting) {
+            if (thunderstormSetting) {
               _context.next = 84;
               break;
             }
@@ -340,7 +338,7 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             _context.next = 84;
             return _models["default"].features.create({
               type: 'global',
-              name: 'hurricane',
+              name: 'thunderstorm',
               enabled: true
             });
 
@@ -349,14 +347,14 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             return _models["default"].features.findOne({
               where: {
                 type: 'global',
-                name: 'faucet'
+                name: 'hurricane'
               }
             });
 
           case 86:
-            faucetSetting = _context.sent;
+            hurricaneSetting = _context.sent;
 
-            if (faucetSetting) {
+            if (hurricaneSetting) {
               _context.next = 90;
               break;
             }
@@ -364,7 +362,7 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             _context.next = 90;
             return _models["default"].features.create({
               type: 'global',
-              name: 'faucet',
+              name: 'hurricane',
               enabled: true
             });
 
@@ -373,14 +371,14 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             return _models["default"].features.findOne({
               where: {
                 type: 'global',
-                name: 'reactdrop'
+                name: 'faucet'
               }
             });
 
           case 92:
-            reactdropSetting = _context.sent;
+            faucetSetting = _context.sent;
 
-            if (reactdropSetting) {
+            if (faucetSetting) {
               _context.next = 96;
               break;
             }
@@ -388,11 +386,35 @@ var initDatabaseRecords = /*#__PURE__*/function () {
             _context.next = 96;
             return _models["default"].features.create({
               type: 'global',
-              name: 'reactdrop',
+              name: 'faucet',
               enabled: true
             });
 
           case 96:
+            _context.next = 98;
+            return _models["default"].features.findOne({
+              where: {
+                type: 'global',
+                name: 'reactdrop'
+              }
+            });
+
+          case 98:
+            reactdropSetting = _context.sent;
+
+            if (reactdropSetting) {
+              _context.next = 102;
+              break;
+            }
+
+            _context.next = 102;
+            return _models["default"].features.create({
+              type: 'global',
+              name: 'reactdrop',
+              enabled: true
+            });
+
+          case 102:
           case "end":
             return _context.stop();
         }
@@ -400,7 +422,7 @@ var initDatabaseRecords = /*#__PURE__*/function () {
     }, _callee);
   }));
 
-  return function initDatabaseRecords() {
+  return function initDatabaseRecords(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 }();

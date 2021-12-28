@@ -207,25 +207,18 @@ var syncTransactions = /*#__PURE__*/function () {
 
                                 case 7:
                                   if (!(transaction.confirmations >= Number(settings.min.confirmations))) {
-                                    _context3.next = 54;
+                                    _context3.next = 50;
                                     break;
                                   }
 
                                   if (!(transaction.details[1] && transaction.details[1].category === 'send' && trans.type === 'send')) {
-                                    _context3.next = 33;
+                                    _context3.next = 29;
                                     break;
                                   }
 
-                                  // console.log(detail.amount);
-                                  // console.log(((detail.amount * 1e8)));
-                                  console.log(transaction.details[1].amount);
                                   prepareLockedAmount = transaction.details[1].amount * 1e8 - Number(trans.feeAmount);
-                                  console.log(prepareLockedAmount);
                                   removeLockedAmount = Math.abs(prepareLockedAmount);
-                                  console.log(removeLockedAmount);
-                                  console.log('send complete'); // console.log(removeLockedAmount);
-
-                                  _context3.next = 17;
+                                  _context3.next = 13;
                                   return wallet.update({
                                     locked: wallet.locked - removeLockedAmount
                                   }, {
@@ -233,9 +226,9 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 17:
+                                case 13:
                                   updatedWallet = _context3.sent;
-                                  _context3.next = 20;
+                                  _context3.next = 16;
                                   return trans.update({
                                     confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
                                     phase: 'confirmed'
@@ -244,9 +237,9 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 20:
+                                case 16:
                                   updatedTransaction = _context3.sent;
-                                  _context3.next = 23;
+                                  _context3.next = 19;
                                   return _models["default"].activity.create({
                                     spenderId: updatedWallet.userId,
                                     type: 'withdrawComplete',
@@ -258,23 +251,23 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 23:
+                                case 19:
                                   createActivity = _context3.sent;
-                                  _context3.next = 26;
+                                  _context3.next = 22;
                                   return _models["default"].faucet.findOne({
                                     transaction: t,
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 26:
+                                case 22:
                                   faucet = _context3.sent;
 
                                   if (!faucet) {
-                                    _context3.next = 30;
+                                    _context3.next = 26;
                                     break;
                                   }
 
-                                  _context3.next = 30;
+                                  _context3.next = 26;
                                   return faucet.update({
                                     amount: Number(faucet.amount) + Number(trans.feeAmount / 2)
                                   }, {
@@ -282,8 +275,8 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 30:
-                                  _context3.next = 32;
+                                case 26:
+                                  _context3.next = 28;
                                   return _models["default"].activity.create({
                                     spenderId: updatedWallet.userId,
                                     type: 'faucet_add',
@@ -293,16 +286,16 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 32:
+                                case 28:
                                   createFaucetActivity = _context3.sent;
 
-                                case 33:
+                                case 29:
                                   if (!(transaction.details[0].category === 'receive' && trans.type === 'receive')) {
-                                    _context3.next = 54;
+                                    _context3.next = 50;
                                     break;
                                   }
 
-                                  _context3.next = 36;
+                                  _context3.next = 32;
                                   return wallet.update({
                                     available: wallet.available + transaction.details[0].amount * 1e8
                                   }, {
@@ -310,9 +303,9 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 36:
+                                case 32:
                                   updatedWallet = _context3.sent;
-                                  _context3.next = 39;
+                                  _context3.next = 35;
                                   return trans.update({
                                     confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
                                     phase: 'confirmed'
@@ -321,9 +314,9 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 39:
+                                case 35:
                                   updatedTransaction = _context3.sent;
-                                  _context3.next = 42;
+                                  _context3.next = 38;
                                   return _models["default"].activity.create({
                                     earnerId: updatedWallet.userId,
                                     type: 'depositComplete',
@@ -335,9 +328,9 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 42:
+                                case 38:
                                   _createActivity = _context3.sent;
-                                  _context3.next = 45;
+                                  _context3.next = 41;
                                   return _models["default"].user.findOne({
                                     where: {
                                       id: updatedWallet.userId
@@ -346,37 +339,37 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 45:
+                                case 41:
                                   userToMessage = _context3.sent;
 
                                   if (!userToMessage.user_id.startsWith('discord')) {
-                                    _context3.next = 53;
+                                    _context3.next = 49;
                                     break;
                                   }
 
                                   userClientId = userToMessage.user_id.replace('discord-', '');
-                                  _context3.next = 50;
+                                  _context3.next = 46;
                                   return discordClient.users.fetch(userClientId, false);
 
-                                case 50:
+                                case 46:
                                   myClient = _context3.sent;
-                                  _context3.next = 53;
+                                  _context3.next = 49;
                                   return myClient.send({
                                     embeds: [(0, _discord.discordDepositConfirmedMessage)(transaction.details[0].amount)]
                                   });
 
-                                case 53:
+                                case 49:
                                   if (userToMessage.user_id.startsWith('telegram')) {
                                     userClientId = userToMessage.user_id.replace('telegram-', '');
                                     telegramClient.telegram.sendMessage(userClientId, (0, _telegram.telegramDepositConfirmedMessage)(transaction.details[0].amount));
                                   }
 
-                                case 54:
+                                case 50:
                                   t.afterCommit(function () {
                                     console.log('done');
                                   });
 
-                                case 55:
+                                case 51:
                                 case "end":
                                   return _context3.stop();
                               }

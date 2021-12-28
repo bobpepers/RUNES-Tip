@@ -204,7 +204,7 @@ server.listen(port);
 
         case 4:
           _context4.next = 6;
-          return (0, _initDatabaseRecords.initDatabaseRecords)();
+          return (0, _initDatabaseRecords.initDatabaseRecords)(discordClient, telegramClient);
 
         case 6:
           _context4.next = 8;

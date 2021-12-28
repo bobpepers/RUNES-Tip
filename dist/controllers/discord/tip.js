@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.tipRunesToDiscordUser = void 0;
+exports.tipRunesToDiscordUser = exports.tipCoinsToDiscordFaucet = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -440,3 +440,333 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
 }();
 
 exports.tipRunesToDiscordUser = tipRunesToDiscordUser;
+
+var tipCoinsToDiscordFaucet = /*#__PURE__*/function () {
+  var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(discordClient, message, filteredMessage, io, groupTask, channelTask, setting, faucetSetting, queue) {
+    var activity, user, usersToTip, userActivity;
+    return _regenerator["default"].wrap(function _callee4$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            if (!(!groupTask || !channelTask)) {
+              _context5.next = 4;
+              break;
+            }
+
+            _context5.next = 3;
+            return message.channel.send({
+              embeds: [(0, _discord.NotInDirectMessage)(message, 'Tip')]
+            });
+
+          case 3:
+            return _context5.abrupt("return");
+
+          case 4:
+            activity = [];
+            usersToTip = [];
+            _context5.next = 8;
+            return _models["default"].sequelize.transaction({
+              isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
+            }, /*#__PURE__*/function () {
+              var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(t) {
+                var _yield$userWalletExis3, _yield$userWalletExis4, userExist, _yield$validateAmount3, _yield$validateAmount4, activityValiateAmount, amount, updatedBalance, userTipAmount, tipRecord, preActivity, finalActivity, faucet, updatedFaucet, listOfUsersRained, _iterator2, _step2, tipee, tiptipRecord, tipActivity, userIdReceivedRain;
+
+                return _regenerator["default"].wrap(function _callee3$(_context4) {
+                  while (1) {
+                    switch (_context4.prev = _context4.next) {
+                      case 0:
+                        _context4.next = 2;
+                        return (0, _userWalletExist.userWalletExist)(message, t, filteredMessage[1].toLowerCase());
+
+                      case 2:
+                        _yield$userWalletExis3 = _context4.sent;
+                        _yield$userWalletExis4 = (0, _slicedToArray2["default"])(_yield$userWalletExis3, 2);
+                        user = _yield$userWalletExis4[0];
+                        userActivity = _yield$userWalletExis4[1];
+
+                        if (userActivity) {
+                          activity.unshift(userActivity);
+                        }
+
+                        if (user) {
+                          _context4.next = 9;
+                          break;
+                        }
+
+                        return _context4.abrupt("return");
+
+                      case 9:
+                        _context4.next = 11;
+                        return _models["default"].user.findOne({
+                          where: {
+                            user_id: "discord-".concat(discordClient.user.id)
+                          },
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 11:
+                        userExist = _context4.sent;
+
+                        if (userExist) {
+                          usersToTip.push(userExist);
+                        }
+
+                        if (!(usersToTip.length < 1)) {
+                          _context4.next = 17;
+                          break;
+                        }
+
+                        _context4.next = 16;
+                        return message.channel.send({
+                          embeds: [(0, _discord.notEnoughUsersToTip)(message)]
+                        });
+
+                      case 16:
+                        return _context4.abrupt("return");
+
+                      case 17:
+                        _context4.next = 19;
+                        return (0, _validateAmount.validateAmount)(message, t, filteredMessage[2], user, setting, 'tip', 'each', usersToTip);
+
+                      case 19:
+                        _yield$validateAmount3 = _context4.sent;
+                        _yield$validateAmount4 = (0, _slicedToArray2["default"])(_yield$validateAmount3, 2);
+                        activityValiateAmount = _yield$validateAmount4[0];
+                        amount = _yield$validateAmount4[1];
+
+                        if (!activityValiateAmount) {
+                          _context4.next = 26;
+                          break;
+                        }
+
+                        activity.unshift(activityValiateAmount);
+                        return _context4.abrupt("return");
+
+                      case 26:
+                        _context4.next = 28;
+                        return user.wallet.update({
+                          available: user.wallet.available - amount
+                        }, {
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 28:
+                        updatedBalance = _context4.sent;
+                        userTipAmount = Number(amount);
+                        _context4.next = 32;
+                        return _models["default"].tip.create({
+                          feeAmount: 0,
+                          amount: amount,
+                          type: 'each',
+                          userCount: usersToTip.length,
+                          userId: user.id,
+                          groupId: groupTask.id,
+                          channelId: channelTask.id
+                        }, {
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 32:
+                        tipRecord = _context4.sent;
+                        _context4.next = 35;
+                        return _models["default"].activity.create({
+                          amount: amount,
+                          type: 'tip_faucet_s',
+                          spenderId: user.id,
+                          tipId: tipRecord.id,
+                          spender_balance: updatedBalance.available + updatedBalance.locked
+                        }, {
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 35:
+                        preActivity = _context4.sent;
+                        _context4.next = 38;
+                        return _models["default"].activity.findOne({
+                          where: {
+                            id: preActivity.id
+                          },
+                          include: [{
+                            model: _models["default"].tip,
+                            as: 'tip'
+                          }, {
+                            model: _models["default"].user,
+                            as: 'spender'
+                          }],
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 38:
+                        finalActivity = _context4.sent;
+                        activity.unshift(finalActivity);
+                        _context4.next = 42;
+                        return _models["default"].faucet.findOne({
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 42:
+                        faucet = _context4.sent;
+                        _context4.next = 45;
+                        return faucet.update({
+                          amount: faucet.amount + Number(userTipAmount)
+                        }, {
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 45:
+                        updatedFaucet = _context4.sent;
+                        listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
+
+                        // eslint-disable-next-line no-restricted-syntax
+                        _iterator2 = _createForOfIteratorHelper(usersToTip);
+                        _context4.prev = 48;
+
+                        _iterator2.s();
+
+                      case 50:
+                        if ((_step2 = _iterator2.n()).done) {
+                          _context4.next = 66;
+                          break;
+                        }
+
+                        tipee = _step2.value;
+                        _context4.next = 54;
+                        return _models["default"].tiptip.create({
+                          amount: Number(userTipAmount),
+                          userId: tipee.id,
+                          tipId: tipRecord.id,
+                          groupId: groupTask.id,
+                          channelId: channelTask.id
+                        }, {
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 54:
+                        tiptipRecord = _context4.sent;
+                        tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
+
+                        _context4.next = 58;
+                        return _models["default"].activity.create({
+                          amount: Number(userTipAmount),
+                          type: 'tiptip_faucet_s',
+                          spenderId: user.id,
+                          earnerId: tipee.id,
+                          tipId: tipRecord.id,
+                          tiptipId: tiptipRecord.id,
+                          earner_balance: updatedFaucet.amount,
+                          spender_balance: updatedBalance.available + updatedBalance.locked
+                        }, {
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 58:
+                        tipActivity = _context4.sent;
+                        _context4.next = 61;
+                        return _models["default"].activity.findOne({
+                          where: {
+                            id: tipActivity.id
+                          },
+                          include: [{
+                            model: _models["default"].user,
+                            as: 'earner'
+                          }, {
+                            model: _models["default"].user,
+                            as: 'spender'
+                          }, {
+                            model: _models["default"].tip,
+                            as: 'tip'
+                          }, {
+                            model: _models["default"].tiptip,
+                            as: 'tiptip'
+                          }],
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 61:
+                        tipActivity = _context4.sent;
+                        activity.unshift(tipActivity);
+
+                        if (tipee.ignoreMe) {
+                          listOfUsersRained.push("".concat(tipee.username));
+                        } else {
+                          userIdReceivedRain = tipee.user_id.replace('discord-', '');
+                          listOfUsersRained.push("<@".concat(userIdReceivedRain, ">"));
+                        }
+
+                      case 64:
+                        _context4.next = 50;
+                        break;
+
+                      case 66:
+                        _context4.next = 71;
+                        break;
+
+                      case 68:
+                        _context4.prev = 68;
+                        _context4.t0 = _context4["catch"](48);
+
+                        _iterator2.e(_context4.t0);
+
+                      case 71:
+                        _context4.prev = 71;
+
+                        _iterator2.f();
+
+                        return _context4.finish(71);
+
+                      case 74:
+                        _context4.next = 76;
+                        return message.channel.send({
+                          embeds: [(0, _discord.tipFaucetSuccessMessage)(message, userTipAmount)]
+                        });
+
+                      case 76:
+                        t.afterCommit(function () {
+                          console.log('done');
+                        });
+
+                      case 77:
+                      case "end":
+                        return _context4.stop();
+                    }
+                  }
+                }, _callee3, null, [[48, 68, 71, 74]]);
+              }));
+
+              return function (_x20) {
+                return _ref4.apply(this, arguments);
+              };
+            }())["catch"](function (err) {
+              console.log(err);
+              message.channel.send('something went wrong');
+            });
+
+          case 8:
+            io.to('admin').emit('updateActivity', {
+              activity: activity
+            });
+
+          case 9:
+          case "end":
+            return _context5.stop();
+        }
+      }
+    }, _callee4);
+  }));
+
+  return function tipCoinsToDiscordFaucet(_x11, _x12, _x13, _x14, _x15, _x16, _x17, _x18, _x19) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+exports.tipCoinsToDiscordFaucet = tipCoinsToDiscordFaucet;
