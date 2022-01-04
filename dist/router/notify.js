@@ -48,6 +48,8 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, set
     } else {
       (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient);
     }
+
+    res.sendStatus(200);
   });
 
   if (settings.coin.setting === 'Pirate') {
@@ -93,6 +95,9 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, set
                 });
 
               case 12:
+                res.sendStatus(200);
+
+              case 13:
               case "end":
                 return _context.stop();
             }
@@ -147,6 +152,9 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, set
                 });
 
               case 12:
+                res.sendStatus(200);
+
+              case 13:
               case "end":
                 return _context2.stop();
             }
@@ -201,6 +209,9 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, set
                 });
 
               case 12:
+                res.sendStatus(200);
+
+              case 13:
               case "end":
                 return _context3.stop();
             }
@@ -255,6 +266,9 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, set
                 });
 
               case 12:
+                res.sendStatus(200);
+
+              case 13:
               case "end":
                 return _context4.stop();
             }

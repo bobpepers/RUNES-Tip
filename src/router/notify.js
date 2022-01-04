@@ -39,6 +39,7 @@ export const notifyRouter = (
       } else {
         startRunebaseSync(discordClient, telegramClient);
       }
+      res.sendStatus(200);
     },
   );
   if (settings.coin.setting === 'Pirate') {
@@ -58,6 +59,7 @@ export const notifyRouter = (
             await myClient.send({ embeds: [discordIncomingDepositMessage(res)] });
           }
         }
+        res.sendStatus(200);
       },
     );
   } else if (settings.coin.setting === 'Komodo') {
@@ -77,6 +79,7 @@ export const notifyRouter = (
             await myClient.send({ embeds: [discordIncomingDepositMessage(res)] });
           }
         }
+        res.sendStatus(200);
       },
     );
   } else if (settings.coin.setting === 'Runebase') {
@@ -96,6 +99,7 @@ export const notifyRouter = (
             await myClient.send({ embeds: [discordIncomingDepositMessage(res)] });
           }
         }
+        res.sendStatus(200);
       },
     );
   } else {
@@ -115,6 +119,7 @@ export const notifyRouter = (
             await myClient.send({ embeds: [discordIncomingDepositMessage(res)] });
           }
         }
+        res.sendStatus(200);
       },
     );
   }
