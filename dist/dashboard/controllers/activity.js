@@ -58,6 +58,7 @@ var fetchActivity = /*#__PURE__*/function () {
             options = {
               where: activityOptions,
               order: [['id', 'DESC']],
+              limit: 300,
               include: [{
                 model: _models["default"].user,
                 as: 'spender',

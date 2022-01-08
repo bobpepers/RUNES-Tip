@@ -53,6 +53,7 @@ export const fetchActivity = async (req, res, next) => {
     order: [
       ['id', 'DESC'],
     ],
+    limit: 300,
     include: [
       {
         model: db.user,
