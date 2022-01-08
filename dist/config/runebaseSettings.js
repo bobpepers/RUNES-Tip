@@ -29,7 +29,7 @@ module.exports = {
     exchanges: ["https://bololex.com/trading/?symbol=RUNES-BTC", "https://bololex.com/trading/?symbol=RUNES-USDT", "https://bololex.com/trading/?symbol=RUNES-DOGE", "https://bololex.com/trading/?symbol=RUNES-ETH", "https://bololex.com/trading/?symbol=RUNES-BOLO", "https://v2.altmarkets.io/trading/runesdoge", "https://txbit.io/Trade/RUNES/BTC", "https://txbit.io/Trade/RUNES/ETH", "https://stakecenter.co/client/exchange/BTC/RUNES", "https://stakecenter.co/client/exchange/LTC/RUNES", "https://stakecenter.co/client/exchange/DOGE/RUNES", "https://stakecenter.co/client/exchange/RDD/RUNES", "https://www.localrunes.com"],
     exampleAddress: 'ReU2nhYXamYRd2VBk4auwresov6jwLEuSg'
   },
-  faucet: 50,
+  faucet: 10,
   // (50 = 0,5% / 100 = 1% / ...) percentage of total per claim
   min: {
     confirmations: 6

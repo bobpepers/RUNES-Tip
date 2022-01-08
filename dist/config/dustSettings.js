@@ -29,7 +29,7 @@ module.exports = {
     exchanges: ["none"],
     exampleAddress: 'ReU2nhYXamYRd2VBk4auwresov6jwLEuSg'
   },
-  faucet: 50,
+  faucet: 10,
   // (50 = 0,5% / 100 = 1% / ...) percentage of total per claim
   min: {
     confirmations: 6
