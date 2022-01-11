@@ -1,11 +1,11 @@
 /* eslint-disable import/prefer-default-export */
 import db from '../../models';
 import {
-  AfterHurricaneSuccess,
   hurricaneMaxUserAmountMessage,
   hurricaneInvalidUserAmount,
   hurricaneUserZeroAmountMessage,
   NotInDirectMessage,
+  AfterSuccessMessage,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { mapMembers } from "../../helpers/discord/mapMembers";
@@ -29,7 +29,7 @@ export const discordHurricane = async (
   queue,
 ) => {
   if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Hurricane')] });
     return;
   }
   if (Number(filteredMessage[2]) > 50) {
@@ -228,10 +228,19 @@ export const discordHurricane = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      console.log('1');
       activity.unshift(tipActivity);
     }
-    await message.channel.send({ embeds: [AfterHurricaneSuccess(message, amount, amountPerUser, listOfUsersRained)] });
+
+    const newStringListUsers = listOfUsersRained.join(", ");
+    const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const element of cutStringListUsers) {
+      // eslint-disable-next-line no-await-in-loop
+      await message.channel.send(element);
+    }
+    await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, '⛈ Hurricane ⛈', 'hurricaned')] });
+
+    //await message.channel.send({ embeds: [AfterHurricaneSuccess(message, amount, amountPerUser, listOfUsersRained)] });
 
     logger.info(`Success Hurricane Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 

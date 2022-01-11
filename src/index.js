@@ -44,7 +44,7 @@ const queue = new PQueue({
   // interval: 500,
 });
 
-const telegrafGetChatMembers = require('telegraf-getchatmembers');
+// const telegrafGetChatMembers = require('telegraf-getchatmembers');
 
 const socketIo = require("socket.io");
 const redis = require('redis');
@@ -151,7 +151,7 @@ const discordClient = new Client({
 });
 
 const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
-telegramClient.use(telegrafGetChatMembers);
+// telegramClient.use(telegrafGetChatMembers);
 
 router(
   app,

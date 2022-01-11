@@ -13,7 +13,10 @@ export const discordUserBannedMessage = (user) => {
     .setDescription(`Reason:
 ${user.banMessage}`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -25,7 +28,10 @@ export const discordServerBannedMessage = (server) => {
     .setDescription(`Reason:
 ${server.banMessage}`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -37,7 +43,10 @@ export const discordChannelBannedMessage = (channel) => {
     .setDescription(`Reason:
 ${channel.banMessage}`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -66,7 +75,10 @@ export const coinInfoMessage = (blockHeight, priceInfo) => {
     .addField("Exchanges", settings.coin.exchanges.join('\n'))
     .addField("Current price", `$${priceInfo.price} (source: coinpaprika)`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -89,7 +101,10 @@ export const reactDropMessage = (distance, author, emoji, amount) => {
 ${!ended ? `:clock9: Time remaining ${days > 0 ? `${days} days` : ''}  ${hours > 0 ? `${hours} hours` : ''} ${minutes > 0 ? `${minutes} minutes` : ''} ${seconds > 0 ? `${seconds} seconds` : ''}` : `Ended`}
 `)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -102,7 +117,10 @@ export const AfterReactDropSuccessMessage = (endReactDrop, amountEach, initiator
     
 :money_with_wings:${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)!:money_with_wings:`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -114,7 +132,10 @@ export const discordLimitSpamMessage = (message, myFunctionName) => {
     .setDescription(`🚫 Slow down! 🚫
 <@${message.author.id}>, you're using this command too fast, wait a while before using it again.`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -125,7 +146,10 @@ export const minimumTimeReactDropMessage = (message) => {
     .setTitle('Reactdrop')
     .setDescription(`Minimum time for reactdrop is 60 seconds (60s)`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -136,7 +160,10 @@ export const maxTimeReactdropMessage = (message) => {
     .setTitle('Reactdrop')
     .setDescription(`Maximum time is 2 days`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -148,7 +175,10 @@ export const ignoreMeMessage = (message) => {
     .setDescription(`<@${message.author.id}>, you will no longer be @mentioned while receiving rains, soaks and other mass operations, but will continue to receive coins from them.
 If you wish to be @mentioned, please issue this command again.`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -160,7 +190,10 @@ export const unIngoreMeMessage = (message) => {
     .setDescription(`<@${message.author.id}>, you will again be @mentioned while receiving rains, soaks and other mass operations.
 If you do not wish to be @mentioned, please issue this command again.`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -172,7 +205,10 @@ export const discordDepositConfirmedMessage = (amount) => {
     .setDescription(`Deposit Confirmed 
 ${amount} ${settings.coin.ticker} has been credited to your wallet`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -185,7 +221,10 @@ export const discordIncomingDepositMessage = (res) => {
 Balance will be reflected in your wallet in ~${settings.min.confirmations}+ confirmations
 ${settings.coin.explorer}tx/${res.locals.transaction[0].txid}`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -196,7 +235,10 @@ export const discordUserWithdrawalRejectMessage = (title) => {
     .setTitle('Withdraw')
     .setDescription(`Your withdrawal has been rejected`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -208,7 +250,10 @@ export const transactionNotFoundMessage = (title) => {
     .setTitle(title)
     .setDescription(`Transaction not found`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -220,7 +265,10 @@ export const discordWithdrawalAcceptedMessage = (updatedTrans) => {
     .setDescription(`Your withdrawal has been accepted
 ${settings.coin.explorer}/tx/${updatedTrans.txid}`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -234,7 +282,10 @@ export const balanceMessage = (userId, user, priceInfo) => {
 Estimated value of <@${userId}>'s balance: $${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(2)}`)
     .setThumbnail(settings.coin.logo)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -251,7 +302,10 @@ export const DiscordFeeMessage = (message, fee) => {
     .setDescription(`${feeString}`)
     .setThumbnail(settings.coin.logo)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -263,7 +317,10 @@ export const ReactdropCaptchaMessage = (userId) => {
     .setDescription(`<@${userId}>'s you have 1 minute to guess`)
     .setImage("attachment://captcha.png")
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -276,7 +333,10 @@ export const depositAddressMessage = (userId, user) => {
 *${user.wallet.addresses[0].address}*`)
     .setImage("attachment://qr.png")
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -287,7 +347,10 @@ export const featureDisabledChannelMessage = (name) => {
     .setTitle(name)
     .setDescription(`This Feature has been disabled for this channel`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -298,7 +361,10 @@ export const featureDisabledServerMessage = (name) => {
     .setTitle(name)
     .setDescription(`This Feature has been disabled for this server`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -309,7 +375,10 @@ export const featureDisabledGlobalMessage = (name) => {
     .setTitle(name)
     .setDescription(`This Feature has been disabled`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -320,7 +389,10 @@ export const tipFaucetSuccessMessage = (message, amount) => {
     .setTitle('Tip')
     .setDescription(`<@${message.author.id}> tipped ${amount / 1e8} ${settings.coin.ticker} to Faucet`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -335,7 +407,10 @@ export const tipSuccessMessage = (message, listOfUsersRained, amount, type) => {
     ${listOfUsersRained.length > 1 ? `<@${message.author.id}> tipped ${amount / 1e8} ${settings.coin.ticker} to ${userText} (${type})` : ``}
 `)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -346,7 +421,10 @@ export const unableToFindUserTipMessage = (message, amount) => {
     .setTitle('Tip')
     .setDescription(`Unable to find user to tip.`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -357,7 +435,10 @@ export const AfterSuccessMessage = (message, amount, withoutBots, amountPerUser,
     .setTitle(type)
     .setDescription(`<@${message.author.id}> ${typeH} ${amount / 1e8} ${settings.coin.ticker} on ${withoutBots.length} users -- ${amountPerUser / 1e8} ${settings.coin.ticker} each`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -368,7 +449,10 @@ export const notEnoughActiveUsersMessage = (message, title) => {
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, not enough active users`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -379,7 +463,10 @@ export const discordWithdrawalRejectedMessage = () => {
     .setTitle("Withdraw")
     .setDescription(`Your withdrawal has been rejected`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -390,7 +477,10 @@ export const walletNotFoundMessage = (message, title) => {
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, Wallet not found`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -401,7 +491,10 @@ export const minimumMessage = (message, setting, type) => {
     .setTitle(type)
     .setDescription(`<@${message.author.id}>, Minimum ${type} is ${setting.min / 1e8} ${settings.coin.ticker}`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -412,7 +505,10 @@ export const timeOutAllAmoutMessageDiscord = (message, title) => {
     .setTitle(capitalize(title))
     .setDescription(`<@${message.author.id}>, the request to ${title} all your ${settings.coin.ticker} has expired`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -422,7 +518,10 @@ export const canceledAllAmoutMessageDiscord = (message, title) => {
     .setTitle(capitalize(title))
     .setDescription(`<@${message.author.id}>, you canceled the request to ${title} all your ${settings.coin.ticker}`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -435,7 +534,10 @@ export const confirmAllAmoutMessageDiscord = (message, title) => {
     Accepted answers: yes/no/y/n; 
     Auto-cancel in 30 seconds.`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -449,7 +551,10 @@ export const claimTooFactFaucetMessage = (message, username, distance) => {
     .setTitle('Faucet')
     .setDescription(`${username}, you have to wait ${hours === 1 ? `${hours} hour` : ''} ${hours > 1 ? `${hours} hours` : ''}, ${minutes === 1 ? `${minutes} minute` : ''} ${minutes > 1 ? `${minutes} minutes` : ''} and ${seconds === 1 ? `${seconds} second` : ''} ${seconds > 1 ? `${seconds} seconds` : ''} before claiming the faucet again (the faucet can be claimed every 4 hours).`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -460,7 +565,10 @@ export const faucetClaimedMessage = (message, username, amount) => {
     .setTitle('Faucet')
     .setDescription(`${username}, you have been tipped ${amount / 1e8} ${settings.coin.ticker} from the faucet.`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -471,7 +579,10 @@ export const dryFaucetMessage = (message) => {
     .setTitle('Faucet')
     .setDescription(`Faucet is dry`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -482,7 +593,10 @@ export const hurricaneMaxUserAmountMessage = (message) => {
     .setTitle('Hurricane')
     .setDescription(`<@${message.author.id}>, Maximum user amount is 50`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -492,7 +606,10 @@ export const hurricaneInvalidUserAmount = (message) => {
     .setTitle('Hurricane')
     .setDescription(`<@${message.author.id}>, Invalid amount of users`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -503,7 +620,10 @@ export const thunderstormMaxUserAmountMessage = (message) => {
     .setTitle('ThunderStorm')
     .setDescription(`<@${message.author.id}>, Maximum user amount is 50`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -514,7 +634,10 @@ export const thunderstormInvalidUserAmount = (message) => {
     .setTitle('ThunderStorm')
     .setDescription(`<@${message.author.id}>, Invalid amount of users`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -525,7 +648,10 @@ export const hurricaneUserZeroAmountMessage = (message) => {
     .setTitle('Hurricane')
     .setDescription(`<@${message.author.id}>, minimum amount of users to thunderstorm is 1`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -536,35 +662,10 @@ export const thunderstormUserZeroAmountMessage = (message) => {
     .setTitle('ThunderStorm')
     .setDescription(`<@${message.author.id}>, minimum amount of users to thunderstorm is 1`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
-
-  return result;
-};
-
-export const AfterHurricaneSuccess = (message, amount, amountPerUser, listOfUsersRained) => {
-  const result = new MessageEmbed()
-    .setColor(settings.bot.color)
-    .setTitle('Hurricane')
-    .setDescription(`${listOfUsersRained.map((user) => `⛈ ${user} has been hit with ${amountPerUser / 1e8} ${settings.coin.ticker} ⛈`).join("\n")}`)
-    // .setDescription(`⛈ ${userThunder} has been thunderstruck with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
-    .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
-
-  return result;
-};
-
-export const AfterThunderStormSuccess = (message, amount, amountPerUser, listOfUsersRained) => {
-  const result = new MessageEmbed()
-    .setColor(settings.bot.color)
-    .setTitle('ThunderStorm')
-    .setDescription(`${listOfUsersRained.map((user) => {
-      console.log('user');
-      console.log(user);
-      return `⛈ ${user} has been hit with ${amountPerUser / 1e8} ${settings.coin.ticker} ⛈`;
-    }).join("\n")}`)
-    // .setDescription(`⛈ ${userThunder} has been thunderstruck with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
-    .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -575,7 +676,10 @@ export const AfterThunderSuccess = (message, amount, userThunder) => {
     .setTitle('Thunder')
     .setDescription(`⛈ ${userThunder} has been hit with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -586,7 +690,10 @@ export const reviewMessage = (message) => {
     .setTitle('Withdraw')
     .setDescription(`<@${message.author.id}>, Your withdrawal is being reviewed`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -597,7 +704,10 @@ export const invalidTimeMessage = (message, title) => {
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, Invalid time`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -608,7 +718,10 @@ export const invalidEmojiMessage = (message, title) => {
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, You used an invalid emoji`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -619,7 +732,10 @@ export const insufficientBalanceMessage = (message, title) => {
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, Insufficient balance`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -630,7 +746,10 @@ export const userNotFoundMessage = (message, title) => {
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, User not found`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -641,7 +760,10 @@ export const invalidAddressMessage = (message) => {
     .setTitle('Withdraw')
     .setDescription(`<@${message.author.id}>, Invalid Runebase Address`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -652,7 +774,10 @@ export const invalidAmountMessage = (message, title) => {
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, Invalid Amount`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -663,7 +788,10 @@ export const minimumWithdrawalMessage = (message, min) => {
     .setTitle('Withdraw')
     .setDescription(`<@${message.author.id}>, Minimum Withdrawal is ${min / 1e8} ${settings.coin.ticker}`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -675,7 +803,10 @@ export const disablePublicStatsMessage = (message) => {
     .setDescription(`<@${message.author.id}>, Public Statistics has been disabled`)
     .setThumbnail(settings.coin.logo)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -687,7 +818,10 @@ export const NotInDirectMessage = (message, title) => {
     .setDescription(`<@${message.author.id}>, Can't use this command in a direct message`)
     .setThumbnail(settings.coin.logo)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -699,7 +833,10 @@ export const enablePublicStatsMeMessage = (message) => {
     .setDescription(`<@${message.author.id}>, Public Statistic has been enabled`)
     .setThumbnail(settings.coin.logo)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -711,7 +848,10 @@ export const notEnoughUsersToTip = (message) => {
     .setDescription(`<@${message.author.id}>, Not enough users to tip`)
     .setThumbnail(settings.coin.logo)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -723,7 +863,10 @@ export const statsMessage = (message, statsMessage) => {
     .setDescription(`<@${message.author.id}>, ${statsMessage}`)
     .setThumbnail(settings.coin.logo)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -735,7 +878,10 @@ export const warnDirectMessage = (userId, title) => {
     .setDescription(`<@${userId}>, I've sent you a direct message.`)
     .setThumbnail(settings.coin.logo)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
 
   return result;
 };
@@ -827,6 +973,9 @@ Turns @mentioning you during mass operations on/off
 **Like the bot?**
 [Invite it to your server](${settings.bot.url.discord})`)
     .setTimestamp()
-    .setFooter(`${settings.bot.name} v${pjson.version}`, settings.coin.logo);
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
   return result;
 };

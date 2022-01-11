@@ -236,7 +236,6 @@ export const discordVoiceRain = async (
     }
 
     const newStringListUsers = listOfUsersRained.join(", ");
-    console.log(newStringListUsers);
     const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
     // eslint-disable-next-line no-restricted-syntax
     for (const element of cutStringListUsers) {
@@ -245,6 +244,7 @@ export const discordVoiceRain = async (
     }
 
     await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, 'Rain', 'rained')] });
+
     logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 
     t.afterCommit(() => {

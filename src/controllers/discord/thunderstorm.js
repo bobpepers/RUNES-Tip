@@ -1,11 +1,11 @@
 /* eslint-disable import/prefer-default-export */
 import db from '../../models';
 import {
-  AfterThunderStormSuccess,
   thunderstormMaxUserAmountMessage,
   thunderstormInvalidUserAmount,
   thunderstormUserZeroAmountMessage,
   NotInDirectMessage,
+  AfterSuccessMessage,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { mapMembers } from "../../helpers/discord/mapMembers";
@@ -29,7 +29,7 @@ export const discordThunderStorm = async (
   queue,
 ) => {
   if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Thunderstorm')] });
     return;
   }
   if (Number(filteredMessage[2]) > 50) {
@@ -229,9 +229,17 @@ export const discordThunderStorm = async (
       });
       activity.unshift(tipActivity);
     }
-    await message.channel.send({ embeds: [AfterThunderStormSuccess(message, amount, amountPerUser, listOfUsersRained)] });
 
-    logger.info(`Success Thunder Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+    const newStringListUsers = listOfUsersRained.join(", ");
+    const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const element of cutStringListUsers) {
+      // eslint-disable-next-line no-await-in-loop
+      await message.channel.send(element);
+    }
+    await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, '⛈ Thunderstorm ⛈', 'thunderstormed')] });
+
+    logger.info(`Success ThunderStorm Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 
     t.afterCommit(() => {
       console.log('done');

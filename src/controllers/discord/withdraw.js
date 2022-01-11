@@ -84,8 +84,6 @@ export const withdrawDiscordCreate = async (
     });
 
     if (!addressExternal) {
-      console.log('notfound');
-      console.log(filteredMessage[2]);
       addressExternal = await db.addressExternal.create({
         address: filteredMessage[2],
       }, {
@@ -93,7 +91,7 @@ export const withdrawDiscordCreate = async (
         lock: t.LOCK.UPDATE,
       });
     }
-    console.log('after');
+
     UserExternalAddressMnMAssociation = await db.UserAddressExternal.findOne({
       where: {
         addressExternalId: addressExternal.id,
@@ -102,7 +100,7 @@ export const withdrawDiscordCreate = async (
       transaction: t,
       lock: t.LOCK.UPDATE,
     });
-    console.log('after2');
+
     if (!UserExternalAddressMnMAssociation) {
       UserExternalAddressMnMAssociation = await db.UserAddressExternal.create({
         addressExternalId: addressExternal.id,

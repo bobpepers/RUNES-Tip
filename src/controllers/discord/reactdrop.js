@@ -215,7 +215,10 @@ export const listenReactDrop = async (
 
                 await m.react('✅');
                 await collector.send({ content: '\u200b', components: [row] });
-              } else {
+              } else if (m.content !== findReactTip.solution) {
+                // console.log('content');
+                // console.log(m.content);
+                // console.log(findReactTip.solution);
                 await findReactTip.update({
                   status: 'failed',
                 }, {
