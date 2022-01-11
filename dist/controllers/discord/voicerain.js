@@ -360,65 +360,64 @@ var discordVoiceRain = /*#__PURE__*/function () {
 
                       case 78:
                         newStringListUsers = listOfUsersRained.join(", ");
-                        console.log(newStringListUsers);
                         cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                        _context.prev = 82;
+                        _context.prev = 81;
 
                         _iterator2.s();
 
-                      case 84:
+                      case 83:
                         if ((_step2 = _iterator2.n()).done) {
-                          _context.next = 90;
+                          _context.next = 89;
                           break;
                         }
 
                         element = _step2.value;
-                        _context.next = 88;
+                        _context.next = 87;
                         return message.channel.send(element);
 
-                      case 88:
-                        _context.next = 84;
+                      case 87:
+                        _context.next = 83;
                         break;
 
-                      case 90:
-                        _context.next = 95;
+                      case 89:
+                        _context.next = 94;
                         break;
 
-                      case 92:
-                        _context.prev = 92;
-                        _context.t1 = _context["catch"](82);
+                      case 91:
+                        _context.prev = 91;
+                        _context.t1 = _context["catch"](81);
 
                         _iterator2.e(_context.t1);
 
-                      case 95:
-                        _context.prev = 95;
+                      case 94:
+                        _context.prev = 94;
 
                         _iterator2.f();
 
-                        return _context.finish(95);
+                        return _context.finish(94);
 
-                      case 98:
-                        _context.next = 100;
+                      case 97:
+                        _context.next = 99;
                         return message.channel.send({
                           embeds: [(0, _discord.AfterSuccessMessage)(message, amount, withoutBots, amountPerUser, 'Rain', 'rained')]
                         });
 
-                      case 100:
+                      case 99:
                         _logger["default"].info("Success Rain Requested by: ".concat(message.author.id, "-").concat(message.author.username, " for ").concat(amount / 1e8));
 
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 102:
+                      case 101:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[49, 72, 75, 78], [82, 92, 95, 98]]);
+                }, _callee, null, [[49, 72, 75, 78], [81, 91, 94, 97]]);
               }));
 
               return function (_x10) {

@@ -12,8 +12,9 @@ import morgan from "morgan";
 import cors from "cors";
 import compression from "compression";
 import schedule from "node-schedule";
+import dotenv from 'dotenv';
 
-require('dotenv').config();
+// require('dotenv').config();
 
 import passport from 'passport';
 import { router } from "./router";
@@ -35,6 +36,7 @@ import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";
 import { processWithdrawals } from "./services/processWithdrawals";
 
+dotenv.config();
 const settings = getCoinSettings();
 
 const queue = new PQueue({

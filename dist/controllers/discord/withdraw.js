@@ -166,13 +166,11 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                         addressExternal = _context.sent;
 
                         if (addressExternal) {
-                          _context.next = 52;
+                          _context.next = 50;
                           break;
                         }
 
-                        console.log('notfound');
-                        console.log(filteredMessage[2]);
-                        _context.next = 51;
+                        _context.next = 49;
                         return _models["default"].addressExternal.create({
                           address: filteredMessage[2]
                         }, {
@@ -180,12 +178,11 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 51:
+                      case 49:
                         addressExternal = _context.sent;
 
-                      case 52:
-                        console.log('after');
-                        _context.next = 55;
+                      case 50:
+                        _context.next = 52;
                         return _models["default"].UserAddressExternal.findOne({
                           where: {
                             addressExternalId: addressExternal.id,
@@ -195,16 +192,15 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 55:
+                      case 52:
                         UserExternalAddressMnMAssociation = _context.sent;
-                        console.log('after2');
 
                         if (UserExternalAddressMnMAssociation) {
-                          _context.next = 61;
+                          _context.next = 57;
                           break;
                         }
 
-                        _context.next = 60;
+                        _context.next = 56;
                         return _models["default"].UserAddressExternal.create({
                           addressExternalId: addressExternal.id,
                           userId: user.id
@@ -213,11 +209,11 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 60:
+                      case 56:
                         UserExternalAddressMnMAssociation = _context.sent;
 
-                      case 61:
-                        _context.next = 63;
+                      case 57:
+                        _context.next = 59;
                         return user.wallet.update({
                           available: user.wallet.available - amount,
                           locked: user.wallet.locked + amount
@@ -226,10 +222,10 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 63:
+                      case 59:
                         wallet = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
-                        _context.next = 67;
+                        _context.next = 63;
                         return _models["default"].transaction.create({
                           addressId: wallet.addresses[0].id,
                           addressExternalId: addressExternal.id,
@@ -243,9 +239,9 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 67:
+                      case 63:
                         transaction = _context.sent;
-                        _context.next = 70;
+                        _context.next = 66;
                         return _models["default"].activity.create({
                           spenderId: user.id,
                           type: 'withdrawRequested',
@@ -256,43 +252,43 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 70:
+                      case 66:
                         activity = _context.sent;
                         userId = user.user_id.replace('discord-', '');
 
                         if (!(message.channel.type === 'DM')) {
-                          _context.next = 75;
+                          _context.next = 71;
                           break;
                         }
 
-                        _context.next = 75;
+                        _context.next = 71;
                         return message.author.send({
                           embeds: [(0, _discord.reviewMessage)(message)]
                         });
 
-                      case 75:
+                      case 71:
                         if (!(message.channel.type === 'GUILD_TEXT')) {
-                          _context.next = 80;
+                          _context.next = 76;
                           break;
                         }
 
-                        _context.next = 78;
+                        _context.next = 74;
                         return message.channel.send({
                           embeds: [(0, _discord.warnDirectMessage)(userId, 'Balance')]
                         });
 
-                      case 78:
-                        _context.next = 80;
+                      case 74:
+                        _context.next = 76;
                         return message.author.send({
                           embeds: [(0, _discord.reviewMessage)(message)]
                         });
 
-                      case 80:
+                      case 76:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 81:
+                      case 77:
                       case "end":
                         return _context.stop();
                     }

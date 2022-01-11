@@ -327,11 +327,16 @@ var listenReactDrop = /*#__PURE__*/function () {
                                                 });
 
                                               case 11:
-                                                _context.next = 23;
+                                                _context.next = 24;
                                                 break;
 
                                               case 13:
-                                                _context.next = 15;
+                                                if (!(m.content !== _findReactTip.solution)) {
+                                                  _context.next = 24;
+                                                  break;
+                                                }
+
+                                                _context.next = 16;
                                                 return _findReactTip.update({
                                                   status: 'failed'
                                                 }, {
@@ -339,8 +344,8 @@ var listenReactDrop = /*#__PURE__*/function () {
                                                   transaction: t
                                                 });
 
-                                              case 15:
-                                                _context.next = 17;
+                                              case 16:
+                                                _context.next = 18;
                                                 return _models["default"].reactdrop.findOne({
                                                   where: {
                                                     id: _findReactTip.reactdropId
@@ -356,25 +361,25 @@ var listenReactDrop = /*#__PURE__*/function () {
                                                   transaction: t
                                                 });
 
-                                              case 17:
+                                              case 18:
                                                 _reactDropRecord = _context.sent;
                                                 _row = new _discord.MessageActionRow().addComponents(new _discord.MessageButton().setLabel('Back to ReactDrop').setStyle('LINK').setURL("https://discord.com/channels/".concat(_reactDropRecord.group.groupId.replace("discord-", ""), "/").concat(_reactDropRecord.channel.channelId.replace("discord-", ""), "/").concat(_reactDropRecord.discordMessageId)));
-                                                _context.next = 21;
+                                                _context.next = 22;
                                                 return m.react('❌');
 
-                                              case 21:
-                                                _context.next = 23;
+                                              case 22:
+                                                _context.next = 24;
                                                 return collector.send({
                                                   content: "\u200B",
                                                   components: [_row]
                                                 });
 
-                                              case 23:
+                                              case 24:
                                                 t.afterCommit(function () {
                                                   console.log('done');
                                                 });
 
-                                              case 24:
+                                              case 25:
                                               case "end":
                                                 return _context.stop();
                                             }

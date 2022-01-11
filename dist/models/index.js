@@ -17,8 +17,10 @@ var _sequelize = _interopRequireDefault(require("sequelize"));
 
 var _pQueue = _interopRequireDefault(require("p-queue"));
 
+var _dotenv = require("dotenv");
+
 // import mysql2 from 'mysql2';
-require('dotenv').config();
+(0, _dotenv.config)();
 
 var basename = _path["default"].basename(__filename);
 

@@ -26,6 +26,8 @@ var _compression = _interopRequireDefault(require("compression"));
 
 var _nodeSchedule = _interopRequireDefault(require("node-schedule"));
 
+var _dotenv = _interopRequireDefault(require("dotenv"));
+
 var _passport = _interopRequireDefault(require("passport"));
 
 var _router = require("./router");
@@ -64,7 +66,7 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-require('dotenv').config();
+_dotenv["default"].config();
 
 var settings = (0, _settings["default"])();
 var queue = new _pQueue["default"]({
@@ -72,9 +74,7 @@ var queue = new _pQueue["default"]({
   timeout: 1000000000 // intervalCap: 1,
   // interval: 500,
 
-});
-
-var telegrafGetChatMembers = require('telegraf-getchatmembers');
+}); // const telegrafGetChatMembers = require('telegraf-getchatmembers');
 
 var socketIo = require("socket.io");
 
@@ -183,8 +183,8 @@ var discordClient = new _discord.Client({
   // }),
 
 });
-var telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN);
-telegramClient.use(telegrafGetChatMembers);
+var telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN); // telegramClient.use(telegrafGetChatMembers);
+
 (0, _router.router)(app, discordClient, telegramClient, io, settings, queue);
 (0, _router2.dashboardRouter)(app, io, discordClient, telegramClient);
 server.listen(port);

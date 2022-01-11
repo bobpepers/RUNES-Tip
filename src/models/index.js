@@ -4,8 +4,9 @@ import fs from "fs";
 import path from "path";
 import Sequelize from "sequelize";
 import PQueue from "p-queue";
+import { config } from 'dotenv';
 
-require('dotenv').config();
+config();
 
 const basename = path.basename(__filename);
 const db = {};

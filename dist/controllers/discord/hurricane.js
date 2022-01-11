@@ -51,7 +51,7 @@ var discordHurricane = /*#__PURE__*/function () {
 
             _context2.next = 3;
             return message.channel.send({
-              embeds: [(0, _discord.NotInDirectMessage)(message, 'Flood')]
+              embeds: [(0, _discord.NotInDirectMessage)(message, 'Hurricane')]
             });
 
           case 3:
@@ -118,7 +118,7 @@ var discordHurricane = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, preWithoutBots, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, activityA, updatedBalance, fee, amountPerUser, faucetWatered, hurricaneRecord, factivity, activityC, listOfUsersRained, _iterator, _step, hurricaneee, hurricaneeeWallet, hurricanetipRecord, userIdReceivedRain, tipActivity;
+                var _yield$userWalletExis, _yield$userWalletExis2, preWithoutBots, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, activityA, updatedBalance, fee, amountPerUser, faucetWatered, hurricaneRecord, factivity, activityC, listOfUsersRained, _iterator, _step, hurricaneee, hurricaneeeWallet, hurricanetipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -268,7 +268,7 @@ var discordHurricane = /*#__PURE__*/function () {
 
                       case 52:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 72;
+                          _context.next = 71;
                           break;
                         }
 
@@ -348,49 +348,90 @@ var discordHurricane = /*#__PURE__*/function () {
 
                       case 67:
                         tipActivity = _context.sent;
-                        console.log('1');
                         activity.unshift(tipActivity);
 
-                      case 70:
+                      case 69:
                         _context.next = 52;
                         break;
 
-                      case 72:
-                        _context.next = 77;
+                      case 71:
+                        _context.next = 76;
                         break;
 
-                      case 74:
-                        _context.prev = 74;
+                      case 73:
+                        _context.prev = 73;
                         _context.t0 = _context["catch"](50);
 
                         _iterator.e(_context.t0);
 
-                      case 77:
-                        _context.prev = 77;
+                      case 76:
+                        _context.prev = 76;
 
                         _iterator.f();
 
-                        return _context.finish(77);
+                        return _context.finish(76);
 
-                      case 80:
-                        _context.next = 82;
+                      case 79:
+                        newStringListUsers = listOfUsersRained.join(", ");
+                        cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
+
+                        // eslint-disable-next-line no-restricted-syntax
+                        _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
+                        _context.prev = 82;
+
+                        _iterator2.s();
+
+                      case 84:
+                        if ((_step2 = _iterator2.n()).done) {
+                          _context.next = 90;
+                          break;
+                        }
+
+                        element = _step2.value;
+                        _context.next = 88;
+                        return message.channel.send(element);
+
+                      case 88:
+                        _context.next = 84;
+                        break;
+
+                      case 90:
+                        _context.next = 95;
+                        break;
+
+                      case 92:
+                        _context.prev = 92;
+                        _context.t1 = _context["catch"](82);
+
+                        _iterator2.e(_context.t1);
+
+                      case 95:
+                        _context.prev = 95;
+
+                        _iterator2.f();
+
+                        return _context.finish(95);
+
+                      case 98:
+                        _context.next = 100;
                         return message.channel.send({
-                          embeds: [(0, _discord.AfterHurricaneSuccess)(message, amount, amountPerUser, listOfUsersRained)]
+                          embeds: [(0, _discord.AfterSuccessMessage)(message, amount, withoutBots, amountPerUser, '⛈ Hurricane ⛈', 'hurricaned')]
                         });
 
-                      case 82:
+                      case 100:
+                        //await message.channel.send({ embeds: [AfterHurricaneSuccess(message, amount, amountPerUser, listOfUsersRained)] });
                         _logger["default"].info("Success Hurricane Requested by: ".concat(message.author.id, "-").concat(message.author.username, " for ").concat(amount / 1e8));
 
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 84:
+                      case 102:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[50, 74, 77, 80]]);
+                }, _callee, null, [[50, 73, 76, 79], [82, 92, 95, 98]]);
               }));
 
               return function (_x10) {
