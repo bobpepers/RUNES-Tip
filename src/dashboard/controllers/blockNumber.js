@@ -10,12 +10,6 @@ export const fetchBlockNumber = async (
   res,
   next,
 ) => {
-  console.log('fetchBlockNumber');
-  console.log('fetchBlockNumber');
-  console.log('fetchBlockNumber');
-  console.log('fetchBlockNumber');
-  console.log('fetchBlockNumber');
-
   try {
     let response;
     if (settings.coin.setting === 'Runebase') {
@@ -39,9 +33,7 @@ export const fetchBlockNumber = async (
       order: [['id', 'DESC']],
     });
     res.locals.blockNumberDb = dbBlockNumber.id;
-    console.log(dbBlockNumber);
 
-    // console.log(req.body);
     next();
   } catch (error) {
     console.log(error);

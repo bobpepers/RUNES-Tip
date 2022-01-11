@@ -11,7 +11,6 @@ export const startSyncBlocks = async (
   next,
 ) => {
   try {
-    let response;
     if (settings.coin.setting === 'Runebase') {
       startRunebaseSync();
     } else if (settings.coin.setting === 'Pirate') {
@@ -21,7 +20,6 @@ export const startSyncBlocks = async (
     } else {
       startRunebaseSync();
     }
-
     res.locals.sync = 'TRUE';
     next();
   } catch (error) {

@@ -43,6 +43,10 @@ var _deposits = require("./controllers/deposits");
 
 var _channels = require("./controllers/channels");
 
+var _blockNumber = require("./controllers/blockNumber");
+
+var _sync = require("./controllers/sync");
+
 var _users = require("./controllers/users");
 
 var _passport2 = _interopRequireDefault(require("./services/passport"));
@@ -231,6 +235,33 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
     if (res.locals.channels) {
       res.json({
         channels: res.locals.channels
+      });
+    } else {
+      res.status(401).send({
+        error: "ERROR"
+      });
+    }
+  });
+  app.get('/api/sync/blocks', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _sync.startSyncBlocks, function (req, res) {
+    if (res.locals.sync) {
+      res.json({
+        sync: res.locals.sync
+      });
+    } else {
+      res.status(401).send({
+        error: "ERROR"
+      });
+    }
+  });
+  app.get('/api/blocknumber', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _blockNumber.fetchBlockNumber, function (req, res) {
+    console.log('after fetchblocknumber');
+
+    if (res.locals.blockNumberNode && res.locals.blockNumberDb) {
+      res.json({
+        blockNumber: {
+          node: res.locals.blockNumberNode,
+          db: res.locals.blockNumberDb
+        }
       });
     } else {
       res.status(401).send({
