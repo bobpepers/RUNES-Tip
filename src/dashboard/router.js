@@ -62,6 +62,14 @@ import {
 } from './controllers/channels';
 
 import {
+  fetchBlockNumber,
+} from './controllers/blockNumber';
+
+import {
+  startSyncBlocks,
+} from './controllers/sync';
+
+import {
   fetchUsers,
   banUser,
 } from './controllers/users';
@@ -370,6 +378,50 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
       if (res.locals.channels) {
         res.json({
           channels: res.locals.channels,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.get(
+    '/api/sync/blocks',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    startSyncBlocks,
+    (req, res) => {
+      if (res.locals.sync) {
+        res.json({
+          sync: res.locals.sync,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.get(
+    '/api/blocknumber',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    fetchBlockNumber,
+    (req, res) => {
+      console.log('after fetchblocknumber');
+      if (res.locals.blockNumberNode && res.locals.blockNumberDb) {
+        res.json({
+          blockNumber: {
+            node: res.locals.blockNumberNode,
+            db: res.locals.blockNumberDb,
+          },
         });
       } else {
         res.status(401).send({
