@@ -155,23 +155,6 @@ const discordClient = new Client({
 const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 // telegramClient.use(telegrafGetChatMembers);
 
-router(
-  app,
-  discordClient,
-  telegramClient,
-  io,
-  settings,
-  queue,
-);
-dashboardRouter(
-  app,
-  io,
-  discordClient,
-  telegramClient,
-);
-
-server.listen(port);
-
 (async function () {
   await telegramClient.launch();
   await discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
@@ -261,6 +244,22 @@ server.listen(port);
       patchRunebaseDeposits();
     });
   }
+  router(
+    app,
+    discordClient,
+    telegramClient,
+    io,
+    settings,
+    queue,
+  );
+  dashboardRouter(
+    app,
+    io,
+    discordClient,
+    telegramClient,
+  );
+
+  server.listen(port);
 }());
 
 updatePrice();

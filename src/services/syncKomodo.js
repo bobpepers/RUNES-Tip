@@ -104,7 +104,6 @@ const syncTransactions = async (discordClient, telegramClient) => {
       }
       if (transaction.confirmations >= Number(settings.min.confirmations)) {
         if (transaction.details[1] && transaction.details[1].category === 'send' && trans.type === 'send') {
-
           const prepareLockedAmount = ((transaction.details[1].amount * 1e8) - Number(trans.feeAmount));
           const removeLockedAmount = Math.abs(prepareLockedAmount);
 
@@ -205,54 +204,39 @@ const syncTransactions = async (discordClient, telegramClient) => {
   return true;
 };
 
-const getInsertBlockPromises = async (startBlock, endBlock) => {
-  // let blockHash;
-  let blockTime;
-  const insertBlockPromises = [];
-
-  for (let i = startBlock; i <= endBlock; i += 1) {
-    // console.log(i);
-    const blockPromise = new Promise((resolve) => {
-      try {
-        getInstance().getBlockHash(i).then((blockHash) => {
-          getInstance().getBlock(blockHash, 2).then((blockInfo) => {
-            db.block.findOne({
-              where: {
-                id: i,
-              },
-            }).then(async (obj) => {
-              if (obj) {
-                await obj.update({
-                  id: i,
-                  blockTime: blockInfo.time,
-                });
-              }
-              if (!obj) {
-                await db.block.create({
-                  id: i,
-                  blockTime,
-                });
-              }
-              resolve();
-            });
-          }).catch((err) => {
-            console.log(err);
-          });
-        }).catch((err) => {
-          console.log(err);
+const insertBlock = async (startBlock) => {
+  try {
+    const blockHash = await getInstance().getBlockHash(startBlock);
+    if (blockHash) {
+      const block = getInstance().getBlock(blockHash, 2);
+      if (block) {
+        const dbBlock = await db.block.findOne({
+          where: {
+            id: Number(startBlock),
+          },
         });
-      } catch (err) {
-        console.log(err);
+        if (dbBlock) {
+          await dbBlock.update({
+            id: Number(startBlock),
+            blockTime: block.time,
+          });
+        }
+        if (!dbBlock) {
+          await db.block.create({
+            id: startBlock,
+            blockTime: block.time,
+          });
+        }
       }
-    });
-
-    insertBlockPromises.push(blockPromise);
+    }
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
   }
-
-  return { insertBlockPromises };
 };
 
-const sync = async (discordClient, telegramClient) => {
+export const startKomodoSync = async (discordClient, telegramClient) => {
   const currentBlockCount = Math.max(0, await getInstance().getBlockCount());
   let startBlock = Number(settings.startSyncBlock);
 
@@ -275,8 +259,8 @@ const sync = async (discordClient, telegramClient) => {
       // await syncTransactions(startBlock, endBlock);
       await queue.add(() => syncTransactions(discordClient, telegramClient));
 
-      const { insertBlockPromises } = await getInsertBlockPromises(startBlock, endBlock);
-      await queue.add(() => Promise.all(insertBlockPromises));
+      const task = await insertBlock(startBlock);
+      await queue.add(() => task);
 
       startBlock = endBlock + 1;
       console.log('Synced block');
@@ -288,13 +272,3 @@ const sync = async (discordClient, telegramClient) => {
     },
   );
 };
-
-export async function startKomodoSync(
-  discordClient,
-  telegramClient,
-) {
-  sync(
-    discordClient,
-    telegramClient,
-  );
-}
