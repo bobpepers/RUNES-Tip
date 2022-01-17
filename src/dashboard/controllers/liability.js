@@ -9,6 +9,7 @@ export const fetchLiability = async (req, res, next) => {
   let runningReactdrops = 0;
   let unconfirmedDeposits = 0;
   let unconfirmledWithdrawals = 0;
+  let faucetAmount = 0;
 
   try {
     const sumAvailable = await db.wallet.findAll({
@@ -68,25 +69,19 @@ export const fetchLiability = async (req, res, next) => {
       },
     });
 
+    const faucet = await db.faucet.findOne();
+    console.log(faucet);
+    console.log('faucet');
+
+    faucetAmount = faucet.amount ? faucet.amount : 0;
     available = sumAvailable[0].dataValues.total_available ? sumAvailable[0].dataValues.total_available : 0;
     locked = sumLocked[0].dataValues.total_locked ? sumLocked[0].dataValues.total_locked : 0;
     unconfirmedDeposits = sumUnconfirmedDeposits[0].dataValues.total_amount ? sumUnconfirmedDeposits[0].dataValues.total_amount : 0;
     unconfirmledWithdrawals = sumUnconfirmedWithdrawals[0].dataValues.total_amount ? sumUnconfirmedWithdrawals[0].dataValues.total_amount : 0;
     runningReactdrops = sumRunningReactdrops[0].dataValues.total_amount ? sumRunningReactdrops[0].dataValues.total_amount : 0;
 
-    res.locals.liability = (((Number(available) + Number(locked)) + Number(unconfirmedDeposits)) - Number(unconfirmledWithdrawals) + Number(runningReactdrops));
+    res.locals.liability = (((Number(available) + Number(locked)) + Number(unconfirmedDeposits)) - Number(unconfirmledWithdrawals) + Number(runningReactdrops) + Number(faucetAmount));
 
-    console.log('sumAvailable');
-
-    console.log(available);
-    console.log(locked);
-    console.log(unconfirmedDeposits);
-    console.log(unconfirmledWithdrawals);
-    console.log(res.locals.liability);
-    // const response = await getInstance().getWalletInfo();
-    // console.log(response);
-    // res.locals.balance = response.balance;
-    // console.log(req.body);
     next();
   } catch (error) {
     console.log(error);
