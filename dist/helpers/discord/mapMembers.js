@@ -23,7 +23,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 var mapMembers = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(message, t, optionalRoleMessage, onlineMembers, setting) {
-    var roleId, mappedMembersArray, withoutBots, filterWithRoles, _iterator, _step, discordUser, userExist, userIdTest;
+    var roleId, mappedMembersArray, withoutBots, filterWithRoles, _iterator, _step, discordUser, userExist, userIdTest, withoutBotsSorted;
 
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
@@ -163,9 +163,14 @@ var mapMembers = /*#__PURE__*/function () {
             return _context.finish(44);
 
           case 47:
-            return _context.abrupt("return", withoutBots);
+            _context.next = 49;
+            return _lodash["default"].sortBy(withoutBots, 'createdAt');
 
-          case 48:
+          case 49:
+            withoutBotsSorted = _context.sent;
+            return _context.abrupt("return", withoutBotsSorted);
+
+          case 51:
           case "end":
             return _context.stop();
         }

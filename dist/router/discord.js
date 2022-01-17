@@ -53,6 +53,8 @@ var _ignore = require("../controllers/discord/ignore");
 
 var _help = require("../controllers/discord/help");
 
+var _price = require("../controllers/discord/price");
+
 var _rateLimit = require("../helpers/rateLimit");
 
 var _reactdrop = require("../controllers/discord/reactdrop");
@@ -140,7 +142,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
     }, _callee2);
   })));
   discordClient.on("presenceUpdate", function (oldMember, newMember) {
-    //const { username } = newMember.user;
+    // const { username } = newMember.user;
     console.log('presenceUpdate');
   });
   discordClient.on('voiceStateUpdate', /*#__PURE__*/function () {
@@ -185,7 +187,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
   }());
   discordClient.on("messageCreate", /*#__PURE__*/function () {
     var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(message) {
-      var groupTask, groupTaskId, channelTask, channelTaskId, lastSeenDiscordTask, faucetSetting, maintenance, walletExists, preFilteredMessageDiscord, filteredMessageDiscord, limited, task, _limited, _task, _limited2, _task2, _limited3, _task3, _limited4, _task4, _limited5, _task5, _limited6, _task6, _limited7, _task7, _limited8, _task8, setting, _limited9, _task9, _limited10, _task10, _setting, _limited11, _setting2, _limited12, AmountPosition, AmountPositionEnded, _setting3, _limited13, _setting4, _limited14, _setting5, _limited15, _setting6, _limited16, _setting7, _limited17, _setting8, _limited18, _setting9, _limited19, _setting10, _limited20, _setting11, _limited21;
+      var groupTask, groupTaskId, channelTask, channelTaskId, lastSeenDiscordTask, faucetSetting, maintenance, walletExists, preFilteredMessageDiscord, filteredMessageDiscord, limited, task, _limited, _task, _limited2, _task2, _limited3, _task3, _limited4, _task4, _limited5, _task5, _limited6, _task6, _limited7, _task7, _limited8, _task8, _limited9, _task9, setting, _limited10, _task10, _limited11, _task11, _setting, _limited12, _setting2, _limited13, AmountPosition, AmountPositionEnded, _setting3, _limited14, _setting4, _limited15, _setting5, _limited16, _setting6, _limited17, _setting7, _limited18, _setting8, _limited19, _setting9, _limited20, _setting10, _limited21, _setting11, _limited22;
 
       return _regenerator["default"].wrap(function _callee4$(_context4) {
         while (1) {
@@ -655,23 +657,23 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               });
 
             case 171:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'faucet')) {
-                _context4.next = 191;
+              if (!(filteredMessageDiscord[1].toLowerCase() === 'price')) {
+                _context4.next = 184;
                 break;
               }
 
               _context4.next = 174;
-              return (0, _settings.discordSettings)(message, 'faucet', groupTaskId, channelTaskId);
+              return (0, _rateLimit.limitPrice)(message);
 
             case 174:
-              setting = _context4.sent;
+              _limited9 = _context4.sent;
               _context4.next = 177;
               return queue.add(function () {
-                return setting;
+                return _limited9;
               });
 
             case 177:
-              if (setting) {
+              if (!_limited9) {
                 _context4.next = 179;
                 break;
               }
@@ -680,42 +682,42 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 179:
               _context4.next = 181;
-              return (0, _rateLimit.limitFaucet)(message);
+              return (0, _price.discordPrice)(message, io);
 
             case 181:
-              _limited9 = _context4.sent;
+              _task9 = _context4.sent;
               _context4.next = 184;
               return queue.add(function () {
-                return _limited9;
+                return _task9;
               });
 
             case 184:
-              if (!_limited9) {
-                _context4.next = 186;
+              if (!(filteredMessageDiscord[1].toLowerCase() === 'faucet')) {
+                _context4.next = 204;
+                break;
+              }
+
+              _context4.next = 187;
+              return (0, _settings.discordSettings)(message, 'faucet', groupTaskId, channelTaskId);
+
+            case 187:
+              setting = _context4.sent;
+              _context4.next = 190;
+              return queue.add(function () {
+                return setting;
+              });
+
+            case 190:
+              if (setting) {
+                _context4.next = 192;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 186:
-              _context4.next = 188;
-              return (0, _faucet.discordFaucetClaim)(message, filteredMessageDiscord, io);
-
-            case 188:
-              _task9 = _context4.sent;
-              _context4.next = 191;
-              return queue.add(function () {
-                return _task9;
-              });
-
-            case 191:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'deposit')) {
-                _context4.next = 204;
-                break;
-              }
-
+            case 192:
               _context4.next = 194;
-              return (0, _rateLimit.limitDeposit)(message);
+              return (0, _rateLimit.limitFaucet)(message);
 
             case 194:
               _limited10 = _context4.sent;
@@ -734,7 +736,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 199:
               _context4.next = 201;
-              return (0, _deposit.fetchDiscordWalletDepositAddress)(message, io);
+              return (0, _faucet.discordFaucetClaim)(message, filteredMessageDiscord, io);
 
             case 201:
               _task10 = _context4.sent;
@@ -744,23 +746,23 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               });
 
             case 204:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'withdraw')) {
-                _context4.next = 221;
+              if (!(filteredMessageDiscord[1].toLowerCase() === 'deposit')) {
+                _context4.next = 217;
                 break;
               }
 
               _context4.next = 207;
-              return (0, _settings.discordSettings)(message, 'withdraw', groupTaskId, channelTaskId);
+              return (0, _rateLimit.limitDeposit)(message);
 
             case 207:
-              _setting = _context4.sent;
+              _limited11 = _context4.sent;
               _context4.next = 210;
               return queue.add(function () {
-                return _setting;
+                return _limited11;
               });
 
             case 210:
-              if (_setting) {
+              if (!_limited11) {
                 _context4.next = 212;
                 break;
               }
@@ -769,84 +771,119 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 212:
               _context4.next = 214;
-              return (0, _rateLimit.limitWithdraw)(message);
+              return (0, _deposit.fetchDiscordWalletDepositAddress)(message, io);
 
             case 214:
-              _limited11 = _context4.sent;
+              _task11 = _context4.sent;
               _context4.next = 217;
               return queue.add(function () {
-                return _limited11;
+                return _task11;
               });
 
             case 217:
-              if (!_limited11) {
-                _context4.next = 219;
+              if (!(filteredMessageDiscord[1].toLowerCase() === 'withdraw')) {
+                _context4.next = 234;
                 break;
               }
 
-              return _context4.abrupt("return");
+              _context4.next = 220;
+              return (0, _settings.discordSettings)(message, 'withdraw', groupTaskId, channelTaskId);
 
-            case 219:
-              _context4.next = 221;
-              return (0, _executeTips.executeTipFunction)(_withdraw.withdrawDiscordCreate, queue, filteredMessageDiscord[3], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting, faucetSetting);
-
-            case 221:
-              if (!(filteredMessageDiscord.length > 1 && filteredMessageDiscord[1].startsWith('<@'))) {
-                _context4.next = 246;
-                break;
-              }
-
-              _context4.next = 224;
-              return (0, _settings.discordSettings)(message, 'tip', groupTaskId, channelTaskId);
-
-            case 224:
-              _setting2 = _context4.sent;
-              _context4.next = 227;
+            case 220:
+              _setting = _context4.sent;
+              _context4.next = 223;
               return queue.add(function () {
-                return _setting2;
+                return _setting;
               });
 
-            case 227:
-              if (_setting2) {
-                _context4.next = 229;
+            case 223:
+              if (_setting) {
+                _context4.next = 225;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 229:
-              _context4.next = 231;
-              return (0, _rateLimit.limitTip)(message);
+            case 225:
+              _context4.next = 227;
+              return (0, _rateLimit.limitWithdraw)(message);
 
-            case 231:
+            case 227:
               _limited12 = _context4.sent;
-              _context4.next = 234;
+              _context4.next = 230;
               return queue.add(function () {
                 return _limited12;
               });
 
-            case 234:
+            case 230:
               if (!_limited12) {
-                _context4.next = 236;
+                _context4.next = 232;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 236:
-              if (!(filteredMessageDiscord[1].substr(3).slice(0, -1) === discordClient.user.id)) {
-                _context4.next = 241;
+            case 232:
+              _context4.next = 234;
+              return (0, _executeTips.executeTipFunction)(_withdraw.withdrawDiscordCreate, queue, filteredMessageDiscord[3], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting, faucetSetting);
+
+            case 234:
+              if (!(filteredMessageDiscord.length > 1 && filteredMessageDiscord[1].startsWith('<@'))) {
+                _context4.next = 259;
                 break;
               }
 
-              _context4.next = 239;
+              _context4.next = 237;
+              return (0, _settings.discordSettings)(message, 'tip', groupTaskId, channelTaskId);
+
+            case 237:
+              _setting2 = _context4.sent;
+              _context4.next = 240;
+              return queue.add(function () {
+                return _setting2;
+              });
+
+            case 240:
+              if (_setting2) {
+                _context4.next = 242;
+                break;
+              }
+
+              return _context4.abrupt("return");
+
+            case 242:
+              _context4.next = 244;
+              return (0, _rateLimit.limitTip)(message);
+
+            case 244:
+              _limited13 = _context4.sent;
+              _context4.next = 247;
+              return queue.add(function () {
+                return _limited13;
+              });
+
+            case 247:
+              if (!_limited13) {
+                _context4.next = 249;
+                break;
+              }
+
+              return _context4.abrupt("return");
+
+            case 249:
+              if (!(filteredMessageDiscord[1].substr(3).slice(0, -1) === discordClient.user.id)) {
+                _context4.next = 254;
+                break;
+              }
+
+              _context4.next = 252;
               return (0, _executeTips.executeTipFunction)(_tip.tipCoinsToDiscordFaucet, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting2, faucetSetting);
 
-            case 239:
-              _context4.next = 246;
+            case 252:
+              _context4.next = 259;
               break;
 
-            case 241:
+            case 254:
               AmountPosition = 1;
               AmountPositionEnded = false;
 
@@ -858,433 +895,433 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
                 }
               }
 
-              _context4.next = 246;
+              _context4.next = 259;
               return (0, _executeTips.executeTipFunction)(_tip.tipRunesToDiscordUser, queue, filteredMessageDiscord[AmountPosition], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting2, faucetSetting);
 
-            case 246:
+            case 259:
               if (!(filteredMessageDiscord[1].toLowerCase() === 'voicerain')) {
-                _context4.next = 263;
+                _context4.next = 276;
                 break;
               }
 
-              _context4.next = 249;
+              _context4.next = 262;
               return (0, _settings.discordSettings)(message, 'voicerain', groupTaskId, channelTaskId);
 
-            case 249:
+            case 262:
               _setting3 = _context4.sent;
-              _context4.next = 252;
+              _context4.next = 265;
               return queue.add(function () {
                 return _setting3;
               });
 
-            case 252:
+            case 265:
               if (_setting3) {
-                _context4.next = 254;
+                _context4.next = 267;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 254:
-              _context4.next = 256;
-              return (0, _rateLimit.limitRain)(message);
-
-            case 256:
-              _limited13 = _context4.sent;
-              _context4.next = 259;
-              return queue.add(function () {
-                return _limited13;
-              });
-
-            case 259:
-              if (!_limited13) {
-                _context4.next = 261;
-                break;
-              }
-
-              return _context4.abrupt("return");
-
-            case 261:
-              _context4.next = 263;
-              return (0, _executeTips.executeTipFunction)(_voicerain.discordVoiceRain, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting3, faucetSetting);
-
-            case 263:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'rain')) {
-                _context4.next = 280;
-                break;
-              }
-
-              _context4.next = 266;
-              return (0, _settings.discordSettings)(message, 'rain', groupTaskId, channelTaskId);
-
-            case 266:
-              _setting4 = _context4.sent;
+            case 267:
               _context4.next = 269;
-              return queue.add(function () {
-                return _setting4;
-              });
+              return (0, _rateLimit.limitRain)(message);
 
             case 269:
-              if (_setting4) {
-                _context4.next = 271;
-                break;
-              }
-
-              return _context4.abrupt("return");
-
-            case 271:
-              _context4.next = 273;
-              return (0, _rateLimit.limitRain)(message);
-
-            case 273:
               _limited14 = _context4.sent;
-              _context4.next = 276;
+              _context4.next = 272;
               return queue.add(function () {
                 return _limited14;
               });
 
-            case 276:
+            case 272:
               if (!_limited14) {
-                _context4.next = 278;
+                _context4.next = 274;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 278:
-              _context4.next = 280;
-              return (0, _executeTips.executeTipFunction)(_rain.discordRain, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting4, faucetSetting);
+            case 274:
+              _context4.next = 276;
+              return (0, _executeTips.executeTipFunction)(_voicerain.discordVoiceRain, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting3, faucetSetting);
 
-            case 280:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'flood')) {
-                _context4.next = 297;
+            case 276:
+              if (!(filteredMessageDiscord[1].toLowerCase() === 'rain')) {
+                _context4.next = 293;
                 break;
               }
 
-              _context4.next = 283;
-              return (0, _settings.discordSettings)(message, 'flood', groupTaskId, channelTaskId);
+              _context4.next = 279;
+              return (0, _settings.discordSettings)(message, 'rain', groupTaskId, channelTaskId);
 
-            case 283:
-              _setting5 = _context4.sent;
-              _context4.next = 286;
+            case 279:
+              _setting4 = _context4.sent;
+              _context4.next = 282;
               return queue.add(function () {
-                return _setting5;
+                return _setting4;
               });
 
-            case 286:
-              if (_setting5) {
-                _context4.next = 288;
+            case 282:
+              if (_setting4) {
+                _context4.next = 284;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 288:
-              _context4.next = 290;
-              return (0, _rateLimit.limitFlood)(message);
+            case 284:
+              _context4.next = 286;
+              return (0, _rateLimit.limitRain)(message);
 
-            case 290:
+            case 286:
               _limited15 = _context4.sent;
-              _context4.next = 293;
+              _context4.next = 289;
               return queue.add(function () {
                 return _limited15;
               });
 
-            case 293:
+            case 289:
               if (!_limited15) {
-                _context4.next = 295;
+                _context4.next = 291;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 295:
-              _context4.next = 297;
-              return (0, _executeTips.executeTipFunction)(_flood.discordFlood, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting5, faucetSetting);
+            case 291:
+              _context4.next = 293;
+              return (0, _executeTips.executeTipFunction)(_rain.discordRain, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting4, faucetSetting);
 
-            case 297:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'thunder')) {
-                _context4.next = 314;
+            case 293:
+              if (!(filteredMessageDiscord[1].toLowerCase() === 'flood')) {
+                _context4.next = 310;
                 break;
               }
 
-              _context4.next = 300;
-              return (0, _settings.discordSettings)(message, 'thunder', groupTaskId, channelTaskId);
+              _context4.next = 296;
+              return (0, _settings.discordSettings)(message, 'flood', groupTaskId, channelTaskId);
 
-            case 300:
-              _setting6 = _context4.sent;
-              _context4.next = 303;
+            case 296:
+              _setting5 = _context4.sent;
+              _context4.next = 299;
               return queue.add(function () {
-                return _setting6;
+                return _setting5;
               });
 
-            case 303:
-              if (_setting6) {
-                _context4.next = 305;
+            case 299:
+              if (_setting5) {
+                _context4.next = 301;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 305:
-              _context4.next = 307;
-              return (0, _rateLimit.limitThunder)(message);
+            case 301:
+              _context4.next = 303;
+              return (0, _rateLimit.limitFlood)(message);
 
-            case 307:
+            case 303:
               _limited16 = _context4.sent;
-              _context4.next = 310;
+              _context4.next = 306;
               return queue.add(function () {
                 return _limited16;
               });
 
-            case 310:
+            case 306:
               if (!_limited16) {
-                _context4.next = 312;
+                _context4.next = 308;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 312:
-              _context4.next = 314;
-              return (0, _executeTips.executeTipFunction)(_thunder.discordThunder, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting6, faucetSetting);
+            case 308:
+              _context4.next = 310;
+              return (0, _executeTips.executeTipFunction)(_flood.discordFlood, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting5, faucetSetting);
 
-            case 314:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'thunderstorm')) {
-                _context4.next = 331;
+            case 310:
+              if (!(filteredMessageDiscord[1].toLowerCase() === 'thunder')) {
+                _context4.next = 327;
                 break;
               }
 
-              _context4.next = 317;
-              return (0, _settings.discordSettings)(message, 'thunderstorm', groupTaskId, channelTaskId);
+              _context4.next = 313;
+              return (0, _settings.discordSettings)(message, 'thunder', groupTaskId, channelTaskId);
 
-            case 317:
-              _setting7 = _context4.sent;
-              _context4.next = 320;
+            case 313:
+              _setting6 = _context4.sent;
+              _context4.next = 316;
               return queue.add(function () {
-                return _setting7;
+                return _setting6;
               });
 
-            case 320:
-              if (_setting7) {
-                _context4.next = 322;
+            case 316:
+              if (_setting6) {
+                _context4.next = 318;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 322:
-              _context4.next = 324;
-              return (0, _rateLimit.limitThunderStorm)(message);
+            case 318:
+              _context4.next = 320;
+              return (0, _rateLimit.limitThunder)(message);
 
-            case 324:
+            case 320:
               _limited17 = _context4.sent;
-              _context4.next = 327;
+              _context4.next = 323;
               return queue.add(function () {
                 return _limited17;
               });
 
-            case 327:
+            case 323:
               if (!_limited17) {
-                _context4.next = 329;
+                _context4.next = 325;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 329:
-              _context4.next = 331;
-              return (0, _executeTips.executeTipFunction)(_thunderstorm.discordThunderStorm, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting7, faucetSetting);
+            case 325:
+              _context4.next = 327;
+              return (0, _executeTips.executeTipFunction)(_thunder.discordThunder, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting6, faucetSetting);
 
-            case 331:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'hurricane')) {
-                _context4.next = 348;
+            case 327:
+              if (!(filteredMessageDiscord[1].toLowerCase() === 'thunderstorm')) {
+                _context4.next = 344;
                 break;
               }
 
-              _context4.next = 334;
-              return (0, _settings.discordSettings)(message, 'hurricane', groupTaskId, channelTaskId);
+              _context4.next = 330;
+              return (0, _settings.discordSettings)(message, 'thunderstorm', groupTaskId, channelTaskId);
 
-            case 334:
-              _setting8 = _context4.sent;
-              _context4.next = 337;
+            case 330:
+              _setting7 = _context4.sent;
+              _context4.next = 333;
               return queue.add(function () {
-                return _setting8;
+                return _setting7;
               });
 
-            case 337:
-              if (_setting8) {
-                _context4.next = 339;
+            case 333:
+              if (_setting7) {
+                _context4.next = 335;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 339:
-              _context4.next = 341;
-              return (0, _rateLimit.limitHurricane)(message);
+            case 335:
+              _context4.next = 337;
+              return (0, _rateLimit.limitThunderStorm)(message);
 
-            case 341:
+            case 337:
               _limited18 = _context4.sent;
-              _context4.next = 344;
+              _context4.next = 340;
               return queue.add(function () {
                 return _limited18;
               });
 
-            case 344:
+            case 340:
               if (!_limited18) {
-                _context4.next = 346;
+                _context4.next = 342;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 346:
-              _context4.next = 348;
-              return (0, _executeTips.executeTipFunction)(_hurricane.discordHurricane, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting8, faucetSetting);
+            case 342:
+              _context4.next = 344;
+              return (0, _executeTips.executeTipFunction)(_thunderstorm.discordThunderStorm, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting7, faucetSetting);
 
-            case 348:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'soak')) {
-                _context4.next = 365;
+            case 344:
+              if (!(filteredMessageDiscord[1].toLowerCase() === 'hurricane')) {
+                _context4.next = 361;
                 break;
               }
 
-              _context4.next = 351;
-              return (0, _settings.discordSettings)(message, 'soak', groupTaskId, channelTaskId);
+              _context4.next = 347;
+              return (0, _settings.discordSettings)(message, 'hurricane', groupTaskId, channelTaskId);
 
-            case 351:
-              _setting9 = _context4.sent;
-              _context4.next = 354;
+            case 347:
+              _setting8 = _context4.sent;
+              _context4.next = 350;
               return queue.add(function () {
-                return _setting9;
+                return _setting8;
               });
 
-            case 354:
-              if (_setting9) {
-                _context4.next = 356;
+            case 350:
+              if (_setting8) {
+                _context4.next = 352;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 356:
-              _context4.next = 358;
-              return (0, _rateLimit.limitSoak)(message);
+            case 352:
+              _context4.next = 354;
+              return (0, _rateLimit.limitHurricane)(message);
 
-            case 358:
+            case 354:
               _limited19 = _context4.sent;
-              _context4.next = 361;
+              _context4.next = 357;
               return queue.add(function () {
                 return _limited19;
               });
 
-            case 361:
+            case 357:
               if (!_limited19) {
-                _context4.next = 363;
+                _context4.next = 359;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 363:
-              _context4.next = 365;
-              return (0, _executeTips.executeTipFunction)(_soak.discordSoak, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting9, faucetSetting);
+            case 359:
+              _context4.next = 361;
+              return (0, _executeTips.executeTipFunction)(_hurricane.discordHurricane, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting8, faucetSetting);
 
-            case 365:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'sleet')) {
-                _context4.next = 382;
+            case 361:
+              if (!(filteredMessageDiscord[1].toLowerCase() === 'soak')) {
+                _context4.next = 378;
                 break;
               }
 
-              _context4.next = 368;
-              return (0, _settings.discordSettings)(message, 'sleet', groupTaskId, channelTaskId);
+              _context4.next = 364;
+              return (0, _settings.discordSettings)(message, 'soak', groupTaskId, channelTaskId);
 
-            case 368:
-              _setting10 = _context4.sent;
-              _context4.next = 371;
+            case 364:
+              _setting9 = _context4.sent;
+              _context4.next = 367;
               return queue.add(function () {
-                return _setting10;
+                return _setting9;
               });
 
-            case 371:
-              if (_setting10) {
-                _context4.next = 373;
+            case 367:
+              if (_setting9) {
+                _context4.next = 369;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 373:
-              _context4.next = 375;
-              return (0, _rateLimit.limitSleet)(message);
+            case 369:
+              _context4.next = 371;
+              return (0, _rateLimit.limitSoak)(message);
 
-            case 375:
+            case 371:
               _limited20 = _context4.sent;
-              _context4.next = 378;
+              _context4.next = 374;
               return queue.add(function () {
                 return _limited20;
               });
 
-            case 378:
+            case 374:
               if (!_limited20) {
-                _context4.next = 380;
+                _context4.next = 376;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 380:
-              _context4.next = 382;
-              return (0, _executeTips.executeTipFunction)(_sleet.discordSleet, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting10, faucetSetting);
+            case 376:
+              _context4.next = 378;
+              return (0, _executeTips.executeTipFunction)(_soak.discordSoak, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting9, faucetSetting);
 
-            case 382:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'reactdrop')) {
-                _context4.next = 399;
+            case 378:
+              if (!(filteredMessageDiscord[1].toLowerCase() === 'sleet')) {
+                _context4.next = 395;
                 break;
               }
 
-              _context4.next = 385;
-              return (0, _settings.discordSettings)(message, 'reactdrop', groupTaskId, channelTaskId);
+              _context4.next = 381;
+              return (0, _settings.discordSettings)(message, 'sleet', groupTaskId, channelTaskId);
 
-            case 385:
-              _setting11 = _context4.sent;
-              _context4.next = 388;
+            case 381:
+              _setting10 = _context4.sent;
+              _context4.next = 384;
               return queue.add(function () {
-                return _setting11;
+                return _setting10;
               });
 
-            case 388:
-              if (_setting11) {
-                _context4.next = 390;
+            case 384:
+              if (_setting10) {
+                _context4.next = 386;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 390:
-              _context4.next = 392;
-              return (0, _rateLimit.limitReactDrop)(message);
+            case 386:
+              _context4.next = 388;
+              return (0, _rateLimit.limitSleet)(message);
 
-            case 392:
+            case 388:
               _limited21 = _context4.sent;
-              _context4.next = 395;
+              _context4.next = 391;
               return queue.add(function () {
                 return _limited21;
               });
 
-            case 395:
+            case 391:
               if (!_limited21) {
-                _context4.next = 397;
+                _context4.next = 393;
                 break;
               }
 
               return _context4.abrupt("return");
 
-            case 397:
-              _context4.next = 399;
+            case 393:
+              _context4.next = 395;
+              return (0, _executeTips.executeTipFunction)(_sleet.discordSleet, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting10, faucetSetting);
+
+            case 395:
+              if (!(filteredMessageDiscord[1].toLowerCase() === 'reactdrop')) {
+                _context4.next = 412;
+                break;
+              }
+
+              _context4.next = 398;
+              return (0, _settings.discordSettings)(message, 'reactdrop', groupTaskId, channelTaskId);
+
+            case 398:
+              _setting11 = _context4.sent;
+              _context4.next = 401;
+              return queue.add(function () {
+                return _setting11;
+              });
+
+            case 401:
+              if (_setting11) {
+                _context4.next = 403;
+                break;
+              }
+
+              return _context4.abrupt("return");
+
+            case 403:
+              _context4.next = 405;
+              return (0, _rateLimit.limitReactDrop)(message);
+
+            case 405:
+              _limited22 = _context4.sent;
+              _context4.next = 408;
+              return queue.add(function () {
+                return _limited22;
+              });
+
+            case 408:
+              if (!_limited22) {
+                _context4.next = 410;
+                break;
+              }
+
+              return _context4.abrupt("return");
+
+            case 410:
+              _context4.next = 412;
               return (0, _executeTips.executeTipFunction)(_reactdrop.discordReactDrop, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting11, faucetSetting);
 
-            case 399:
+            case 412:
             case "end":
               return _context4.stop();
           }

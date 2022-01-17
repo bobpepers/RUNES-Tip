@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.startKomodoSync = startKomodoSync;
+exports.startKomodoSync = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -462,225 +462,185 @@ var syncTransactions = /*#__PURE__*/function () {
   };
 }();
 
-var getInsertBlockPromises = /*#__PURE__*/function () {
-  var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(startBlock, endBlock) {
-    var blockTime, insertBlockPromises, _loop2, i;
-
-    return _regenerator["default"].wrap(function _callee6$(_context7) {
+var insertBlock = /*#__PURE__*/function () {
+  var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(startBlock) {
+    var blockHash, block, dbBlock;
+    return _regenerator["default"].wrap(function _callee5$(_context6) {
       while (1) {
-        switch (_context7.prev = _context7.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
-            // let blockHash;
-            insertBlockPromises = [];
+            _context6.prev = 0;
+            _context6.next = 3;
+            return (0, _rclient.getInstance)().getBlockHash(startBlock);
 
-            _loop2 = function _loop2(i) {
-              // console.log(i);
-              var blockPromise = new Promise(function (resolve) {
-                try {
-                  (0, _rclient.getInstance)().getBlockHash(i).then(function (blockHash) {
-                    (0, _rclient.getInstance)().getBlock(blockHash, 2).then(function (blockInfo) {
-                      _models["default"].block.findOne({
-                        where: {
-                          id: i
-                        }
-                      }).then( /*#__PURE__*/function () {
-                        var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(obj) {
-                          return _regenerator["default"].wrap(function _callee5$(_context6) {
-                            while (1) {
-                              switch (_context6.prev = _context6.next) {
-                                case 0:
-                                  if (!obj) {
-                                    _context6.next = 3;
-                                    break;
-                                  }
+          case 3:
+            blockHash = _context6.sent;
 
-                                  _context6.next = 3;
-                                  return obj.update({
-                                    id: i,
-                                    blockTime: blockInfo.time
-                                  });
-
-                                case 3:
-                                  if (obj) {
-                                    _context6.next = 6;
-                                    break;
-                                  }
-
-                                  _context6.next = 6;
-                                  return _models["default"].block.create({
-                                    id: i,
-                                    blockTime: blockTime
-                                  });
-
-                                case 6:
-                                  resolve();
-
-                                case 7:
-                                case "end":
-                                  return _context6.stop();
-                              }
-                            }
-                          }, _callee5);
-                        }));
-
-                        return function (_x9) {
-                          return _ref5.apply(this, arguments);
-                        };
-                      }());
-                    })["catch"](function (err) {
-                      console.log(err);
-                    });
-                  })["catch"](function (err) {
-                    console.log(err);
-                  });
-                } catch (err) {
-                  console.log(err);
-                }
-              });
-              insertBlockPromises.push(blockPromise);
-            };
-
-            for (i = startBlock; i <= endBlock; i += 1) {
-              _loop2(i);
+            if (!blockHash) {
+              _context6.next = 16;
+              break;
             }
 
-            return _context7.abrupt("return", {
-              insertBlockPromises: insertBlockPromises
+            block = (0, _rclient.getInstance)().getBlock(blockHash, 2);
+
+            if (!block) {
+              _context6.next = 16;
+              break;
+            }
+
+            _context6.next = 9;
+            return _models["default"].block.findOne({
+              where: {
+                id: Number(startBlock)
+              }
             });
 
-          case 4:
+          case 9:
+            dbBlock = _context6.sent;
+
+            if (!dbBlock) {
+              _context6.next = 13;
+              break;
+            }
+
+            _context6.next = 13;
+            return dbBlock.update({
+              id: Number(startBlock),
+              blockTime: block.time
+            });
+
+          case 13:
+            if (dbBlock) {
+              _context6.next = 16;
+              break;
+            }
+
+            _context6.next = 16;
+            return _models["default"].block.create({
+              id: startBlock,
+              blockTime: block.time
+            });
+
+          case 16:
+            return _context6.abrupt("return", true);
+
+          case 19:
+            _context6.prev = 19;
+            _context6.t0 = _context6["catch"](0);
+            console.log(_context6.t0);
+            return _context6.abrupt("return", false);
+
+          case 23:
           case "end":
-            return _context7.stop();
+            return _context6.stop();
         }
       }
-    }, _callee6);
+    }, _callee5, null, [[0, 19]]);
   }));
 
-  return function getInsertBlockPromises(_x7, _x8) {
+  return function insertBlock(_x7) {
     return _ref4.apply(this, arguments);
   };
 }();
 
-var sync = /*#__PURE__*/function () {
-  var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee9(discordClient, telegramClient) {
+var startKomodoSync = /*#__PURE__*/function () {
+  var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee8(discordClient, telegramClient) {
     var currentBlockCount, startBlock, blocks, numOfIterations;
-    return _regenerator["default"].wrap(function _callee9$(_context10) {
+    return _regenerator["default"].wrap(function _callee8$(_context9) {
       while (1) {
-        switch (_context10.prev = _context10.next) {
+        switch (_context9.prev = _context9.next) {
           case 0:
-            _context10.t0 = Math;
-            _context10.next = 3;
+            _context9.t0 = Math;
+            _context9.next = 3;
             return (0, _rclient.getInstance)().getBlockCount();
 
           case 3:
-            _context10.t1 = _context10.sent;
-            currentBlockCount = _context10.t0.max.call(_context10.t0, 0, _context10.t1);
+            _context9.t1 = _context9.sent;
+            currentBlockCount = _context9.t0.max.call(_context9.t0, 0, _context9.t1);
             startBlock = Number(settings.startSyncBlock);
-            _context10.next = 8;
+            _context9.next = 8;
             return _models["default"].block.findAll({
               limit: 1,
               order: [['id', 'DESC']]
             });
 
           case 8:
-            blocks = _context10.sent;
+            blocks = _context9.sent;
 
             if (blocks.length > 0) {
               startBlock = Math.max(blocks[0].id + 1, startBlock);
             }
 
             numOfIterations = Math.ceil((currentBlockCount - startBlock + 1) / 1);
-            _context10.next = 13;
+            _context9.next = 13;
             return sequentialLoop(numOfIterations, /*#__PURE__*/function () {
-              var _ref7 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee7(loop) {
-                var endBlock, _yield$getInsertBlock, insertBlockPromises;
-
-                return _regenerator["default"].wrap(function _callee7$(_context8) {
+              var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(loop) {
+                var endBlock, task;
+                return _regenerator["default"].wrap(function _callee6$(_context7) {
                   while (1) {
-                    switch (_context8.prev = _context8.next) {
+                    switch (_context7.prev = _context7.next) {
                       case 0:
                         endBlock = Math.min(startBlock + 1 - 1, currentBlockCount); // await syncTransactions(startBlock, endBlock);
 
-                        _context8.next = 3;
+                        _context7.next = 3;
                         return queue.add(function () {
                           return syncTransactions(discordClient, telegramClient);
                         });
 
                       case 3:
-                        _context8.next = 5;
-                        return getInsertBlockPromises(startBlock, endBlock);
+                        _context7.next = 5;
+                        return insertBlock(startBlock);
 
                       case 5:
-                        _yield$getInsertBlock = _context8.sent;
-                        insertBlockPromises = _yield$getInsertBlock.insertBlockPromises;
-                        _context8.next = 9;
+                        task = _context7.sent;
+                        _context7.next = 8;
                         return queue.add(function () {
-                          return Promise.all(insertBlockPromises);
+                          return task;
                         });
 
-                      case 9:
+                      case 8:
                         startBlock = endBlock + 1;
                         console.log('Synced block');
-                        _context8.next = 13;
+                        _context7.next = 12;
                         return loop.next();
 
-                      case 13:
+                      case 12:
                       case "end":
-                        return _context8.stop();
+                        return _context7.stop();
                     }
                   }
-                }, _callee7);
+                }, _callee6);
               }));
 
-              return function (_x12) {
-                return _ref7.apply(this, arguments);
+              return function (_x10) {
+                return _ref6.apply(this, arguments);
               };
-            }(), /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee8() {
-              return _regenerator["default"].wrap(function _callee8$(_context9) {
+            }(), /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee7() {
+              return _regenerator["default"].wrap(function _callee7$(_context8) {
                 while (1) {
-                  switch (_context9.prev = _context9.next) {
+                  switch (_context8.prev = _context8.next) {
                     case 0:
                       console.log('sleep'); // setTimeout(startSync, 5000);
 
                     case 1:
                     case "end":
-                      return _context9.stop();
+                      return _context8.stop();
                   }
                 }
-              }, _callee8);
+              }, _callee7);
             })));
 
           case 13:
           case "end":
-            return _context10.stop();
+            return _context9.stop();
         }
       }
-    }, _callee9);
+    }, _callee8);
   }));
 
-  return function sync(_x10, _x11) {
-    return _ref6.apply(this, arguments);
+  return function startKomodoSync(_x8, _x9) {
+    return _ref5.apply(this, arguments);
   };
 }();
 
-function startKomodoSync(_x13, _x14) {
-  return _startKomodoSync.apply(this, arguments);
-}
-
-function _startKomodoSync() {
-  _startKomodoSync = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee10(discordClient, telegramClient) {
-    return _regenerator["default"].wrap(function _callee10$(_context11) {
-      while (1) {
-        switch (_context11.prev = _context11.next) {
-          case 0:
-            sync(discordClient, telegramClient);
-
-          case 1:
-          case "end":
-            return _context11.stop();
-        }
-      }
-    }, _callee10);
-  }));
-  return _startKomodoSync.apply(this, arguments);
-}
+exports.startKomodoSync = startKomodoSync;
