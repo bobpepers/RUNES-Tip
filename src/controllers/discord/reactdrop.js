@@ -20,6 +20,7 @@ import {
   AfterReactDropSuccessMessage,
   invalidEmojiMessage,
   maxTimeReactdropMessage,
+  ReactDropReturnInitiatorMessage,
 } from '../../messages/discord';
 import db from '../../models';
 import emojiCompact from "../../config/emoji";
@@ -368,7 +369,8 @@ export const listenReactDrop = async (
             lock: t.LOCK.UPDATE,
             transaction: t,
           });
-          reactMessage.channel.send('Nobody claimed, returning funds to reactdrop initiator');
+          // reactMessage.channel.send('Nobody claimed, returning funds to reactdrop initiator');
+          reactMessage.channel.send({ embeds: [ReactDropReturnInitiatorMessage()] });
         } else {
           // Get Faucet Settings
           let faucetSetting;

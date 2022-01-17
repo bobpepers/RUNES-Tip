@@ -885,6 +885,20 @@ export const statsMessage = (message, statsMessage) => {
 
   return result;
 };
+export const ReactDropReturnInitiatorMessage = () => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(`Reactdrop`)
+    .setDescription(`Nobody claimed, returning funds to reactdrop initiator`)
+    .setThumbnail(settings.coin.logo)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
 
 export const warnDirectMessage = (userId, title) => {
   const result = new MessageEmbed()

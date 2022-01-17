@@ -621,7 +621,10 @@ var listenReactDrop = /*#__PURE__*/function () {
                                   });
 
                                 case 13:
-                                  reactMessage.channel.send('Nobody claimed, returning funds to reactdrop initiator');
+                                  // reactMessage.channel.send('Nobody claimed, returning funds to reactdrop initiator');
+                                  reactMessage.channel.send({
+                                    embeds: [(0, _discord2.ReactDropReturnInitiatorMessage)()]
+                                  });
                                   _context6.next = 82;
                                   break;
 
