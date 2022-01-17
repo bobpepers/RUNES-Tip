@@ -40,7 +40,7 @@ module.exports = {
     ],
     exampleAddress: 'ReU2nhYXamYRd2VBk4auwresov6jwLEuSg',
   },
-  faucet: 10, // (50 = 0,5% / 100 = 1% / ...) percentage of total per claim
+  faucet: 1, // (50 = 0,5% / 100 = 1% / ...) percentage of total per claim
   min: {
     confirmations: 6,
   },
