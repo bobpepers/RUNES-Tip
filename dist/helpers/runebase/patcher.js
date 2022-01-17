@@ -51,7 +51,7 @@ function _patchRunebaseDeposits() {
                       trans = _step.value;
                       console.log(trans);
 
-                      if (!(trans.category === 'receive' || trans.category === 'send')) {
+                      if (!(trans.category === 'receive')) {
                         _context2.next = 13;
                         break;
                       }

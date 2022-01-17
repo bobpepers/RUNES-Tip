@@ -12,7 +12,7 @@ export async function patchKomodoDeposits() {
   // eslint-disable-next-line no-restricted-syntax
   for await (const trans of transactions) {
     console.log(trans);
-    if (trans.address) {
+    if (trans.address && trans.category === 'receive') {
       // eslint-disable-next-line no-await-in-loop
       const address = await db.address.findOne({
         where: {

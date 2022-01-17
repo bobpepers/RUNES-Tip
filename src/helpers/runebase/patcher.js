@@ -9,7 +9,7 @@ export async function patchRunebaseDeposits() {
   // eslint-disable-next-line no-restricted-syntax
   for await (const trans of transactions) {
     console.log(trans);
-    if (trans.category === 'receive' || trans.category === 'send') {
+    if (trans.category === 'receive') {
       if (trans.address) {
         // eslint-disable-next-line no-await-in-loop
         const address = await db.address.findOne({

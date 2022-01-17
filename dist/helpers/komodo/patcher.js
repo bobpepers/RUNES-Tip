@@ -55,7 +55,7 @@ function _patchKomodoDeposits() {
                       trans = _step.value;
                       console.log(trans);
 
-                      if (!trans.address) {
+                      if (!(trans.address && trans.category === 'receive')) {
                         _context2.next = 12;
                         break;
                       }
