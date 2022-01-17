@@ -36,6 +36,21 @@ ${server.banMessage}`)
   return result;
 };
 
+export const priceMessage = (replyString) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Price')
+    .setThumbnail(settings.coin.logo)
+    .setDescription(replyString)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
 export const discordChannelBannedMessage = (channel) => {
   const result = new MessageEmbed()
     .setColor('#FF7900')
@@ -901,6 +916,9 @@ Displays coin info
 
 \`${settings.bot.command.discord} balance\`
 Displays your balance
+
+\`${settings.bot.command.discord} price\`
+Displays ${settings.coin.ticker} price
 
 \`${settings.bot.command.discord} stats\`
 Displays your tip statistics

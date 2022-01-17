@@ -40,6 +40,8 @@ import { setIgnoreMe } from '../controllers/discord/ignore';
 
 import { discordHelp } from '../controllers/discord/help';
 
+import { discordPrice } from '../controllers/discord/price';
+
 import {
   limitReactDrop,
   limitTip,
@@ -60,6 +62,7 @@ import {
   limitPublicStats,
   limitThunder,
   limitThunderStorm,
+  limitPrice,
 } from '../helpers/rateLimit';
 
 import { discordReactDrop } from '../controllers/discord/reactdrop';
@@ -117,7 +120,7 @@ export const discordRouter = (
   });
 
   discordClient.on("presenceUpdate", (oldMember, newMember) => {
-    //const { username } = newMember.user;
+    // const { username } = newMember.user;
     console.log('presenceUpdate');
   });
 
@@ -209,7 +212,7 @@ export const discordRouter = (
         filteredMessageDiscord,
         io,
         groupTask,
-        channelTask
+        channelTask,
       );
       await queue.add(() => task);
     }
@@ -248,6 +251,13 @@ export const discordRouter = (
       const task = await fetchDiscordWalletBalance(message, io);
       await queue.add(() => task);
     }
+    if (filteredMessageDiscord[1].toLowerCase() === 'price') {
+      const limited = await limitPrice(message);
+      await queue.add(() => limited);
+      if (limited) return;
+      const task = await discordPrice(message, io);
+      await queue.add(() => task);
+    }
     if (filteredMessageDiscord[1].toLowerCase() === 'faucet') {
       const setting = await discordSettings(
         message,
@@ -281,7 +291,7 @@ export const discordRouter = (
         message,
         'withdraw',
         groupTaskId,
-        channelTaskId
+        channelTaskId,
       );
       await queue.add(() => setting);
       if (!setting) return;
@@ -312,7 +322,7 @@ export const discordRouter = (
         message,
         'tip',
         groupTaskId,
-        channelTaskId
+        channelTaskId,
       );
       await queue.add(() => setting);
       if (!setting) return;

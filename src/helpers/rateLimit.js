@@ -24,6 +24,10 @@ const rateLimiterHelp = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 20,
   duration: 120,
 });
+const rateLimiterPrice = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 20,
+  duration: 120,
+});
 const rateLimiterInfo = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 20,
   duration: 120,
@@ -211,6 +215,23 @@ export const limitBalance = async (message) => {
       const notError = await errorConsumer.consume(message.author.id, 1);
       if (notError.remainingPoints > 0) {
         await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Tip')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+
+export const limitPrice = async (message) => {
+  try {
+    const limited = await rateLimiterPrice.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Price')] });
       }
       return true;
     } catch (e) {
