@@ -33,19 +33,15 @@ function _patchRunebaseDeposits() {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            console.log('start patch deposits');
-            _context3.next = 3;
+            _context3.next = 2;
             return (0, _rclient.getInstance)().listTransactions(1000);
 
-          case 3:
+          case 2:
             transactions = _context3.sent;
-            console.log('after await instance listtransactions');
-            console.log(transactions); // transactions.forEach(async (trans) => {
             // eslint-disable-next-line no-restricted-syntax
-
             _iteratorAbruptCompletion = false;
             _didIteratorError = false;
-            _context3.prev = 8;
+            _context3.prev = 5;
             _loop = /*#__PURE__*/_regenerator["default"].mark(function _loop() {
               var trans, address;
               return _regenerator["default"].wrap(function _loop$(_context2) {
@@ -55,12 +51,17 @@ function _patchRunebaseDeposits() {
                       trans = _step.value;
                       console.log(trans);
 
-                      if (!trans.address) {
-                        _context2.next = 12;
+                      if (!(trans.category === 'receive' || trans.category === 'send')) {
+                        _context2.next = 13;
                         break;
                       }
 
-                      _context2.next = 5;
+                      if (!trans.address) {
+                        _context2.next = 13;
+                        break;
+                      }
+
+                      _context2.next = 6;
                       return _models["default"].address.findOne({
                         where: {
                           address: trans.address
@@ -71,7 +72,7 @@ function _patchRunebaseDeposits() {
                         }]
                       });
 
-                    case 5:
+                    case 6:
                       address = _context2.sent;
 
                       if (!address) {
@@ -80,14 +81,14 @@ function _patchRunebaseDeposits() {
                       }
 
                       if (!address) {
-                        _context2.next = 12;
+                        _context2.next = 13;
                         break;
                       }
 
                       console.log(trans);
                       console.log(address); // eslint-disable-next-line no-await-in-loop
 
-                      _context2.next = 12;
+                      _context2.next = 13;
                       return _models["default"].sequelize.transaction({
                         isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
                       }, /*#__PURE__*/function () {
@@ -136,7 +137,7 @@ function _patchRunebaseDeposits() {
                         };
                       }());
 
-                    case 12:
+                    case 13:
                     case "end":
                       return _context2.stop();
                   }
@@ -145,67 +146,67 @@ function _patchRunebaseDeposits() {
             });
             _iterator = _asyncIterator(transactions);
 
-          case 11:
-            _context3.next = 13;
+          case 8:
+            _context3.next = 10;
             return _iterator.next();
 
-          case 13:
+          case 10:
             if (!(_iteratorAbruptCompletion = !(_step = _context3.sent).done)) {
-              _context3.next = 18;
+              _context3.next = 15;
               break;
             }
 
-            return _context3.delegateYield(_loop(), "t0", 15);
+            return _context3.delegateYield(_loop(), "t0", 12);
+
+          case 12:
+            _iteratorAbruptCompletion = false;
+            _context3.next = 8;
+            break;
 
           case 15:
-            _iteratorAbruptCompletion = false;
-            _context3.next = 11;
+            _context3.next = 21;
             break;
 
-          case 18:
-            _context3.next = 24;
-            break;
-
-          case 20:
-            _context3.prev = 20;
-            _context3.t1 = _context3["catch"](8);
+          case 17:
+            _context3.prev = 17;
+            _context3.t1 = _context3["catch"](5);
             _didIteratorError = true;
             _iteratorError = _context3.t1;
 
-          case 24:
-            _context3.prev = 24;
-            _context3.prev = 25;
+          case 21:
+            _context3.prev = 21;
+            _context3.prev = 22;
 
             if (!(_iteratorAbruptCompletion && _iterator["return"] != null)) {
-              _context3.next = 29;
+              _context3.next = 26;
               break;
             }
 
-            _context3.next = 29;
+            _context3.next = 26;
             return _iterator["return"]();
 
-          case 29:
-            _context3.prev = 29;
+          case 26:
+            _context3.prev = 26;
 
             if (!_didIteratorError) {
-              _context3.next = 32;
+              _context3.next = 29;
               break;
             }
 
             throw _iteratorError;
 
-          case 32:
-            return _context3.finish(29);
+          case 29:
+            return _context3.finish(26);
 
-          case 33:
-            return _context3.finish(24);
+          case 30:
+            return _context3.finish(21);
 
-          case 34:
+          case 31:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee2, null, [[8, 20, 24, 34], [25,, 29, 33]]);
+    }, _callee2, null, [[5, 17, 21, 31], [22,, 26, 30]]);
   }));
   return _patchRunebaseDeposits.apply(this, arguments);
 }
