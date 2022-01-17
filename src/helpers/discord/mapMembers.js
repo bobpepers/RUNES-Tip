@@ -57,5 +57,6 @@ export const mapMembers = async (
       }
     }
   }
-  return withoutBots;
+  const withoutBotsSorted = await _.sortBy(withoutBots, 'createdAt');
+  return withoutBotsSorted;
 };
