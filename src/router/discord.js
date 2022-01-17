@@ -91,33 +91,33 @@ export const discordRouter = (
   io,
   settings,
 ) => {
-  discordClient.on('ready', async () => {
-    let counter = 0;
-    const interval = setInterval(async () => {
-      if (counter % 2 === 0) {
-        const priceInfo = await db.priceInfo.findOne({
-          where: {
-            currency: 'USD',
-          },
-        });
-        discordClient.user.setPresence({
-          activities: [{
-            name: `$${priceInfo.price}/${settings.coin.ticker}`,
-            type: "WATCHING",
-          }],
-        });
-      } else {
-        discordClient.user.setPresence({
-          activities: [{
-            name: `${settings.bot.command.discord}`,
-            type: "PLAYING",
-          }],
-        });
-      }
-      counter += 1;
-    }, 40000);
-    console.log(`Logged in as ${discordClient.user.tag}!`);
-  });
+  // discordClient.on('ready', async () => {
+  let counter = 0;
+  const interval = setInterval(async () => {
+    if (counter % 2 === 0) {
+      const priceInfo = await db.priceInfo.findOne({
+        where: {
+          currency: 'USD',
+        },
+      });
+      discordClient.user.setPresence({
+        activities: [{
+          name: `$${priceInfo.price}/${settings.coin.ticker}`,
+          type: "WATCHING",
+        }],
+      });
+    } else {
+      discordClient.user.setPresence({
+        activities: [{
+          name: `${settings.bot.command.discord}`,
+          type: "PLAYING",
+        }],
+      });
+    }
+    counter += 1;
+  }, 40000);
+  console.log(`Logged in as ${discordClient.user.tag}!`);
+  // });
 
   discordClient.on("presenceUpdate", (oldMember, newMember) => {
     // const { username } = newMember.user;
