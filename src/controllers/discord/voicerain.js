@@ -35,6 +35,7 @@ export const discordVoiceRain = async (
     console.log('not a channel');
     return;
   }
+
   const voiceChannelId = filteredMessage[3].substr(2).slice(0, -1);
 
   const voiceChannel = await db.channel.findOne({
