@@ -21,6 +21,7 @@ import {
   invalidEmojiMessage,
   maxTimeReactdropMessage,
   ReactDropReturnInitiatorMessage,
+  NotInDirectMessage,
 } from '../../messages/discord';
 import db from '../../models';
 import emojiCompact from "../../config/emoji";
@@ -250,7 +251,11 @@ export const listenReactDrop = async (
                     .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`),
                 );
                 await m.react('❌');
-                await collector.send({ content: '\u200b', components: [row] });
+                await collector.send({
+                  content: `Failed
+Solution: **${findReactTip.solution}**`,
+                  components: [row],
+                });
               }
               t.afterCommit(() => {
                 console.log('done');
@@ -262,6 +267,7 @@ export const listenReactDrop = async (
           });
 
           await Ccollector.on('end', async (collected) => {
+            console.log(collected);
             const endingCollectReactdrop = await db.sequelize.transaction({
               isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
             }, async (t) => {
@@ -310,6 +316,7 @@ export const listenReactDrop = async (
       const endReactDrop = await db.reactdrop.findOne({
         where: {
           id: reactDrop.id,
+          ended: false,
         },
         lock: t.LOCK.UPDATE,
         transaction: t,
@@ -424,8 +431,9 @@ export const listenReactDrop = async (
           });
 
           const listOfUsersRained = [];
+          const withoutBotsSorted = await _.sortBy(endReactDrop.reactdroptips, 'createdAt');
           // eslint-disable-next-line no-restricted-syntax
-          for (const receiver of endReactDrop.reactdroptips) {
+          for (const receiver of withoutBotsSorted) {
             // eslint-disable-next-line no-await-in-loop
             const earnerWallet = await receiver.user.wallet.update({
               available: receiver.user.wallet.available + Number(amountEach),
@@ -520,6 +528,10 @@ export const discordReactDrop = async (
   faucetSetting,
   queue,
 ) => {
+  if (!groupTask || !channelTask) {
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Reactdrop')] });
+    return;
+  }
   let activity = [];
   let user;
   await db.sequelize.transaction({
