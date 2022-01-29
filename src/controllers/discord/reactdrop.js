@@ -267,7 +267,7 @@ Solution: **${findReactTip.solution}**`,
           });
 
           await Ccollector.on('end', async (collected) => {
-            console.log(collected);
+            await Promise((r) => setTimeout(r, 200));
             const endingCollectReactdrop = await db.sequelize.transaction({
               isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
             }, async (t) => {
