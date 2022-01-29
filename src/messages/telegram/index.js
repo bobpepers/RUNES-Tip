@@ -72,6 +72,18 @@ export const minimumMessage = (setting, title) => {
   return result;
 };
 
+export const claimTooFastFaucetMessage = (username, distance) => {
+  const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  const result = `${username}, you have to wait ${hours === 1 ? `${hours} hour` : ''} ${hours > 1 ? `${hours} hours,` : ''} ${minutes === 1 ? `${minutes} minute` : ''} ${minutes > 1 ? `${minutes} minutes and` : ''} ${seconds === 1 ? `${seconds} second` : ''} ${seconds > 1 ? `${seconds} seconds` : ''} before claiming the faucet again (the faucet can be claimed every 4 hours).`;
+  return result;
+};
+export const faucetClaimedMessage = (username, amount) => {
+  const result = `${username}, you have been tipped ${amount / 1e8} ${settings.coin.ticker} from the faucet.`;
+  return result;
+};
+
 export const groupNotFoundMessage = () => {
   const result = `Group not found`;
   return result;
@@ -154,6 +166,10 @@ ${settings.bot.command.telegram} info
 ${settings.bot.command.telegram} balance
 /balance
 <code>Display wallet balance</code>
+
+${settings.bot.command.telegram} faucet
+/faucet
+<code>Claim faucet</code>
     
       
 ${settings.bot.command.telegram} tip [@user] [amount]

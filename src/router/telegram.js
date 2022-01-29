@@ -17,6 +17,9 @@ import {
 import {
   fetchHelp,
 } from '../controllers/telegram/help';
+import {
+  telegramFaucetClaim,
+} from '../controllers/telegram/faucet';
 
 import {
   fetchReferralCount,
@@ -76,6 +79,30 @@ export const telegramRouter = (
       await queue.add(() => maintenance);
       if (maintenance.maintenance || !maintenance.enabled) return;
       const task = await fetchPriceInfo(ctx, io);
+      await queue.add(() => task);
+    })();
+  });
+
+  telegramClient.command('faucet', (ctx) => {
+    (async () => {
+      const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
+      await queue.add(() => maintenance);
+      if (maintenance.maintenance || !maintenance.enabled) return;
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
+      const task = await telegramFaucetClaim(ctx, io);
+      await queue.add(() => task);
+    })();
+  });
+
+  telegramClient.command('Faucet', (ctx) => {
+    (async () => {
+      const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
+      await queue.add(() => maintenance);
+      if (maintenance.maintenance || !maintenance.enabled) return;
+      const groupTask = await updateGroup(ctx);
+      await queue.add(() => groupTask);
+      const task = await telegramFaucetClaim(ctx, io);
       await queue.add(() => task);
     })();
   });
@@ -316,10 +343,6 @@ export const telegramRouter = (
   });
 
   telegramClient.on('text', async (ctx) => {
-    const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
-    await queue.add(() => maintenance);
-    if (maintenance.maintenance || !maintenance.enabled) return;
-
     const groupTask = await updateGroup(ctx);
     await queue.add(() => groupTask);
     const task = await createUpdateUser(ctx);
@@ -333,6 +356,9 @@ export const telegramRouter = (
     const telegramUserName = ctx.update.message.from.username;
     // console.log(filteredMessageTelegram);
     if (filteredMessageTelegram[0].toLowerCase() === settings.bot.command.telegram) {
+      const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
+      await queue.add(() => maintenance);
+      if (maintenance.maintenance || !maintenance.enabled) return;
       if (!filteredMessageTelegram[1]) {
         const task = await fetchHelp(ctx, io);
         await queue.add(() => task);
@@ -347,6 +373,10 @@ export const telegramRouter = (
       }
       if (filteredMessageTelegram[1] === 'help') {
         const task = await fetchHelp(ctx, io);
+        await queue.add(() => task);
+      }
+      if (filteredMessageTelegram[1] === 'faucet') {
+        const task = await telegramFaucetClaim(ctx, io);
         await queue.add(() => task);
       }
       if (settings.coin.setting === 'Runebase') {

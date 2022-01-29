@@ -564,7 +564,7 @@ export const claimTooFactFaucetMessage = (message, username, distance) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Faucet')
-    .setDescription(`${username}, you have to wait ${hours === 1 ? `${hours} hour` : ''} ${hours > 1 ? `${hours} hours` : ''}, ${minutes === 1 ? `${minutes} minute` : ''} ${minutes > 1 ? `${minutes} minutes` : ''} and ${seconds === 1 ? `${seconds} second` : ''} ${seconds > 1 ? `${seconds} seconds` : ''} before claiming the faucet again (the faucet can be claimed every 4 hours).`)
+    .setDescription(`${username}, you have to wait ${hours === 1 ? `${hours} hour` : ''} ${hours > 1 ? `${hours} hours,` : ''} ${minutes === 1 ? `${minutes} minute` : ''} ${minutes > 1 ? `${minutes} minutes and` : ''} ${seconds === 1 ? `${seconds} second` : ''} ${seconds > 1 ? `${seconds} seconds` : ''} before claiming the faucet again (the faucet can be claimed every 4 hours).`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
