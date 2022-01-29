@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.withdrawalReviewMessage = exports.withdrawalAcceptedMessage = exports.withdrawalAcceptedAdminMessage = exports.welcomeMessage = exports.userNotFoundMessage = exports.unableToFindUserMessage = exports.tipSuccessMessage = exports.telegramWithdrawalRejectedMessage = exports.telegramIncomingDepositMessage = exports.telegramDepositConfirmedMessage = exports.rainSuccessMessage = exports.rainErrorMessage = exports.notEnoughActiveUsersMessage = exports.minimumMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.helpMessage = exports.groupNotFoundMessage = exports.generalErrorMessage = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.depositAddressNotFoundMessage = exports.depositAddressMessage = exports.balanceMessage = exports.InfoMessage = void 0;
+exports.withdrawalReviewMessage = exports.withdrawalAcceptedMessage = exports.withdrawalAcceptedAdminMessage = exports.welcomeMessage = exports.userNotFoundMessage = exports.unableToFindUserMessage = exports.tipSuccessMessage = exports.telegramWithdrawalRejectedMessage = exports.telegramIncomingDepositMessage = exports.telegramDepositConfirmedMessage = exports.rainSuccessMessage = exports.rainErrorMessage = exports.notEnoughActiveUsersMessage = exports.minimumMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.helpMessage = exports.groupNotFoundMessage = exports.generalErrorMessage = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.faucetClaimedMessage = exports.depositAddressNotFoundMessage = exports.depositAddressMessage = exports.claimTooFastFaucetMessage = exports.balanceMessage = exports.InfoMessage = void 0;
 
 var _settings = _interopRequireDefault(require("../../config/settings"));
 
@@ -103,6 +103,23 @@ var minimumMessage = function minimumMessage(setting, title) {
 
 exports.minimumMessage = minimumMessage;
 
+var claimTooFastFaucetMessage = function claimTooFastFaucetMessage(username, distance) {
+  var hours = Math.floor(distance % (1000 * 60 * 60 * 24) / (1000 * 60 * 60));
+  var minutes = Math.floor(distance % (1000 * 60 * 60) / (1000 * 60));
+  var seconds = Math.floor(distance % (1000 * 60) / 1000);
+  var result = "".concat(username, ", you have to wait ").concat(hours === 1 ? "".concat(hours, " hour") : '', " ").concat(hours > 1 ? "".concat(hours, " hours,") : '', " ").concat(minutes === 1 ? "".concat(minutes, " minute") : '', " ").concat(minutes > 1 ? "".concat(minutes, " minutes and") : '', " ").concat(seconds === 1 ? "".concat(seconds, " second") : '', " ").concat(seconds > 1 ? "".concat(seconds, " seconds") : '', " before claiming the faucet again (the faucet can be claimed every 4 hours).");
+  return result;
+};
+
+exports.claimTooFastFaucetMessage = claimTooFastFaucetMessage;
+
+var faucetClaimedMessage = function faucetClaimedMessage(username, amount) {
+  var result = "".concat(username, ", you have been tipped ").concat(amount / 1e8, " ").concat(settings.coin.ticker, " from the faucet.");
+  return result;
+};
+
+exports.faucetClaimedMessage = faucetClaimedMessage;
+
 var groupNotFoundMessage = function groupNotFoundMessage() {
   var result = "Group not found";
   return result;
@@ -181,7 +198,7 @@ var welcomeMessage = function welcomeMessage(ctx) {
 exports.welcomeMessage = welcomeMessage;
 
 var helpMessage = function helpMessage(withdraw) {
-  var result = "<b>Tipbot Help</b>\n      \n".concat(settings.bot.command.telegram, "\n<code>Display this message</code>\n    \n      \n").concat(settings.bot.command.telegram, " help\n/help\n<code>Display this message</code>\n    \n      \n").concat(settings.bot.command.telegram, " price\n/price\n<code>Display current ").concat(settings.coin.ticker, " price</code>\n    \n      \n").concat(settings.bot.command.telegram, " info\n/info\n<code>Displays coin info</code>\n    \n    \n").concat(settings.bot.command.telegram, " balance\n/balance\n<code>Display wallet balance</code>\n    \n      \n").concat(settings.bot.command.telegram, " tip [@user] [amount]\n/tip [@user] [amount]\n<code>Tips the @ mentioned user with the desired amount, e.g.</code>\n").concat(settings.bot.command.telegram, " tip @Bagosan 1.00\n/tip @Bagosan 1.00\n    \n      \n").concat(settings.bot.command.telegram, " rain [amount]\n/rain [amount]\n<code>Rains the desired amount onto all active users (active time 3 hours), e.g.</code>\n").concat(settings.bot.command.telegram, " rain 1.00\n/rain 1.00\n    \n      \n").concat(settings.bot.command.telegram, " deposit\n/deposit\n<code>Displays your deposit address</code>\n    \n      \n").concat(settings.bot.command.telegram, " withdraw [address] [amount]\n/withdraw [address] [amount]\n<code>Withdraws the entered amount to a ").concat(settings.coin.ticker, " address of your choice, e.g.</code>\n").concat(settings.bot.command.telegram, " withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20\n/withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20\n<code>Note: Minimal amount to withdraw: ").concat(withdraw.min / 1e8, " ").concat(settings.coin.ticker, ". A withdrawal fee of ").concat(withdraw.fee / 1e2, "% ").concat(settings.coin.ticker, " will be automatically deducted from the amount. half of the fee is donated to common faucet pot.</code>\n      \n").concat(settings.coin.name === 'Runebase' && "".concat(settings.bot.command.telegram, " referral\n/referral\n<code>Displays your referral count</code>\n<code>Note: We reward members for every 10 new members they add. current reward = 20 ").concat(settings.coin.ticker, "</code>\n      \n    \n").concat(settings.bot.command.telegram, " referral top\n/top\n<code>Displays referral top 10</code>"), "     \n");
+  var result = "<b>Tipbot Help</b>\n      \n".concat(settings.bot.command.telegram, "\n<code>Display this message</code>\n    \n      \n").concat(settings.bot.command.telegram, " help\n/help\n<code>Display this message</code>\n    \n      \n").concat(settings.bot.command.telegram, " price\n/price\n<code>Display current ").concat(settings.coin.ticker, " price</code>\n    \n      \n").concat(settings.bot.command.telegram, " info\n/info\n<code>Displays coin info</code>\n    \n    \n").concat(settings.bot.command.telegram, " balance\n/balance\n<code>Display wallet balance</code>\n\n").concat(settings.bot.command.telegram, " faucet\n/faucet\n<code>Claim faucet</code>\n    \n      \n").concat(settings.bot.command.telegram, " tip [@user] [amount]\n/tip [@user] [amount]\n<code>Tips the @ mentioned user with the desired amount, e.g.</code>\n").concat(settings.bot.command.telegram, " tip @Bagosan 1.00\n/tip @Bagosan 1.00\n    \n      \n").concat(settings.bot.command.telegram, " rain [amount]\n/rain [amount]\n<code>Rains the desired amount onto all active users (active time 3 hours), e.g.</code>\n").concat(settings.bot.command.telegram, " rain 1.00\n/rain 1.00\n    \n      \n").concat(settings.bot.command.telegram, " deposit\n/deposit\n<code>Displays your deposit address</code>\n    \n      \n").concat(settings.bot.command.telegram, " withdraw [address] [amount]\n/withdraw [address] [amount]\n<code>Withdraws the entered amount to a ").concat(settings.coin.ticker, " address of your choice, e.g.</code>\n").concat(settings.bot.command.telegram, " withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20\n/withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20\n<code>Note: Minimal amount to withdraw: ").concat(withdraw.min / 1e8, " ").concat(settings.coin.ticker, ". A withdrawal fee of ").concat(withdraw.fee / 1e2, "% ").concat(settings.coin.ticker, " will be automatically deducted from the amount. half of the fee is donated to common faucet pot.</code>\n      \n").concat(settings.coin.name === 'Runebase' && "".concat(settings.bot.command.telegram, " referral\n/referral\n<code>Displays your referral count</code>\n<code>Note: We reward members for every 10 new members they add. current reward = 20 ").concat(settings.coin.ticker, "</code>\n      \n    \n").concat(settings.bot.command.telegram, " referral top\n/top\n<code>Displays referral top 10</code>"), "     \n");
   return result;
 };
 

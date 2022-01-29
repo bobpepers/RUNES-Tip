@@ -403,7 +403,7 @@ var claimTooFactFaucetMessage = function claimTooFactFaucetMessage(message, user
   var hours = Math.floor(distance % (1000 * 60 * 60 * 24) / (1000 * 60 * 60));
   var minutes = Math.floor(distance % (1000 * 60 * 60) / (1000 * 60));
   var seconds = Math.floor(distance % (1000 * 60) / 1000);
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Faucet').setDescription("".concat(username, ", you have to wait ").concat(hours === 1 ? "".concat(hours, " hour") : '', " ").concat(hours > 1 ? "".concat(hours, " hours") : '', ", ").concat(minutes === 1 ? "".concat(minutes, " minute") : '', " ").concat(minutes > 1 ? "".concat(minutes, " minutes") : '', " and ").concat(seconds === 1 ? "".concat(seconds, " second") : '', " ").concat(seconds > 1 ? "".concat(seconds, " seconds") : '', " before claiming the faucet again (the faucet can be claimed every 4 hours).")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Faucet').setDescription("".concat(username, ", you have to wait ").concat(hours === 1 ? "".concat(hours, " hour") : '', " ").concat(hours > 1 ? "".concat(hours, " hours,") : '', " ").concat(minutes === 1 ? "".concat(minutes, " minute") : '', " ").concat(minutes > 1 ? "".concat(minutes, " minutes and") : '', " ").concat(seconds === 1 ? "".concat(seconds, " second") : '', " ").concat(seconds > 1 ? "".concat(seconds, " seconds") : '', " before claiming the faucet again (the faucet can be claimed every 4 hours).")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
