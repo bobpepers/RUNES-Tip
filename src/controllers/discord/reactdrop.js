@@ -771,8 +771,8 @@ export const discordReactDrop = async (
 
           // eslint-disable-next-line no-restricted-syntax
           for (const shufEmoji of shuffeledEmojisArray) {
-            // eslint-disable-next-line no-await-in-loop
             // console.log(shufEmoji);
+            // eslint-disable-next-line no-await-in-loop
             await reactMessage.react(shufEmoji);
           }
 
@@ -784,8 +784,8 @@ export const discordReactDrop = async (
             if (distance < 0) {
               clearInterval(updateMessage);
             }
-          }, 5000);
-          logger.info(`Success started reactdrop Requested by: ${user.user_id}-${user.username} with ${amount / 1e8} ${settings.coin.ticker}`);
+          }, 10000);
+          // logger.info(`Success started reactdrop Requested by: ${user.user_id}-${user.username} with ${amount / 1e8} ${settings.coin.ticker}`);
         }
       }
     }

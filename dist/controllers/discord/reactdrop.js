@@ -1045,7 +1045,7 @@ var discordReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 32:
-                        _context10.next = 144;
+                        _context10.next = 143;
                         break;
 
                       case 34:
@@ -1072,7 +1072,7 @@ var discordReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 41:
-                        _context10.next = 144;
+                        _context10.next = 143;
                         break;
 
                       case 43:
@@ -1110,7 +1110,7 @@ var discordReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 54:
-                        _context10.next = 144;
+                        _context10.next = 143;
                         break;
 
                       case 56:
@@ -1206,7 +1206,7 @@ var discordReactDrop = /*#__PURE__*/function () {
                         }
 
                         console.log('group not found');
-                        _context10.next = 144;
+                        _context10.next = 143;
                         break;
 
                       case 96:
@@ -1371,16 +1371,14 @@ var discordReactDrop = /*#__PURE__*/function () {
                               }
                             }
                           }, _callee9);
-                        })), 5000);
+                        })), 10000); // logger.info(`Success started reactdrop Requested by: ${user.user_id}-${user.username} with ${amount / 1e8} ${settings.coin.ticker}`);
 
-                        _logger["default"].info("Success started reactdrop Requested by: ".concat(user.user_id, "-").concat(user.username, " with ").concat(amount / 1e8, " ").concat(settings.coin.ticker));
-
-                      case 144:
+                      case 143:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 145:
+                      case 144:
                       case "end":
                         return _context10.stop();
                     }
