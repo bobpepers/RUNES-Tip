@@ -54,7 +54,9 @@ export const mapMembers = async (
     if (userExist) {
       const userIdTest = await userExist.user_id.replace('discord-', '');
       if (userIdTest !== message.author.id) {
-        await withoutBots.push(userExist);
+        if (!userExist.banned) {
+          await withoutBots.push(userExist);
+        }
       }
     }
     if (!userExist) {

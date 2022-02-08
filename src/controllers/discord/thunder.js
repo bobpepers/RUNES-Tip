@@ -1,13 +1,12 @@
 /* eslint-disable import/prefer-default-export */
+import _ from "lodash";
+import { Transaction } from "sequelize";
 import db from '../../models';
 import {
   AfterThunderSuccess,
   NotInDirectMessage,
 } from '../../messages/discord';
 
-import _ from "lodash";
-
-import { Transaction } from "sequelize";
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { mapMembers } from "../../helpers/discord/mapMembers";
@@ -30,10 +29,9 @@ export const discordThunder = async (
     return;
   }
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  const onlineMembers = members.filter((member) =>
-    member.presence?.status === "online"
-  );
-
+  const onlineMembers = members.filter((member) => member.presence
+    && member.presence.status
+    && member.presence.status === "online");
 
   const activity = [];
   let userActivity;
@@ -104,7 +102,7 @@ export const discordThunder = async (
       const faucetWatered = await waterFaucet(
         t,
         Number(fee),
-        faucetSetting
+        faucetSetting,
       );
 
       const thunderRecord = await db.thunder.create({
@@ -135,11 +133,11 @@ export const discordThunder = async (
         include: [
           {
             model: db.thunder,
-            as: 'thunder'
+            as: 'thunder',
           },
           {
             model: db.user,
-            as: 'spender'
+            as: 'spender',
           },
         ],
         lock: t.LOCK.UPDATE,
@@ -195,19 +193,19 @@ export const discordThunder = async (
           include: [
             {
               model: db.user,
-              as: 'earner'
+              as: 'earner',
             },
             {
               model: db.user,
-              as: 'spender'
+              as: 'spender',
             },
             {
               model: db.thunder,
-              as: 'thunder'
+              as: 'thunder',
             },
             {
               model: db.thundertip,
-              as: 'thundertip'
+              as: 'thundertip',
             },
           ],
           lock: t.LOCK.UPDATE,

@@ -13,13 +13,13 @@ var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/sli
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _models = _interopRequireDefault(require("../../models"));
-
-var _discord = require("../../messages/discord");
-
 var _lodash = _interopRequireDefault(require("lodash"));
 
 var _sequelize = require("sequelize");
+
+var _models = _interopRequireDefault(require("../../models"));
+
+var _discord = require("../../messages/discord");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
@@ -66,9 +66,7 @@ var discordThunder = /*#__PURE__*/function () {
           case 6:
             members = _context2.sent;
             onlineMembers = members.filter(function (member) {
-              var _member$presence;
-
-              return ((_member$presence = member.presence) === null || _member$presence === void 0 ? void 0 : _member$presence.status) === "online";
+              return member.presence && member.presence.status && member.presence.status === "online";
             });
             activity = [];
             _context2.next = 11;

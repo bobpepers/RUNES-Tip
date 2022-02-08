@@ -97,7 +97,7 @@ var mapMembers = /*#__PURE__*/function () {
 
           case 25:
             if ((_step = _iterator.n()).done) {
-              _context.next = 79;
+              _context.next = 80;
               break;
             }
 
@@ -125,7 +125,7 @@ var mapMembers = /*#__PURE__*/function () {
             userExist = _context.sent;
 
             if (!userExist) {
-              _context.next = 37;
+              _context.next = 38;
               break;
             }
 
@@ -136,22 +136,27 @@ var mapMembers = /*#__PURE__*/function () {
             userIdTest = _context.sent;
 
             if (!(userIdTest !== message.author.id)) {
-              _context.next = 37;
+              _context.next = 38;
               break;
             }
 
-            _context.next = 37;
+            if (userExist.banned) {
+              _context.next = 38;
+              break;
+            }
+
+            _context.next = 38;
             return withoutBots.push(userExist);
 
-          case 37:
+          case 38:
             if (userExist) {
-              _context.next = 77;
+              _context.next = 78;
               break;
             }
 
             user = void 0;
             console.log(discordUser);
-            _context.next = 42;
+            _context.next = 43;
             return _models["default"].user.create({
               user_id: "discord-".concat(discordUser.id),
               username: "".concat(discordUser.username, "#").concat(discordUser.discriminator),
@@ -162,20 +167,20 @@ var mapMembers = /*#__PURE__*/function () {
               lock: t.LOCK.UPDATE
             });
 
-          case 42:
+          case 43:
             user = _context.sent;
 
             if (!user) {
-              _context.next = 67;
+              _context.next = 68;
               break;
             }
 
             if (!(user.username !== "".concat(discordUser.username, "#").concat(discordUser.discriminator))) {
-              _context.next = 48;
+              _context.next = 49;
               break;
             }
 
-            _context.next = 47;
+            _context.next = 48;
             return user.update({
               username: "".concat(discordUser.username, "#").concat(discordUser.discriminator)
             }, {
@@ -183,11 +188,11 @@ var mapMembers = /*#__PURE__*/function () {
               lock: t.LOCK.UPDATE
             });
 
-          case 47:
+          case 48:
             user = _context.sent;
 
-          case 48:
-            _context.next = 50;
+          case 49:
+            _context.next = 51;
             return _models["default"].wallet.findOne({
               where: {
                 userId: user.id
@@ -196,15 +201,15 @@ var mapMembers = /*#__PURE__*/function () {
               lock: t.LOCK.UPDATE
             });
 
-          case 50:
+          case 51:
             wallet = _context.sent;
 
             if (wallet) {
-              _context.next = 55;
+              _context.next = 56;
               break;
             }
 
-            _context.next = 54;
+            _context.next = 55;
             return _models["default"].wallet.create({
               userId: user.id,
               available: 0,
@@ -214,11 +219,11 @@ var mapMembers = /*#__PURE__*/function () {
               lock: t.LOCK.UPDATE
             });
 
-          case 54:
+          case 55:
             wallet = _context.sent;
 
-          case 55:
-            _context.next = 57;
+          case 56:
+            _context.next = 58;
             return _models["default"].address.findOne({
               where: {
                 walletId: wallet.id
@@ -227,22 +232,22 @@ var mapMembers = /*#__PURE__*/function () {
               lock: t.LOCK.UPDATE
             });
 
-          case 57:
+          case 58:
             address = _context.sent;
 
             if (address) {
-              _context.next = 67;
+              _context.next = 68;
               break;
             }
 
             console.log('adress not found');
-            _context.next = 62;
+            _context.next = 63;
             return (0, _rclient.getInstance)().getNewAddress();
 
-          case 62:
+          case 63:
             newAddress = _context.sent;
             console.log(newAddress);
-            _context.next = 66;
+            _context.next = 67;
             return _models["default"].address.create({
               address: newAddress,
               walletId: wallet.id,
@@ -253,11 +258,11 @@ var mapMembers = /*#__PURE__*/function () {
               lock: t.LOCK.UPDATE
             });
 
-          case 66:
+          case 67:
             address = _context.sent;
 
-          case 67:
-            _context.next = 69;
+          case 68:
+            _context.next = 70;
             return _models["default"].user.findOne({
               where: {
                 user_id: "discord-".concat(discordUser.id)
@@ -276,63 +281,63 @@ var mapMembers = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 69:
+          case 70:
             userExistNew = _context.sent;
 
             if (!userExistNew) {
-              _context.next = 77;
+              _context.next = 78;
               break;
             }
 
-            _context.next = 73;
+            _context.next = 74;
             return userExistNew.user_id.replace('discord-', '');
 
-          case 73:
+          case 74:
             _userIdTest = _context.sent;
 
             if (!(_userIdTest !== message.author.id)) {
-              _context.next = 77;
+              _context.next = 78;
               break;
             }
 
-            _context.next = 77;
+            _context.next = 78;
             return withoutBots.push(userExistNew);
 
-          case 77:
+          case 78:
             _context.next = 25;
             break;
 
-          case 79:
-            _context.next = 84;
+          case 80:
+            _context.next = 85;
             break;
 
-          case 81:
-            _context.prev = 81;
+          case 82:
+            _context.prev = 82;
             _context.t0 = _context["catch"](23);
 
             _iterator.e(_context.t0);
 
-          case 84:
-            _context.prev = 84;
+          case 85:
+            _context.prev = 85;
 
             _iterator.f();
 
-            return _context.finish(84);
+            return _context.finish(85);
 
-          case 87:
-            _context.next = 89;
+          case 88:
+            _context.next = 90;
             return _lodash["default"].sortBy(withoutBots, 'createdAt');
 
-          case 89:
+          case 90:
             withoutBotsSorted = _context.sent;
             return _context.abrupt("return", withoutBotsSorted);
 
-          case 91:
+          case 92:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[23, 81, 84, 87]]);
+    }, _callee, null, [[23, 82, 85, 88]]);
   }));
 
   return function mapMembers(_x, _x2, _x3, _x4, _x5) {
