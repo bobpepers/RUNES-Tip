@@ -19,8 +19,16 @@ export const executeTipFunction = async (
   setting,
   faucetSetting,
 ) => {
+  let operationName;
+  let userBeingTipped;
+  if (filteredMessageDiscord[1].startsWith('<@!')) {
+    operationName = 'tip';
+    userBeingTipped = filteredMessageDiscord[1];
+  } else {
+    operationName = filteredMessageDiscord[1];
+  }
   if (amount && amount.toLowerCase() === 'all') {
-    message.channel.send({ embeds: [confirmAllAmoutMessageDiscord(message, filteredMessageDiscord[1])] }).then(async () => {
+    message.channel.send({ embeds: [confirmAllAmoutMessageDiscord(message, operationName, userBeingTipped)] }).then(async () => {
       const msgFilter = (m) => {
         const filtered = m.author.id === message.author.id
           && (
@@ -58,10 +66,10 @@ export const executeTipFunction = async (
           collectedMessage.content.toUpperCase() === 'NO'
           || collectedMessage.content.toUpperCase() === 'N'
         ) {
-          message.channel.send({ embeds: [canceledAllAmoutMessageDiscord(message, filteredMessageDiscord[1])] });
+          message.channel.send({ embeds: [canceledAllAmoutMessageDiscord(message, operationName, userBeingTipped)] });
         }
       }).catch((collected) => {
-        message.channel.send({ embeds: [timeOutAllAmoutMessageDiscord(message, filteredMessageDiscord[1])] });
+        message.channel.send({ embeds: [timeOutAllAmoutMessageDiscord(message, operationName, userBeingTipped)] });
       });
     });
   } else {

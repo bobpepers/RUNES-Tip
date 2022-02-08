@@ -514,11 +514,11 @@ export const minimumMessage = (message, setting, type) => {
   return result;
 };
 
-export const timeOutAllAmoutMessageDiscord = (message, title) => {
+export const timeOutAllAmoutMessageDiscord = (message, operationName, userBeingTipped) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle(capitalize(title))
-    .setDescription(`<@${message.author.id}>, the request to ${title} all your ${settings.coin.ticker} has expired`)
+    .setTitle(capitalize(operationName))
+    .setDescription(`<@${message.author.id}>, the request to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker} has expired`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
@@ -527,11 +527,11 @@ export const timeOutAllAmoutMessageDiscord = (message, title) => {
 
   return result;
 };
-export const canceledAllAmoutMessageDiscord = (message, title) => {
+export const canceledAllAmoutMessageDiscord = (message, operationName, userBeingTipped) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle(capitalize(title))
-    .setDescription(`<@${message.author.id}>, you canceled the request to ${title} all your ${settings.coin.ticker}`)
+    .setTitle(capitalize(operationName))
+    .setDescription(`<@${message.author.id}>, you canceled the request to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
@@ -541,11 +541,15 @@ export const canceledAllAmoutMessageDiscord = (message, title) => {
   return result;
 };
 
-export const confirmAllAmoutMessageDiscord = (message, title) => {
+export const confirmAllAmoutMessageDiscord = (
+  message,
+  operationName,
+  userBeingTipped,
+) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle(capitalize(title))
-    .setDescription(`<@${message.author.id}>, are you sure that you want to ${title} with all your ${settings.coin.ticker}?
+    .setTitle(capitalize(operationName))
+    .setDescription(`<@${message.author.id}>, are you sure that you want to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}?
     Accepted answers: yes/no/y/n; 
     Auto-cancel in 30 seconds.`)
     .setTimestamp()

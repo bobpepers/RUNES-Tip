@@ -173,6 +173,7 @@ export const discordThunder = async (
           listOfUsersRained.push(`<@${userIdReceivedRain}>`);
         }
         let tipActivity;
+        // eslint-disable-next-line no-await-in-loop
         tipActivity = await db.activity.create({
           amount: Number(amountPerUser),
           type: 'thundertip_s',
@@ -186,6 +187,7 @@ export const discordThunder = async (
           lock: t.LOCK.UPDATE,
           transaction: t,
         });
+        // eslint-disable-next-line no-await-in-loop
         tipActivity = await db.activity.findOne({
           where: {
             id: tipActivity.id,
@@ -213,6 +215,7 @@ export const discordThunder = async (
         });
         activity.unshift(tipActivity);
       }
+      // eslint-disable-next-line no-restricted-syntax
       for (const userThunder of listOfUsersRained) {
         // eslint-disable-next-line no-await-in-loop
         await message.channel.send({ embeds: [AfterThunderSuccess(message, amount, userThunder)] });
