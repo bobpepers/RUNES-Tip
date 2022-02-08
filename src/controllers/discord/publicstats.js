@@ -7,7 +7,10 @@ import {
 } from '../../messages/discord';
 import db from '../../models';
 
-export const discordPublicStats = async (message, io) => {
+export const discordPublicStats = async (
+  message,
+  io,
+) => {
   const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -31,6 +34,7 @@ export const discordPublicStats = async (message, io) => {
       await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Ignore me')] });
       return;
     }
+
     if (user.publicStats) {
       await user.update({
         publicStats: false,
@@ -38,21 +42,25 @@ export const discordPublicStats = async (message, io) => {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      message.channel.send({ embeds: [disablePublicStatsMessage(message)] });
-    }
-    if (!user.publicStats) {
+      await message.channel.send({ embeds: [disablePublicStatsMessage(message)] });
+    } else if (!user.publicStats) {
       await user.update({
         publicStats: true,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      message.channel.send({ embeds: [enablePublicStatsMeMessage(message)] });
+      await message.channel.send({ embeds: [enablePublicStatsMeMessage(message)] });
     }
+
     const preActivity = await db.activity.create({
       type: 'publicstats_s',
       earnerId: user.id,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
     });
+
     const finalActivity = await db.activity.findOne({
       where: {
         id: preActivity.id,
@@ -63,7 +71,10 @@ export const discordPublicStats = async (message, io) => {
           as: 'earner',
         },
       ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
     });
+
     activity.unshift(finalActivity);
 
     t.afterCommit(() => {

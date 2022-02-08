@@ -5,9 +5,7 @@ import { getInstance } from "../../services/rclient";
 import getCoinSettings from '../../config/settings';
 
 const settings = getCoinSettings();
-/**
- * Fetch Wallet
- */
+
 export const createUpdateDiscordUser = async (message) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -73,9 +71,7 @@ export const createUpdateDiscordUser = async (message) => {
         },
       );
       if (!address) {
-        console.log('adress not found');
         const newAddress = await getInstance().getNewAddress();
-        console.log(newAddress);
         address = await db.address.create({
           address: newAddress,
           walletId: wallet.id,
