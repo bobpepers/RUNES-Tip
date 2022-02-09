@@ -165,7 +165,14 @@ export const listenReactDrop = async (
         }
 
         // eslint-disable-next-line no-underscore-dangle
-        const constructEmoji = reaction._emoji.id ? `<:${reaction._emoji.name}:${reaction._emoji.id}>` : reaction._emoji.name;
+        console.log(reaction._emoji);
+        let constructEmoji;
+        if (reaction._emoji && reaction._emoji.animated) {
+          constructEmoji = reaction._emoji.id ? `<a:${reaction._emoji.name}:${reaction._emoji.id}>` : reaction._emoji.name;
+        } else if (reaction._emoji && !reaction._emoji.animated) {
+          constructEmoji = reaction._emoji.id ? `<:${reaction._emoji.name}:${reaction._emoji.id}>` : reaction._emoji.name;
+        }
+
         if (reactDrop.emoji !== constructEmoji) {
           collector.send('Failed, pressed wrong emoji');
           await findReactTip.update({ status: 'failed' });
