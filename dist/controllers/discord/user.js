@@ -20,9 +20,6 @@ var _rclient = require("../../services/rclient");
 var _settings = _interopRequireDefault(require("../../config/settings"));
 
 var settings = (0, _settings["default"])();
-/**
- * Fetch Wallet
- */
 
 var createUpdateDiscordUser = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(message) {
@@ -73,7 +70,7 @@ var createUpdateDiscordUser = /*#__PURE__*/function () {
 
                       case 7:
                         if (!user) {
-                          _context.next = 32;
+                          _context.next = 30;
                           break;
                         }
 
@@ -138,18 +135,16 @@ var createUpdateDiscordUser = /*#__PURE__*/function () {
                         address = _context.sent;
 
                         if (address) {
-                          _context.next = 32;
+                          _context.next = 30;
                           break;
                         }
 
-                        console.log('adress not found');
-                        _context.next = 26;
+                        _context.next = 25;
                         return (0, _rclient.getInstance)().getNewAddress();
 
-                      case 26:
+                      case 25:
                         newAddress = _context.sent;
-                        console.log(newAddress);
-                        _context.next = 30;
+                        _context.next = 28;
                         return _models["default"].address.create({
                           address: newAddress,
                           walletId: wallet.id,
@@ -160,16 +155,16 @@ var createUpdateDiscordUser = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 30:
+                      case 28:
                         address = _context.sent;
                         message.author.send("Welcome ".concat(message.author.username, ", we created a wallet for you.\nType \"").concat(settings.bot.command.discord, " help\" for usage info")); // ctx.reply(``);
 
-                      case 32:
+                      case 30:
                         t.afterCommit(function () {
                           console.log('done'); // ctx.reply(`done`);
                         });
 
-                      case 33:
+                      case 31:
                       case "end":
                         return _context.stop();
                     }

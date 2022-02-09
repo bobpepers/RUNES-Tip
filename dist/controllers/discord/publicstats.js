@@ -75,7 +75,7 @@ var discordPublicStats = /*#__PURE__*/function () {
 
                       case 11:
                         if (!user.publicStats) {
-                          _context.next = 15;
+                          _context.next = 18;
                           break;
                         }
 
@@ -88,17 +88,22 @@ var discordPublicStats = /*#__PURE__*/function () {
                         });
 
                       case 14:
-                        message.channel.send({
+                        _context.next = 16;
+                        return message.channel.send({
                           embeds: [(0, _discord.disablePublicStatsMessage)(message)]
                         });
 
-                      case 15:
+                      case 16:
+                        _context.next = 23;
+                        break;
+
+                      case 18:
                         if (user.publicStats) {
-                          _context.next = 19;
+                          _context.next = 23;
                           break;
                         }
 
-                        _context.next = 18;
+                        _context.next = 21;
                         return user.update({
                           publicStats: true
                         }, {
@@ -106,21 +111,25 @@ var discordPublicStats = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 18:
-                        message.channel.send({
+                      case 21:
+                        _context.next = 23;
+                        return message.channel.send({
                           embeds: [(0, _discord.enablePublicStatsMeMessage)(message)]
                         });
 
-                      case 19:
-                        _context.next = 21;
+                      case 23:
+                        _context.next = 25;
                         return _models["default"].activity.create({
                           type: 'publicstats_s',
                           earnerId: user.id
+                        }, {
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
                         });
 
-                      case 21:
+                      case 25:
                         preActivity = _context.sent;
-                        _context.next = 24;
+                        _context.next = 28;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -128,17 +137,19 @@ var discordPublicStats = /*#__PURE__*/function () {
                           include: [{
                             model: _models["default"].user,
                             as: 'earner'
-                          }]
+                          }],
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
                         });
 
-                      case 24:
+                      case 28:
                         finalActivity = _context.sent;
                         activity.unshift(finalActivity);
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 27:
+                      case 31:
                       case "end":
                         return _context.stop();
                     }

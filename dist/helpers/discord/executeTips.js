@@ -19,18 +19,25 @@ var _discord = require("../../messages/discord");
 
 var executeTipFunction = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(tipFunction, queue, amount, discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, setting, faucetSetting) {
-    var task;
+    var operationName, userBeingTipped, task;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
+            if (filteredMessageDiscord[1].startsWith('<@!')) {
+              operationName = 'tip';
+              userBeingTipped = filteredMessageDiscord[1];
+            } else {
+              operationName = filteredMessageDiscord[1];
+            }
+
             if (!(amount && amount.toLowerCase() === 'all')) {
-              _context3.next = 4;
+              _context3.next = 5;
               break;
             }
 
             message.channel.send({
-              embeds: [(0, _discord.confirmAllAmoutMessageDiscord)(message, filteredMessageDiscord[1])]
+              embeds: [(0, _discord.confirmAllAmoutMessageDiscord)(message, operationName, userBeingTipped)]
             }).then( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
               var msgFilter;
               return _regenerator["default"].wrap(function _callee2$(_context2) {
@@ -78,7 +85,7 @@ var executeTipFunction = /*#__PURE__*/function () {
                                 case 9:
                                   if (collectedMessage.content.toUpperCase() === 'NO' || collectedMessage.content.toUpperCase() === 'N') {
                                     message.channel.send({
-                                      embeds: [(0, _discord.canceledAllAmoutMessageDiscord)(message, filteredMessageDiscord[1])]
+                                      embeds: [(0, _discord.canceledAllAmoutMessageDiscord)(message, operationName, userBeingTipped)]
                                     });
                                   }
 
@@ -95,7 +102,7 @@ var executeTipFunction = /*#__PURE__*/function () {
                         };
                       }())["catch"](function (collected) {
                         message.channel.send({
-                          embeds: [(0, _discord.timeOutAllAmoutMessageDiscord)(message, filteredMessageDiscord[1])]
+                          embeds: [(0, _discord.timeOutAllAmoutMessageDiscord)(message, operationName, userBeingTipped)]
                         });
                       });
 
@@ -106,21 +113,21 @@ var executeTipFunction = /*#__PURE__*/function () {
                 }
               }, _callee2);
             })));
-            _context3.next = 9;
+            _context3.next = 10;
             break;
 
-          case 4:
-            _context3.next = 6;
+          case 5:
+            _context3.next = 7;
             return tipFunction(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, setting, faucetSetting, queue);
 
-          case 6:
+          case 7:
             task = _context3.sent;
-            _context3.next = 9;
+            _context3.next = 10;
             return queue.add(function () {
               return task;
             });
 
-          case 9:
+          case 10:
           case "end":
             return _context3.stop();
         }

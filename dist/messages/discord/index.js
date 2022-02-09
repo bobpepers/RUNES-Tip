@@ -369,8 +369,8 @@ var minimumMessage = function minimumMessage(message, setting, type) {
 
 exports.minimumMessage = minimumMessage;
 
-var timeOutAllAmoutMessageDiscord = function timeOutAllAmoutMessageDiscord(message, title) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(capitalize(title)).setDescription("<@".concat(message.author.id, ">, the request to ").concat(title, " all your ").concat(settings.coin.ticker, " has expired")).setTimestamp().setFooter({
+var timeOutAllAmoutMessageDiscord = function timeOutAllAmoutMessageDiscord(message, operationName, userBeingTipped) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(capitalize(operationName)).setDescription("<@".concat(message.author.id, ">, the request to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker, " has expired")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -379,8 +379,8 @@ var timeOutAllAmoutMessageDiscord = function timeOutAllAmoutMessageDiscord(messa
 
 exports.timeOutAllAmoutMessageDiscord = timeOutAllAmoutMessageDiscord;
 
-var canceledAllAmoutMessageDiscord = function canceledAllAmoutMessageDiscord(message, title) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(capitalize(title)).setDescription("<@".concat(message.author.id, ">, you canceled the request to ").concat(title, " all your ").concat(settings.coin.ticker)).setTimestamp().setFooter({
+var canceledAllAmoutMessageDiscord = function canceledAllAmoutMessageDiscord(message, operationName, userBeingTipped) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(capitalize(operationName)).setDescription("<@".concat(message.author.id, ">, you canceled the request to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker)).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -389,8 +389,8 @@ var canceledAllAmoutMessageDiscord = function canceledAllAmoutMessageDiscord(mes
 
 exports.canceledAllAmoutMessageDiscord = canceledAllAmoutMessageDiscord;
 
-var confirmAllAmoutMessageDiscord = function confirmAllAmoutMessageDiscord(message, title) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(capitalize(title)).setDescription("<@".concat(message.author.id, ">, are you sure that you want to ").concat(title, " with all your ").concat(settings.coin.ticker, "?\n    Accepted answers: yes/no/y/n; \n    Auto-cancel in 30 seconds.")).setTimestamp().setFooter({
+var confirmAllAmoutMessageDiscord = function confirmAllAmoutMessageDiscord(message, operationName, userBeingTipped) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(capitalize(operationName)).setDescription("<@".concat(message.author.id, ">, are you sure that you want to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker, "?\n    Accepted answers: yes/no/y/n; \n    Auto-cancel in 30 seconds.")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });

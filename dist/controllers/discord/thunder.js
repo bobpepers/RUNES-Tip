@@ -266,7 +266,8 @@ var discordThunder = /*#__PURE__*/function () {
                           listOfUsersRained.push("<@".concat(userIdReceivedRain, ">"));
                         }
 
-                        tipActivity = void 0;
+                        tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
+
                         _context.next = 65;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
