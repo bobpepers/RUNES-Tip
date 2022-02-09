@@ -621,11 +621,16 @@ export const discordReactDrop = async (
     } else {
       const allEmojis = emojiCompact;
       await message.guild.emojis.cache.forEach((customEmoji) => {
-        allEmojis.push(`<:${customEmoji.name}:${customEmoji.id}>`);
+        if (customEmoji.animated) {
+          allEmojis.push(`<a:${customEmoji.name}:${customEmoji.id}>`);
+        } else {
+          allEmojis.push(`<:${customEmoji.name}:${customEmoji.id}>`);
+        }
       });
       if (!filteredMessage[4]) {
         filteredMessage[4] = _.sample(allEmojis);
       }
+      console.log(filteredMessage[4]);
 
       if (!allEmojis.includes(filteredMessage[4])) {
         const failEmojiActivity = await db.activity.create({
