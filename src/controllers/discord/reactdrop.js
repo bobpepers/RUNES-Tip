@@ -165,7 +165,6 @@ export const listenReactDrop = async (
         }
 
         // eslint-disable-next-line no-underscore-dangle
-        console.log(reaction._emoji);
         let constructEmoji;
         if (reaction._emoji && reaction._emoji.animated) {
           constructEmoji = reaction._emoji.id ? `<a:${reaction._emoji.name}:${reaction._emoji.id}>` : reaction._emoji.name;

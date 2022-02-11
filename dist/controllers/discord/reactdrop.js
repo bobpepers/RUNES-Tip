@@ -88,7 +88,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                     switch (_context5.prev = _context5.next) {
                       case 0:
                         if (collector.bot) {
-                          _context5.next = 56;
+                          _context5.next = 55;
                           break;
                         }
 
@@ -113,7 +113,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                         findReactTip = _context5.sent;
 
                         if (findReactTip) {
-                          _context5.next = 56;
+                          _context5.next = 55;
                           break;
                         }
 
@@ -227,9 +227,6 @@ var listenReactDrop = /*#__PURE__*/function () {
                         _findReactTip = _context5.sent;
 
                       case 37:
-                        // eslint-disable-next-line no-underscore-dangle
-                        console.log(reaction._emoji);
-
                         if (reaction._emoji && reaction._emoji.animated) {
                           constructEmoji = reaction._emoji.id ? "<a:".concat(reaction._emoji.name, ":").concat(reaction._emoji.id, ">") : reaction._emoji.name;
                         } else if (reaction._emoji && !reaction._emoji.animated) {
@@ -237,40 +234,40 @@ var listenReactDrop = /*#__PURE__*/function () {
                         }
 
                         if (!(reactDrop.emoji !== constructEmoji)) {
-                          _context5.next = 45;
+                          _context5.next = 44;
                           break;
                         }
 
                         collector.send('Failed, pressed wrong emoji');
-                        _context5.next = 43;
+                        _context5.next = 42;
                         return _findReactTip.update({
                           status: 'failed'
                         });
 
-                      case 43:
-                        _context5.next = 56;
+                      case 42:
+                        _context5.next = 55;
                         break;
 
-                      case 45:
+                      case 44:
                         captchaPngFixed = captchaPng.replace('data:image/png;base64,', '');
-                        _context5.next = 48;
+                        _context5.next = 47;
                         return collector.send({
                           embeds: [(0, _discord2.ReactdropCaptchaMessage)(collector.id)],
                           files: [new _discord.MessageAttachment(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')]
                         });
 
-                      case 48:
+                      case 47:
                         awaitCaptchaMessage = _context5.sent;
-                        _context5.next = 51;
+                        _context5.next = 50;
                         return awaitCaptchaMessage.channel.createMessageCollector({
                           filter: filter,
                           time: 60000,
                           max: 1
                         });
 
-                      case 51:
+                      case 50:
                         Ccollector = _context5.sent;
-                        _context5.next = 54;
+                        _context5.next = 53;
                         return Ccollector.on('collect', /*#__PURE__*/function () {
                           var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(m) {
                             var collectReactdrop;
@@ -420,8 +417,8 @@ var listenReactDrop = /*#__PURE__*/function () {
                           };
                         }());
 
-                      case 54:
-                        _context5.next = 56;
+                      case 53:
+                        _context5.next = 55;
                         return Ccollector.on('end', /*#__PURE__*/function () {
                           var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(collected) {
                             var endingCollectReactdrop;
@@ -526,7 +523,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                           };
                         }());
 
-                      case 56:
+                      case 55:
                       case "end":
                         return _context5.stop();
                     }

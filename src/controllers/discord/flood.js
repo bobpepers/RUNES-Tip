@@ -214,10 +214,6 @@ export const discordFlood = async (
         transaction: t,
       });
       activity.unshift(tipActivity);
-      // console.log(tipActivity);
-      // io.to('admin').emit('updateActivity', {
-      //  activity: tipActivity,
-      // });
     }
 
     const newStringListUsers = listOfUsersRained.join(", ");
@@ -229,7 +225,7 @@ export const discordFlood = async (
     }
 
     await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, 'Flood', 'flooded')] });
-    logger.info(`Success Flood Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+    // logger.info(`Success Flood Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 
     t.afterCommit(() => {
       console.log('done');
@@ -237,6 +233,7 @@ export const discordFlood = async (
   }).catch((err) => {
     console.log(err);
     message.channel.send('something went wrong');
+    logger.error(`flood error: ${err}`);
   });
   io.to('admin').emit('updateActivity', {
     activity,

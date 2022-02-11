@@ -302,10 +302,7 @@ var discordFlood = /*#__PURE__*/function () {
 
                       case 66:
                         tipActivity = _context.sent;
-                        activity.unshift(tipActivity); // console.log(tipActivity);
-                        // io.to('admin').emit('updateActivity', {
-                        //  activity: tipActivity,
-                        // });
+                        activity.unshift(tipActivity);
 
                       case 68:
                         _context.next = 51;
@@ -376,13 +373,12 @@ var discordFlood = /*#__PURE__*/function () {
                         });
 
                       case 99:
-                        _logger["default"].info("Success Flood Requested by: ".concat(message.author.id, "-").concat(message.author.username, " for ").concat(amount / 1e8));
-
+                        // logger.info(`Success Flood Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 101:
+                      case 100:
                       case "end":
                         return _context.stop();
                     }
@@ -396,6 +392,8 @@ var discordFlood = /*#__PURE__*/function () {
             }())["catch"](function (err) {
               console.log(err);
               message.channel.send('something went wrong');
+
+              _logger["default"].error("flood error: ".concat(err));
             });
 
           case 11:
