@@ -46,7 +46,7 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, isValidAddress, addressExternal, UserExternalAddressMnMAssociation, wallet, fee, transaction, userId;
+                var _yield$userWalletExis, _yield$userWalletExis2, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, isValidAddressInfo, isValidAddress, addressExternal, UserExternalAddressMnMAssociation, wallet, fee, transaction, userId;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -88,72 +88,116 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
 
                       case 17:
                         // Add new currencies here (default fallback Runebase)
-                        isValidAddress = false;
+                        isValidAddressInfo = false;
 
                         if (!(settings.coin.setting === 'Runebase')) {
-                          _context.next = 24;
+                          _context.next = 35;
                           break;
                         }
 
-                        _context.next = 21;
-                        return (0, _rclient.getInstance)().utils.isRunebaseAddress(filteredMessage[2]);
+                        _context.prev = 19;
+                        _context.next = 22;
+                        return (0, _rclient.getInstance)().getAddressInfo(filteredMessage[2]);
 
-                      case 21:
-                        isValidAddress = _context.sent;
-                        _context.next = 39;
+                      case 22:
+                        isValidAddressInfo = _context.sent;
+                        _context.next = 35;
                         break;
 
-                      case 24:
-                        if (!(settings.coin.setting === 'Pirate')) {
-                          _context.next = 30;
+                      case 25:
+                        _context.prev = 25;
+                        _context.t0 = _context["catch"](19);
+                        //
+                        console.log(_context.t0);
+
+                        if (!(_context.t0.response && _context.t0.response.status === 500)) {
+                          _context.next = 32;
                           break;
                         }
 
-                        _context.next = 27;
-                        return (0, _rclient.getInstance)().utils.isPirateAddress(filteredMessage[2]);
-
-                      case 27:
-                        isValidAddress = _context.sent;
-                        _context.next = 39;
-                        break;
-
-                      case 30:
-                        if (!(settings.coin.setting === 'Komodo')) {
-                          _context.next = 36;
-                          break;
-                        }
-
-                        _context.next = 33;
-                        return (0, _rclient.getInstance)().utils.isKomodoAddress(filteredMessage[2]);
-
-                      case 33:
-                        isValidAddress = _context.sent;
-                        _context.next = 39;
-                        break;
-
-                      case 36:
-                        _context.next = 38;
-                        return (0, _rclient.getInstance)().utils.isRunebaseAddress(filteredMessage[2]);
-
-                      case 38:
-                        isValidAddress = _context.sent;
-
-                      case 39:
-                        if (isValidAddress) {
-                          _context.next = 43;
-                          break;
-                        }
-
-                        _context.next = 42;
+                        _context.next = 31;
                         return message.author.send({
                           embeds: [(0, _discord.invalidAddressMessage)(message)]
                         });
 
-                      case 42:
+                      case 31:
                         return _context.abrupt("return");
 
-                      case 43:
+                      case 32:
+                        _context.next = 34;
+                        return message.author.send('Runebase node offline');
+
+                      case 34:
+                        return _context.abrupt("return");
+
+                      case 35:
+                        // Add new currencies here (default fallback Runebase)
+                        isValidAddress = false;
+
+                        if (!(settings.coin.setting === 'Runebase')) {
+                          _context.next = 42;
+                          break;
+                        }
+
+                        _context.next = 39;
+                        return (0, _rclient.getInstance)().utils.isRunebaseAddress(filteredMessage[2]);
+
+                      case 39:
+                        isValidAddress = _context.sent;
+                        _context.next = 57;
+                        break;
+
+                      case 42:
+                        if (!(settings.coin.setting === 'Pirate')) {
+                          _context.next = 48;
+                          break;
+                        }
+
                         _context.next = 45;
+                        return (0, _rclient.getInstance)().utils.isPirateAddress(filteredMessage[2]);
+
+                      case 45:
+                        isValidAddress = _context.sent;
+                        _context.next = 57;
+                        break;
+
+                      case 48:
+                        if (!(settings.coin.setting === 'Komodo')) {
+                          _context.next = 54;
+                          break;
+                        }
+
+                        _context.next = 51;
+                        return (0, _rclient.getInstance)().utils.isKomodoAddress(filteredMessage[2]);
+
+                      case 51:
+                        isValidAddress = _context.sent;
+                        _context.next = 57;
+                        break;
+
+                      case 54:
+                        _context.next = 56;
+                        return (0, _rclient.getInstance)().utils.isRunebaseAddress(filteredMessage[2]);
+
+                      case 56:
+                        isValidAddress = _context.sent;
+
+                      case 57:
+                        if (isValidAddress) {
+                          _context.next = 61;
+                          break;
+                        }
+
+                        _context.next = 60;
+                        return message.author.send({
+                          embeds: [(0, _discord.invalidAddressMessage)(message)]
+                        });
+
+                      case 60:
+                        return _context.abrupt("return");
+
+                      case 61:
+                        _context.next = 63;
                         return _models["default"].addressExternal.findOne({
                           where: {
                             address: filteredMessage[2]
@@ -162,15 +206,15 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 45:
+                      case 63:
                         addressExternal = _context.sent;
 
                         if (addressExternal) {
-                          _context.next = 50;
+                          _context.next = 68;
                           break;
                         }
 
-                        _context.next = 49;
+                        _context.next = 67;
                         return _models["default"].addressExternal.create({
                           address: filteredMessage[2]
                         }, {
@@ -178,11 +222,11 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 49:
+                      case 67:
                         addressExternal = _context.sent;
 
-                      case 50:
-                        _context.next = 52;
+                      case 68:
+                        _context.next = 70;
                         return _models["default"].UserAddressExternal.findOne({
                           where: {
                             addressExternalId: addressExternal.id,
@@ -192,15 +236,15 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 52:
+                      case 70:
                         UserExternalAddressMnMAssociation = _context.sent;
 
                         if (UserExternalAddressMnMAssociation) {
-                          _context.next = 57;
+                          _context.next = 75;
                           break;
                         }
 
-                        _context.next = 56;
+                        _context.next = 74;
                         return _models["default"].UserAddressExternal.create({
                           addressExternalId: addressExternal.id,
                           userId: user.id
@@ -209,11 +253,11 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 56:
+                      case 74:
                         UserExternalAddressMnMAssociation = _context.sent;
 
-                      case 57:
-                        _context.next = 59;
+                      case 75:
+                        _context.next = 77;
                         return user.wallet.update({
                           available: user.wallet.available - amount,
                           locked: user.wallet.locked + amount
@@ -222,10 +266,10 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 59:
+                      case 77:
                         wallet = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
-                        _context.next = 63;
+                        _context.next = 81;
                         return _models["default"].transaction.create({
                           addressId: wallet.addresses[0].id,
                           addressExternalId: addressExternal.id,
@@ -239,9 +283,9 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 63:
+                      case 81:
                         transaction = _context.sent;
-                        _context.next = 66;
+                        _context.next = 84;
                         return _models["default"].activity.create({
                           spenderId: user.id,
                           type: 'withdrawRequested',
@@ -252,48 +296,48 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 66:
+                      case 84:
                         activity = _context.sent;
                         userId = user.user_id.replace('discord-', '');
 
                         if (!(message.channel.type === 'DM')) {
-                          _context.next = 71;
+                          _context.next = 89;
                           break;
                         }
 
-                        _context.next = 71;
+                        _context.next = 89;
                         return message.author.send({
                           embeds: [(0, _discord.reviewMessage)(message)]
                         });
 
-                      case 71:
+                      case 89:
                         if (!(message.channel.type === 'GUILD_TEXT')) {
-                          _context.next = 76;
+                          _context.next = 94;
                           break;
                         }
 
-                        _context.next = 74;
+                        _context.next = 92;
                         return message.channel.send({
                           embeds: [(0, _discord.warnDirectMessage)(userId, 'Balance')]
                         });
 
-                      case 74:
-                        _context.next = 76;
+                      case 92:
+                        _context.next = 94;
                         return message.author.send({
                           embeds: [(0, _discord.reviewMessage)(message)]
                         });
 
-                      case 76:
+                      case 94:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 77:
+                      case 95:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee);
+                }, _callee, null, [[19, 25]]);
               }));
 
               return function (_x8) {

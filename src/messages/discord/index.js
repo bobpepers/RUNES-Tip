@@ -234,7 +234,7 @@ export const discordIncomingDepositMessage = (res) => {
     .setTitle('Deposit')
     .setDescription(`incoming deposit detected for ${res.locals.amount} ${settings.coin.ticker}
 Balance will be reflected in your wallet in ~${settings.min.confirmations}+ confirmations
-${settings.coin.explorer}tx/${res.locals.transaction[0].txid}`)
+${settings.coin.explorer}/tx/${res.locals.transaction[0].txid}`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,

@@ -18,7 +18,7 @@ module.exports = {
     ticker: "ARRR",
     logo: "https://pirate.black/wp-content/uploads/2019/04/Pirate_Logo_Ship_Gold.png",
     website: "https://pirate.black",
-    explorer: "https://explorer.pirate.black/",
+    explorer: "https://explorer.pirate.black",
     github: "https://github.com/PirateNetwork",
     telegram: "https://t.me/piratechain",
     discord: "https://discord.gg/V62f77NV6e",

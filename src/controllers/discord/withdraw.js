@@ -55,6 +55,23 @@ export const withdrawDiscordCreate = async (
     }
 
     // Add new currencies here (default fallback Runebase)
+    let isValidAddressInfo = false;
+    if (settings.coin.setting === 'Runebase') {
+      try {
+        isValidAddressInfo = await getInstance().getAddressInfo(filteredMessage[2]);
+      } catch (e) {
+        //
+        console.log(e);
+        if (e.response && e.response.status === 500) {
+          await message.author.send({ embeds: [invalidAddressMessage(message)] });
+          return;
+        }
+        await message.author.send('Runebase node offline');
+        return;
+      }
+    }
+
+    // Add new currencies here (default fallback Runebase)
     let isValidAddress = false;
     if (settings.coin.setting === 'Runebase') {
       isValidAddress = await getInstance().utils.isRunebaseAddress(filteredMessage[2]);

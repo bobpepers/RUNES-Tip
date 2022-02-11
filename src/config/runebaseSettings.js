@@ -36,7 +36,6 @@ module.exports = {
       "https://stakecenter.co/client/exchange/LTC/RUNES",
       "https://stakecenter.co/client/exchange/DOGE/RUNES",
       "https://stakecenter.co/client/exchange/RDD/RUNES",
-      "https://www.localrunes.com",
     ],
     exampleAddress: 'ReU2nhYXamYRd2VBk4auwresov6jwLEuSg',
   },
