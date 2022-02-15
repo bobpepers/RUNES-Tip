@@ -7,6 +7,7 @@ import {
   AfterSuccessMessage,
   NotInDirectMessage,
   discordErrorMessage,
+  invalidTimeMessage,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { userWalletExist } from "../../helpers/discord/userWalletExist";
@@ -83,6 +84,70 @@ export const discordSleet = async (
       await message.channel.send("Group not found");
       return;
     }
+    let textTime;
+    let cutLastTimeLetter;
+    let cutNumberTime;
+    let isnum;
+    let lastSeenOptions = { [Op.gte]: new Date(Date.now() - (15 * 60 * 1000)) };
+    // Optional Timer
+    if (filteredMessage[3]) {
+      // eslint-disable-next-line prefer-destructuring
+      textTime = filteredMessage[3];
+      cutLastTimeLetter = textTime.substring(textTime.length - 1, textTime.length).toLowerCase();
+      cutNumberTime = textTime.substring(0, textTime.length - 1);
+      isnum = /^\d+$/.test(cutNumberTime);
+    }
+    if (
+      (filteredMessage[3]
+        && !isnum)
+      // && Number(cutNumberTime) < 0
+      && (
+        cutLastTimeLetter !== 'd'
+        || cutLastTimeLetter !== 'h'
+        || cutLastTimeLetter !== 'm'
+        || cutLastTimeLetter !== 's')
+    ) {
+      console.log('not pass');
+      console.log(user.id);
+      const activityA = await db.activity.create({
+        type: 'sleet_i',
+        spenderId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      activity.unshift(activityA);
+      await message.channel.send({ embeds: [invalidTimeMessage(message, 'Sleet')] });
+      return;
+    }
+
+    if (
+      (filteredMessage[2]
+        && isnum)
+      // && Number(cutNumberTime) < 0
+      && (
+        cutLastTimeLetter === 'd'
+        || cutLastTimeLetter === 'h'
+        || cutLastTimeLetter === 'm'
+        || cutLastTimeLetter === 's')
+    ) {
+      let dateObj = await new Date().getTime();
+      if (cutLastTimeLetter === 'd') {
+        dateObj -= Number(cutNumberTime) * 24 * 60 * 60 * 1000;
+      }
+      if (cutLastTimeLetter === 'h') {
+        dateObj -= Number(cutNumberTime) * 60 * 60 * 1000;
+      }
+      if (cutLastTimeLetter === 'm') {
+        dateObj -= Number(cutNumberTime) * 60 * 1000;
+      }
+      if (cutLastTimeLetter === 's') {
+        dateObj -= Number(cutNumberTime) * 1000;
+      }
+      dateObj = await new Date(dateObj);
+      lastSeenOptions = { [Op.gte]: dateObj };
+    }
+    //
 
     const usersToRain = await db.user.findAll({
       where: {
@@ -100,9 +165,7 @@ export const discordSleet = async (
           where: {
             [Op.and]: [
               {
-                lastSeen: {
-                  [Op.gte]: new Date(Date.now() - (15 * 60 * 1000)),
-                },
+                lastSeen: lastSeenOptions,
               },
               {
                 groupId: group.id,
