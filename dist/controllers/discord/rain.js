@@ -264,7 +264,8 @@ var discordRain = /*#__PURE__*/function () {
                           listOfUsersRained.push("<@".concat(userIdReceivedRain, ">"));
                         }
 
-                        tipActivity = void 0;
+                        tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
+
                         _context.next = 64;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
@@ -378,13 +379,12 @@ var discordRain = /*#__PURE__*/function () {
                         });
 
                       case 101:
-                        _logger["default"].info("Success Rain Requested by: ".concat(message.author.id, "-").concat(message.author.username, " for ").concat(amount / 1e8));
-
+                        // logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 103:
+                      case 102:
                       case "end":
                         return _context.stop();
                     }
@@ -397,7 +397,12 @@ var discordRain = /*#__PURE__*/function () {
               };
             }())["catch"](function (err) {
               console.log(err);
-              message.channel.send('something went wrong');
+
+              _logger["default"].error("rain error: ".concat(err));
+
+              message.channel.send({
+                embeds: [(0, _discord.discordErrorMessage)("Rain")]
+              });
             });
 
           case 13:

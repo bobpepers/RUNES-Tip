@@ -17,6 +17,8 @@ var _discord = require("../../messages/discord");
 
 var _models = _interopRequireDefault(require("../../models"));
 
+var _logger = _interopRequireDefault(require("../../helpers/logger"));
+
 /* eslint-disable import/prefer-default-export */
 var discordPublicStats = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(message, io) {
@@ -162,7 +164,12 @@ var discordPublicStats = /*#__PURE__*/function () {
               };
             }())["catch"](function (err) {
               console.log(err);
-              message.channel.send('something went wrong');
+
+              _logger["default"].error("publicstats error: ".concat(err));
+
+              message.channel.send({
+                embeds: [(0, _discord.discordErrorMessage)("PublicStats")]
+              });
             });
 
           case 3:

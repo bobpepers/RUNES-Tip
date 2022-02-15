@@ -406,13 +406,12 @@ var discordVoiceRain = /*#__PURE__*/function () {
                         });
 
                       case 99:
-                        _logger["default"].info("Success Rain Requested by: ".concat(message.author.id, "-").concat(message.author.username, " for ").concat(amount / 1e8));
-
+                        // logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 101:
+                      case 100:
                       case "end":
                         return _context.stop();
                     }
@@ -424,7 +423,11 @@ var discordVoiceRain = /*#__PURE__*/function () {
                 return _ref2.apply(this, arguments);
               };
             }())["catch"](function (err) {
-              message.channel.send('something went wrong');
+              _logger["default"].error("voicerain error: ".concat(err));
+
+              message.channel.send({
+                embeds: [(0, _discord.discordErrorMessage)("VoirceRain")]
+              });
             });
 
           case 23:

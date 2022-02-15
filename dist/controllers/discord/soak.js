@@ -13,11 +13,11 @@ var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/sli
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _sequelize = require("sequelize");
+
 var _models = _interopRequireDefault(require("../../models"));
 
 var _discord = require("../../messages/discord");
-
-var _sequelize = require("sequelize");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
@@ -64,9 +64,7 @@ var discordSoak = /*#__PURE__*/function () {
           case 6:
             members = _context2.sent;
             onlineMembers = members.filter(function (member) {
-              var _member$presence, _member$presence2, _member$presence3;
-
-              return ((_member$presence = member.presence) === null || _member$presence === void 0 ? void 0 : _member$presence.status) === "online" || ((_member$presence2 = member.presence) === null || _member$presence2 === void 0 ? void 0 : _member$presence2.status) === "idle" || ((_member$presence3 = member.presence) === null || _member$presence3 === void 0 ? void 0 : _member$presence3.status) === "dnd";
+              return member.presence && member.presence.status === "online" || member.presence && member.presence.status === "idle" || member.presence && member.presence.status === "dnd";
             });
             activity = [];
             _context2.next = 11;
@@ -260,7 +258,8 @@ var discordSoak = /*#__PURE__*/function () {
                           listOfUsersRained.push("<@".concat(userIdReceivedRain, ">"));
                         }
 
-                        tipActivity = void 0;
+                        tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
+
                         _context.next = 63;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
@@ -374,13 +373,12 @@ var discordSoak = /*#__PURE__*/function () {
                         });
 
                       case 100:
-                        _logger["default"].info("Success Soak Requested by: ".concat(message.author.id, "-").concat(message.author.username, " for ").concat(amount / 1e8));
-
+                        // logger.info(`Success Soak Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 102:
+                      case 101:
                       case "end":
                         return _context.stop();
                     }
@@ -393,7 +391,12 @@ var discordSoak = /*#__PURE__*/function () {
               };
             }())["catch"](function (err) {
               console.log(err);
-              message.channel.send('something went wrong');
+
+              _logger["default"].error("soak error: ".concat(err));
+
+              message.channel.send({
+                embeds: [(0, _discord.discordErrorMessage)("Soak")]
+              });
             });
 
           case 11:

@@ -399,13 +399,12 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
 
                       case 82:
                         // await message.channel.send({ embeds: [AfterThunderStormSuccess(message, amount, amountPerUser, listOfUsersRained)] });
-                        _logger["default"].info("Success Tip Requested by: ".concat(message.author.id, "-").concat(message.author.username, " for ").concat(amount / 1e8));
-
+                        // logger.info(`Success Tip Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 84:
+                      case 83:
                       case "end":
                         return _context2.stop();
                     }
@@ -418,7 +417,12 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
               };
             }())["catch"](function (err) {
               console.log(err);
-              message.channel.send('something went wrong');
+
+              _logger["default"].error("tip error: ".concat(err));
+
+              message.channel.send({
+                embeds: [(0, _discord.discordErrorMessage)("Tip")]
+              });
             });
 
           case 11:
@@ -748,7 +752,12 @@ var tipCoinsToDiscordFaucet = /*#__PURE__*/function () {
               };
             }())["catch"](function (err) {
               console.log(err);
-              message.channel.send('something went wrong');
+
+              _logger["default"].error("tip error: ".concat(err));
+
+              message.channel.send({
+                embeds: [(0, _discord.discordErrorMessage)("Tip")]
+              });
             });
 
           case 8:

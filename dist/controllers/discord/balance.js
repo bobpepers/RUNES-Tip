@@ -142,7 +142,8 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
 
                       case 26:
                         t.afterCommit(function () {
-                          _logger["default"].info("Success Discord Balance Requested by: ".concat(message.author.id, "-").concat(message.author.username, "#").concat(message.author.discriminator));
+                          // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
+                          console.log('done balance request');
                         });
 
                       case 27:
@@ -158,6 +159,10 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
               };
             }())["catch"](function (err) {
               _logger["default"].error("Error Discord Balance Requested by: ".concat(message.author.id, "-").concat(message.author.username, "#").concat(message.author.discriminator, " - ").concat(err));
+
+              message.channel.send({
+                embeds: [(0, _discord.discordErrorMessage)("Balance")]
+              });
             });
 
           case 3:

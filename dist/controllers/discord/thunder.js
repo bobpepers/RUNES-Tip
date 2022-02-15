@@ -150,7 +150,7 @@ var discordThunder = /*#__PURE__*/function () {
 
                       case 30:
                         if (!(withoutBots.length === 1)) {
-                          _context.next = 89;
+                          _context.next = 88;
                           break;
                         }
 
@@ -353,14 +353,11 @@ var discordThunder = /*#__PURE__*/function () {
                         break;
 
                       case 88:
-                        _logger["default"].info("Success Thunder Requested by: ".concat(message.author.id, "-").concat(message.author.username, " for ").concat(amount / 1e8));
-
-                      case 89:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 90:
+                      case 89:
                       case "end":
                         return _context.stop();
                     }
@@ -373,7 +370,12 @@ var discordThunder = /*#__PURE__*/function () {
               };
             }())["catch"](function (err) {
               console.log(err);
-              message.channel.send('something went wrong');
+
+              _logger["default"].error("thunder error: ".concat(err));
+
+              message.channel.send({
+                embeds: [(0, _discord.discordErrorMessage)("Thunder")]
+              });
             });
 
           case 11:

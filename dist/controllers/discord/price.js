@@ -155,7 +155,7 @@ var discordPrice = /*#__PURE__*/function () {
 
                       case 35:
                         t.afterCommit(function () {
-                          _logger["default"].info("Success Discord Balance Requested by: ".concat(message.author.id, "-").concat(message.author.username, "#").concat(message.author.discriminator));
+                          console.log('done price request'); // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
                         });
 
                       case 36:
@@ -171,6 +171,10 @@ var discordPrice = /*#__PURE__*/function () {
               };
             }())["catch"](function (err) {
               _logger["default"].error("Error Discord Balance Requested by: ".concat(message.author.id, "-").concat(message.author.username, "#").concat(message.author.discriminator, " - ").concat(err));
+
+              message.channel.send({
+                embeds: [(0, _discord.discordErrorMessage)("Price")]
+              });
             });
 
           case 3:

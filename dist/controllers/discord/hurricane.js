@@ -13,6 +13,10 @@ var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/sli
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _lodash = _interopRequireDefault(require("lodash"));
+
+var _sequelize = require("sequelize");
+
 var _models = _interopRequireDefault(require("../../models"));
 
 var _discord = require("../../messages/discord");
@@ -24,10 +28,6 @@ var _mapMembers = require("../../helpers/discord/mapMembers");
 var _userWalletExist = require("../../helpers/discord/userWalletExist");
 
 var _waterFaucet = require("../../helpers/discord/waterFaucet");
-
-var _lodash = _interopRequireDefault(require("lodash"));
-
-var _sequelize = require("sequelize");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
@@ -108,9 +108,7 @@ var discordHurricane = /*#__PURE__*/function () {
           case 18:
             members = _context2.sent;
             onlineMembers = members.filter(function (member) {
-              var _member$presence, _member$presence2, _member$presence3;
-
-              return ((_member$presence = member.presence) === null || _member$presence === void 0 ? void 0 : _member$presence.status) === "online" || ((_member$presence2 = member.presence) === null || _member$presence2 === void 0 ? void 0 : _member$presence2.status) === "idle" || ((_member$presence3 = member.presence) === null || _member$presence3 === void 0 ? void 0 : _member$presence3.status) === "dnd";
+              return member.presence && member.presence.status === "online" || member.presence && member.presence.status === "idle" || member.presence && member.presence.status === "dnd";
             });
             activity = [];
             _context2.next = 23;
@@ -303,10 +301,10 @@ var discordHurricane = /*#__PURE__*/function () {
                         } else {
                           userIdReceivedRain = hurricaneee.user_id.replace('discord-', '');
                           listOfUsersRained.push("<@".concat(userIdReceivedRain, ">"));
-                          ;
                         }
 
-                        tipActivity = void 0;
+                        tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
+
                         _context.next = 64;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
@@ -419,14 +417,12 @@ var discordHurricane = /*#__PURE__*/function () {
                         });
 
                       case 100:
-                        //await message.channel.send({ embeds: [AfterHurricaneSuccess(message, amount, amountPerUser, listOfUsersRained)] });
-                        _logger["default"].info("Success Hurricane Requested by: ".concat(message.author.id, "-").concat(message.author.username, " for ").concat(amount / 1e8));
-
+                        // logger.info(`Success Hurricane Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 102:
+                      case 101:
                       case "end":
                         return _context.stop();
                     }
@@ -439,7 +435,12 @@ var discordHurricane = /*#__PURE__*/function () {
               };
             }())["catch"](function (err) {
               console.log(err);
-              message.channel.send('something went wrong');
+
+              _logger["default"].error("hurricane error: ".concat(err));
+
+              message.channel.send({
+                embeds: [(0, _discord.discordErrorMessage)("Hurricane")]
+              });
             });
 
           case 23:

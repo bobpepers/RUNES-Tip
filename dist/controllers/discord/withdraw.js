@@ -39,9 +39,7 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _logger["default"].info("Start Withdrawal Request: ".concat(message.author.id, "-").concat(message.author.username));
-
-            _context2.next = 3;
+            _context2.next = 2;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -345,10 +343,15 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
               };
             }())["catch"](function (err) {
               console.log(err);
-              message.author.send("Something went wrong.");
+
+              _logger["default"].error("withdraw error: ".concat(err));
+
+              message.channel.send({
+                embeds: [(0, _discord.discordErrorMessage)("Withdraw")]
+              });
             });
 
-          case 3:
+          case 2:
           case "end":
             return _context2.stop();
         }

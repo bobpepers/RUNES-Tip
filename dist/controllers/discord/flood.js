@@ -391,9 +391,12 @@ var discordFlood = /*#__PURE__*/function () {
               };
             }())["catch"](function (err) {
               console.log(err);
-              message.channel.send('something went wrong');
 
               _logger["default"].error("flood error: ".concat(err));
+
+              message.channel.send({
+                embeds: [(0, _discord.discordErrorMessage)("Flood")]
+              });
             });
 
           case 11:

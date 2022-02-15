@@ -80,7 +80,7 @@ function group(arr, type, whichGroup) {
 
 var discordStats = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(message, filteredMessageDiscord, io, groupTask, channelTask) {
-    var activity, parentWhereOptions, childWhereOptions, textTime, cutLastTimeLetter, cutNumberTime, isnum, user, activityA, _activityA, dateObj, groupedTips, groupedTipTips, groupedReactdrops, groupedFloods, groupedSoaks, groupedHurricanes, groupedThunderStorms, groupedThunders, groupedSleets, groupedReactdropTips, groupedFloodTips, groupedSoakTips, groupedHurricaneTips, groupedThunderStormTips, groupedThunderTips, groupedSleetTips, mergedObject, serverObj, spendTips, spendFloods, spendRains, spendSoaks, spendHurricanes, spendThunders, spendThunderstorms, spendReactDrops, earnedTips, earnedFloods, earnedRains, earnedSoaks, earnedHurricanes, earnedThunders, earnedThunderstorms, earnedReactDrops, serverString, preActivity, finalActivity;
+    var activity, parentWhereOptions, childWhereOptions, textTime, cutLastTimeLetter, cutNumberTime, isnum, user, activityA, _activityA, dateObj, groupedTips, groupedTipTips, groupedReactdrops, groupedFloods, groupedSoaks, groupedHurricanes, groupedThunderStorms, groupedThunders, groupedSleets, groupedReactdropTips, groupedFloodTips, groupedSoakTips, groupedHurricaneTips, groupedThunderStormTips, groupedThunderTips, groupedSleetTips, mergedObject, serverObj, spendTips, spendFloods, spendRains, spendSoaks, spendHurricanes, spendThunders, spendThunderstorms, spendReactDrops, spendTotal, earnedTips, earnedFloods, earnedRains, earnedSoaks, earnedHurricanes, earnedThunders, earnedThunderstorms, earnedReactDrops, earnedTotal, serverString, preActivity, finalActivity;
 
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
@@ -123,6 +123,7 @@ var discordStats = /*#__PURE__*/function () {
 
           case 14:
             if (filteredMessageDiscord[2]) {
+              // eslint-disable-next-line prefer-destructuring
               textTime = filteredMessageDiscord[2];
               cutLastTimeLetter = textTime.substring(textTime.length - 1, textTime.length).toLowerCase();
               cutNumberTime = textTime.substring(0, textTime.length - 1);
@@ -460,7 +461,7 @@ var discordStats = /*#__PURE__*/function () {
 
           case 51:
             if ((_context.t1 = _context.t0()).done) {
-              _context.next = 74;
+              _context.next = 76;
               break;
             }
 
@@ -489,7 +490,24 @@ var discordStats = /*#__PURE__*/function () {
             }, 0) / 1e8, " ").concat(settings.coin.ticker);
             spendReactDrops = mergedObject[serverObj].spend && mergedObject[serverObj].spend.reactdrops && "".concat(mergedObject[serverObj].spend.reactdrops.length, " reactdrops for ").concat(mergedObject[serverObj].spend.reactdrops.reduce(function (a, b) {
               return +a + +b.amount;
-            }, 0) / 1e8, " ").concat(settings.coin.ticker); // Earned
+            }, 0) / 1e8, " ").concat(settings.coin.ticker);
+            spendTotal = (mergedObject[serverObj].spend && mergedObject[serverObj].spend.tips ? mergedObject[serverObj].spend.tips.reduce(function (a, b) {
+              return +a + +b.amount;
+            }, 0) / 1e8 : 0) + (mergedObject[serverObj].spend && mergedObject[serverObj].spend.floods ? mergedObject[serverObj].spend.floods.reduce(function (a, b) {
+              return +a + +b.amount;
+            }, 0) / 1e8 : 0) + (mergedObject[serverObj].spend && mergedObject[serverObj].spend.rains ? mergedObject[serverObj].spend.rains.reduce(function (a, b) {
+              return +a + +b.amount;
+            }, 0) / 1e8 : 0) + (mergedObject[serverObj].spend && mergedObject[serverObj].spend.soaks ? mergedObject[serverObj].spend.soaks.reduce(function (a, b) {
+              return +a + +b.amount;
+            }, 0) / 1e8 : 0) + (mergedObject[serverObj].spend && mergedObject[serverObj].spend.hurricanes ? mergedObject[serverObj].spend.hurricanes.reduce(function (a, b) {
+              return +a + +b.amount;
+            }, 0) / 1e8 : 0) + (mergedObject[serverObj].spend && mergedObject[serverObj].spend.thunders ? mergedObject[serverObj].spend.thunders.reduce(function (a, b) {
+              return +a + +b.amount;
+            }, 0) / 1e8 : 0) + (mergedObject[serverObj].spend && mergedObject[serverObj].spend.thunderstorms ? mergedObject[serverObj].spend.thunderstorms.reduce(function (a, b) {
+              return +a + +b.amount;
+            }, 0) / 1e8 : 0) + (mergedObject[serverObj].spend && mergedObject[serverObj].spend.reactdrops ? mergedObject[serverObj].spend.reactdrops.reduce(function (a, b) {
+              return +a + +b.amount;
+            }, 0) / 1e8 : 0); // Earned
 
             earnedTips = mergedObject[serverObj].earned && mergedObject[serverObj].earned.tips && "".concat(mergedObject[serverObj].earned.tips.length, " tips for ").concat(mergedObject[serverObj].earned.tips.reduce(function (a, b) {
               return +a + +b.amount;
@@ -515,26 +533,44 @@ var discordStats = /*#__PURE__*/function () {
             earnedReactDrops = mergedObject[serverObj].earned && mergedObject[serverObj].earned.reactdrops && "".concat(mergedObject[serverObj].earned.reactdrops.length, " reactdrops for ").concat(mergedObject[serverObj].earned.reactdrops.reduce(function (a, b) {
               return +a + +b.amount;
             }, 0) / 1e8, " ").concat(settings.coin.ticker);
-            serverString = "_**".concat(serverObj, "**_\n    \n").concat(mergedObject[serverObj].spend ? '_Spend_\n' : '', "\n").concat(spendTips ? "Tips: ".concat(spendTips, "\n") : '').concat(spendRains ? "Rains: ".concat(spendRains, "\n") : '').concat(spendFloods ? "Floods: ".concat(spendFloods, "\n") : '').concat(spendSoaks ? "Soaks: ".concat(spendSoaks, "\n") : '').concat(spendHurricanes ? "Hurricanes: ".concat(spendHurricanes, "\n") : '').concat(spendThunders ? "Thunders: ".concat(spendThunders, "\n") : '').concat(spendThunderstorms ? "Thunderstorms: ".concat(spendThunderstorms, "\n") : '').concat(spendReactDrops ? "ReactDrops: ".concat(spendReactDrops, "\n") : '', "\n  \n").concat(mergedObject[serverObj].earned ? '_Earned_\n' : '', "\n").concat(earnedTips ? "Tips: ".concat(earnedTips, "\n") : '').concat(earnedRains ? "Rains: ".concat(earnedRains, "\n") : '').concat(earnedFloods ? "Floods: ".concat(earnedFloods, "\n") : '').concat(earnedSoaks ? "Soaks: ".concat(earnedSoaks, "\n") : '').concat(earnedHurricanes ? "Hurricanes: ".concat(earnedHurricanes, "\n") : '').concat(earnedThunders ? "Thunders: ".concat(earnedThunders, "\n") : '').concat(earnedThunderstorms ? "Thunderstorms: ".concat(earnedThunderstorms, "\n") : '').concat(earnedReactDrops ? "ReactDrops: ".concat(earnedReactDrops, "\n") : '');
-            _context.next = 72;
+            earnedTotal = (mergedObject[serverObj].earned && mergedObject[serverObj].earned.tips ? mergedObject[serverObj].earned.tips.reduce(function (a, b) {
+              return +a + +b.amount;
+            }, 0) / 1e8 : 0) + (mergedObject[serverObj].earned && mergedObject[serverObj].earned.floods ? mergedObject[serverObj].earned.floods.reduce(function (a, b) {
+              return +a + +b.amount;
+            }, 0) / 1e8 : 0) + (mergedObject[serverObj].earned && mergedObject[serverObj].earned.rains ? mergedObject[serverObj].earned.rains.reduce(function (a, b) {
+              return +a + +b.amount;
+            }, 0) / 1e8 : 0) + (mergedObject[serverObj].earned && mergedObject[serverObj].earned.soaks ? mergedObject[serverObj].earned.soaks.reduce(function (a, b) {
+              return +a + +b.amount;
+            }, 0) / 1e8 : 0) + (mergedObject[serverObj].earned && mergedObject[serverObj].earned.hurricanes ? mergedObject[serverObj].earned.hurricanes.reduce(function (a, b) {
+              return +a + +b.amount;
+            }, 0) / 1e8 : 0) + (mergedObject[serverObj].earned && mergedObject[serverObj].earned.thunders ? mergedObject[serverObj].earned.thunders.reduce(function (a, b) {
+              return +a + +b.amount;
+            }, 0) / 1e8 : 0) + (mergedObject[serverObj].earned && mergedObject[serverObj].earned.thunderstorms ? mergedObject[serverObj].earned.thunderstorms.reduce(function (a, b) {
+              return +a + +b.amount;
+            }, 0) / 1e8 : 0) + (mergedObject[serverObj].earned && mergedObject[serverObj].earned.reactdrops ? mergedObject[serverObj].earned.reactdrops.reduce(function (a, b) {
+              return +a + +b.amount;
+            }, 0) / 1e8 : 0);
+            serverString = "_**".concat(serverObj, "**_\n    \n").concat(mergedObject[serverObj].spend ? '_Spend_\n' : '', "\n").concat(spendTips ? "Tips: ".concat(spendTips, "\n") : '').concat(spendRains ? "Rains: ".concat(spendRains, "\n") : '').concat(spendFloods ? "Floods: ".concat(spendFloods, "\n") : '').concat(spendSoaks ? "Soaks: ".concat(spendSoaks, "\n") : '').concat(spendHurricanes ? "Hurricanes: ".concat(spendHurricanes, "\n") : '').concat(spendThunders ? "Thunders: ".concat(spendThunders, "\n") : '').concat(spendThunderstorms ? "Thunderstorms: ".concat(spendThunderstorms, "\n") : '').concat(spendReactDrops ? "ReactDrops: ".concat(spendReactDrops, "\n") : '').concat(spendTotal ? "Total Spend: ".concat(spendTotal, " ").concat(settings.coin.ticker, "\n") : '', "\n  \n").concat(mergedObject[serverObj].earned ? '_Earned_\n' : '', "\n").concat(earnedTips ? "Tips: ".concat(earnedTips, "\n") : '').concat(earnedRains ? "Rains: ".concat(earnedRains, "\n") : '').concat(earnedFloods ? "Floods: ".concat(earnedFloods, "\n") : '').concat(earnedSoaks ? "Soaks: ".concat(earnedSoaks, "\n") : '').concat(earnedHurricanes ? "Hurricanes: ".concat(earnedHurricanes, "\n") : '').concat(earnedThunders ? "Thunders: ".concat(earnedThunders, "\n") : '').concat(earnedThunderstorms ? "Thunderstorms: ".concat(earnedThunderstorms, "\n") : '').concat(earnedReactDrops ? "ReactDrops: ".concat(earnedReactDrops, "\n") : '').concat(earnedTotal ? "Total Earned: ".concat(earnedTotal, " ").concat(settings.coin.ticker, "\n") : ''); // eslint-disable-next-line no-await-in-loop
+
+            _context.next = 74;
             return message.author.send({
               embeds: [(0, _discord.statsMessage)(message, serverString)]
             });
 
-          case 72:
+          case 74:
             _context.next = 51;
             break;
 
-          case 74:
-            _context.next = 76;
+          case 76:
+            _context.next = 78;
             return _models["default"].activity.create({
               type: 'stats_s',
               earnerId: user.id
             });
 
-          case 76:
+          case 78:
             preActivity = _context.sent;
-            _context.next = 79;
+            _context.next = 81;
             return _models["default"].activity.findOne({
               where: {
                 id: preActivity.id
@@ -545,7 +581,7 @@ var discordStats = /*#__PURE__*/function () {
               }]
             });
 
-          case 79:
+          case 81:
             finalActivity = _context.sent;
             activity.unshift(finalActivity);
             io.to('admin').emit('updateActivity', {
@@ -553,7 +589,7 @@ var discordStats = /*#__PURE__*/function () {
             });
             return _context.abrupt("return", true);
 
-          case 83:
+          case 85:
           case "end":
             return _context.stop();
         }

@@ -23,6 +23,8 @@ var _settings = _interopRequireDefault(require("../../config/settings"));
 
 var _userWalletExist = require("../../helpers/discord/userWalletExist");
 
+var _logger = _interopRequireDefault(require("../../helpers/logger"));
+
 /* eslint-disable import/prefer-default-export */
 var settings = (0, _settings["default"])();
 
@@ -250,7 +252,12 @@ var discordFaucetClaim = /*#__PURE__*/function () {
               };
             }())["catch"](function (err) {
               console.log(err);
-              message.channel.send('something went wrong');
+
+              _logger["default"].error("faucet error: ".concat(err));
+
+              message.channel.send({
+                embeds: [(0, _discord.discordErrorMessage)("Faucet")]
+              });
             });
 
           case 3:

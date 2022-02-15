@@ -13,6 +13,10 @@ var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/sli
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _lodash = _interopRequireDefault(require("lodash"));
+
+var _sequelize = require("sequelize");
+
 var _models = _interopRequireDefault(require("../../models"));
 
 var _discord = require("../../messages/discord");
@@ -22,10 +26,6 @@ var _validateAmount = require("../../helpers/discord/validateAmount");
 var _mapMembers = require("../../helpers/discord/mapMembers");
 
 var _userWalletExist = require("../../helpers/discord/userWalletExist");
-
-var _lodash = _interopRequireDefault(require("lodash"));
-
-var _sequelize = require("sequelize");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
@@ -108,9 +108,7 @@ var discordThunderStorm = /*#__PURE__*/function () {
           case 18:
             members = _context2.sent;
             onlineMembers = members.filter(function (member) {
-              var _member$presence;
-
-              return ((_member$presence = member.presence) === null || _member$presence === void 0 ? void 0 : _member$presence.status) === "online";
+              return member && member.presence && member.presence.status && member.presence.status === "online";
             });
             activity = [];
             _context2.next = 23;
@@ -305,7 +303,8 @@ var discordThunderStorm = /*#__PURE__*/function () {
                           listOfUsersRained.push("<@".concat(userIdReceivedRain, ">"));
                         }
 
-                        tipActivity = void 0;
+                        tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
+
                         _context.next = 64;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
@@ -418,13 +417,12 @@ var discordThunderStorm = /*#__PURE__*/function () {
                         });
 
                       case 100:
-                        _logger["default"].info("Success ThunderStorm Requested by: ".concat(message.author.id, "-").concat(message.author.username, " for ").concat(amount / 1e8));
-
+                        // logger.info(`Success ThunderStorm Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 102:
+                      case 101:
                       case "end":
                         return _context.stop();
                     }
@@ -437,7 +435,12 @@ var discordThunderStorm = /*#__PURE__*/function () {
               };
             }())["catch"](function (err) {
               console.log(err);
-              message.channel.send('something went wrong');
+
+              _logger["default"].error("thunderstorm error: ".concat(err));
+
+              message.channel.send({
+                embeds: [(0, _discord.discordErrorMessage)("ThunderStorm")]
+              });
             });
 
           case 23:
