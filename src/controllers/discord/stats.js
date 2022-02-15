@@ -37,7 +37,13 @@ function group(arr, type, whichGroup) {
   }, {});
 }
 
-export const discordStats = async (message, filteredMessageDiscord, io, groupTask, channelTask) => {
+export const discordStats = async (
+  message,
+  filteredMessageDiscord,
+  io,
+  groupTask,
+  channelTask,
+) => {
   const activity = [];
   const parentWhereOptions = {};
   const childWhereOptions = {};
@@ -475,6 +481,15 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
     const spendReactDrops = mergedObject[serverObj].spend && mergedObject[serverObj].spend.reactdrops
       && `${mergedObject[serverObj].spend.reactdrops.length} reactdrops for ${mergedObject[serverObj].spend.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
+    const spendTotal = (mergedObject[serverObj].spend && mergedObject[serverObj].spend.tips ? mergedObject[serverObj].spend.tips.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+      + (mergedObject[serverObj].spend && mergedObject[serverObj].spend.floods ? mergedObject[serverObj].spend.floods.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+      + (mergedObject[serverObj].spend && mergedObject[serverObj].spend.rains ? mergedObject[serverObj].spend.rains.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+      + (mergedObject[serverObj].spend && mergedObject[serverObj].spend.soaks ? mergedObject[serverObj].spend.soaks.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+      + (mergedObject[serverObj].spend && mergedObject[serverObj].spend.hurricanes ? mergedObject[serverObj].spend.hurricanes.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+      + (mergedObject[serverObj].spend && mergedObject[serverObj].spend.thunders ? mergedObject[serverObj].spend.thunders.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+      + (mergedObject[serverObj].spend && mergedObject[serverObj].spend.thunderstorms ? mergedObject[serverObj].spend.thunderstorms.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+      + (mergedObject[serverObj].spend && mergedObject[serverObj].spend.reactdrops ? mergedObject[serverObj].spend.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0);
+
     // Earned
     const earnedTips = mergedObject[serverObj].earned && mergedObject[serverObj].earned.tips
       && `${mergedObject[serverObj].earned.tips.length} tips for ${mergedObject[serverObj].earned.tips.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
@@ -500,13 +515,22 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
     const earnedReactDrops = mergedObject[serverObj].earned && mergedObject[serverObj].earned.reactdrops
       && `${mergedObject[serverObj].earned.reactdrops.length} reactdrops for ${mergedObject[serverObj].earned.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
+    const earnedTotal = (mergedObject[serverObj].earned && mergedObject[serverObj].earned.tips ? mergedObject[serverObj].earned.tips.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+    + (mergedObject[serverObj].earned && mergedObject[serverObj].earned.floods ? mergedObject[serverObj].earned.floods.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+    + (mergedObject[serverObj].earned && mergedObject[serverObj].earned.rains ? mergedObject[serverObj].earned.rains.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+    + (mergedObject[serverObj].earned && mergedObject[serverObj].earned.soaks ? mergedObject[serverObj].earned.soaks.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+    + (mergedObject[serverObj].earned && mergedObject[serverObj].earned.hurricanes ? mergedObject[serverObj].earned.hurricanes.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+    + (mergedObject[serverObj].earned && mergedObject[serverObj].earned.thunders ? mergedObject[serverObj].earned.thunders.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+    + (mergedObject[serverObj].earned && mergedObject[serverObj].earned.thunderstorms ? mergedObject[serverObj].earned.thunderstorms.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+    + (mergedObject[serverObj].earned && mergedObject[serverObj].earned.reactdrops ? mergedObject[serverObj].earned.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0);
+
     const serverString = `_**${serverObj}**_
     
 ${mergedObject[serverObj].spend ? '_Spend_\n' : ''}
-${spendTips ? `Tips: ${spendTips}\n` : ''}${spendRains ? `Rains: ${spendRains}\n` : ''}${spendFloods ? `Floods: ${spendFloods}\n` : ''}${spendSoaks ? `Soaks: ${spendSoaks}\n` : ''}${spendHurricanes ? `Hurricanes: ${spendHurricanes}\n` : ''}${spendThunders ? `Thunders: ${spendThunders}\n` : ''}${spendThunderstorms ? `Thunderstorms: ${spendThunderstorms}\n` : ''}${spendReactDrops ? `ReactDrops: ${spendReactDrops}\n` : ''}
+${spendTips ? `Tips: ${spendTips}\n` : ''}${spendRains ? `Rains: ${spendRains}\n` : ''}${spendFloods ? `Floods: ${spendFloods}\n` : ''}${spendSoaks ? `Soaks: ${spendSoaks}\n` : ''}${spendHurricanes ? `Hurricanes: ${spendHurricanes}\n` : ''}${spendThunders ? `Thunders: ${spendThunders}\n` : ''}${spendThunderstorms ? `Thunderstorms: ${spendThunderstorms}\n` : ''}${spendReactDrops ? `ReactDrops: ${spendReactDrops}\n` : ''}${spendTotal ? `Total Spend: ${spendTotal} ${settings.coin.ticker}\n` : ''}
   
 ${mergedObject[serverObj].earned ? '_Earned_\n' : ''}
-${earnedTips ? `Tips: ${earnedTips}\n` : ''}${earnedRains ? `Rains: ${earnedRains}\n` : ''}${earnedFloods ? `Floods: ${earnedFloods}\n` : ''}${earnedSoaks ? `Soaks: ${earnedSoaks}\n` : ''}${earnedHurricanes ? `Hurricanes: ${earnedHurricanes}\n` : ''}${earnedThunders ? `Thunders: ${earnedThunders}\n` : ''}${earnedThunderstorms ? `Thunderstorms: ${earnedThunderstorms}\n` : ''}${earnedReactDrops ? `ReactDrops: ${earnedReactDrops}\n` : ''}`;
+${earnedTips ? `Tips: ${earnedTips}\n` : ''}${earnedRains ? `Rains: ${earnedRains}\n` : ''}${earnedFloods ? `Floods: ${earnedFloods}\n` : ''}${earnedSoaks ? `Soaks: ${earnedSoaks}\n` : ''}${earnedHurricanes ? `Hurricanes: ${earnedHurricanes}\n` : ''}${earnedThunders ? `Thunders: ${earnedThunders}\n` : ''}${earnedThunderstorms ? `Thunderstorms: ${earnedThunderstorms}\n` : ''}${earnedReactDrops ? `ReactDrops: ${earnedReactDrops}\n` : ''}${earnedTotal ? `Total Earned: ${earnedTotal} ${settings.coin.ticker}\n` : ''}`;
     // eslint-disable-next-line no-await-in-loop
     await message.author.send({ embeds: [statsMessage(message, serverString)] });
   }
