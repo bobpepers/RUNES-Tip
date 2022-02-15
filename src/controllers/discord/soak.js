@@ -1,11 +1,12 @@
 /* eslint-disable import/prefer-default-export */
+import { Transaction } from "sequelize";
 import db from '../../models';
 import {
   AfterSuccessMessage,
   NotInDirectMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 
-import { Transaction } from "sequelize";
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { mapMembers } from "../../helpers/discord/mapMembers";
@@ -28,11 +29,9 @@ export const discordSoak = async (
     return;
   }
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  const onlineMembers = members.filter((member) =>
-    member.presence?.status === "online"
-    || member.presence?.status === "idle"
-    || member.presence?.status === "dnd"
-  );
+  const onlineMembers = members.filter((member) => (member.presence && member.presence.status === "online")
+    || (member.presence && member.presence.status === "idle")
+    || (member.presence && member.presence.status === "dnd"));
 
   const activity = [];
   let userActivity;
@@ -102,7 +101,7 @@ export const discordSoak = async (
     const faucetWatered = await waterFaucet(
       t,
       Number(fee),
-      faucetSetting
+      faucetSetting,
     );
     const soakRecord = await db.soak.create({
       feeAmount: fee,
@@ -132,11 +131,11 @@ export const discordSoak = async (
       include: [
         {
           model: db.soak,
-          as: 'soak'
+          as: 'soak',
         },
         {
           model: db.user,
-          as: 'spender'
+          as: 'spender',
         },
       ],
       lock: t.LOCK.UPDATE,
@@ -172,6 +171,7 @@ export const discordSoak = async (
         listOfUsersRained.push(`<@${userIdReceivedRain}>`);
       }
       let tipActivity;
+      // eslint-disable-next-line no-await-in-loop
       tipActivity = await db.activity.create({
         amount: Number(amountPerUser),
         type: 'soaktip_s',
@@ -185,6 +185,7 @@ export const discordSoak = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      // eslint-disable-next-line no-await-in-loop
       tipActivity = await db.activity.findOne({
         where: {
           id: tipActivity.id,
@@ -192,19 +193,19 @@ export const discordSoak = async (
         include: [
           {
             model: db.user,
-            as: 'earner'
+            as: 'earner',
           },
           {
             model: db.user,
-            as: 'spender'
+            as: 'spender',
           },
           {
             model: db.soak,
-            as: 'soak'
+            as: 'soak',
           },
           {
             model: db.soaktip,
-            as: 'soaktip'
+            as: 'soaktip',
           },
         ],
         lock: t.LOCK.UPDATE,
@@ -223,14 +224,15 @@ export const discordSoak = async (
     }
 
     await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, 'Soak', 'soaked')] });
-    logger.info(`Success Soak Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+    // logger.info(`Success Soak Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 
     t.afterCommit(() => {
       console.log('done');
     });
   }).catch((err) => {
     console.log(err);
-    message.channel.send('something went wrong');
+    logger.error(`soak error: ${err}`);
+    message.channel.send({ embeds: [discordErrorMessage("Soak")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,

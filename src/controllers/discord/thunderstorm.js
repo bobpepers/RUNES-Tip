@@ -1,4 +1,6 @@
 /* eslint-disable import/prefer-default-export */
+import _ from "lodash";
+import { Transaction } from "sequelize";
 import db from '../../models';
 import {
   thunderstormMaxUserAmountMessage,
@@ -6,14 +8,12 @@ import {
   thunderstormUserZeroAmountMessage,
   NotInDirectMessage,
   AfterSuccessMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { mapMembers } from "../../helpers/discord/mapMembers";
 import { userWalletExist } from "../../helpers/discord/userWalletExist";
 
-import _ from "lodash";
-
-import { Transaction } from "sequelize";
 import logger from "../../helpers/logger";
 import { waterFaucet } from "../../helpers/discord/waterFaucet";
 
@@ -45,9 +45,7 @@ export const discordThunderStorm = async (
     return;
   }
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  const onlineMembers = members.filter((member) =>
-    member.presence?.status === "online"
-  );
+  const onlineMembers = members.filter((member) => member && member.presence && member.presence.status && member.presence.status === "online");
 
   const activity = [];
   let userActivity;
@@ -119,7 +117,7 @@ export const discordThunderStorm = async (
     const faucetWatered = await waterFaucet(
       t,
       Number(fee),
-      faucetSetting
+      faucetSetting,
     );
     const thunderstormRecord = await db.thunderstorm.create({
       feeAmount: fee,
@@ -149,11 +147,11 @@ export const discordThunderStorm = async (
       include: [
         {
           model: db.thunderstorm,
-          as: 'thunderstorm'
+          as: 'thunderstorm',
         },
         {
           model: db.user,
-          as: 'spender'
+          as: 'spender',
         },
       ],
       lock: t.LOCK.UPDATE,
@@ -189,6 +187,7 @@ export const discordThunderStorm = async (
         listOfUsersRained.push(`<@${userIdReceivedRain}>`);
       }
       let tipActivity;
+      // eslint-disable-next-line no-await-in-loop
       tipActivity = await db.activity.create({
         amount: Number(amountPerUser),
         type: 'thunderstormtip_s',
@@ -202,6 +201,7 @@ export const discordThunderStorm = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      // eslint-disable-next-line no-await-in-loop
       tipActivity = await db.activity.findOne({
         where: {
           id: tipActivity.id,
@@ -209,19 +209,19 @@ export const discordThunderStorm = async (
         include: [
           {
             model: db.user,
-            as: 'earner'
+            as: 'earner',
           },
           {
             model: db.user,
-            as: 'spender'
+            as: 'spender',
           },
           {
             model: db.thunderstorm,
-            as: 'thunderstorm'
+            as: 'thunderstorm',
           },
           {
             model: db.thunderstormtip,
-            as: 'thunderstormtip'
+            as: 'thunderstormtip',
           },
         ],
         lock: t.LOCK.UPDATE,
@@ -239,14 +239,15 @@ export const discordThunderStorm = async (
     }
     await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, '⛈ Thunderstorm ⛈', 'thunderstormed')] });
 
-    logger.info(`Success ThunderStorm Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+    // logger.info(`Success ThunderStorm Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 
     t.afterCommit(() => {
       console.log('done');
     });
   }).catch((err) => {
     console.log(err);
-    message.channel.send('something went wrong');
+    logger.error(`thunderstorm error: ${err}`);
+    message.channel.send({ embeds: [discordErrorMessage("ThunderStorm")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,

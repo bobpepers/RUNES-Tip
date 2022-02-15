@@ -213,6 +213,20 @@ If you do not wish to be @mentioned, please issue this command again.`)
   return result;
 };
 
+export const discordErrorMessage = (title) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(title)
+    .setDescription(`Something went wrong.`)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
 export const discordDepositConfirmedMessage = (amount) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)

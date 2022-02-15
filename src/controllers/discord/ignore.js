@@ -4,8 +4,10 @@ import {
   ignoreMeMessage,
   unIngoreMeMessage,
   walletNotFoundMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 import db from '../../models';
+import logger from "../../helpers/logger";
 
 export const setIgnoreMe = async (message, io) => {
   const activity = [];
@@ -73,7 +75,8 @@ export const setIgnoreMe = async (message, io) => {
     });
   }).catch((err) => {
     console.log(err);
-    message.channel.send('something went wrong');
+    logger.error(`ignoreme error: ${err}`);
+    message.channel.send({ embeds: [discordErrorMessage("Ignore me")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,

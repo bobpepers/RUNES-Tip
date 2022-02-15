@@ -61,6 +61,7 @@ export const discordStats = async (message, filteredMessageDiscord, io, groupTas
   }
 
   if (filteredMessageDiscord[2]) {
+    // eslint-disable-next-line prefer-destructuring
     textTime = filteredMessageDiscord[2];
     cutLastTimeLetter = textTime.substring(textTime.length - 1, textTime.length).toLowerCase();
     cutNumberTime = textTime.substring(0, textTime.length - 1);
@@ -506,6 +507,7 @@ ${spendTips ? `Tips: ${spendTips}\n` : ''}${spendRains ? `Rains: ${spendRains}\n
   
 ${mergedObject[serverObj].earned ? '_Earned_\n' : ''}
 ${earnedTips ? `Tips: ${earnedTips}\n` : ''}${earnedRains ? `Rains: ${earnedRains}\n` : ''}${earnedFloods ? `Floods: ${earnedFloods}\n` : ''}${earnedSoaks ? `Soaks: ${earnedSoaks}\n` : ''}${earnedHurricanes ? `Hurricanes: ${earnedHurricanes}\n` : ''}${earnedThunders ? `Thunders: ${earnedThunders}\n` : ''}${earnedThunderstorms ? `Thunderstorms: ${earnedThunderstorms}\n` : ''}${earnedReactDrops ? `ReactDrops: ${earnedReactDrops}\n` : ''}`;
+    // eslint-disable-next-line no-await-in-loop
     await message.author.send({ embeds: [statsMessage(message, serverString)] });
   }
 

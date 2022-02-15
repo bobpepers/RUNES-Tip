@@ -7,6 +7,7 @@ import {
   NotInDirectMessage,
   notEnoughUsersToTip,
   tipFaucetSuccessMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { waterFaucet } from "../../helpers/discord/waterFaucet";
@@ -263,20 +264,20 @@ export const tipRunesToDiscordUser = async (
 
     // await message.channel.send({ embeds: [AfterThunderStormSuccess(message, amount, amountPerUser, listOfUsersRained)] });
 
-    logger.info(`Success Tip Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+    // logger.info(`Success Tip Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 
     t.afterCommit(() => {
       console.log('done');
     });
   }).catch((err) => {
     console.log(err);
-    message.channel.send('something went wrong');
+    logger.error(`tip error: ${err}`);
+    message.channel.send({ embeds: [discordErrorMessage("Tip")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,
   });
 };
-
 
 export const tipCoinsToDiscordFaucet = async (
   discordClient,
@@ -313,7 +314,7 @@ export const tipCoinsToDiscordFaucet = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
-    //console.lgo(discordClient);
+    // console.lgo(discordClient);
 
     const userExist = await db.user.findOne({
       where: {
@@ -484,7 +485,8 @@ export const tipCoinsToDiscordFaucet = async (
     });
   }).catch((err) => {
     console.log(err);
-    message.channel.send('something went wrong');
+    logger.error(`tip error: ${err}`);
+    message.channel.send({ embeds: [discordErrorMessage("Tip")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,

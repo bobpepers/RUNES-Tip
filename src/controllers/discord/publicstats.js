@@ -4,8 +4,10 @@ import {
   disablePublicStatsMessage,
   enablePublicStatsMeMessage,
   walletNotFoundMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 import db from '../../models';
+import logger from "../../helpers/logger";
 
 export const discordPublicStats = async (
   message,
@@ -82,7 +84,8 @@ export const discordPublicStats = async (
     });
   }).catch((err) => {
     console.log(err);
-    message.channel.send('something went wrong');
+    logger.error(`publicstats error: ${err}`);
+    message.channel.send({ embeds: [discordErrorMessage("PublicStats")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,

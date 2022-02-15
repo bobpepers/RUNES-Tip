@@ -6,6 +6,7 @@ import {
   walletNotFoundMessage,
   AfterSuccessMessage,
   NotInDirectMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { userWalletExist } from "../../helpers/discord/userWalletExist";
@@ -263,7 +264,7 @@ export const discordSleet = async (
       }
 
       await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, usersToRain, amountPerUser, 'Sleet', 'sleeted')] });
-      logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+      // logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
     }
 
     t.afterCommit(() => {
@@ -271,7 +272,8 @@ export const discordSleet = async (
     });
   }).catch((err) => {
     console.log(err);
-    message.channel.send("Something went wrong.");
+    logger.error(`sleet error: ${err}`);
+    message.channel.send({ embeds: [discordErrorMessage("Sleet")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,

@@ -6,6 +6,7 @@ import {
   invalidAddressMessage,
   reviewMessage,
   warnDirectMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 import getCoinSettings from '../../config/settings';
 import logger from "../../helpers/logger";
@@ -23,7 +24,7 @@ export const withdrawDiscordCreate = async (
   channelTask,
   setting,
 ) => {
-  logger.info(`Start Withdrawal Request: ${message.author.id}-${message.author.username}`);
+  // logger.info(`Start Withdrawal Request: ${message.author.id}-${message.author.username}`);
   let user;
   let activity;
   await db.sequelize.transaction({
@@ -177,6 +178,7 @@ export const withdrawDiscordCreate = async (
     });
   }).catch((err) => {
     console.log(err);
-    message.author.send("Something went wrong.");
+    logger.error(`withdraw error: ${err}`);
+    message.channel.send({ embeds: [discordErrorMessage("Withdraw")] });
   });
 };

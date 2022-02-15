@@ -4,6 +4,7 @@ import db from '../../models';
 import {
   AfterSuccessMessage,
   NotInDirectMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { mapMembers } from "../../helpers/discord/mapMembers";
@@ -246,13 +247,14 @@ export const discordVoiceRain = async (
 
     await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, 'Rain', 'rained')] });
 
-    logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+    // logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 
     t.afterCommit(() => {
       console.log('done');
     });
   }).catch((err) => {
-    message.channel.send('something went wrong');
+    logger.error(`voicerain error: ${err}`);
+    message.channel.send({ embeds: [discordErrorMessage("VoirceRain")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,

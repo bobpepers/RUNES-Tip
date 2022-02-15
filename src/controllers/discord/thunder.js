@@ -5,6 +5,7 @@ import db from '../../models';
 import {
   AfterThunderSuccess,
   NotInDirectMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 
 import logger from "../../helpers/logger";
@@ -220,14 +221,15 @@ export const discordThunder = async (
         // eslint-disable-next-line no-await-in-loop
         await message.channel.send({ embeds: [AfterThunderSuccess(message, amount, userThunder)] });
       }
-      logger.info(`Success Thunder Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+      // logger.info(`Success Thunder Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
     }
     t.afterCommit(() => {
       console.log('done');
     });
   }).catch((err) => {
     console.log(err);
-    message.channel.send('something went wrong');
+    logger.error(`thunder error: ${err}`);
+    message.channel.send({ embeds: [discordErrorMessage("Thunder")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,

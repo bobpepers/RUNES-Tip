@@ -2,6 +2,7 @@ import { Transaction } from "sequelize";
 import {
   warnDirectMessage,
   priceMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 import db from '../../models';
 import logger from "../../helpers/logger";
@@ -89,10 +90,12 @@ export const discordPrice = async (
     }
 
     t.afterCommit(() => {
-      logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
+      console.log('done price request');
+      // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
     });
   }).catch((err) => {
     logger.error(`Error Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
+    message.channel.send({ embeds: [discordErrorMessage("Price")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,

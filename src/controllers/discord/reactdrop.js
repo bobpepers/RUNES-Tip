@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable import/prefer-default-export */
 import { svg2png } from 'svg-png-converter';
 import _ from 'lodash';
@@ -22,6 +23,7 @@ import {
   maxTimeReactdropMessage,
   ReactDropReturnInitiatorMessage,
   NotInDirectMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 import db from '../../models';
 import emojiCompact from "../../config/emoji";
@@ -39,9 +41,11 @@ function shuffle(array) {
   while (currentIndex !== 0) {
     // Pick a remaining element...
     randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
+    // currentIndex--;
+    currentIndex -= 1;
 
     // And swap it with the current element.
+    // eslint-disable-next-line no-param-reassign
     [array[currentIndex], array[randomIndex]] = [
       array[randomIndex], array[currentIndex]];
   }
@@ -539,6 +543,7 @@ export const discordReactDrop = async (
     return;
   }
   let activity = [];
+  const useEmojis = [];
   let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -589,6 +594,7 @@ export const discordReactDrop = async (
     // Convert Message time to MS
     let textTime = '5m';
     if (filteredMessage[3]) {
+      // eslint-disable-next-line prefer-destructuring
       textTime = filteredMessage[3];
     }
     // const textTime = filteredMessage[3];
@@ -634,6 +640,7 @@ export const discordReactDrop = async (
         }
       });
       if (!filteredMessage[4]) {
+        // eslint-disable-next-line no-param-reassign
         filteredMessage[4] = _.sample(allEmojis);
       }
       console.log(filteredMessage[4]);
@@ -681,8 +688,8 @@ export const discordReactDrop = async (
         let distance = countDownDate - now;
 
         const randomAmount = Math.floor(Math.random() * 3) + 1;
-        const useEmojis = [];
-        for (let i = 0; i < randomAmount; i++) {
+
+        for (let i = 0; i < randomAmount; i += 1) {
           const randomX = Math.floor(Math.random() * allEmojis.length);
           useEmojis.push(allEmojis[randomX]);
         }
@@ -707,8 +714,8 @@ export const discordReactDrop = async (
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
-          console.log(distance);
-          console.log('distance');
+          // console.log(distance);
+          // console.log('distance');
           const sendReactDropMessage = await message.channel.send({ embeds: [reactDropMessage(distance, message.author.id, filteredMessage[4], amount)] });
           const group = await db.group.findOne({
             where: {
@@ -806,8 +813,12 @@ export const discordReactDrop = async (
     });
   }).catch((err) => {
     console.log(err);
-    message.channel.send("Something went wrong.");
+    console.log(useEmojis);
+    logger.error(`reactdrop error: ${err}
+Emojis used: ${useEmojis}`);
+    message.channel.send({ embeds: [discordErrorMessage("ReactDrop")] });
   });
+
   io.to('admin').emit('updateActivity', {
     activity,
   });

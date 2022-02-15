@@ -5,6 +5,7 @@ import db from '../../models';
 import {
   AfterSuccessMessage,
   NotInDirectMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/discord/validateAmount";
@@ -232,8 +233,8 @@ export const discordFlood = async (
     });
   }).catch((err) => {
     console.log(err);
-    message.channel.send('something went wrong');
     logger.error(`flood error: ${err}`);
+    message.channel.send({ embeds: [discordErrorMessage("Flood")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,

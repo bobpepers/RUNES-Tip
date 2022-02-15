@@ -1,4 +1,6 @@
 /* eslint-disable import/prefer-default-export */
+import _ from "lodash";
+import { Transaction } from "sequelize";
 import db from '../../models';
 import {
   hurricaneMaxUserAmountMessage,
@@ -6,15 +8,13 @@ import {
   hurricaneUserZeroAmountMessage,
   NotInDirectMessage,
   AfterSuccessMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { mapMembers } from "../../helpers/discord/mapMembers";
 import { userWalletExist } from "../../helpers/discord/userWalletExist";
 import { waterFaucet } from "../../helpers/discord/waterFaucet";
 
-import _ from "lodash";
-
-import { Transaction } from "sequelize";
 import logger from "../../helpers/logger";
 
 export const discordHurricane = async (
@@ -45,11 +45,9 @@ export const discordHurricane = async (
     return;
   }
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  const onlineMembers = members.filter((member) =>
-    member.presence?.status === "online"
-    || member.presence?.status === "idle"
-    || member.presence?.status === "dnd"
-  );
+  const onlineMembers = members.filter((member) => (member.presence && member.presence.status === "online")
+    || (member.presence && member.presence.status === "idle")
+    || (member.presence && member.presence.status === "dnd"));
 
   const activity = [];
   let userActivity;
@@ -120,7 +118,7 @@ export const discordHurricane = async (
     const faucetWatered = await waterFaucet(
       t,
       Number(fee),
-      faucetSetting
+      faucetSetting,
     );
     const hurricaneRecord = await db.hurricane.create({
       amount,
@@ -150,11 +148,11 @@ export const discordHurricane = async (
       include: [
         {
           model: db.hurricane,
-          as: 'hurricane'
+          as: 'hurricane',
         },
         {
           model: db.user,
-          as: 'spender'
+          as: 'spender',
         },
       ],
       lock: t.LOCK.UPDATE,
@@ -187,9 +185,10 @@ export const discordHurricane = async (
         listOfUsersRained.push(`${hurricaneee.username}`);
       } else {
         const userIdReceivedRain = hurricaneee.user_id.replace('discord-', '');
-        listOfUsersRained.push(`<@${userIdReceivedRain}>`);;
+        listOfUsersRained.push(`<@${userIdReceivedRain}>`);
       }
       let tipActivity;
+      // eslint-disable-next-line no-await-in-loop
       tipActivity = await db.activity.create({
         amount: Number(amountPerUser),
         type: 'hurricanetip_s',
@@ -203,6 +202,7 @@ export const discordHurricane = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      // eslint-disable-next-line no-await-in-loop
       tipActivity = await db.activity.findOne({
         where: {
           id: tipActivity.id,
@@ -210,19 +210,19 @@ export const discordHurricane = async (
         include: [
           {
             model: db.user,
-            as: 'earner'
+            as: 'earner',
           },
           {
             model: db.user,
-            as: 'spender'
+            as: 'spender',
           },
           {
             model: db.hurricane,
-            as: 'hurricane'
+            as: 'hurricane',
           },
           {
             model: db.hurricanetip,
-            as: 'hurricanetip'
+            as: 'hurricanetip',
           },
         ],
         lock: t.LOCK.UPDATE,
@@ -240,16 +240,15 @@ export const discordHurricane = async (
     }
     await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, '⛈ Hurricane ⛈', 'hurricaned')] });
 
-    //await message.channel.send({ embeds: [AfterHurricaneSuccess(message, amount, amountPerUser, listOfUsersRained)] });
-
-    logger.info(`Success Hurricane Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+    // logger.info(`Success Hurricane Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 
     t.afterCommit(() => {
       console.log('done');
     });
   }).catch((err) => {
     console.log(err);
-    message.channel.send('something went wrong');
+    logger.error(`hurricane error: ${err}`);
+    message.channel.send({ embeds: [discordErrorMessage("Hurricane")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,

@@ -4,10 +4,12 @@ import {
   dryFaucetMessage,
   claimTooFactFaucetMessage,
   faucetClaimedMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 import db from '../../models';
 import getCoinSettings from '../../config/settings';
 import { userWalletExist } from "../../helpers/discord/userWalletExist";
+import logger from "../../helpers/logger";
 
 const settings = getCoinSettings();
 
@@ -145,7 +147,8 @@ export const discordFaucetClaim = async (
     await message.channel.send({ embeds: [faucetClaimedMessage(message, username, amountToTip)] });
   }).catch((err) => {
     console.log(err);
-    message.channel.send('something went wrong');
+    logger.error(`faucet error: ${err}`);
+    message.channel.send({ embeds: [discordErrorMessage("Faucet")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,

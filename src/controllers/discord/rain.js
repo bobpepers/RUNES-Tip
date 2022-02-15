@@ -4,6 +4,7 @@ import db from '../../models';
 import {
   AfterSuccessMessage,
   NotInDirectMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 
 import logger from "../../helpers/logger";
@@ -180,6 +181,7 @@ export const discordRain = async (
       }
 
       let tipActivity;
+      // eslint-disable-next-line no-await-in-loop
       tipActivity = await db.activity.create({
         amount: Number(amountPerUser),
         type: 'raintip_s',
@@ -193,6 +195,7 @@ export const discordRain = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      // eslint-disable-next-line no-await-in-loop
       tipActivity = await db.activity.findOne({
         where: {
           id: tipActivity.id,
@@ -231,14 +234,15 @@ export const discordRain = async (
     }
 
     await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, 'Rain', 'rained')] });
-    logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+    // logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 
     t.afterCommit(() => {
       console.log('done');
     });
   }).catch((err) => {
     console.log(err);
-    message.channel.send('something went wrong');
+    logger.error(`rain error: ${err}`);
+    message.channel.send({ embeds: [discordErrorMessage("Rain")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,

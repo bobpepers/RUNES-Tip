@@ -2,6 +2,7 @@ import { Transaction } from "sequelize";
 import {
   warnDirectMessage,
   balanceMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 import db from '../../models';
 import logger from "../../helpers/logger";
@@ -83,10 +84,12 @@ export const fetchDiscordWalletBalance = async (
     }
 
     t.afterCommit(() => {
-      logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
+      // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
+      console.log('done balance request');
     });
   }).catch((err) => {
     logger.error(`Error Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
+    message.channel.send({ embeds: [discordErrorMessage("Balance")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,
