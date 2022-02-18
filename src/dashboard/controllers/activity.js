@@ -24,7 +24,7 @@ export const fetchActivity = async (req, res, next) => {
           },
         },
         {
-          userId: {
+          id: {
             [Op.like]: `%${req.body.spender}%`,
           },
         },
@@ -40,14 +40,14 @@ export const fetchActivity = async (req, res, next) => {
           },
         },
         {
-          userId: {
+          id: {
             [Op.like]: `%${req.body.earner}%`,
           },
         },
       ],
     };
   }
-
+  console.log(earnerOptions);
   const options = {
     where: activityOptions,
     order: [

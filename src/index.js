@@ -42,11 +42,7 @@ const settings = getCoinSettings();
 const queue = new PQueue({
   concurrency: 1,
   timeout: 1000000000,
-  // intervalCap: 1,
-  // interval: 500,
 });
-
-// const telegrafGetChatMembers = require('telegraf-getchatmembers');
 
 const socketIo = require("socket.io");
 const redis = require('redis');

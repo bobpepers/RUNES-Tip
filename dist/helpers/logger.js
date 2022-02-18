@@ -1,10 +1,9 @@
 "use strict";
 
-var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-
-var _winston = _interopRequireDefault(require("winston"));
-
 // var appRoot = require('app-root-path');
+// import winston from "winston";
+var winston = require('winston');
+
 var options = {
   file: {
     level: 'info',
@@ -36,8 +35,8 @@ var options = {
   }
 }; // your centralized logger object
 
-module.exports = _winston["default"].createLogger({
-  transports: [new _winston["default"].transports.Console(options.console), new _winston["default"].transports.File(options.errorFile), new _winston["default"].transports.File(options.file)],
+module.exports = winston.createLogger({
+  transports: [new winston.transports.Console(options.console), new winston.transports.File(options.errorFile), new winston.transports.File(options.file)],
   exitOnError: false // do not exit on handled exceptions
 
 }); // logger.info('and over your neighbors dog?');

@@ -62,7 +62,6 @@ export const discordFlood = async (
       onlineMembers,
       setting,
     );
-
     const [
       activityValiateAmount,
       amount,

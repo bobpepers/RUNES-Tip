@@ -71,10 +71,8 @@ _dotenv["default"].config();
 var settings = (0, _settings["default"])();
 var queue = new _pQueue["default"]({
   concurrency: 1,
-  timeout: 1000000000 // intervalCap: 1,
-  // interval: 500,
-
-}); // const telegrafGetChatMembers = require('telegraf-getchatmembers');
+  timeout: 1000000000
+});
 
 var socketIo = require("socket.io");
 

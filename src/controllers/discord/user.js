@@ -6,95 +6,99 @@ import getCoinSettings from '../../config/settings';
 
 const settings = getCoinSettings();
 
-export const createUpdateDiscordUser = async (message) => {
-  await db.sequelize.transaction({
-    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-  }, async (t) => {
-    let user = await db.user.findOne(
-      {
-        where: {
-          user_id: `discord-${message.author.id}`,
-        },
-        transaction: t,
-        lock: t.LOCK.UPDATE,
-      },
-    );
-    if (!user) {
-      user = await db.user.create({
-        user_id: `discord-${message.author.id}`,
-        username: `${message.author.username}#${message.author.discriminator}`,
-        firstname: '',
-        lastname: '',
-      }, {
-        transaction: t,
-        lock: t.LOCK.UPDATE,
-      });
-    }
-    if (user) {
-      if (user.username !== `${message.author.username}#${message.author.discriminator}`) {
-        user = await user.update(
-          {
-            username: `${message.author.username}#${message.author.discriminator}`,
+export const createUpdateDiscordUser = async (
+  message,
+  queue,
+) => {
+  await queue.add(async () => {
+    await db.sequelize.transaction({
+      isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+    }, async (t) => {
+      let user = await db.user.findOne(
+        {
+          where: {
+            user_id: `discord-${message.author.id}`,
           },
+          transaction: t,
+          lock: t.LOCK.UPDATE,
+        },
+      );
+      if (!user) {
+        user = await db.user.create({
+          user_id: `discord-${message.author.id}`,
+          username: `${message.author.username}#${message.author.discriminator}`,
+          firstname: '',
+          lastname: '',
+        }, {
+          transaction: t,
+          lock: t.LOCK.UPDATE,
+        });
+      }
+      if (user) {
+        if (user.username !== `${message.author.username}#${message.author.discriminator}`) {
+          user = await user.update(
+            {
+              username: `${message.author.username}#${message.author.discriminator}`,
+            },
+            {
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            },
+          );
+        }
+        let wallet = await db.wallet.findOne(
           {
+            where: {
+              userId: user.id,
+            },
             transaction: t,
             lock: t.LOCK.UPDATE,
           },
         );
-      }
-      let wallet = await db.wallet.findOne(
-        {
-          where: {
+        if (!wallet) {
+          wallet = await db.wallet.create({
             userId: user.id,
+            available: 0,
+            locked: 0,
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+        }
+        let address = await db.address.findOne(
+          {
+            where: {
+              walletId: wallet.id,
+            },
+            transaction: t,
+            lock: t.LOCK.UPDATE,
           },
-          transaction: t,
-          lock: t.LOCK.UPDATE,
-        },
-      );
-      if (!wallet) {
-        wallet = await db.wallet.create({
-          userId: user.id,
-          available: 0,
-          locked: 0,
-        }, {
-          transaction: t,
-          lock: t.LOCK.UPDATE,
-        });
-      }
-      let address = await db.address.findOne(
-        {
-          where: {
+        );
+        if (!address) {
+          const newAddress = await getInstance().getNewAddress();
+          address = await db.address.create({
+            address: newAddress,
             walletId: wallet.id,
-          },
-          transaction: t,
-          lock: t.LOCK.UPDATE,
-        },
-      );
-      if (!address) {
-        const newAddress = await getInstance().getNewAddress();
-        address = await db.address.create({
-          address: newAddress,
-          walletId: wallet.id,
-          type: 'deposit',
-          confirmed: true,
-        }, {
-          transaction: t,
-          lock: t.LOCK.UPDATE,
-        });
-        message.author.send(`Welcome ${message.author.username}, we created a wallet for you.
+            type: 'deposit',
+            confirmed: true,
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          message.author.send(`Welcome ${message.author.username}, we created a wallet for you.
 Type "${settings.bot.command.discord} help" for usage info`);
-        // ctx.reply(``);
+        }
       }
-    }
 
-    t.afterCommit(() => {
-      console.log('done');
-      // ctx.reply(`done`);
+      t.afterCommit(() => {
+        console.log('done');
+        // ctx.reply(`done`);
+      });
+    }).catch((err) => {
+      console.log(err.message);
     });
-  }).catch((err) => {
-    console.log(err.message);
+    return true;
   });
-  return true;
 };
 
 export const updateDiscordLastSeen = async (client, message) => {

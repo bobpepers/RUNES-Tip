@@ -132,19 +132,19 @@ export const discordRouter = (
   });
 
   discordClient.on("messageCreate", async (message) => {
+    // await queue.add(async () => {
     let groupTask;
     let groupTaskId;
     let channelTask;
     let channelTaskId;
     let lastSeenDiscordTask;
     let faucetSetting;
-
     if (!message.author.bot) {
       const maintenance = await isMaintenanceOrDisabled(message, 'discord');
-      await queue.add(() => maintenance);
+      // await queue.add(() => maintenance);
       if (maintenance.maintenance || !maintenance.enabled) return;
-      const walletExists = await createUpdateDiscordUser(message);
-      await queue.add(() => walletExists);
+      const walletExists = await createUpdateDiscordUser(message, queue);
+      // await queue.add(() => walletExists);
       groupTask = await updateDiscordGroup(discordClient, message);
       await queue.add(() => groupTask);
       groupTaskId = groupTask && groupTask.id;
@@ -157,10 +157,8 @@ export const discordRouter = (
         groupTaskId,
         channelTaskId,
       );
-      await queue.add(() => faucetSetting);
       if (!faucetSetting) return;
     }
-
     if (!message.content.startsWith(settings.bot.command.discord) || message.author.bot) return;
     if (message.content.startsWith(settings.bot.command.discord)) {
       if (groupTask && groupTask.banned) {
@@ -176,87 +174,86 @@ export const discordRouter = (
         return;
       }
     }
-
     const preFilteredMessageDiscord = message.content.split(' ');
     const filteredMessageDiscord = preFilteredMessageDiscord.filter((el) => el !== '');
-
     if (filteredMessageDiscord[1] === undefined) {
       const limited = await limitHelp(message);
-      await queue.add(() => limited);
       if (limited) return;
-      const task = await discordHelp(message, io);
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const task = await discordHelp(message, io);
+      });
     }
 
     if (filteredMessageDiscord[1].toLowerCase() === 'help') {
       const limited = await limitHelp(message);
-      await queue.add(() => limited);
       if (limited) return;
-      const task = await discordHelp(message, io);
-      await queue.add(() => task);
-    }
-    if (filteredMessageDiscord[1].toLowerCase() === 'fees') {
-      const limited = await limitHelp(message);
-      await queue.add(() => limited);
-      if (limited) return;
-      const task = await fetchFeeSchedule(message, io, groupTaskId, channelTaskId);
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const task = await discordHelp(message, io);
+      });
     }
 
+    if (filteredMessageDiscord[1].toLowerCase() === 'fees') {
+      const limited = await limitHelp(message);
+      if (limited) return;
+      await queue.add(async () => {
+        const task = await fetchFeeSchedule(message, io, groupTaskId, channelTaskId);
+      });
+    }
     if (filteredMessageDiscord[1].toLowerCase() === 'stats') {
       const limited = await limitStats(message);
-      await queue.add(() => limited);
       if (limited) return;
-      const task = await discordStats(
-        message,
-        filteredMessageDiscord,
-        io,
-        groupTask,
-        channelTask,
-      );
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const task = await discordStats(
+          message,
+          filteredMessageDiscord,
+          io,
+          groupTask,
+          channelTask,
+        );
+      });
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'leaderboard') {
       const limited = await limitLeaderboard(message);
-      await queue.add(() => limited);
       if (limited) return;
-      const task = await discordLeaderboard(message, io);
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const task = await discordLeaderboard(message, io);
+      });
     }
+
     if (filteredMessageDiscord[1].toLowerCase() === 'publicstats') {
       const limited = await limitPublicStats(message);
-      await queue.add(() => limited);
       if (limited) return;
-      const task = await discordPublicStats(message, io);
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const task = await discordPublicStats(message, io);
+      });
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'info') {
       const limited = await limitInfo(message);
-      await queue.add(() => limited);
       if (limited) return;
-      const task = await discordCoinInfo(message, io);
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const task = await discordCoinInfo(message, io);
+      });
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'ignoreme') {
       const limited = await limitIgnoreMe(message);
-      await queue.add(() => limited);
       if (limited) return;
-      const task = await setIgnoreMe(message, io);
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const task = await setIgnoreMe(message, io);
+      });
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'balance') {
       const limited = await limitBalance(message);
-      await queue.add(() => limited);
       if (limited) return;
-      const task = await fetchDiscordWalletBalance(message, io);
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const task = await fetchDiscordWalletBalance(message, io);
+      });
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'price') {
       const limited = await limitPrice(message);
-      await queue.add(() => limited);
       if (limited) return;
-      const task = await discordPrice(message, io);
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const task = await discordPrice(message, io);
+      });
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'faucet') {
       const setting = await discordSettings(
@@ -265,27 +262,25 @@ export const discordRouter = (
         groupTaskId,
         channelTaskId,
       );
-      await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitFaucet(message);
-      await queue.add(() => limited);
       if (limited) return;
-
-      const task = await discordFaucetClaim(
-        message,
-        filteredMessageDiscord,
-        io,
-      );
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const task = await discordFaucetClaim(
+          message,
+          filteredMessageDiscord,
+          io,
+        );
+      });
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'deposit') {
       const limited = await limitDeposit(message);
-      await queue.add(() => limited);
       if (limited) return;
-      const task = await fetchDiscordWalletDepositAddress(message, io);
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const task = await fetchDiscordWalletDepositAddress(message, io);
+      });
+      // await queue.add(() => task);
     }
-
     if (filteredMessageDiscord[1].toLowerCase() === 'withdraw') {
       const setting = await discordSettings(
         message,
@@ -293,10 +288,8 @@ export const discordRouter = (
         groupTaskId,
         channelTaskId,
       );
-      await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitWithdraw(message);
-      await queue.add(() => limited);
       if (limited) return;
 
       await executeTipFunction(
@@ -324,10 +317,8 @@ export const discordRouter = (
         groupTaskId,
         channelTaskId,
       );
-      await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitTip(message);
-      await queue.add(() => limited);
       if (limited) return;
 
       if (
@@ -374,10 +365,8 @@ export const discordRouter = (
 
     if (filteredMessageDiscord[1].toLowerCase() === 'voicerain') {
       const setting = await discordSettings(message, 'voicerain', groupTaskId, channelTaskId);
-      await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitRain(message);
-      await queue.add(() => limited);
       if (limited) return;
 
       await executeTipFunction(
@@ -397,10 +386,8 @@ export const discordRouter = (
 
     if (filteredMessageDiscord[1].toLowerCase() === 'rain') {
       const setting = await discordSettings(message, 'rain', groupTaskId, channelTaskId);
-      await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitRain(message);
-      await queue.add(() => limited);
       if (limited) return;
 
       await executeTipFunction(
@@ -420,10 +407,8 @@ export const discordRouter = (
 
     if (filteredMessageDiscord[1].toLowerCase() === 'flood') {
       const setting = await discordSettings(message, 'flood', groupTaskId, channelTaskId);
-      await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitFlood(message);
-      await queue.add(() => limited);
       if (limited) return;
 
       await executeTipFunction(
@@ -443,10 +428,8 @@ export const discordRouter = (
 
     if (filteredMessageDiscord[1].toLowerCase() === 'thunder') {
       const setting = await discordSettings(message, 'thunder', groupTaskId, channelTaskId);
-      await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitThunder(message);
-      await queue.add(() => limited);
       if (limited) return;
 
       await executeTipFunction(
@@ -466,10 +449,8 @@ export const discordRouter = (
 
     if (filteredMessageDiscord[1].toLowerCase() === 'thunderstorm') {
       const setting = await discordSettings(message, 'thunderstorm', groupTaskId, channelTaskId);
-      await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitThunderStorm(message);
-      await queue.add(() => limited);
       if (limited) return;
 
       await executeTipFunction(
@@ -489,10 +470,8 @@ export const discordRouter = (
 
     if (filteredMessageDiscord[1].toLowerCase() === 'hurricane') {
       const setting = await discordSettings(message, 'hurricane', groupTaskId, channelTaskId);
-      await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitHurricane(message);
-      await queue.add(() => limited);
       if (limited) return;
 
       await executeTipFunction(
@@ -512,10 +491,8 @@ export const discordRouter = (
 
     if (filteredMessageDiscord[1].toLowerCase() === 'soak') {
       const setting = await discordSettings(message, 'soak', groupTaskId, channelTaskId);
-      await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitSoak(message);
-      await queue.add(() => limited);
       if (limited) return;
 
       await executeTipFunction(
@@ -535,10 +512,8 @@ export const discordRouter = (
 
     if (filteredMessageDiscord[1].toLowerCase() === 'sleet') {
       const setting = await discordSettings(message, 'sleet', groupTaskId, channelTaskId);
-      await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitSleet(message);
-      await queue.add(() => limited);
       if (limited) return;
 
       await executeTipFunction(
@@ -555,13 +530,10 @@ export const discordRouter = (
         faucetSetting,
       );
     }
-
     if (filteredMessageDiscord[1].toLowerCase() === 'reactdrop') {
       const setting = await discordSettings(message, 'reactdrop', groupTaskId, channelTaskId);
-      await queue.add(() => setting);
       if (!setting) return;
       const limited = await limitReactDrop(message);
-      await queue.add(() => limited);
       if (limited) return;
 
       await executeTipFunction(
@@ -578,5 +550,6 @@ export const discordRouter = (
         faucetSetting,
       );
     }
+    // });
   });
 };

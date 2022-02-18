@@ -401,12 +401,8 @@ var listenReactDrop = /*#__PURE__*/function () {
 
                                   case 2:
                                     collectReactdrop = _context2.sent;
-                                    _context2.next = 5;
-                                    return queue.add(function () {
-                                      return collectReactdrop;
-                                    });
 
-                                  case 5:
+                                  case 3:
                                   case "end":
                                     return _context2.stop();
                                 }

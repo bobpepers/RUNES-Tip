@@ -273,7 +273,7 @@ Solution: **${findReactTip.solution}**`,
             }).catch((err) => {
               console.log('failed');
             });
-            await queue.add(() => collectReactdrop);
+            // await queue.add(() => collectReactdrop);
           });
 
           await Ccollector.on('end', async (collected) => {

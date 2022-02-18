@@ -1,5 +1,5 @@
-import BigNumber from "bignumber.js";
-import db from '../../models';
+// import BigNumber from "bignumber.js";
+// import db from '../../models';
 import {
   confirmAllAmoutMessageDiscord,
   timeOutAllAmoutMessageDiscord,
@@ -50,18 +50,19 @@ export const executeTipFunction = async (
           collectedMessage.content.toUpperCase() === 'YES'
           || collectedMessage.content.toUpperCase() === 'Y'
         ) {
-          const task = await tipFunction(
-            discordClient,
-            message,
-            filteredMessageDiscord,
-            io,
-            groupTask,
-            channelTask,
-            setting,
-            faucetSetting,
-            queue,
-          );
-          await queue.add(() => task);
+          await queue.add(async () => {
+            const task = await tipFunction(
+              discordClient,
+              message,
+              filteredMessageDiscord,
+              io,
+              groupTask,
+              channelTask,
+              setting,
+              faucetSetting,
+              queue,
+            );
+          });
         } else if (
           collectedMessage.content.toUpperCase() === 'NO'
           || collectedMessage.content.toUpperCase() === 'N'
@@ -73,17 +74,18 @@ export const executeTipFunction = async (
       });
     });
   } else {
-    const task = await tipFunction(
-      discordClient,
-      message,
-      filteredMessageDiscord,
-      io,
-      groupTask,
-      channelTask,
-      setting,
-      faucetSetting,
-      queue,
-    );
-    await queue.add(() => task);
+    await queue.add(async () => {
+      const task = await tipFunction(
+        discordClient,
+        message,
+        filteredMessageDiscord,
+        io,
+        groupTask,
+        channelTask,
+        setting,
+        faucetSetting,
+        queue,
+      );
+    });
   }
 };

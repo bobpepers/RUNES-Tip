@@ -43,7 +43,7 @@ var fetchActivity = /*#__PURE__*/function () {
               spenderOptions = (0, _defineProperty2["default"])({}, Op.or, [{
                 username: (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.spender, "%"))
               }, {
-                userId: (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.spender, "%"))
+                id: (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.spender, "%"))
               }]);
             }
 
@@ -51,10 +51,11 @@ var fetchActivity = /*#__PURE__*/function () {
               earnerOptions = (0, _defineProperty2["default"])({}, Op.or, [{
                 username: (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.earner, "%"))
               }, {
-                userId: (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.earner, "%"))
+                id: (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.earner, "%"))
               }]);
             }
 
+            console.log(earnerOptions);
             options = {
               where: activityOptions,
               order: [['id', 'DESC']],
@@ -127,14 +128,14 @@ var fetchActivity = /*#__PURE__*/function () {
                 required: false
               }]
             };
-            _context.next = 11;
+            _context.next = 12;
             return _models["default"].activity.findAll(options);
 
-          case 11:
+          case 12:
             res.locals.activity = _context.sent;
             next();
 
-          case 13:
+          case 14:
           case "end":
             return _context.stop();
         }
