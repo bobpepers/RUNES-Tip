@@ -155,6 +155,9 @@ export const discordSleet = async (
           {
             user_id: { [Op.not]: `discord-${message.author.id}` },
           },
+          {
+            banned: false,
+          },
         ],
       },
       include: [

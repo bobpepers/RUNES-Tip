@@ -9,7 +9,7 @@ const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
 export const discordUserBannedMessage = (user) => {
   const result = new MessageEmbed()
     .setColor("#C70039")
-    .setTitle('🚫     User Banned     🚫')
+    .setTitle(`🚫     User: ${user.username} Banned     🚫`)
     .setDescription(`Reason:
 ${user.banMessage}`)
     .setTimestamp()
@@ -990,9 +990,9 @@ example: \`${settings.bot.command.discord} soak 3.00\`
 Floods the desired amount onto all users (including offline users) (optionally, within specified role)
 example: \`${settings.bot.command.discord} flood 5.00\`, \`${settings.bot.command.discord} flood 5.00 @supporters\`
 
-\`${settings.bot.command.discord} sleet <amount|all> [<@role>]\`
+\`${settings.bot.command.discord} sleet <amount|all> [<time>] [<@role>]\`
 Makes a sleet storm with the desired amount onto all users that have been active in the channel in the last 15 minutes (optionally, within specified role
-example: \`${settings.bot.command.discord} sleet 5.00\`, \`${settings.bot.command.discord} sleet 5.00 @supporters\`
+example: \`${settings.bot.command.discord} sleet 5.00\`, \`${settings.bot.command.discord} sleet 5.00 @supporters\`, \`${settings.bot.command.discord} sleet 5.00 10m @supporters\`
 
 \`${settings.bot.command.discord} voicerain <amount|all> <@voiceChannel> [<@role>]\`
 Rains the desired amount onto all listening users in the mentioned voice channel.
