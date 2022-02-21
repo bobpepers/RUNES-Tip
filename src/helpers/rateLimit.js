@@ -91,6 +91,29 @@ const rateLimiterThunderstorm = new RateLimiterFlexible.default.RateLimiterMemor
   points: 180,
   duration: 120,
 });
+
+const rateLimiterTrivia = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+
+export const limitTrivia = async (message) => {
+  try {
+    const limited = await rateLimiterTrivia.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Trivia')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+
 export const limitThunder = async (message) => {
   try {
     const limited = await rateLimiterThunder.consume(message.author.id, 1);

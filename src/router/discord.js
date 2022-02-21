@@ -63,8 +63,10 @@ import {
   limitThunder,
   limitThunderStorm,
   limitPrice,
+  limitTrivia,
 } from '../helpers/rateLimit';
 
+import { discordTrivia } from '../controllers/discord/trivia';
 import { discordReactDrop } from '../controllers/discord/reactdrop';
 import db from '../models';
 import {
@@ -538,6 +540,27 @@ export const discordRouter = (
 
       await executeTipFunction(
         discordReactDrop,
+        queue,
+        filteredMessageDiscord[2],
+        discordClient,
+        message,
+        filteredMessageDiscord,
+        io,
+        groupTask,
+        channelTask,
+        setting,
+        faucetSetting,
+      );
+    }
+
+    if (filteredMessageDiscord[1].toLowerCase() === 'trivia') {
+      const setting = await discordSettings(message, 'trivia', groupTaskId, channelTaskId);
+      if (!setting) return;
+      const limited = await limitTrivia(message);
+      if (limited) return;
+
+      await executeTipFunction(
+        discordTrivia,
         queue,
         filteredMessageDiscord[2],
         discordClient,

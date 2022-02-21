@@ -50,12 +50,20 @@ import {
 import { verifyMyCaptcha } from './controllers/recaptcha';
 
 import {
+  insertTrivia,
+  removeTriviaQuestion,
+  fetchTriviaQuestions,
+} from './controllers/trivia';
+
+import {
   fetchDashboardUsers,
 } from './controllers/dashboardUsers';
+
 import {
   fetchDeposits,
   patchDeposits,
 } from './controllers/deposits';
+
 import {
   fetchChannels,
   banChannel,
@@ -378,6 +386,84 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
       if (res.locals.channels) {
         res.json({
           channels: res.locals.channels,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.get(
+    '/api/triviaquestions',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    fetchTriviaQuestions,
+    (req, res) => {
+      if (res.locals.error) {
+        console.log('found error');
+        console.log(res.locals.error);
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      } else if (res.locals.trivia) {
+        res.json({
+          trivia: res.locals.trivia,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/trivia/remove',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    removeTriviaQuestion,
+    (req, res) => {
+      if (res.locals.error) {
+        console.log('found error');
+        console.log(res.locals.error);
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      } else if (res.locals.trivia) {
+        res.json({
+          trivia: res.locals.trivia,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/trivia/insert',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    insertTrivia,
+    (req, res) => {
+      if (res.locals.error) {
+        console.log('found error');
+        console.log(res.locals.error);
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      } else if (res.locals.trivia) {
+        res.json({
+          trivia: res.locals.trivia,
         });
       } else {
         res.status(401).send({

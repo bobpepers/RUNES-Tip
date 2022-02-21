@@ -49,7 +49,7 @@
   "dependencies": {
     "algebraic-captcha": "^1.0.1",
     "arrrweb3": "github:The-ARRRmy/ARRRweb3.js#0.1.0",
-    "axios": "^0.25.0",
+    "axios": "^0.26.0",
     "bcrypt-nodejs": "^0.0.3",
     "bignumber.js": "^9.0.2",
     "bluebird": "^3.7.2",

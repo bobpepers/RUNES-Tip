@@ -98,6 +98,32 @@ export const coinInfoMessage = (blockHeight, priceInfo) => {
   return result;
 };
 
+export const triviaMessage = (distance, author, emoji, amount) => {
+  // Time calculations for days, hours, minutes and seconds
+  const days = Math.floor((distance % (1000 * 60 * 60 * 24 * 60)) / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  const ended = days < 1 && hours < 1 && minutes < 1 && seconds < 1;
+
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Trivia')
+    .setDescription(`:tada: <@${author}> has started a trivia question! :tada:
+
+:information_source: Click the correct answer for a chance to win a share in ${amount / 1e8} ${settings.coin.ticker}!
+
+${!ended ? `:clock9: Time remaining ${days > 0 ? `${days} days` : ''}  ${hours > 0 ? `${hours} hours` : ''} ${minutes > 0 ? `${minutes} minutes` : ''} ${seconds > 0 ? `${seconds} seconds` : ''}` : `Ended`}
+`)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
 export const reactDropMessage = (distance, author, emoji, amount) => {
   // Time calculations for days, hours, minutes and seconds
   const days = Math.floor((distance % (1000 * 60 * 60 * 24 * 60)) / (1000 * 60 * 60 * 24));
@@ -160,6 +186,20 @@ export const minimumTimeReactDropMessage = (message) => {
     .setColor(settings.bot.color)
     .setTitle('Reactdrop')
     .setDescription(`Minimum time for reactdrop is 60 seconds (60s)`)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
+export const maxTimeTriviaMessage = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Trivia')
+    .setDescription(`Maximum time is 2 days`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
@@ -731,11 +771,39 @@ export const reviewMessage = (message) => {
   return result;
 };
 
+export const invalidPeopleAmountMessage = (message, title) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(title)
+    .setDescription(`<@${message.author.id}>, Invalid amount of people to win ${title}`)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
 export const invalidTimeMessage = (message, title) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, Invalid time`)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
+export const noTriviaQuestionFoundMessage = (message, title) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(title)
+    .setDescription(`<@${message.author.id}>, No trivia question found`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,

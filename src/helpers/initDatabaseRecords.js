@@ -7,13 +7,13 @@ export const initDatabaseRecords = async (
   // Create Bot user for tagging
   const discordBotUser = await db.user.findOne({
     where: {
-      user_id: `discord-${discordClient.user.id}`
-    }
+      user_id: `discord-${discordClient.user.id}`,
+    },
   });
   if (!discordBotUser) {
     await db.user.create({
       username: discordClient.user.username,
-      user_id: `discord-${discordClient.user.id}`
+      user_id: `discord-${discordClient.user.id}`,
     });
   }
   // Discord bot setting
@@ -65,6 +65,20 @@ export const initDatabaseRecords = async (
   }
 
   // Init Features settings
+  // Flood
+  const triviaSetting = await db.features.findOne({
+    where: {
+      type: 'global',
+      name: 'trivia',
+    },
+  });
+  if (!triviaSetting) {
+    await db.features.create({
+      type: 'global',
+      name: 'trivia',
+      enabled: true,
+    });
+  }
   // Flood
   const floodSetting = await db.features.findOne({
     where: {
