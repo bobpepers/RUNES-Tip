@@ -50,6 +50,7 @@ module.exports = (sequelize, DataTypes) => {
     GroupModel.hasMany(model.thunder);
     GroupModel.hasMany(model.thunderstorm);
     GroupModel.hasMany(model.hurricane);
+    GroupModel.hasMany(model.trivia);
 
     // receive
     GroupModel.hasMany(model.reactdroptip);
@@ -61,6 +62,7 @@ module.exports = (sequelize, DataTypes) => {
     GroupModel.hasMany(model.thunderstormtip);
     GroupModel.hasMany(model.hurricanetip);
     GroupModel.hasMany(model.features);
+    GroupModel.hasMany(model.triviatip);
   };
 
   return GroupModel;

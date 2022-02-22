@@ -98,7 +98,7 @@ export const coinInfoMessage = (blockHeight, priceInfo) => {
   return result;
 };
 
-export const triviaMessage = (distance, author, emoji, amount) => {
+export const triviaMessageDiscord = (distance, author, question, answers, amount, totalPeople) => {
   // Time calculations for days, hours, minutes and seconds
   const days = Math.floor((distance % (1000 * 60 * 60 * 24 * 60)) / (1000 * 60 * 60 * 24));
   const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -106,12 +106,17 @@ export const triviaMessage = (distance, author, emoji, amount) => {
   const seconds = Math.floor((distance % (1000 * 60)) / 1000);
   const ended = days < 1 && hours < 1 && minutes < 1 && seconds < 1;
 
+  console.log(totalPeople);
+  console.log('totalPeople');
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Trivia')
-    .setDescription(`:tada: <@${author}> has started a trivia question! :tada:
+    .setDescription(`:tada: <@${author}> has started a trivia question for ${totalPeople} ${Number(totalPeople) === 1 ? 'person' : 'people'}! :tada:
 
 :information_source: Click the correct answer for a chance to win a share in ${amount / 1e8} ${settings.coin.ticker}!
+
+Question: ${question}
+${answers}
 
 ${!ended ? `:clock9: Time remaining ${days > 0 ? `${days} days` : ''}  ${hours > 0 ? `${hours} hours` : ''} ${minutes > 0 ? `${minutes} minutes` : ''} ${seconds > 0 ? `${seconds} seconds` : ''}` : `Ended`}
 `)

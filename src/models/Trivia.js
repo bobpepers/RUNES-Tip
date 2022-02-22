@@ -41,8 +41,16 @@ module.exports = (sequelize, DataTypes) => {
 
   TriviaModel.associate = (model) => {
     TriviaModel.belongsTo(model.user);
-    TriviaModel.hasMany(model.triviatip);
-    TriviaModel.hasMany(model.activity, { as: 'trivia' });
+    TriviaModel.hasMany(model.triviatip, {
+      // as: 'trivia',
+      foreignKey: 'triviaId',
+      targetKey: 'triviaId',
+    });
+    TriviaModel.hasMany(model.activity, {
+      as: 'trivia',
+      foreignKey: 'triviaId',
+      targetKey: 'triviaId',
+    });
     TriviaModel.belongsTo(model.group);
     TriviaModel.belongsTo(model.channel);
   };

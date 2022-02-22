@@ -29,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
 
   TriviaAnswerModel.associate = (model) => {
     TriviaAnswerModel.belongsTo(model.triviaquestion);
+    TriviaAnswerModel.hasMany(model.triviatip);
   };
 
   // 5: Wallet has many addresses

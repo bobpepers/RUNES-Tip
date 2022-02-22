@@ -10,14 +10,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
       allowNull: true,
     },
-    status: {
-      type: DataTypes.ENUM,
-      values: [
-        'waiting',
-        'failed',
-        'success',
-      ],
-    },
   };
 
   // 2: The model options.
@@ -32,7 +24,11 @@ module.exports = (sequelize, DataTypes) => {
 
   TriviaTipModel.associate = (model) => {
     TriviaTipModel.belongsTo(model.user);
-    TriviaTipModel.belongsTo(model.trivia);
+    TriviaTipModel.belongsTo(model.trivia, {
+      as: 'trivia',
+      foreignKey: 'triviaId',
+    });
+    TriviaTipModel.belongsTo(model.triviaanswer);
     TriviaTipModel.hasMany(model.activity, { as: 'triviatip' });
     TriviaTipModel.belongsTo(model.group);
     TriviaTipModel.belongsTo(model.channel);

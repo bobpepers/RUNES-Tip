@@ -207,6 +207,10 @@ module.exports = (sequelize, DataTypes) => {
       as: 'tiptip',
       foreignKey: 'tiptipId',
     });
+    ActivityModel.belongsTo(model.trivia, {
+      as: 'trivia',
+      foreignKey: 'triviaId',
+    });
   };
 
   return ActivityModel;
