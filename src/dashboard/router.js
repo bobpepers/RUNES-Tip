@@ -53,6 +53,7 @@ import {
   insertTrivia,
   removeTriviaQuestion,
   fetchTriviaQuestions,
+  switchTriviaQuestion,
 } from './controllers/trivia';
 
 import {
@@ -402,6 +403,32 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isDashboardUserBanned,
     insertIp,
     fetchTriviaQuestions,
+    (req, res) => {
+      if (res.locals.error) {
+        console.log('found error');
+        console.log(res.locals.error);
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      } else if (res.locals.trivia) {
+        res.json({
+          trivia: res.locals.trivia,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/trivia/switch',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    switchTriviaQuestion,
     (req, res) => {
       if (res.locals.error) {
         console.log('found error');

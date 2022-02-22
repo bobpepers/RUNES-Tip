@@ -98,7 +98,14 @@ export const coinInfoMessage = (blockHeight, priceInfo) => {
   return result;
 };
 
-export const triviaMessageDiscord = (distance, author, question, answers, amount, totalPeople) => {
+export const triviaMessageDiscord = (
+  distance,
+  author,
+  question,
+  answers,
+  amount,
+  totalPeople,
+) => {
   // Time calculations for days, hours, minutes and seconds
   const days = Math.floor((distance % (1000 * 60 * 60 * 24 * 60)) / (1000 * 60 * 60 * 24));
   const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -106,8 +113,6 @@ export const triviaMessageDiscord = (distance, author, question, answers, amount
   const seconds = Math.floor((distance % (1000 * 60)) / 1000);
   const ended = days < 1 && hours < 1 && minutes < 1 && seconds < 1;
 
-  console.log(totalPeople);
-  console.log('totalPeople');
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Trivia')
@@ -146,6 +151,26 @@ export const reactDropMessage = (distance, author, emoji, amount) => {
 
 ${!ended ? `:clock9: Time remaining ${days > 0 ? `${days} days` : ''}  ${hours > 0 ? `${hours} hours` : ''} ${minutes > 0 ? `${minutes} minutes` : ''} ${seconds > 0 ? `${seconds} seconds` : ''}` : `Ended`}
 `)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
+export const AfterTriviaSuccessMessage = (
+  endTrivia,
+  amountEach,
+  initiator,
+) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Trivia')
+    .setDescription(`:tada:[Trivia](https://discord.com/channels/${endTrivia.group.groupId.replace("discord-", "")}/${endTrivia.channel.channelId.replace("discord-", "")}/${endTrivia.discordMessageId}) started by <@${initiator}> has finished!:tada:
+    
+:money_with_wings:${endTrivia.triviatips.length} ${endTrivia.triviatips.length === 1 ? 'user' : 'users'} will share ${endTrivia.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)!:money_with_wings:`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
@@ -981,6 +1006,21 @@ export const ReactDropReturnInitiatorMessage = () => {
     .setColor(settings.bot.color)
     .setTitle(`Reactdrop`)
     .setDescription(`Nobody claimed, returning funds to reactdrop initiator`)
+    .setThumbnail(settings.coin.logo)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
+export const triviaReturnInitiatorMessage = () => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(`Trivia`)
+    .setDescription(`Nobody claimed, returning funds to trivia initiator`)
     .setThumbnail(settings.coin.logo)
     .setTimestamp()
     .setFooter({

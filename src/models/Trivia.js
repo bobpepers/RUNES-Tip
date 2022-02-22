@@ -53,6 +53,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     TriviaModel.belongsTo(model.group);
     TriviaModel.belongsTo(model.channel);
+    TriviaModel.belongsTo(model.triviaquestion);
   };
 
   return TriviaModel;

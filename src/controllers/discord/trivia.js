@@ -1,8 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable import/prefer-default-export */
-import { svg2png } from 'svg-png-converter';
 import _ from 'lodash';
-import svgCaptcha from "svg-captcha";
 import { Transaction } from "sequelize";
 import {
   MessageAttachment,
@@ -10,18 +8,16 @@ import {
   MessageActionRow,
   MessageButton,
 } from "discord.js";
-import { AlgebraicCaptcha } from "algebraic-captcha";
 import getCoinSettings from '../../config/settings';
 import {
   triviaMessageDiscord,
   userNotFoundMessage,
   minimumTimeReactDropMessage,
   invalidTimeMessage,
-  ReactdropCaptchaMessage,
-  AfterReactDropSuccessMessage,
+  AfterTriviaSuccessMessage,
   noTriviaQuestionFoundMessage,
   maxTimeTriviaMessage,
-  ReactDropReturnInitiatorMessage,
+  triviaReturnInitiatorMessage,
   NotInDirectMessage,
   discordErrorMessage,
   invalidPeopleAmountMessage,
@@ -39,8 +35,10 @@ export const listenTrivia = async (
   triviaRecord,
   io,
   queue,
+  updateMessage,
+  answerString,
 ) => {
-  const filter = () => true;
+  // const filter = () => true;
   const collector = triviaMessage.createMessageComponentCollector({ componentType: 'BUTTON', time: distance });
   collector.on('collect', async (
     reaction,
@@ -51,87 +49,99 @@ export const listenTrivia = async (
         await db.sequelize.transaction({
           isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
         }, async (t) => {
-          console.log('123');
-          const findTrivUser = await db.user.findOne({
+          const findAllCorrectUserTriviaAnswersStart = await db.triviatip.findAll({
             where: {
-              user_id: `discord-${reaction.user.id}`,
+              triviaId: triviaRecord.id,
             },
+            include: [
+              {
+                model: db.triviaanswer,
+                as: 'triviaanswer',
+                where: {
+                  correct: true,
+                },
+              },
+            ],
             lock: t.LOCK.UPDATE,
             transaction: t,
           });
-          if (findTrivUser) {
-            console.log('found user');
-            console.log(findTrivUser.id);
-            console.log(triviaRecord.id);
-            const findTriviaTip = await db.triviatip.findOne({
+          if (Number(findAllCorrectUserTriviaAnswersStart.length) < Number(triviaRecord.userCount)) {
+            const findTrivUser = await db.user.findOne({
               where: {
-                userId: findTrivUser.id,
-                triviaId: triviaRecord.id,
+                user_id: `discord-${reaction.user.id}`,
               },
               lock: t.LOCK.UPDATE,
               transaction: t,
             });
-            if (findTriviaTip) {
-              reaction.reply({
-                content: "We already received an answer from you",
-                ephemeral: true,
-              });
-            }
-            if (!findTriviaTip) {
-              console.log('trivia tip not found');
-              console.log(reaction.customId);
-              const findTriviaAnswer = await db.triviaanswer.findOne({
+            if (findTrivUser) {
+              const findTriviaTip = await db.triviatip.findOne({
                 where: {
-                  answer: reaction.customId,
-                  triviaquestionId: triviaRecord.triviaquestionId,
-                },
-                lock: t.LOCK.UPDATE,
-                transaction: t,
-              });
-              console.log('triviaAnswer');
-              console.log(findTriviaAnswer);
-              const insertTriviaTip = await db.triviatip.create({
-                userId: findTrivUser.id,
-                triviaId: triviaRecord.id,
-                triviaanswerId: findTriviaAnswer.id,
-              }, {
-                lock: t.LOCK.UPDATE,
-                transaction: t,
-              });
-              const findAllCorrectUserTriviaAnswers = await db.triviatip.findAll({
-                where: {
+                  userId: findTrivUser.id,
                   triviaId: triviaRecord.id,
                 },
-                include: [
-                  {
-                    model: db.triviaanswer,
-                    as: 'triviaanswer',
-                    // required: false,
-                    where: {
-                      correct: true,
-                    },
-                  },
-                ],
                 lock: t.LOCK.UPDATE,
                 transaction: t,
               });
-              console.log('findAllCorrectUserTriviaAnswers.triviaanswer.length');
-              console.log(findAllCorrectUserTriviaAnswers.length);
-              console.log('triviaRecord.userCount');
-              console.log(triviaRecord.userCount);
-              if (Number(findAllCorrectUserTriviaAnswers.length) >= Number(triviaRecord.userCount)) {
-                collector.stop('Collector stopped manually');
+              if (findTriviaTip) {
+                reaction.reply({
+                  content: "We already received an answer from you",
+                  ephemeral: true,
+                });
               }
-              reaction.reply({
-                content: `Thank you, we received your answer\nYou answered: ${reaction.customId}`,
-                ephemeral: true,
-              });
-              // console.log(findAllCorrectUserTriviaAnswers);
+              if (!findTriviaTip) {
+                console.log('trivia tip not found');
+                console.log(reaction.customId);
+                const findTriviaAnswer = await db.triviaanswer.findOne({
+                  where: {
+                    answer: reaction.customId,
+                    triviaquestionId: triviaRecord.triviaquestionId,
+                  },
+                  lock: t.LOCK.UPDATE,
+                  transaction: t,
+                });
+                console.log('triviaAnswer');
+                console.log(findTriviaAnswer);
+                const insertTriviaTip = await db.triviatip.create({
+                  userId: findTrivUser.id,
+                  triviaId: triviaRecord.id,
+                  triviaanswerId: findTriviaAnswer.id,
+                }, {
+                  lock: t.LOCK.UPDATE,
+                  transaction: t,
+                });
+                const findAllCorrectUserTriviaAnswers = await db.triviatip.findAll({
+                  where: {
+                    triviaId: triviaRecord.id,
+                  },
+                  include: [
+                    {
+                      model: db.triviaanswer,
+                      as: 'triviaanswer',
+                      // required: false,
+                      where: {
+                        correct: true,
+                      },
+                    },
+                  ],
+                  lock: t.LOCK.UPDATE,
+                  transaction: t,
+                });
+
+                if (Number(findAllCorrectUserTriviaAnswers.length) >= Number(triviaRecord.userCount)) {
+                  collector.stop('Collector stopped manually');
+                }
+                reaction.reply({
+                  content: `Thank you, we received your answer\nYou answered: ${reaction.customId}`,
+                  ephemeral: true,
+                });
+                // console.log(findAllCorrectUserTriviaAnswers);
+              }
             }
           }
 
           t.afterCommit(() => {
             // reaction.deferUpdate();
+            console.log('done');
           });
         }).catch((err) => {
           console.log(err);
@@ -145,6 +155,20 @@ export const listenTrivia = async (
     console.log('end trivia drop');
     const activity = [];
     await queue.add(async () => {
+      clearInterval(updateMessage);
+      const actualUserId = triviaRecord.user.user_id.replace('discord-', '');
+      await triviaMessage.edit({
+        embeds: [
+          triviaMessageDiscord(
+            -1,
+            actualUserId,
+            triviaRecord.triviaquestion.question,
+            answerString,
+            triviaRecord.amount,
+            triviaRecord.userCount,
+          )],
+        components: [],
+      });
       await db.sequelize.transaction({
         isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
       }, async (t) => {
@@ -220,7 +244,7 @@ export const listenTrivia = async (
               transaction: t,
             });
             // reactMessage.channel.send('Nobody claimed, returning funds to reactdrop initiator');
-            triviaMessage.channel.send({ embeds: [ReactDropReturnInitiatorMessage()] });
+            triviaMessage.channel.send({ embeds: [triviaReturnInitiatorMessage()] });
           } else {
             // Get Faucet Settings
             let faucetSetting;
@@ -342,7 +366,7 @@ export const listenTrivia = async (
               await triviaMessage.channel.send(element);
             }
             const initiator = endTriviaDrop.user.user_id.replace('discord-', '');
-            triviaMessage.channel.send({ embeds: [AfterReactDropSuccessMessage(endTriviaDrop, amountEach, initiator)] });
+            triviaMessage.channel.send({ embeds: [AfterTriviaSuccessMessage(endTriviaDrop, amountEach, initiator)] });
           }
         }
 
@@ -445,6 +469,7 @@ export const discordTrivia = async (
 
     if (
       !isnumPeople
+      && totalPeople % 1 === 0
     ) {
       const amountPeopleFailActivity = await db.activity.create({
         type: 'trivia_f',
@@ -495,8 +520,6 @@ export const discordTrivia = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      console.log('randomQuestion');
-      console.log(randomQuestion);
 
       if (!randomQuestion) {
         const failEmojiActivity = await db.activity.create({
@@ -605,7 +628,7 @@ export const discordTrivia = async (
             lock: t.LOCK.UPDATE,
           });
           const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
-          const newTrivia = await db.trivia.create({
+          const newTriviaCreate = await db.trivia.create({
             feeAmount: Number(fee),
             amount,
             userCount: totalPeople,
@@ -616,6 +639,24 @@ export const discordTrivia = async (
             discordMessageId: sendTriviaMessage.id,
             userId: user.id,
           }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+
+          const newTrivia = await db.trivia.findOne({
+            where: {
+              id: newTriviaCreate.id,
+            },
+            include: [
+              {
+                model: db.triviaquestion,
+                as: 'triviaquestion',
+              },
+              {
+                model: db.user,
+                as: 'user',
+              },
+            ],
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
@@ -679,6 +720,8 @@ export const discordTrivia = async (
             newTrivia,
             io,
             queue,
+            updateMessage,
+            answerString,
           );
           // logger.info(`Success started reactdrop Requested by: ${user.user_id}-${user.username} with ${amount / 1e8} ${settings.coin.ticker}`);
         }

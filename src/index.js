@@ -2,7 +2,10 @@
 import {
   Client,
   Intents,
+  MessageActionRow,
+  MessageButton,
 } from "discord.js";
+import _ from 'lodash';
 import { Telegraf } from "telegraf";
 import PQueue from 'p-queue';
 import express from "express";
@@ -26,8 +29,9 @@ import { initDatabaseRecords } from "./helpers/initDatabaseRecords";
 import { patchRunebaseDeposits } from "./helpers/runebase/patcher";
 import { patchPirateDeposits } from "./helpers/pirate/patcher";
 import { patchKomodoDeposits } from "./helpers/komodo/patcher";
-import { reactDropMessage } from "./messages/discord";
+import { reactDropMessage, triviaMessageDiscord } from "./messages/discord";
 import { listenReactDrop } from "./controllers/discord/reactdrop";
+import { listenTrivia } from "./controllers/discord/trivia";
 import db from "./models";
 import getCoinSettings from './config/settings';
 
@@ -203,12 +207,133 @@ const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
     const updateMessage = setInterval(async () => {
       now = new Date().getTime();
       distance = countDownDate - now;
-      await reactMessage.edit({ embeds: [reactDropMessage(distance, actualUserId, runningReactDrop.emoji, runningReactDrop.amount)] });
+      await reactMessage.edit({
+        embeds: [
+          reactDropMessage(
+            distance,
+            actualUserId,
+            runningReactDrop.emoji,
+            runningReactDrop.amount,
+          ),
+        ],
+      });
       if (distance < 0) {
         clearInterval(updateMessage);
       }
-    }, 5000);
+    }, 10000);
   }
+
+  // Recover Trivia
+  const allRunningTrivia = await db.trivia.findAll({
+    where: {
+      ended: false,
+    },
+    include: [
+      {
+        model: db.group,
+        as: 'group',
+      },
+      {
+        model: db.channel,
+        as: 'channel',
+      },
+      {
+        model: db.user,
+        as: 'user',
+      },
+      {
+        model: db.triviaquestion,
+        as: 'triviaquestion',
+        include: [
+          {
+            model: db.triviaanswer,
+            as: 'triviaanswers',
+          },
+        ],
+      },
+    ],
+  });
+
+  // eslint-disable-next-line no-restricted-syntax
+  for (const runningTrivia of allRunningTrivia) {
+    const actualChannelId = runningTrivia.channel.channelId.replace('discord-', '');
+    const actualGroupId = runningTrivia.group.groupId.replace('discord-', '');
+    const actualUserId = runningTrivia.user.user_id.replace('discord-', '');
+
+    // eslint-disable-next-line no-await-in-loop
+    const triviaMessage = await discordClient.guilds.cache.get(actualGroupId)
+      .channels.cache.get(actualChannelId)
+      .messages.fetch(runningTrivia.discordMessageId);
+
+    // eslint-disable-next-line no-await-in-loop
+    const countDownDate = await runningTrivia.ends.getTime();
+    let now = new Date().getTime();
+    let distance = countDownDate - now;
+    const row = new MessageActionRow();
+    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    const answers = _.shuffle(runningTrivia.triviaquestion.triviaanswers);
+    let answerString = '';
+    let positionAlphabet = 0;
+    // console.log(answers);
+    // eslint-disable-next-line no-restricted-syntax
+    for (const answer of answers) {
+      row.addComponents(
+        new MessageButton()
+          .setCustomId(answer.answer)
+          .setLabel(alphabet[positionAlphabet])
+          .setStyle('PRIMARY'),
+      );
+      answerString += `${alphabet[positionAlphabet]}. ${answer.answer}\n`;
+      positionAlphabet += 1;
+    }
+    // eslint-disable-next-line no-await-in-loop
+    await triviaMessage.edit({
+      embeds: [
+        triviaMessageDiscord(
+          distance,
+          actualUserId,
+          runningTrivia.triviaquestion.question,
+          answerString,
+          runningTrivia.amount,
+          runningTrivia.userCount,
+        ),
+      ],
+      components: [row],
+    });
+    // eslint-disable-next-line no-loop-func
+    const updateMessage = setInterval(async () => {
+      now = new Date().getTime();
+      distance = countDownDate - now;
+      await triviaMessage.edit({
+        embeds: [
+          triviaMessageDiscord(
+            distance,
+            actualUserId,
+            runningTrivia.triviaquestion.question,
+            answerString,
+            runningTrivia.amount,
+            runningTrivia.userCount,
+          ),
+        ],
+      });
+      if (distance < 0) {
+        clearInterval(updateMessage);
+      }
+    }, 10000);
+    console.log('recover trivia');
+    // eslint-disable-next-line no-await-in-loop
+    listenTrivia(
+      triviaMessage,
+      distance,
+      runningTrivia,
+      io,
+      queue,
+      updateMessage,
+      answerString,
+    );
+  }
+
+  /// //////////////
 
   // patch deposits and sync
   if (settings.coin.setting === 'Runebase') {

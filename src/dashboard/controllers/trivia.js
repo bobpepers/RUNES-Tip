@@ -31,6 +31,45 @@ export const removeTriviaQuestion = async (
   }
 };
 
+export const switchTriviaQuestion = async (
+  req,
+  res,
+  next,
+) => {
+  try {
+    const findTriviaQuestion = await db.triviaquestion.findOne({
+      where: {
+        id: req.body.id,
+      },
+    });
+    await findTriviaQuestion.update({
+      enabled: !findTriviaQuestion.enabled,
+    });
+    res.locals.trivia = await db.triviaquestion.findOne({
+      where: {
+        id: findTriviaQuestion.id,
+      },
+      include: [
+        {
+          model: db.trivia,
+          as: 'trivia',
+          attributes: ['id'],
+        },
+        {
+          model: db.triviaanswer,
+          as: 'triviaanswers',
+        },
+      ],
+    });
+    console.log(res.locals.trivia);
+    next();
+  } catch (error) {
+    console.log(error);
+    res.locals.error = error;
+    next();
+  }
+};
+
 export const fetchTriviaQuestions = async (
   req,
   res,
@@ -42,6 +81,11 @@ export const fetchTriviaQuestions = async (
         ['id', 'DESC'],
       ],
       include: [
+        {
+          model: db.trivia,
+          as: 'trivia',
+          attributes: ['id'],
+        },
         {
           model: db.triviaanswer,
           as: 'triviaanswers',
@@ -71,6 +115,11 @@ export const insertTrivia = async (
   if (req.body.question.answers.length < 2) {
     console.log('must have more then 2 answers');
     res.locals.error = 'must have more then 2 answers';
+    return next();
+  }
+  if (req.body.question.answers.length > 5) {
+    console.log('maximum is 5 answers');
+    res.locals.error = 'maximum is 5 answers';
     return next();
   }
   if (!_.find(req.body.question.answers, { correct: 'true' })) {
