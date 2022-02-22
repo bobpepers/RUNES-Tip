@@ -511,6 +511,9 @@ export const discordTrivia = async (
     } else {
       const randomQuestion = await db.triviaquestion.findOne({
         order: db.sequelize.random(),
+        where: {
+          enabled: true,
+        },
         include: [
           {
             model: db.triviaanswer,

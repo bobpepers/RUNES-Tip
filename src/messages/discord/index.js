@@ -121,6 +121,7 @@ export const triviaMessageDiscord = (
 :information_source: Click the correct answer for a chance to win a share in ${amount / 1e8} ${settings.coin.ticker}!
 
 Question: ${question}
+
 ${answers}
 
 ${!ended ? `:clock9: Time remaining ${days > 0 ? `${days} days` : ''}  ${hours > 0 ? `${hours} hours` : ''} ${minutes > 0 ? `${minutes} minutes` : ''} ${seconds > 0 ? `${seconds} seconds` : ''}` : `Ended`}
@@ -1046,7 +1047,7 @@ export const warnDirectMessage = (userId, title) => {
   return result;
 };
 
-export const helpMessage = (withdraw) => {
+export const helpMessageOne = (withdraw) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle(`${`${settings.bot.name} v${pjson.version}`} Help`)
@@ -1082,8 +1083,20 @@ default: disabled
 Withdraws the entered amount to a ${settings.coin.name} address of your choice
 example: \`${settings.bot.command.discord} withdraw ${settings.coin.exampleAddress} 5.20 \`
 Note: Minimal amount to withdraw: ${withdraw.min / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${withdraw.fee / 1e2}% ${settings.coin.ticker}. half of the withdrawal fee will be automatically deducted from the amount and will be donated to the common faucet pot.
+`);
+    // .setTimestamp()
+    // .setFooter({
+    //  text: `${settings.bot.name} v${pjson.version}`,
+    //  iconURL: settings.coin.logo,
+    // });
+  return result;
+};
 
-\`${settings.bot.command.discord} <@user> <amount|all>\`
+export const helpMessageTwo = (withdraw) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    // .setTitle(`${`${settings.bot.name} v${pjson.version}`} Help`)
+    .setDescription(`\`${settings.bot.command.discord} <@user> <amount|all>\`
 Tips the @ mentioned user with the desired amount
 example: \`${settings.bot.command.discord} @test123456#7890 1.00\`
 
@@ -1129,6 +1142,10 @@ Gets an amount from the faucet (applicable every 4 hours)
 
 \`${settings.bot.command.discord} reactdrop <amount> [<time>] [<emoji>]\`
 Performs a react airdrop with the amount, optionally within custom time, optionally using a custom-supplied emoji. <time> parameter accepts time interval expressions in the form of:\`60s\`, \`5m\`, \`1h\`. Default time interval is \`5m\`(5minutes), e.g. \`${settings.bot.command.discord} reactdrop 10 20m\`, \`${settings.bot.command.discord} reactdrop 10 3h 😃\`
+
+\`${settings.bot.command.discord} trivia <amount> [<amountOfPeople>] [<time>]\`
+Performs a trivia with the amount, optionally with set amount of of people, optionally within custom time. <time> parameter accepts time interval expressions in the form of:\`60s\`, \`5m\`, \`1h\`. Default time interval is \`5m\`(5minutes), e.g. \`${settings.bot.command.discord} trivia 5\`, \`${settings.bot.command.discord} trivia 5 3 40s\`
+
 
 \`${settings.bot.command.discord} ignoreme\`
 Turns @mentioning you during mass operations on/off

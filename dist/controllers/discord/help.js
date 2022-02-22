@@ -35,49 +35,71 @@ var discordHelp = /*#__PURE__*/function () {
             withdraw = _context.sent;
             console.log(withdraw);
 
-            if (message.channel.type === 'DM') {
-              message.author.send({
-                embeds: [(0, _discord.helpMessage)(withdraw)]
-              });
+            if (!(message.channel.type === 'DM')) {
+              _context.next = 9;
+              break;
             }
 
-            if (message.channel.type === 'GUILD_TEXT') {
-              message.channel.send({
-                embeds: [(0, _discord.warnDirectMessage)(message.author.id, 'Help')]
-              });
-              message.author.send({
-                embeds: [(0, _discord.helpMessage)(withdraw)]
-              });
-            }
+            _context.next = 7;
+            return message.author.send({
+              embeds: [(0, _discord.helpMessageOne)(withdraw)]
+            });
 
-            activity = [];
+          case 7:
             _context.next = 9;
+            return message.author.send({
+              embeds: [(0, _discord.helpMessageTwo)(withdraw)]
+            });
+
+          case 9:
+            if (!(message.channel.type === 'GUILD_TEXT')) {
+              _context.next = 15;
+              break;
+            }
+
+            message.channel.send({
+              embeds: [(0, _discord.warnDirectMessage)(message.author.id, 'Help')]
+            });
+            _context.next = 13;
+            return message.author.send({
+              embeds: [(0, _discord.helpMessageOne)(withdraw)]
+            });
+
+          case 13:
+            _context.next = 15;
+            return message.author.send({
+              embeds: [(0, _discord.helpMessageTwo)(withdraw)]
+            });
+
+          case 15:
+            activity = [];
+            _context.next = 18;
             return _models["default"].user.findOne({
               where: {
                 user_id: "discord-".concat(message.author.id)
               }
             });
 
-          case 9:
+          case 18:
             user = _context.sent;
 
             if (user) {
-              _context.next = 12;
+              _context.next = 21;
               break;
             }
 
             return _context.abrupt("return");
 
-          case 12:
-            _context.next = 14;
+          case 21:
+            _context.next = 23;
             return _models["default"].activity.create({
               type: 'help',
               earnerId: user.id
             });
 
-          case 14:
+          case 23:
             preActivity = _context.sent;
-            _context.next = 17;
+            _context.next = 26;
             return _models["default"].activity.findOne({
               where: {
                 id: preActivity.id
@@ -88,7 +110,7 @@ var discordHelp = /*#__PURE__*/function () {
               }]
             });
 
-          case 17:
+          case 26:
             finalActivity = _context.sent;
             activity.unshift(finalActivity);
             io.to('admin').emit('updateActivity', {
@@ -96,7 +118,7 @@ var discordHelp = /*#__PURE__*/function () {
             });
             return _context.abrupt("return", true);
 
-          case 21:
+          case 30:
           case "end":
             return _context.stop();
         }

@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.warnDirectMessage = exports.walletNotFoundMessage = exports.userNotFoundMessage = exports.unableToFindUserTipMessage = exports.unIngoreMeMessage = exports.transactionNotFoundMessage = exports.tipSuccessMessage = exports.tipFaucetSuccessMessage = exports.timeOutAllAmoutMessageDiscord = exports.thunderstormUserZeroAmountMessage = exports.thunderstormMaxUserAmountMessage = exports.thunderstormInvalidUserAmount = exports.statsMessage = exports.reviewMessage = exports.reactDropMessage = exports.priceMessage = exports.notEnoughUsersToTip = exports.notEnoughActiveUsersMessage = exports.minimumWithdrawalMessage = exports.minimumTimeReactDropMessage = exports.minimumMessage = exports.maxTimeReactdropMessage = exports.invalidTimeMessage = exports.invalidEmojiMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.ignoreMeMessage = exports.hurricaneUserZeroAmountMessage = exports.hurricaneMaxUserAmountMessage = exports.hurricaneInvalidUserAmount = exports.helpMessage = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.featureDisabledChannelMessage = exports.faucetClaimedMessage = exports.enablePublicStatsMeMessage = exports.dryFaucetMessage = exports.discordWithdrawalRejectedMessage = exports.discordWithdrawalAcceptedMessage = exports.discordUserWithdrawalRejectMessage = exports.discordUserBannedMessage = exports.discordServerBannedMessage = exports.discordLimitSpamMessage = exports.discordIncomingDepositMessage = exports.discordErrorMessage = exports.discordDepositConfirmedMessage = exports.discordChannelBannedMessage = exports.disablePublicStatsMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessageDiscord = exports.coinInfoMessage = exports.claimTooFactFaucetMessage = exports.canceledAllAmoutMessageDiscord = exports.balanceMessage = exports.ReactdropCaptchaMessage = exports.ReactDropReturnInitiatorMessage = exports.NotInDirectMessage = exports.DiscordFeeMessage = exports.AfterThunderSuccess = exports.AfterSuccessMessage = exports.AfterReactDropSuccessMessage = void 0;
+exports.warnDirectMessage = exports.walletNotFoundMessage = exports.userNotFoundMessage = exports.unableToFindUserTipMessage = exports.unIngoreMeMessage = exports.triviaReturnInitiatorMessage = exports.triviaMessageDiscord = exports.transactionNotFoundMessage = exports.tipSuccessMessage = exports.tipFaucetSuccessMessage = exports.timeOutAllAmoutMessageDiscord = exports.thunderstormUserZeroAmountMessage = exports.thunderstormMaxUserAmountMessage = exports.thunderstormInvalidUserAmount = exports.statsMessage = exports.reviewMessage = exports.reactDropMessage = exports.priceMessage = exports.notEnoughUsersToTip = exports.notEnoughActiveUsersMessage = exports.noTriviaQuestionFoundMessage = exports.minimumWithdrawalMessage = exports.minimumTimeReactDropMessage = exports.minimumMessage = exports.maxTimeTriviaMessage = exports.maxTimeReactdropMessage = exports.invalidTimeMessage = exports.invalidPeopleAmountMessage = exports.invalidEmojiMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.ignoreMeMessage = exports.hurricaneUserZeroAmountMessage = exports.hurricaneMaxUserAmountMessage = exports.hurricaneInvalidUserAmount = exports.helpMessageTwo = exports.helpMessageOne = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.featureDisabledChannelMessage = exports.faucetClaimedMessage = exports.enablePublicStatsMeMessage = exports.dryFaucetMessage = exports.discordWithdrawalRejectedMessage = exports.discordWithdrawalAcceptedMessage = exports.discordUserWithdrawalRejectMessage = exports.discordUserBannedMessage = exports.discordServerBannedMessage = exports.discordLimitSpamMessage = exports.discordIncomingDepositMessage = exports.discordErrorMessage = exports.discordDepositConfirmedMessage = exports.discordChannelBannedMessage = exports.disablePublicStatsMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessageDiscord = exports.coinInfoMessage = exports.claimTooFactFaucetMessage = exports.canceledAllAmoutMessageDiscord = exports.balanceMessage = exports.ReactdropCaptchaMessage = exports.ReactDropReturnInitiatorMessage = exports.NotInDirectMessage = exports.DiscordFeeMessage = exports.AfterTriviaSuccessMessage = exports.AfterThunderSuccess = exports.AfterSuccessMessage = exports.AfterReactDropSuccessMessage = void 0;
 
 var _discord = require("discord.js");
 
@@ -85,6 +85,22 @@ var coinInfoMessage = function coinInfoMessage(blockHeight, priceInfo) {
 
 exports.coinInfoMessage = coinInfoMessage;
 
+var triviaMessageDiscord = function triviaMessageDiscord(distance, author, question, answers, amount, totalPeople) {
+  // Time calculations for days, hours, minutes and seconds
+  var days = Math.floor(distance % (1000 * 60 * 60 * 24 * 60) / (1000 * 60 * 60 * 24));
+  var hours = Math.floor(distance % (1000 * 60 * 60 * 24) / (1000 * 60 * 60));
+  var minutes = Math.floor(distance % (1000 * 60 * 60) / (1000 * 60));
+  var seconds = Math.floor(distance % (1000 * 60) / 1000);
+  var ended = days < 1 && hours < 1 && minutes < 1 && seconds < 1;
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Trivia').setDescription(":tada: <@".concat(author, "> has started a trivia question for ").concat(totalPeople, " ").concat(Number(totalPeople) === 1 ? 'person' : 'people', "! :tada:\n\n:information_source: Click the correct answer for a chance to win a share in ").concat(amount / 1e8, " ").concat(settings.coin.ticker, "!\n\nQuestion: ").concat(question, "\n\n").concat(answers, "\n\n").concat(!ended ? ":clock9: Time remaining ".concat(days > 0 ? "".concat(days, " days") : '', "  ").concat(hours > 0 ? "".concat(hours, " hours") : '', " ").concat(minutes > 0 ? "".concat(minutes, " minutes") : '', " ").concat(seconds > 0 ? "".concat(seconds, " seconds") : '') : "Ended", "\n")).setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.triviaMessageDiscord = triviaMessageDiscord;
+
 var reactDropMessage = function reactDropMessage(distance, author, emoji, amount) {
   // Time calculations for days, hours, minutes and seconds
   var days = Math.floor(distance % (1000 * 60 * 60 * 24 * 60) / (1000 * 60 * 60 * 24));
@@ -100,6 +116,16 @@ var reactDropMessage = function reactDropMessage(distance, author, emoji, amount
 };
 
 exports.reactDropMessage = reactDropMessage;
+
+var AfterTriviaSuccessMessage = function AfterTriviaSuccessMessage(endTrivia, amountEach, initiator) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Trivia').setDescription(":tada:[Trivia](https://discord.com/channels/".concat(endTrivia.group.groupId.replace("discord-", ""), "/").concat(endTrivia.channel.channelId.replace("discord-", ""), "/").concat(endTrivia.discordMessageId, ") started by <@").concat(initiator, "> has finished!:tada:\n    \n:money_with_wings:").concat(endTrivia.triviatips.length, " ").concat(endTrivia.triviatips.length === 1 ? 'user' : 'users', " will share ").concat(endTrivia.amount / 1e8, " ").concat(settings.coin.ticker, " (").concat(amountEach / 1e8, " each)!:money_with_wings:")).setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.AfterTriviaSuccessMessage = AfterTriviaSuccessMessage;
 
 var AfterReactDropSuccessMessage = function AfterReactDropSuccessMessage(endReactDrop, amountEach, initiator) {
   var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Reactdrop').setDescription(":tada:[React airdrop](https://discord.com/channels/".concat(endReactDrop.group.groupId.replace("discord-", ""), "/").concat(endReactDrop.channel.channelId.replace("discord-", ""), "/").concat(endReactDrop.discordMessageId, ") started by <@").concat(initiator, "> has finished!:tada:\n    \n:money_with_wings:").concat(endReactDrop.reactdroptips.length, " user(s) will share ").concat(endReactDrop.amount / 1e8, " ").concat(settings.coin.ticker, " (").concat(amountEach / 1e8, " each)!:money_with_wings:")).setTimestamp().setFooter({
@@ -130,6 +156,16 @@ var minimumTimeReactDropMessage = function minimumTimeReactDropMessage(message) 
 };
 
 exports.minimumTimeReactDropMessage = minimumTimeReactDropMessage;
+
+var maxTimeTriviaMessage = function maxTimeTriviaMessage(message) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Trivia').setDescription("Maximum time is 2 days").setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.maxTimeTriviaMessage = maxTimeTriviaMessage;
 
 var maxTimeReactdropMessage = function maxTimeReactdropMessage(message) {
   var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Reactdrop').setDescription("Maximum time is 2 days").setTimestamp().setFooter({
@@ -522,6 +558,16 @@ var reviewMessage = function reviewMessage(message) {
 
 exports.reviewMessage = reviewMessage;
 
+var invalidPeopleAmountMessage = function invalidPeopleAmountMessage(message, title) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(title).setDescription("<@".concat(message.author.id, ">, Invalid amount of people to win ").concat(title)).setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.invalidPeopleAmountMessage = invalidPeopleAmountMessage;
+
 var invalidTimeMessage = function invalidTimeMessage(message, title) {
   var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(title).setDescription("<@".concat(message.author.id, ">, Invalid time")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
@@ -531,6 +577,16 @@ var invalidTimeMessage = function invalidTimeMessage(message, title) {
 };
 
 exports.invalidTimeMessage = invalidTimeMessage;
+
+var noTriviaQuestionFoundMessage = function noTriviaQuestionFoundMessage(message, title) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(title).setDescription("<@".concat(message.author.id, ">, No trivia question found")).setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.noTriviaQuestionFoundMessage = noTriviaQuestionFoundMessage;
 
 var invalidEmojiMessage = function invalidEmojiMessage(message, title) {
   var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(title).setDescription("<@".concat(message.author.id, ">, You used an invalid emoji")).setTimestamp().setFooter({
@@ -652,6 +708,16 @@ var ReactDropReturnInitiatorMessage = function ReactDropReturnInitiatorMessage()
 
 exports.ReactDropReturnInitiatorMessage = ReactDropReturnInitiatorMessage;
 
+var triviaReturnInitiatorMessage = function triviaReturnInitiatorMessage() {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Trivia").setDescription("Nobody claimed, returning funds to trivia initiator").setThumbnail(settings.coin.logo).setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.triviaReturnInitiatorMessage = triviaReturnInitiatorMessage;
+
 var warnDirectMessage = function warnDirectMessage(userId, title) {
   var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(title).setDescription("<@".concat(userId, ">, I've sent you a direct message.")).setThumbnail(settings.coin.logo).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
@@ -662,12 +728,25 @@ var warnDirectMessage = function warnDirectMessage(userId, title) {
 
 exports.warnDirectMessage = warnDirectMessage;
 
-var helpMessage = function helpMessage(withdraw) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("".concat("".concat(settings.bot.name, " v").concat(_package["default"].version), " Help")).setDescription("`".concat(settings.bot.command.discord, "`\nDisplays this message\n\n`").concat(settings.bot.command.discord, " help`\nDisplays this message\n\n`").concat(settings.bot.command.discord, " info`\nDisplays coin info\n\n`").concat(settings.bot.command.discord, " balance`\nDisplays your balance\n\n`").concat(settings.bot.command.discord, " price`\nDisplays ").concat(settings.coin.ticker, " price\n\n`").concat(settings.bot.command.discord, " stats`\nDisplays your tip statistics\n\n`").concat(settings.bot.command.discord, " deposit`\nDisplays your deposit address\n\n`").concat(settings.bot.command.discord, " fees`\nDisplays fee schedule\n\n`").concat(settings.bot.command.discord, " publicstats`\nEnable/Disable public statistics (determines if you want to be shown on the leaderboards) \ndefault: disabled\n\n`").concat(settings.bot.command.discord, " withdraw <address> <amount|all>`\nWithdraws the entered amount to a ").concat(settings.coin.name, " address of your choice\nexample: `").concat(settings.bot.command.discord, " withdraw ").concat(settings.coin.exampleAddress, " 5.20 `\nNote: Minimal amount to withdraw: ").concat(withdraw.min / 1e8, " ").concat(settings.coin.ticker, ". A withdrawal fee of ").concat(withdraw.fee / 1e2, "% ").concat(settings.coin.ticker, ". half of the withdrawal fee will be automatically deducted from the amount and will be donated to the common faucet pot.\n\n`").concat(settings.bot.command.discord, " <@user> <amount|all>`\nTips the @ mentioned user with the desired amount\nexample: `").concat(settings.bot.command.discord, " @test123456#7890 1.00`\n\n`").concat(settings.bot.command.discord, " <@user> <@user> <@user> <amount|all> [split|each]`\nTips the @ mentioned users with the desired amount\nexample: `").concat(settings.bot.command.discord, " @test123456#7890 @test123457#7890 1.00 each`\n\n`").concat(settings.bot.command.discord, " rain <amount|all> [<@role>]`\nRains the desired amount onto all online users (optionally, within specified role)\nexample: `").concat(settings.bot.command.discord, " rain 10`, `").concat(settings.bot.command.discord, " rain 10 @supporters`\n\n`").concat(settings.bot.command.discord, " soak <amount|all> [<@role>]`\nSoaks the desired amount onto all online and idle users (optionally, within specified role)\nexample: `").concat(settings.bot.command.discord, " soak 3.00`\n\n`").concat(settings.bot.command.discord, " flood <amount|all> [<@role>]`\nFloods the desired amount onto all users (including offline users) (optionally, within specified role)\nexample: `").concat(settings.bot.command.discord, " flood 5.00`, `").concat(settings.bot.command.discord, " flood 5.00 @supporters`\n\n`").concat(settings.bot.command.discord, " sleet <amount|all> [<time>] [<@role>]`\nMakes a sleet storm with the desired amount onto all users that have been active in the channel in the last 15 minutes (optionally, within specified role\nexample: `").concat(settings.bot.command.discord, " sleet 5.00`, `").concat(settings.bot.command.discord, " sleet 5.00 @supporters`, `").concat(settings.bot.command.discord, " sleet 5.00 10m @supporters`\n\n`").concat(settings.bot.command.discord, " voicerain <amount|all> <@voiceChannel> [<@role>]`\nRains the desired amount onto all listening users in the mentioned voice channel.\nexample: `").concat(settings.bot.command.discord, " voicerain 5.00 #General`, `").concat(settings.bot.command.discord, " voicerain 5.00 #General @supporters`\nNOTE: To mention a voice channel, get the channel ID ([read here how](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)) and enclose it with <# and >\n\n`").concat(settings.bot.command.discord, " thunder <amount|all> [<@role>]`\nTips a random lucky online user with the amount (optionally, within specified role)\nexample: `").concat(settings.bot.command.discord, " thunder 5`, `").concat(settings.bot.command.discord, " thunder 5 @supporters`\n\n`").concat(settings.bot.command.discord, " thunderstorm <numberOfUsers> <amount|all> [<@role>]`\nTips a specified number (max: 50) random lucky online users with part of the amount (optionally, within specified role)\nexample: `").concat(settings.bot.command.discord, " thunderstorm 10 5.00`, `").concat(settings.bot.command.discord, " thunderstorm 10 5.00 @supporters`\n\n`").concat(settings.bot.command.discord, " hurricane <numberOfUsers> <amount|all> [<@role>]`\nTips a specified number (max: 50) random lucky online and idle users with part of the amount (optionally, within specified role)\nexample: `").concat(settings.bot.command.discord, " hurricane 10 5.00`, `").concat(settings.bot.command.discord, " hurricane 10 5.00 @supporters`\n\n`").concat(settings.bot.command.discord, " faucet`\nGets an amount from the faucet (applicable every 4 hours)\n\n`").concat(settings.bot.command.discord, " reactdrop <amount> [<time>] [<emoji>]`\nPerforms a react airdrop with the amount, optionally within custom time, optionally using a custom-supplied emoji. <time> parameter accepts time interval expressions in the form of:`60s`, `5m`, `1h`. Default time interval is `5m`(5minutes), e.g. `").concat(settings.bot.command.discord, " reactdrop 10 20m`, `").concat(settings.bot.command.discord, " reactdrop 10 3h \uD83D\uDE03`\n\n`").concat(settings.bot.command.discord, " ignoreme`\nTurns @mentioning you during mass operations on/off\n\n**Like the bot?**\n[Invite it to your server](").concat(settings.bot.url.discord, ")")).setTimestamp().setFooter({
+var helpMessageOne = function helpMessageOne(withdraw) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("".concat("".concat(settings.bot.name, " v").concat(_package["default"].version), " Help")).setDescription("`".concat(settings.bot.command.discord, "`\nDisplays this message\n\n`").concat(settings.bot.command.discord, " help`\nDisplays this message\n\n`").concat(settings.bot.command.discord, " info`\nDisplays coin info\n\n`").concat(settings.bot.command.discord, " balance`\nDisplays your balance\n\n`").concat(settings.bot.command.discord, " price`\nDisplays ").concat(settings.coin.ticker, " price\n\n`").concat(settings.bot.command.discord, " stats`\nDisplays your tip statistics\n\n`").concat(settings.bot.command.discord, " deposit`\nDisplays your deposit address\n\n`").concat(settings.bot.command.discord, " fees`\nDisplays fee schedule\n\n`").concat(settings.bot.command.discord, " publicstats`\nEnable/Disable public statistics (determines if you want to be shown on the leaderboards) \ndefault: disabled\n\n`").concat(settings.bot.command.discord, " withdraw <address> <amount|all>`\nWithdraws the entered amount to a ").concat(settings.coin.name, " address of your choice\nexample: `").concat(settings.bot.command.discord, " withdraw ").concat(settings.coin.exampleAddress, " 5.20 `\nNote: Minimal amount to withdraw: ").concat(withdraw.min / 1e8, " ").concat(settings.coin.ticker, ". A withdrawal fee of ").concat(withdraw.fee / 1e2, "% ").concat(settings.coin.ticker, ". half of the withdrawal fee will be automatically deducted from the amount and will be donated to the common faucet pot.\n")); // .setTimestamp()
+  // .setFooter({
+  //  text: `${settings.bot.name} v${pjson.version}`,
+  //  iconURL: settings.coin.logo,
+  // });
+
+  return result;
+};
+
+exports.helpMessageOne = helpMessageOne;
+
+var helpMessageTwo = function helpMessageTwo(withdraw) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color) // .setTitle(`${`${settings.bot.name} v${pjson.version}`} Help`)
+  .setDescription("`".concat(settings.bot.command.discord, " <@user> <amount|all>`\nTips the @ mentioned user with the desired amount\nexample: `").concat(settings.bot.command.discord, " @test123456#7890 1.00`\n\n`").concat(settings.bot.command.discord, " <@user> <@user> <@user> <amount|all> [split|each]`\nTips the @ mentioned users with the desired amount\nexample: `").concat(settings.bot.command.discord, " @test123456#7890 @test123457#7890 1.00 each`\n\n`").concat(settings.bot.command.discord, " rain <amount|all> [<@role>]`\nRains the desired amount onto all online users (optionally, within specified role)\nexample: `").concat(settings.bot.command.discord, " rain 10`, `").concat(settings.bot.command.discord, " rain 10 @supporters`\n\n`").concat(settings.bot.command.discord, " soak <amount|all> [<@role>]`\nSoaks the desired amount onto all online and idle users (optionally, within specified role)\nexample: `").concat(settings.bot.command.discord, " soak 3.00`\n\n`").concat(settings.bot.command.discord, " flood <amount|all> [<@role>]`\nFloods the desired amount onto all users (including offline users) (optionally, within specified role)\nexample: `").concat(settings.bot.command.discord, " flood 5.00`, `").concat(settings.bot.command.discord, " flood 5.00 @supporters`\n\n`").concat(settings.bot.command.discord, " sleet <amount|all> [<time>] [<@role>]`\nMakes a sleet storm with the desired amount onto all users that have been active in the channel in the last 15 minutes (optionally, within specified role\nexample: `").concat(settings.bot.command.discord, " sleet 5.00`, `").concat(settings.bot.command.discord, " sleet 5.00 @supporters`, `").concat(settings.bot.command.discord, " sleet 5.00 10m @supporters`\n\n`").concat(settings.bot.command.discord, " voicerain <amount|all> <@voiceChannel> [<@role>]`\nRains the desired amount onto all listening users in the mentioned voice channel.\nexample: `").concat(settings.bot.command.discord, " voicerain 5.00 #General`, `").concat(settings.bot.command.discord, " voicerain 5.00 #General @supporters`\nNOTE: To mention a voice channel, get the channel ID ([read here how](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-)) and enclose it with <# and >\n\n`").concat(settings.bot.command.discord, " thunder <amount|all> [<@role>]`\nTips a random lucky online user with the amount (optionally, within specified role)\nexample: `").concat(settings.bot.command.discord, " thunder 5`, `").concat(settings.bot.command.discord, " thunder 5 @supporters`\n\n`").concat(settings.bot.command.discord, " thunderstorm <numberOfUsers> <amount|all> [<@role>]`\nTips a specified number (max: 50) random lucky online users with part of the amount (optionally, within specified role)\nexample: `").concat(settings.bot.command.discord, " thunderstorm 10 5.00`, `").concat(settings.bot.command.discord, " thunderstorm 10 5.00 @supporters`\n\n`").concat(settings.bot.command.discord, " hurricane <numberOfUsers> <amount|all> [<@role>]`\nTips a specified number (max: 50) random lucky online and idle users with part of the amount (optionally, within specified role)\nexample: `").concat(settings.bot.command.discord, " hurricane 10 5.00`, `").concat(settings.bot.command.discord, " hurricane 10 5.00 @supporters`\n\n`").concat(settings.bot.command.discord, " faucet`\nGets an amount from the faucet (applicable every 4 hours)\n\n`").concat(settings.bot.command.discord, " reactdrop <amount> [<time>] [<emoji>]`\nPerforms a react airdrop with the amount, optionally within custom time, optionally using a custom-supplied emoji. <time> parameter accepts time interval expressions in the form of:`60s`, `5m`, `1h`. Default time interval is `5m`(5minutes), e.g. `").concat(settings.bot.command.discord, " reactdrop 10 20m`, `").concat(settings.bot.command.discord, " reactdrop 10 3h \uD83D\uDE03`\n\n`").concat(settings.bot.command.discord, " trivia <amount> [<amountOfPeople>] [<time>]`\nPerforms a trivia with the amount, optionally with set amount of of people, optionally within custom time. <time> parameter accepts time interval expressions in the form of:`60s`, `5m`, `1h`. Default time interval is `5m`(5minutes), e.g. `").concat(settings.bot.command.discord, " trivia 5`, `").concat(settings.bot.command.discord, " trivia 5 3 40s`\n\n\n`").concat(settings.bot.command.discord, " ignoreme`\nTurns @mentioning you during mass operations on/off\n\n**Like the bot?**\n[Invite it to your server](").concat(settings.bot.url.discord, ")")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
   return result;
 };
 
-exports.helpMessage = helpMessage;
+exports.helpMessageTwo = helpMessageTwo;

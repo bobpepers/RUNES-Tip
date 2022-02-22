@@ -57,6 +57,8 @@ var _price = require("../controllers/discord/price");
 
 var _rateLimit = require("../helpers/rateLimit");
 
+var _trivia = require("../controllers/discord/trivia");
+
 var _reactdrop = require("../controllers/discord/reactdrop");
 
 var _models = _interopRequireDefault(require("../models"));
@@ -175,7 +177,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
   }());
   discordClient.on("messageCreate", /*#__PURE__*/function () {
     var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee15(message) {
-      var groupTask, groupTaskId, channelTask, channelTaskId, lastSeenDiscordTask, faucetSetting, maintenance, walletExists, preFilteredMessageDiscord, filteredMessageDiscord, limited, _limited, _limited2, _limited3, _limited4, _limited5, _limited6, _limited7, _limited8, _limited9, setting, _limited10, _limited11, _setting, _limited12, _setting2, _limited13, AmountPosition, AmountPositionEnded, _setting3, _limited14, _setting4, _limited15, _setting5, _limited16, _setting6, _limited17, _setting7, _limited18, _setting8, _limited19, _setting9, _limited20, _setting10, _limited21, _setting11, _limited22;
+      var groupTask, groupTaskId, channelTask, channelTaskId, lastSeenDiscordTask, faucetSetting, maintenance, walletExists, preFilteredMessageDiscord, filteredMessageDiscord, limited, _limited, _limited2, _limited3, _limited4, _limited5, _limited6, _limited7, _limited8, _limited9, setting, _limited10, _limited11, _setting, _limited12, _setting2, _limited13, AmountPosition, AmountPositionEnded, _setting3, _limited14, _setting4, _limited15, _setting5, _limited16, _setting6, _limited17, _setting7, _limited18, _setting8, _limited19, _setting9, _limited20, _setting10, _limited21, _setting11, _limited22, _setting12, _limited23;
 
       return _regenerator["default"].wrap(function _callee15$(_context15) {
         while (1) {
@@ -1251,6 +1253,43 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               return (0, _executeTips.executeTipFunction)(_reactdrop.discordReactDrop, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting11, faucetSetting);
 
             case 300:
+              if (!(filteredMessageDiscord[1].toLowerCase() === 'trivia')) {
+                _context15.next = 313;
+                break;
+              }
+
+              _context15.next = 303;
+              return (0, _settings.discordSettings)(message, 'trivia', groupTaskId, channelTaskId);
+
+            case 303:
+              _setting12 = _context15.sent;
+
+              if (_setting12) {
+                _context15.next = 306;
+                break;
+              }
+
+              return _context15.abrupt("return");
+
+            case 306:
+              _context15.next = 308;
+              return (0, _rateLimit.limitTrivia)(message);
+
+            case 308:
+              _limited23 = _context15.sent;
+
+              if (!_limited23) {
+                _context15.next = 311;
+                break;
+              }
+
+              return _context15.abrupt("return");
+
+            case 311:
+              _context15.next = 313;
+              return (0, _executeTips.executeTipFunction)(_trivia.discordTrivia, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting12, faucetSetting);
+
+            case 313:
             case "end":
               return _context15.stop();
           }

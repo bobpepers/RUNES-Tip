@@ -48,7 +48,8 @@ module.exports = function (sequelize, DataTypes) {
     ChannelModel.hasMany(model.sleet);
     ChannelModel.hasMany(model.thunder);
     ChannelModel.hasMany(model.thunderstorm);
-    ChannelModel.hasMany(model.hurricane); // receive
+    ChannelModel.hasMany(model.hurricane);
+    ChannelModel.hasMany(model.trivia); // receive
 
     ChannelModel.hasMany(model.reactdroptip);
     ChannelModel.hasMany(model.floodtip);
@@ -58,6 +59,7 @@ module.exports = function (sequelize, DataTypes) {
     ChannelModel.hasMany(model.thundertip);
     ChannelModel.hasMany(model.thunderstormtip);
     ChannelModel.hasMany(model.hurricanetip);
+    ChannelModel.hasMany(model.triviatip);
   };
 
   return ChannelModel;

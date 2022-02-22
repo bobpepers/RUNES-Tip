@@ -1,7 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 import {
   warnDirectMessage,
-  helpMessage,
+  helpMessageOne,
+  helpMessageTwo,
 } from '../../messages/discord';
 import db from '../../models';
 
@@ -16,11 +17,13 @@ export const discordHelp = async (message, io) => {
   );
   console.log(withdraw);
   if (message.channel.type === 'DM') {
-    message.author.send({ embeds: [helpMessage(withdraw)] });
+    await message.author.send({ embeds: [helpMessageOne(withdraw)] });
+    await message.author.send({ embeds: [helpMessageTwo(withdraw)] });
   }
   if (message.channel.type === 'GUILD_TEXT') {
     message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Help')] });
-    message.author.send({ embeds: [helpMessage(withdraw)] });
+    await message.author.send({ embeds: [helpMessageOne(withdraw)] });
+    await message.author.send({ embeds: [helpMessageTwo(withdraw)] });
   }
 
   const activity = [];

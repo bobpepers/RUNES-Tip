@@ -37,6 +37,8 @@ var _resetPassword = require("./controllers/resetPassword");
 
 var _recaptcha = require("./controllers/recaptcha");
 
+var _trivia = require("./controllers/trivia");
+
 var _dashboardUsers = require("./controllers/dashboardUsers");
 
 var _deposits = require("./controllers/deposits");
@@ -235,6 +237,74 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
     if (res.locals.channels) {
       res.json({
         channels: res.locals.channels
+      });
+    } else {
+      res.status(401).send({
+        error: "ERROR"
+      });
+    }
+  });
+  app.get('/api/triviaquestions', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _trivia.fetchTriviaQuestions, function (req, res) {
+    if (res.locals.error) {
+      console.log('found error');
+      console.log(res.locals.error);
+      res.status(401).send({
+        error: res.locals.error
+      });
+    } else if (res.locals.trivia) {
+      res.json({
+        trivia: res.locals.trivia
+      });
+    } else {
+      res.status(401).send({
+        error: "ERROR"
+      });
+    }
+  });
+  app.post('/api/trivia/switch', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _trivia.switchTriviaQuestion, function (req, res) {
+    if (res.locals.error) {
+      console.log('found error');
+      console.log(res.locals.error);
+      res.status(401).send({
+        error: res.locals.error
+      });
+    } else if (res.locals.trivia) {
+      res.json({
+        trivia: res.locals.trivia
+      });
+    } else {
+      res.status(401).send({
+        error: "ERROR"
+      });
+    }
+  });
+  app.post('/api/trivia/remove', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _trivia.removeTriviaQuestion, function (req, res) {
+    if (res.locals.error) {
+      console.log('found error');
+      console.log(res.locals.error);
+      res.status(401).send({
+        error: res.locals.error
+      });
+    } else if (res.locals.trivia) {
+      res.json({
+        trivia: res.locals.trivia
+      });
+    } else {
+      res.status(401).send({
+        error: "ERROR"
+      });
+    }
+  });
+  app.post('/api/trivia/insert', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _trivia.insertTrivia, function (req, res) {
+    if (res.locals.error) {
+      console.log('found error');
+      console.log(res.locals.error);
+      res.status(401).send({
+        error: res.locals.error
+      });
+    } else if (res.locals.trivia) {
+      res.json({
+        trivia: res.locals.trivia
       });
     } else {
       res.status(401).send({
