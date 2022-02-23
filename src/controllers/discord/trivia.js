@@ -3,8 +3,6 @@
 import _ from 'lodash';
 import { Transaction } from "sequelize";
 import {
-  MessageAttachment,
-  // MessageCollector,
   MessageActionRow,
   MessageButton,
 } from "discord.js";
@@ -145,7 +143,7 @@ export const listenTrivia = async (
           });
         }).catch((err) => {
           console.log(err);
-          console.log('failed');
+          logger.error(`trivia error: ${err}`);
         });
       });
     }
@@ -302,6 +300,14 @@ export const listenTrivia = async (
             // eslint-disable-next-line no-restricted-syntax
             for (const receiver of withoutBotsSorted) {
               // eslint-disable-next-line no-await-in-loop
+              const updateTriviaTip = await receiver.update({
+                amount: Number(amountEach),
+              }, {
+                lock: t.LOCK.UPDATE,
+                transaction: t,
+              });
+
+              // eslint-disable-next-line no-await-in-loop
               const earnerWallet = await receiver.user.wallet.update({
                 available: receiver.user.wallet.available + Number(amountEach),
               }, {
@@ -375,7 +381,7 @@ export const listenTrivia = async (
         });
       }).catch((err) => {
         console.log(err);
-        console.log('error');
+        logger.error(`trivia error: ${err}`);
       });
       io.to('admin').emit('updateActivity', {
         activity,
@@ -525,14 +531,14 @@ export const discordTrivia = async (
       });
 
       if (!randomQuestion) {
-        const failEmojiActivity = await db.activity.create({
+        const failFindTriviaQuestion = await db.activity.create({
           type: 'trivia_f',
           spenderId: user.id,
         }, {
           lock: t.LOCK.UPDATE,
           transaction: t,
         });
-        activity.unshift(failEmojiActivity);
+        activity.unshift(failFindTriviaQuestion);
         await message.channel.send({ embeds: [noTriviaQuestionFoundMessage(message, 'Trivia')] });
       } else {
         const timeDay = Number(cutNumberTime) * 24 * 60 * 60 * 1000;
@@ -596,10 +602,10 @@ export const discordTrivia = async (
             row.addComponents(
               new MessageButton()
                 .setCustomId(answer.answer)
-                .setLabel(alphabet[positionAlphabet])
+                .setLabel(alphabet[parseInt(positionAlphabet, 10)])
                 .setStyle('PRIMARY'),
             );
-            answerString += `${alphabet[positionAlphabet]}. ${answer.answer}\n`;
+            answerString += `${alphabet[parseInt(positionAlphabet, 10)]}. ${answer.answer}\n`;
             positionAlphabet += 1;
           }
 
@@ -726,7 +732,6 @@ export const discordTrivia = async (
             updateMessage,
             answerString,
           );
-          // logger.info(`Success started reactdrop Requested by: ${user.user_id}-${user.username} with ${amount / 1e8} ${settings.coin.ticker}`);
         }
       }
     }

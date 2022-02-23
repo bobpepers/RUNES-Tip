@@ -16,16 +16,11 @@ import cors from "cors";
 import compression from "compression";
 import schedule from "node-schedule";
 import dotenv from 'dotenv';
-
-// require('dotenv').config();
-
 import passport from 'passport';
 import { router } from "./router";
 import { dashboardRouter } from "./dashboard/router";
-
 import { updatePrice } from "./helpers/updatePrice";
 import { initDatabaseRecords } from "./helpers/initDatabaseRecords";
-
 import { patchRunebaseDeposits } from "./helpers/runebase/patcher";
 import { patchPirateDeposits } from "./helpers/pirate/patcher";
 import { patchKomodoDeposits } from "./helpers/komodo/patcher";
@@ -34,7 +29,6 @@ import { listenReactDrop } from "./controllers/discord/reactdrop";
 import { listenTrivia } from "./controllers/discord/trivia";
 import db from "./models";
 import getCoinSettings from './config/settings';
-
 import { startKomodoSync } from "./services/syncKomodo";
 import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";
@@ -120,6 +114,7 @@ io.on("connection", async (socket) => {
       || socket.request.user.role === 8)
   ) {
     console.log('joined admin socket');
+    console.log(userId);
     socket.join('admin');
     sockets[userId] = socket;
   }
@@ -127,6 +122,7 @@ io.on("connection", async (socket) => {
   socket.on("disconnect", () => {
     delete sockets[userId];
     console.log("Client disconnected");
+    console.log(userId);
   });
 });
 
@@ -160,7 +156,7 @@ const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
   await discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
   await initDatabaseRecords(discordClient, telegramClient);
 
-  // recover reactdrops here listenReactDrop = async (reactMessage, distance, reactDrop)
+  // recover reactdrops
   const allRunningReactDrops = await db.reactdrop.findAll({
     where: {
       ended: false,
@@ -280,10 +276,10 @@ const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
       row.addComponents(
         new MessageButton()
           .setCustomId(answer.answer)
-          .setLabel(alphabet[positionAlphabet])
+          .setLabel(alphabet[parseInt(positionAlphabet, 10)])
           .setStyle('PRIMARY'),
       );
-      answerString += `${alphabet[positionAlphabet]}. ${answer.answer}\n`;
+      answerString += `${alphabet[parseInt(positionAlphabet, 10)]}. ${answer.answer}\n`;
       positionAlphabet += 1;
     }
     // eslint-disable-next-line no-await-in-loop

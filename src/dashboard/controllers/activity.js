@@ -118,6 +118,16 @@ export const fetchActivity = async (req, res, next) => {
         required: false,
       },
       {
+        model: db.trivia,
+        as: 'trivia',
+        required: false,
+      },
+      {
+        model: db.triviatip,
+        as: 'triviatip',
+        required: false,
+      },
+      {
         model: db.thunder,
         as: 'thunder',
         required: false,

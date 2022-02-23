@@ -79,6 +79,7 @@ module.exports = (sequelize, DataTypes) => {
     UserModel.hasMany(model.tip);
     UserModel.hasMany(model.rain);
     UserModel.hasMany(model.reactdrop);
+    UserModel.hasMany(model.trivia, { as: 'trivias' });
     UserModel.hasMany(model.faucettip);
     UserModel.hasMany(model.flood);
     UserModel.hasMany(model.soak);
@@ -89,6 +90,7 @@ module.exports = (sequelize, DataTypes) => {
     UserModel.hasMany(model.hurricane);
 
     UserModel.hasMany(model.reactdroptip);
+    UserModel.hasMany(model.triviatip, { as: 'triviatips' });
     UserModel.hasMany(model.raintip);
     UserModel.hasMany(model.floodtip);
     UserModel.hasMany(model.soaktip);

@@ -7,6 +7,7 @@ export const fetchLiability = async (req, res, next) => {
   let available = 0;
   let locked = 0;
   let runningReactdrops = 0;
+  let runningTrivia = 0;
   let unconfirmedDeposits = 0;
   let unconfirmledWithdrawals = 0;
   let faucetAmount = 0;
@@ -69,6 +70,19 @@ export const fetchLiability = async (req, res, next) => {
       },
     });
 
+    const sumRunningTrivia = await db.trivia.findAll({
+      attributes: [
+        [Sequelize.fn('sum', Sequelize.col('amount')), 'total_amount'],
+      ],
+      where: {
+        [Op.and]: [
+          {
+            ended: false,
+          },
+        ],
+      },
+    });
+
     const faucet = await db.faucet.findOne();
     console.log(faucet);
     console.log('faucet');
@@ -79,8 +93,9 @@ export const fetchLiability = async (req, res, next) => {
     unconfirmedDeposits = sumUnconfirmedDeposits[0].dataValues.total_amount ? sumUnconfirmedDeposits[0].dataValues.total_amount : 0;
     unconfirmledWithdrawals = sumUnconfirmedWithdrawals[0].dataValues.total_amount ? sumUnconfirmedWithdrawals[0].dataValues.total_amount : 0;
     runningReactdrops = sumRunningReactdrops[0].dataValues.total_amount ? sumRunningReactdrops[0].dataValues.total_amount : 0;
+    runningTrivia = sumRunningTrivia[0].dataValues.total_amount ? sumRunningTrivia[0].dataValues.total_amount : 0;
 
-    res.locals.liability = (((Number(available) + Number(locked)) + Number(unconfirmedDeposits)) - Number(unconfirmledWithdrawals) + Number(runningReactdrops) + Number(faucetAmount));
+    res.locals.liability = (((Number(available) + Number(locked)) + Number(unconfirmedDeposits)) - Number(unconfirmledWithdrawals) + Number(runningTrivia) + Number(runningReactdrops) + Number(faucetAmount));
 
     next();
   } catch (error) {

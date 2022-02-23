@@ -84,6 +84,12 @@ export const fetchFeeSchedule = async (
     channelId,
   );
 
+  fee.trivia = await findFee(
+    'trivia',
+    guildId,
+    channelId,
+  );
+
   fee.soak = await findFee(
     'soak',
     guildId,
@@ -101,21 +107,25 @@ export const fetchFeeSchedule = async (
     guildId,
     channelId,
   );
+
   fee.thunder = await findFee(
     'thunder',
     guildId,
     channelId,
   );
+
   fee.thunderstorm = await findFee(
     'thunderstorm',
     guildId,
     channelId,
   );
+
   fee.hurricane = await findFee(
     'hurricane',
     guildId,
     channelId,
   );
+
   fee.flood = await findFee(
     'flood',
     guildId,
@@ -126,12 +136,13 @@ export const fetchFeeSchedule = async (
     guildId,
     channelId,
   );
+
   fee.withdraw = await findFee(
     'withdraw',
     guildId,
     channelId,
   );
-  console.log(fee);
+
   const preActivity = await db.activity.create({
     type: 'fees_s',
     earnerId: user.id,

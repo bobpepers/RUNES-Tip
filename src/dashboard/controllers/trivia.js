@@ -148,6 +148,11 @@ export const insertTrivia = async (
       },
       include: [
         {
+          model: db.trivia,
+          as: 'trivia',
+          attributes: ['id'],
+        },
+        {
           model: db.triviaanswer,
           as: 'triviaanswers',
         },

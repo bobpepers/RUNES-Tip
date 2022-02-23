@@ -47,15 +47,18 @@ export const discordStats = async (
   const activity = [];
   const parentWhereOptions = {};
   const childWhereOptions = {};
+  const childWhereOptionsTriviaTips = {};
   let textTime;
   let cutLastTimeLetter;
   let cutNumberTime;
   let isnum;
+
   let user = await db.user.findOne({
     where: {
       user_id: `discord-${message.author.id}`,
     },
   });
+
   if (!user) {
     const activityA = await db.activity.create({
       type: 'stats_f',
@@ -118,7 +121,10 @@ export const discordStats = async (
     }
     dateObj = await new Date(dateObj);
     childWhereOptions.createdAt = { [Op.gte]: dateObj };
+    // childWhereOptionsTrivia.createdAt = { [Op.gte]: dateObj };
+    childWhereOptionsTriviaTips.createdAt = { [Op.gte]: dateObj };
   }
+  childWhereOptionsTriviaTips.amount = { [Op.ne]: null };
 
   parentWhereOptions.user_id = `discord-${message.author.id}`;
 
@@ -160,6 +166,27 @@ export const discordStats = async (
             model: db.group,
             as: 'group',
             required: false,
+          },
+        ],
+      },
+      {
+        model: db.trivia,
+        as: 'trivias',
+        required: false,
+        separate: true,
+        where: childWhereOptions,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+          {
+            model: db.triviatip,
+            as: 'triviatips',
+            where: {
+              amount: { [Op.ne]: null },
+            },
           },
         ],
       },
@@ -278,6 +305,20 @@ export const discordStats = async (
         ],
       },
       {
+        model: db.triviatip,
+        as: 'triviatips',
+        required: false,
+        separate: true,
+        where: childWhereOptionsTriviaTips,
+        include: [
+          {
+            model: db.group,
+            as: 'group',
+            required: false,
+          },
+        ],
+      },
+      {
         model: db.reactdroptip,
         as: 'reactdroptips',
         required: false,
@@ -383,6 +424,10 @@ export const discordStats = async (
   let groupedThunderTips;
   let groupedSleetTips;
 
+  let groupedTrivia;
+  let groupedTriviaTips;
+
+  console.log(user.triviatips);
   if (message.channel.type === 'DM') {
     // spend
     groupedTips = user.tips ? groupGlobal(user.tips, 'spend', 'tips') : {};
@@ -393,6 +438,7 @@ export const discordStats = async (
     groupedThunderStorms = user.thunderstorms ? groupGlobal(user.thunderstorms, 'spend', 'thunderstorms') : {};
     groupedThunders = user.thunders ? groupGlobal(user.thunders, 'spend', 'thunders') : {};
     groupedSleets = user.sleets ? groupGlobal(user.sleets, 'spend', 'sleets') : {};
+    groupedTrivia = user.trivias ? groupGlobal(user.trivias, 'spend', 'trivias') : {};
 
     // earned
     groupedTipTips = user.tiptips ? groupGlobal(user.tiptips, 'earned', 'tips') : {};
@@ -403,6 +449,7 @@ export const discordStats = async (
     groupedThunderStormTips = user.thunderstormtips ? groupGlobal(user.thunderstormtips, 'earned', 'thunderstorms') : {};
     groupedThunderTips = user.thundertips ? groupGlobal(user.thundertips, 'earned', 'thunders') : {};
     groupedSleetTips = user.sleettips ? groupGlobal(user.sleettips, 'earned', 'sleets') : {};
+    groupedTriviaTips = user.triviatips ? groupGlobal(user.triviatips, 'earned', 'trivias') : {};
   }
   if (message.channel.type === 'GUILD_TEXT') {
     // spend
@@ -414,6 +461,7 @@ export const discordStats = async (
     groupedThunderStorms = user.thunderstorms ? group(user.thunderstorms, 'spend', 'thunderstorms') : {};
     groupedThunders = user.thunders ? group(user.thunders, 'spend', 'thunders') : {};
     groupedSleets = user.sleets ? group(user.sleets, 'spend', 'sleets') : {};
+    groupedTrivia = user.trivias ? group(user.trivias, 'spend', 'trivias') : {};
 
     // earned
     groupedTipTips = user.tiptips ? group(user.tiptips, 'earned', 'tips') : {};
@@ -424,6 +472,7 @@ export const discordStats = async (
     groupedThunderStormTips = user.thunderstormtips ? group(user.thunderstormtips, 'earned', 'thunderstorms') : {};
     groupedThunderTips = user.thundertips ? group(user.thundertips, 'earned', 'thunders') : {};
     groupedSleetTips = user.sleettips ? group(user.sleettips, 'earned', 'sleets') : {};
+    groupedTriviaTips = user.triviatips ? group(user.triviatips, 'earned', 'trivias') : {};
   }
   // group the resuts by server and type
 
@@ -439,6 +488,7 @@ export const discordStats = async (
     groupedThunderStorms,
     groupedThunders,
     groupedSleets,
+    groupedTrivia,
 
     // Earned
     groupedTipTips,
@@ -449,7 +499,9 @@ export const discordStats = async (
     groupedThunderStormTips,
     groupedThunderTips,
     groupedSleetTips,
+    groupedTriviaTips,
   );
+  console.log(groupedTriviaTips);
 
   if (_.isEmpty(mergedObject)) {
     await message.author.send({ embeds: [statsMessage(message, "No data found!")] });
@@ -480,6 +532,9 @@ export const discordStats = async (
 
     const spendReactDrops = mergedObject[serverObj].spend && mergedObject[serverObj].spend.reactdrops
       && `${mergedObject[serverObj].spend.reactdrops.length} reactdrops for ${mergedObject[serverObj].spend.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
+    const spendTrivias = mergedObject[serverObj].spend && mergedObject[serverObj].spend.trivias
+      && `${mergedObject[serverObj].spend.trivias.length} Trivia for ${mergedObject[serverObj].spend.trivias.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
     const spendTotal = (mergedObject[serverObj].spend && mergedObject[serverObj].spend.tips ? mergedObject[serverObj].spend.tips.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
       + (mergedObject[serverObj].spend && mergedObject[serverObj].spend.floods ? mergedObject[serverObj].spend.floods.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
@@ -515,6 +570,9 @@ export const discordStats = async (
     const earnedReactDrops = mergedObject[serverObj].earned && mergedObject[serverObj].earned.reactdrops
       && `${mergedObject[serverObj].earned.reactdrops.length} reactdrops for ${mergedObject[serverObj].earned.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
+    const earnedTrivias = mergedObject[serverObj].earned && mergedObject[serverObj].earned.trivias
+      && `${mergedObject[serverObj].earned.trivias.length} trivia for ${mergedObject[serverObj].earned.trivias.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+
     const earnedTotal = (mergedObject[serverObj].earned && mergedObject[serverObj].earned.tips ? mergedObject[serverObj].earned.tips.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
     + (mergedObject[serverObj].earned && mergedObject[serverObj].earned.floods ? mergedObject[serverObj].earned.floods.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
     + (mergedObject[serverObj].earned && mergedObject[serverObj].earned.rains ? mergedObject[serverObj].earned.rains.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
@@ -527,10 +585,10 @@ export const discordStats = async (
     const serverString = `_**${serverObj}**_
     
 ${mergedObject[serverObj].spend ? '_Spend_\n' : ''}
-${spendTips ? `Tips: ${spendTips}\n` : ''}${spendRains ? `Rains: ${spendRains}\n` : ''}${spendFloods ? `Floods: ${spendFloods}\n` : ''}${spendSoaks ? `Soaks: ${spendSoaks}\n` : ''}${spendHurricanes ? `Hurricanes: ${spendHurricanes}\n` : ''}${spendThunders ? `Thunders: ${spendThunders}\n` : ''}${spendThunderstorms ? `Thunderstorms: ${spendThunderstorms}\n` : ''}${spendReactDrops ? `ReactDrops: ${spendReactDrops}\n` : ''}${spendTotal ? `Total Spend: ${spendTotal} ${settings.coin.ticker}\n` : ''}
+${spendTips ? `Tips: ${spendTips}\n` : ''}${spendRains ? `Rains: ${spendRains}\n` : ''}${spendFloods ? `Floods: ${spendFloods}\n` : ''}${spendSoaks ? `Soaks: ${spendSoaks}\n` : ''}${spendHurricanes ? `Hurricanes: ${spendHurricanes}\n` : ''}${spendThunders ? `Thunders: ${spendThunders}\n` : ''}${spendThunderstorms ? `Thunderstorms: ${spendThunderstorms}\n` : ''}${spendReactDrops ? `ReactDrops: ${spendReactDrops}\n` : ''}${spendTrivias ? `Trivia: ${spendTrivias}\n` : ''}${spendTotal ? `Total Spend: ${spendTotal} ${settings.coin.ticker}\n` : ''}
   
 ${mergedObject[serverObj].earned ? '_Earned_\n' : ''}
-${earnedTips ? `Tips: ${earnedTips}\n` : ''}${earnedRains ? `Rains: ${earnedRains}\n` : ''}${earnedFloods ? `Floods: ${earnedFloods}\n` : ''}${earnedSoaks ? `Soaks: ${earnedSoaks}\n` : ''}${earnedHurricanes ? `Hurricanes: ${earnedHurricanes}\n` : ''}${earnedThunders ? `Thunders: ${earnedThunders}\n` : ''}${earnedThunderstorms ? `Thunderstorms: ${earnedThunderstorms}\n` : ''}${earnedReactDrops ? `ReactDrops: ${earnedReactDrops}\n` : ''}${earnedTotal ? `Total Earned: ${earnedTotal} ${settings.coin.ticker}\n` : ''}`;
+${earnedTips ? `Tips: ${earnedTips}\n` : ''}${earnedRains ? `Rains: ${earnedRains}\n` : ''}${earnedFloods ? `Floods: ${earnedFloods}\n` : ''}${earnedSoaks ? `Soaks: ${earnedSoaks}\n` : ''}${earnedHurricanes ? `Hurricanes: ${earnedHurricanes}\n` : ''}${earnedThunders ? `Thunders: ${earnedThunders}\n` : ''}${earnedThunderstorms ? `Thunderstorms: ${earnedThunderstorms}\n` : ''}${earnedReactDrops ? `ReactDrops: ${earnedReactDrops}\n` : ''}${earnedTrivias ? `Trivia: ${earnedTrivias}\n` : ''}${earnedTotal ? `Total Earned: ${earnedTotal} ${settings.coin.ticker}\n` : ''}`;
     // eslint-disable-next-line no-await-in-loop
     await message.author.send({ embeds: [statsMessage(message, serverString)] });
   }

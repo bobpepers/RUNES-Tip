@@ -392,9 +392,11 @@ Estimated value of <@${userId}>'s balance: $${(((user.wallet.available + user.wa
 
 export const DiscordFeeMessage = (message, fee) => {
   let feeString = '';
+  // eslint-disable-next-line no-restricted-syntax
   for (const key in fee) {
-    feeString += `${key}: ${fee[key].fee / 1e2}% (${fee[key].type})
-`;
+    if (Object.prototype.hasOwnProperty.call(fee, key)) {
+      feeString += `${key}: ${fee[key].fee / 1e2}% (${fee[key].type})\n`;
+    }
   }
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
