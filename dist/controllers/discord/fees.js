@@ -159,60 +159,64 @@ var fetchFeeSchedule = /*#__PURE__*/function () {
           case 22:
             fee.reactdrop = _context2.sent;
             _context2.next = 25;
-            return findFee('soak', guildId, channelId);
+            return findFee('trivia', guildId, channelId);
 
           case 25:
-            fee.soak = _context2.sent;
+            fee.trivia = _context2.sent;
             _context2.next = 28;
-            return findFee('rain', guildId, channelId);
+            return findFee('soak', guildId, channelId);
 
           case 28:
-            fee.rain = _context2.sent;
+            fee.soak = _context2.sent;
             _context2.next = 31;
-            return findFee('voicerain', guildId, channelId);
+            return findFee('rain', guildId, channelId);
 
           case 31:
-            fee.voicerain = _context2.sent;
+            fee.rain = _context2.sent;
             _context2.next = 34;
-            return findFee('thunder', guildId, channelId);
+            return findFee('voicerain', guildId, channelId);
 
           case 34:
-            fee.thunder = _context2.sent;
+            fee.voicerain = _context2.sent;
             _context2.next = 37;
-            return findFee('thunderstorm', guildId, channelId);
+            return findFee('thunder', guildId, channelId);
 
           case 37:
-            fee.thunderstorm = _context2.sent;
+            fee.thunder = _context2.sent;
             _context2.next = 40;
-            return findFee('hurricane', guildId, channelId);
+            return findFee('thunderstorm', guildId, channelId);
 
           case 40:
-            fee.hurricane = _context2.sent;
+            fee.thunderstorm = _context2.sent;
             _context2.next = 43;
-            return findFee('flood', guildId, channelId);
+            return findFee('hurricane', guildId, channelId);
 
           case 43:
-            fee.flood = _context2.sent;
+            fee.hurricane = _context2.sent;
             _context2.next = 46;
-            return findFee('sleet', guildId, channelId);
+            return findFee('flood', guildId, channelId);
 
           case 46:
-            fee.sleet = _context2.sent;
+            fee.flood = _context2.sent;
             _context2.next = 49;
-            return findFee('withdraw', guildId, channelId);
+            return findFee('sleet', guildId, channelId);
 
           case 49:
+            fee.sleet = _context2.sent;
+            _context2.next = 52;
+            return findFee('withdraw', guildId, channelId);
+
+          case 52:
             fee.withdraw = _context2.sent;
-            console.log(fee);
-            _context2.next = 53;
+            _context2.next = 55;
             return _models["default"].activity.create({
               type: 'fees_s',
               earnerId: user.id
             });
 
-          case 53:
+          case 55:
             preActivity = _context2.sent;
-            _context2.next = 56;
+            _context2.next = 58;
             return _models["default"].activity.findOne({
               where: {
                 id: preActivity.id
@@ -223,20 +227,20 @@ var fetchFeeSchedule = /*#__PURE__*/function () {
               }]
             });
 
-          case 56:
+          case 58:
             finalActivity = _context2.sent;
             activity.unshift(finalActivity);
-            _context2.next = 60;
+            _context2.next = 62;
             return message.reply({
               embeds: [(0, _discord.DiscordFeeMessage)(message, fee)]
             });
 
-          case 60:
+          case 62:
             io.to('admin').emit('updateActivity', {
               activity: activity
             });
 
-          case 61:
+          case 63:
           case "end":
             return _context2.stop();
         }

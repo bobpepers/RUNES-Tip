@@ -221,7 +221,8 @@ var listenTrivia = /*#__PURE__*/function () {
                                     };
                                   }())["catch"](function (err) {
                                     console.log(err);
-                                    console.log('failed');
+
+                                    _logger["default"].error("trivia error: ".concat(err));
                                   });
 
                                 case 2:
@@ -273,7 +274,7 @@ var listenTrivia = /*#__PURE__*/function () {
                                   isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
                                 }, /*#__PURE__*/function () {
                                   var _ref7 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(t) {
-                                    var correctAnswer, endTriviaDrop, returnWallet, updatedWallet, faucetSetting, faucetWatered, amountEach, listOfUsersRained, withoutBotsSorted, _iterator, _step, receiver, earnerWallet, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element, initiator;
+                                    var correctAnswer, endTriviaDrop, returnWallet, updatedWallet, faucetSetting, faucetWatered, amountEach, listOfUsersRained, withoutBotsSorted, _iterator, _step, receiver, updateTriviaTip, earnerWallet, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element, initiator;
 
                                     return _regenerator["default"].wrap(function _callee4$(_context4) {
                                       while (1) {
@@ -330,7 +331,7 @@ var listenTrivia = /*#__PURE__*/function () {
                                             endTriviaDrop = _context4.sent;
 
                                             if (!endTriviaDrop) {
-                                              _context4.next = 88;
+                                              _context4.next = 91;
                                               break;
                                             }
 
@@ -373,7 +374,7 @@ var listenTrivia = /*#__PURE__*/function () {
                                             triviaMessage.channel.send({
                                               embeds: [(0, _discord2.triviaReturnInitiatorMessage)()]
                                             });
-                                            _context4.next = 88;
+                                            _context4.next = 91;
                                             break;
 
                                           case 19:
@@ -463,12 +464,22 @@ var listenTrivia = /*#__PURE__*/function () {
 
                                           case 43:
                                             if ((_step = _iterator.n()).done) {
-                                              _context4.next = 59;
+                                              _context4.next = 62;
                                               break;
                                             }
 
                                             receiver = _step.value;
                                             _context4.next = 47;
+                                            return receiver.update({
+                                              amount: Number(amountEach)
+                                            }, {
+                                              lock: t.LOCK.UPDATE,
+                                              transaction: t
+                                            });
+
+                                          case 47:
+                                            updateTriviaTip = _context4.sent;
+                                            _context4.next = 50;
                                             return receiver.user.wallet.update({
                                               available: receiver.user.wallet.available + Number(amountEach)
                                             }, {
@@ -476,7 +487,7 @@ var listenTrivia = /*#__PURE__*/function () {
                                               transaction: t
                                             });
 
-                                          case 47:
+                                          case 50:
                                             earnerWallet = _context4.sent;
 
                                             if (receiver.user.ignoreMe) {
@@ -488,7 +499,7 @@ var listenTrivia = /*#__PURE__*/function () {
 
                                             tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                                            _context4.next = 52;
+                                            _context4.next = 55;
                                             return _models["default"].activity.create({
                                               amount: Number(amountEach),
                                               type: 'triviatip_s',
@@ -502,9 +513,9 @@ var listenTrivia = /*#__PURE__*/function () {
                                               transaction: t
                                             });
 
-                                          case 52:
+                                          case 55:
                                             tipActivity = _context4.sent;
-                                            _context4.next = 55;
+                                            _context4.next = 58;
                                             return _models["default"].activity.findOne({
                                               where: {
                                                 id: tipActivity.id
@@ -526,32 +537,32 @@ var listenTrivia = /*#__PURE__*/function () {
                                               transaction: t
                                             });
 
-                                          case 55:
+                                          case 58:
                                             tipActivity = _context4.sent;
                                             activity.unshift(tipActivity);
 
-                                          case 57:
+                                          case 60:
                                             _context4.next = 43;
                                             break;
 
-                                          case 59:
-                                            _context4.next = 64;
+                                          case 62:
+                                            _context4.next = 67;
                                             break;
 
-                                          case 61:
-                                            _context4.prev = 61;
+                                          case 64:
+                                            _context4.prev = 64;
                                             _context4.t0 = _context4["catch"](41);
 
                                             _iterator.e(_context4.t0);
 
-                                          case 64:
-                                            _context4.prev = 64;
+                                          case 67:
+                                            _context4.prev = 67;
 
                                             _iterator.f();
 
-                                            return _context4.finish(64);
+                                            return _context4.finish(67);
 
-                                          case 67:
+                                          case 70:
                                             newStringListUsers = listOfUsersRained.join(", "); // console.log(newStringListUsers);
 
                                             // console.log(newStringListUsers);
@@ -559,58 +570,58 @@ var listenTrivia = /*#__PURE__*/function () {
 
                                             // eslint-disable-next-line no-restricted-syntax
                                             _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                                            _context4.prev = 70;
+                                            _context4.prev = 73;
 
                                             _iterator2.s();
 
-                                          case 72:
+                                          case 75:
                                             if ((_step2 = _iterator2.n()).done) {
-                                              _context4.next = 78;
+                                              _context4.next = 81;
                                               break;
                                             }
 
                                             element = _step2.value;
-                                            _context4.next = 76;
+                                            _context4.next = 79;
                                             return triviaMessage.channel.send(element);
 
-                                          case 76:
-                                            _context4.next = 72;
+                                          case 79:
+                                            _context4.next = 75;
                                             break;
 
-                                          case 78:
-                                            _context4.next = 83;
+                                          case 81:
+                                            _context4.next = 86;
                                             break;
-
-                                          case 80:
-                                            _context4.prev = 80;
-                                            _context4.t1 = _context4["catch"](70);
-
-                                            _iterator2.e(_context4.t1);
 
                                           case 83:
                                             _context4.prev = 83;
+                                            _context4.t1 = _context4["catch"](73);
+
+                                            _iterator2.e(_context4.t1);
+
+                                          case 86:
+                                            _context4.prev = 86;
 
                                             _iterator2.f();
 
-                                            return _context4.finish(83);
+                                            return _context4.finish(86);
 
-                                          case 86:
+                                          case 89:
                                             initiator = endTriviaDrop.user.user_id.replace('discord-', '');
                                             triviaMessage.channel.send({
                                               embeds: [(0, _discord2.AfterTriviaSuccessMessage)(endTriviaDrop, amountEach, initiator)]
                                             });
 
-                                          case 88:
+                                          case 91:
                                             t.afterCommit(function () {
                                               console.log('done');
                                             });
 
-                                          case 89:
+                                          case 92:
                                           case "end":
                                             return _context4.stop();
                                         }
                                       }
-                                    }, _callee4, null, [[41, 61, 64, 67], [70, 80, 83, 86]]);
+                                    }, _callee4, null, [[41, 64, 67, 70], [73, 83, 86, 89]]);
                                   }));
 
                                   return function (_x10) {
@@ -618,7 +629,8 @@ var listenTrivia = /*#__PURE__*/function () {
                                   };
                                 }())["catch"](function (err) {
                                   console.log(err);
-                                  console.log('error');
+
+                                  _logger["default"].error("trivia error: ".concat(err));
                                 });
 
                               case 6:
@@ -685,7 +697,7 @@ var discordTrivia = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref9 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee9(t) {
-                var failActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, totalPeople, isnumPeople, textTime, cutLastTimeLetter, cutNumberTime, isnum, amountPeopleFailActivity, timeFailActivity, _timeFailActivity, randomQuestion, failEmojiActivity, timeDay, timeHour, timeMinute, timeSecond, dateObj, countDownDate, now, distance, findGroup, wallet, row, alphabet, answers, answerString, positionAlphabet, _iterator3, _step3, answer, sendTriviaMessage, group, channel, fee, newTriviaCreate, newTrivia, preActivity, finalActivity, triviaMessage, updateMessage;
+                var failActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, totalPeople, isnumPeople, textTime, cutLastTimeLetter, cutNumberTime, isnum, amountPeopleFailActivity, timeFailActivity, _timeFailActivity, randomQuestion, failFindTriviaQuestion, timeDay, timeHour, timeMinute, timeSecond, dateObj, countDownDate, now, distance, findGroup, wallet, row, alphabet, answers, answerString, positionAlphabet, _iterator3, _step3, answer, sendTriviaMessage, group, channel, fee, newTriviaCreate, newTrivia, preActivity, finalActivity, triviaMessage, updateMessage;
 
                 return _regenerator["default"].wrap(function _callee9$(_context9) {
                   while (1) {
@@ -889,8 +901,8 @@ var discordTrivia = /*#__PURE__*/function () {
                         });
 
                       case 61:
-                        failEmojiActivity = _context9.sent;
-                        activity.unshift(failEmojiActivity);
+                        failFindTriviaQuestion = _context9.sent;
+                        activity.unshift(failFindTriviaQuestion);
                         _context9.next = 65;
                         return message.channel.send({
                           embeds: [(0, _discord2.noTriviaQuestionFoundMessage)(message, 'Trivia')]
@@ -1007,8 +1019,8 @@ var discordTrivia = /*#__PURE__*/function () {
                           // eslint-disable-next-line no-restricted-syntax
                           for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
                             answer = _step3.value;
-                            row.addComponents(new _discord.MessageButton().setCustomId(answer.answer).setLabel(alphabet[positionAlphabet]).setStyle('PRIMARY'));
-                            answerString += "".concat(alphabet[positionAlphabet], ". ").concat(answer.answer, "\n");
+                            row.addComponents(new _discord.MessageButton().setCustomId(answer.answer).setLabel(alphabet[parseInt(positionAlphabet, 10)]).setStyle('PRIMARY'));
+                            answerString += "".concat(alphabet[parseInt(positionAlphabet, 10)], ". ").concat(answer.answer, "\n");
                             positionAlphabet += 1;
                           }
                         } catch (err) {
@@ -1147,7 +1159,7 @@ var discordTrivia = /*#__PURE__*/function () {
                             }
                           }, _callee8);
                         })), 10000);
-                        listenTrivia(triviaMessage, distance, newTrivia, io, queue, updateMessage, answerString); // logger.info(`Success started reactdrop Requested by: ${user.user_id}-${user.username} with ${amount / 1e8} ${settings.coin.ticker}`);
+                        listenTrivia(triviaMessage, distance, newTrivia, io, queue, updateMessage, answerString);
 
                       case 138:
                         t.afterCommit(function () {

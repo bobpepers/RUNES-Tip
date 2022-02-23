@@ -269,10 +269,12 @@ var balanceMessage = function balanceMessage(userId, user, priceInfo) {
 exports.balanceMessage = balanceMessage;
 
 var DiscordFeeMessage = function DiscordFeeMessage(message, fee) {
-  var feeString = '';
+  var feeString = ''; // eslint-disable-next-line no-restricted-syntax
 
   for (var key in fee) {
-    feeString += "".concat(key, ": ").concat(fee[key].fee / 1e2, "% (").concat(fee[key].type, ")\n");
+    if (Object.prototype.hasOwnProperty.call(fee, key)) {
+      feeString += "".concat(key, ": ").concat(fee[key].fee / 1e2, "% (").concat(fee[key].type, ")\n");
+    }
   }
 
   var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Fee Schedule').setDescription("".concat(feeString)).setThumbnail(settings.coin.logo).setTimestamp().setFooter({

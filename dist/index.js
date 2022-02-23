@@ -156,6 +156,7 @@ io.on("connection", /*#__PURE__*/function () {
 
             if (socket.request.user && (socket.request.user.role === 4 || socket.request.user.role === 8)) {
               console.log('joined admin socket');
+              console.log(userId);
               socket.join('admin');
               sockets[userId] = socket;
             }
@@ -164,6 +165,7 @@ io.on("connection", /*#__PURE__*/function () {
             socket.on("disconnect", function () {
               delete sockets[userId];
               console.log("Client disconnected");
+              console.log(userId);
             });
 
           case 4:
@@ -388,8 +390,8 @@ var telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN); // 
                     try {
                       for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
                         answer = _step3.value;
-                        row.addComponents(new _discord.MessageButton().setCustomId(answer.answer).setLabel(alphabet[positionAlphabet]).setStyle('PRIMARY'));
-                        answerString += "".concat(alphabet[positionAlphabet], ". ").concat(answer.answer, "\n");
+                        row.addComponents(new _discord.MessageButton().setCustomId(answer.answer).setLabel(alphabet[parseInt(positionAlphabet, 10)]).setStyle('PRIMARY'));
+                        answerString += "".concat(alphabet[parseInt(positionAlphabet, 10)], ". ").concat(answer.answer, "\n");
                         positionAlphabet += 1;
                       } // eslint-disable-next-line no-await-in-loop
 

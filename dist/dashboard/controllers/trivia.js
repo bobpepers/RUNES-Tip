@@ -306,6 +306,10 @@ var insertTrivia = /*#__PURE__*/function () {
                 id: question.id
               },
               include: [{
+                model: _models["default"].trivia,
+                as: 'trivia',
+                attributes: ['id']
+              }, {
                 model: _models["default"].triviaanswer,
                 as: 'triviaanswers'
               }]

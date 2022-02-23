@@ -111,6 +111,14 @@ var fetchActivity = /*#__PURE__*/function () {
                 as: 'reactdroptip',
                 required: false
               }, {
+                model: _models["default"].trivia,
+                as: 'trivia',
+                required: false
+              }, {
+                model: _models["default"].triviatip,
+                as: 'triviatip',
+                required: false
+              }, {
                 model: _models["default"].thunder,
                 as: 'thunder',
                 required: false
