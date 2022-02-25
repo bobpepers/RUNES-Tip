@@ -358,12 +358,55 @@ export const transactionNotFoundMessage = (title) => {
   return result;
 };
 
-export const discordWithdrawalAcceptedMessage = (updatedTrans) => {
+export const reviewMessage = (message, transaction) => {
+  const amount = ((transaction.amount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
+  const fee = ((transaction.feeAmount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
+  const total = (((transaction.amount - transaction.feeAmount) / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle('Withdraw')
+    .setTitle(`Withdraw #${transaction.id}`)
+    .setDescription(`<@${message.author.id}>, Your withdrawal is being reviewed
+    
+amount: ${amount}
+fee: ${fee}
+total: ${total}`)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
+export const discordWithdrawalAcceptedMessage = (updatedTrans) => {
+  const amount = ((updatedTrans.amount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
+  const fee = ((updatedTrans.feeAmount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
+  const total = (((updatedTrans.amount - updatedTrans.feeAmount) / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(`Withdraw #${updatedTrans.id}`)
     .setDescription(`Your withdrawal has been accepted
+
+amount: ${amount}
+fee: ${fee}
+total: ${total}
+
 ${settings.coin.explorer}/tx/${updatedTrans.txid}`)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
+export const discordWithdrawalConfirmedMessage = (userId, trans) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(`Withdraw #${trans.id}`)
+    .setDescription(`<@${userId}>, Your withdrawal has been complete`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
@@ -781,20 +824,6 @@ export const AfterThunderSuccess = (message, amount, userThunder) => {
     .setColor(settings.bot.color)
     .setTitle('Thunder')
     .setDescription(`⛈ ${userThunder} has been hit with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
-    .setTimestamp()
-    .setFooter({
-      text: `${settings.bot.name} v${pjson.version}`,
-      iconURL: settings.coin.logo,
-    });
-
-  return result;
-};
-
-export const reviewMessage = (message) => {
-  const result = new MessageEmbed()
-    .setColor(settings.bot.color)
-    .setTitle('Withdraw')
-    .setDescription(`<@${message.author.id}>, Your withdrawal is being reviewed`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,

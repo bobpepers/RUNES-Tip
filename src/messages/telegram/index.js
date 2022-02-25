@@ -36,6 +36,11 @@ export const withdrawalAcceptedMessage = (transaction, updatedTrans) => {
   return result;
 };
 
+export const telegramWithdrawalConfirmedMessage = (user) => {
+  const result = `${user.username}'s withdrawal has been complete`;
+  return result;
+};
+
 export const balanceMessage = (telegramUserName, user, priceInfo) => {
   const result = `${telegramUserName}'s current available balance: ${user.wallet.available / 1e8} ${settings.coin.ticker}
 ${telegramUserName}'s current locked balance: ${user.wallet.locked / 1e8} ${settings.coin.ticker}

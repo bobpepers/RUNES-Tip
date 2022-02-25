@@ -1,21 +1,19 @@
 /* eslint no-underscore-dangle: [2, { "allow": ["_eventName", "_address", "_time", "_orderId"] }] */
-
-import PQueue from 'p-queue';
 import _ from "lodash";
 import { Transaction, Op } from "sequelize";
 import db from '../models';
 import {
   telegramDepositConfirmedMessage,
+  telegramWithdrawalConfirmedMessage,
 } from '../messages/telegram';
 import {
   discordDepositConfirmedMessage,
+  discordWithdrawalConfirmedMessage,
 } from '../messages/discord';
 import getCoinSettings from '../config/settings';
 import { getInstance } from "./rclient";
 
 const settings = getCoinSettings();
-
-const queue = new PQueue({ concurrency: 1 });
 
 const sequentialLoop = async (iterations, process, exit) => {
   let index = 0;
@@ -31,7 +29,8 @@ const sequentialLoop = async (iterations, process, exit) => {
       }
 
       if (index < iterations) {
-        index++;
+        // index++;
+        index += 1;
         await process(loop);
       } else {
         done = true;
@@ -69,15 +68,16 @@ const syncTransactions = async (discordClient, telegramClient) => {
       }],
     }],
   });
-  // console.log('transactions');
 
-  // console.log(transactions);
   // eslint-disable-next-line no-restricted-syntax
   for await (const trans of transactions) {
     const transaction = await getInstance().getTransaction(trans.txid);
 
     // eslint-disable-next-line no-restricted-syntax
     for await (const detail of transaction.details) {
+      let isWithdrawalComplete = false;
+      let isDepositComplete = false;
+      let userToMessage;
       // eslint-disable-next-line no-await-in-loop
       await db.sequelize.transaction({
         isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -90,11 +90,9 @@ const syncTransactions = async (discordClient, telegramClient) => {
           lock: t.LOCK.UPDATE,
         });
 
-        // console.log('update transaction');
-        // console.log(transaction);
         let updatedTransaction;
         let updatedWallet;
-        // console.log(transaction.confirmations);
+
         if (transaction.confirmations < Number(settings.min.confirmations)) {
           updatedTransaction = await trans.update({
             confirmations: transaction.confirmations,
@@ -104,25 +102,21 @@ const syncTransactions = async (discordClient, telegramClient) => {
           });
         }
         if (transaction.confirmations >= Number(settings.min.confirmations)) {
-          // transaction.details.forEach(async (detail) => {
-
           if (detail.category === 'send' && trans.type === 'send') {
             // console.log(detail.amount);
-            // console.log(((detail.amount * 1e8)));
-            console.log(detail.amount);
             const prepareLockedAmount = ((detail.amount * 1e8) - Number(trans.feeAmount));
-            console.log(prepareLockedAmount);
+            // console.log(prepareLockedAmount);
             const removeLockedAmount = Math.abs(prepareLockedAmount);
-            console.log(removeLockedAmount);
-            console.log('send complete runes');
-
             // console.log(removeLockedAmount);
+            // console.log('send complete runes');
+
             updatedWallet = await wallet.update({
               locked: wallet.locked - removeLockedAmount,
             }, {
               transaction: t,
               lock: t.LOCK.UPDATE,
             });
+
             updatedTransaction = await trans.update({
               confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
               phase: 'confirmed',
@@ -130,6 +124,7 @@ const syncTransactions = async (discordClient, telegramClient) => {
               transaction: t,
               lock: t.LOCK.UPDATE,
             });
+
             const createActivity = await db.activity.create({
               spenderId: updatedWallet.userId,
               type: 'withdrawComplete',
@@ -140,11 +135,13 @@ const syncTransactions = async (discordClient, telegramClient) => {
               transaction: t,
               lock: t.LOCK.UPDATE,
             });
+
             /// Add To faucet
             const faucet = await db.faucet.findOne({
               transaction: t,
               lock: t.LOCK.UPDATE,
             });
+
             if (faucet) {
               await faucet.update({
                 amount: Number(faucet.amount) + Number(trans.feeAmount / 2),
@@ -153,6 +150,7 @@ const syncTransactions = async (discordClient, telegramClient) => {
                 lock: t.LOCK.UPDATE,
               });
             }
+
             const createFaucetActivity = await db.activity.create({
               spenderId: updatedWallet.userId,
               type: 'faucet_add',
@@ -161,6 +159,15 @@ const syncTransactions = async (discordClient, telegramClient) => {
               transaction: t,
               lock: t.LOCK.UPDATE,
             });
+
+            userToMessage = await db.user.findOne({
+              where: {
+                id: updatedWallet.userId,
+              },
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            });
+            isWithdrawalComplete = true;
           }
           if (detail.category === 'receive' && trans.type === 'receive') {
             // console.log('updating balance');
@@ -187,14 +194,20 @@ const syncTransactions = async (discordClient, telegramClient) => {
               transaction: t,
               lock: t.LOCK.UPDATE,
             });
-            const userToMessage = await db.user.findOne({
+            userToMessage = await db.user.findOne({
               where: {
                 id: updatedWallet.userId,
               },
               transaction: t,
               lock: t.LOCK.UPDATE,
             });
-            let userClientId;
+            isDepositComplete = true;
+          }
+        }
+
+        t.afterCommit(async () => {
+          let userClientId;
+          if (isDepositComplete) {
             if (userToMessage.user_id.startsWith('discord')) {
               userClientId = userToMessage.user_id.replace('discord-', '');
               const myClient = await discordClient.users.fetch(userClientId, false);
@@ -205,14 +218,23 @@ const syncTransactions = async (discordClient, telegramClient) => {
               telegramClient.telegram.sendMessage(userClientId, telegramDepositConfirmedMessage(detail.amount));
             }
           }
-        }
-        t.afterCommit(() => {
+
+          if (isWithdrawalComplete) {
+            if (userToMessage.user_id.startsWith('discord')) {
+              userClientId = userToMessage.user_id.replace('discord-', '');
+              const myClient = await discordClient.users.fetch(userClientId, false);
+              await myClient.send({ embeds: [discordWithdrawalConfirmedMessage(userClientId, trans)] });
+            }
+            if (userToMessage.user_id.startsWith('telegram')) {
+              userClientId = userToMessage.user_id.replace('telegram-', '');
+              telegramClient.telegram.sendMessage(userClientId, telegramWithdrawalConfirmedMessage(userToMessage));
+            }
+          }
           console.log('done');
         });
       });
     }
   }
-  // console.log(transactions.length);
   return true;
 };
 
@@ -248,7 +270,11 @@ const insertBlock = async (startBlock) => {
   }
 };
 
-export const startRunebaseSync = async (discordClient, telegramClient) => {
+export const startRunebaseSync = async (
+  discordClient,
+  telegramClient,
+  queue,
+) => {
   const currentBlockCount = Math.max(0, await getInstance().getBlockCount());
   let startBlock = Number(settings.startSyncBlock);
 
@@ -268,19 +294,19 @@ export const startRunebaseSync = async (discordClient, telegramClient) => {
     async (loop) => {
       const endBlock = Math.min((startBlock + 1) - 1, currentBlockCount);
 
-      // await syncTransactions(startBlock, endBlock);
-      await queue.add(() => syncTransactions(discordClient, telegramClient));
+      await queue.add(async () => {
+        const task = await syncTransactions(discordClient, telegramClient);
+      });
 
-      const task = await insertBlock(startBlock);
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const task = await insertBlock(startBlock);
+      });
 
       startBlock = endBlock + 1;
-      console.log('Synced block');
       await loop.next();
     },
     async () => {
-      console.log('sleep');
-      // setTimeout(startSync, 5000);
+      console.log('Synced block');
     },
   );
 };

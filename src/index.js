@@ -333,28 +333,44 @@ const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
   // patch deposits and sync
   if (settings.coin.setting === 'Runebase') {
-    await startRunebaseSync(discordClient, telegramClient);
+    await startRunebaseSync(
+      discordClient,
+      telegramClient,
+      queue,
+    );
     await patchRunebaseDeposits();
 
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
       patchRunebaseDeposits();
     });
   } else if (settings.coin.setting === 'Pirate') {
-    await startPirateSync(discordClient, telegramClient);
+    await startPirateSync(
+      discordClient,
+      telegramClient,
+      queue,
+    );
 
     await patchPirateDeposits();
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
       patchPirateDeposits();
     });
   } else if (settings.coin.setting === 'Komodo') {
-    await startKomodoSync(discordClient, telegramClient);
+    await startKomodoSync(
+      discordClient,
+      telegramClient,
+      queue,
+    );
 
     await patchKomodoDeposits();
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
       patchKomodoDeposits();
     });
   } else {
-    await startRunebaseSync(discordClient, telegramClient);
+    await startRunebaseSync(
+      discordClient,
+      telegramClient,
+      queue,
+    );
     await patchRunebaseDeposits();
 
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {

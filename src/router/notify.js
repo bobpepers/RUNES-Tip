@@ -25,19 +25,36 @@ export const notifyRouter = (
   discordClient,
   telegramClient,
   settings,
+  queue,
 ) => {
   app.post(
     '/api/chaininfo/block',
     localhostOnly,
     (req, res) => {
       if (settings.coin.setting === 'Runebase') {
-        startRunebaseSync(discordClient, telegramClient);
+        startRunebaseSync(
+          discordClient,
+          telegramClient,
+          queue,
+        );
       } else if (settings.coin.setting === 'Pirate') {
-        startPirateSync(discordClient, telegramClient);
+        startPirateSync(
+          discordClient,
+          telegramClient,
+          queue,
+        );
       } else if (settings.coin.setting === 'Komodo') {
-        startKomodoSync(discordClient, telegramClient);
+        startKomodoSync(
+          discordClient,
+          telegramClient,
+          queue,
+        );
       } else {
-        startRunebaseSync(discordClient, telegramClient);
+        startRunebaseSync(
+          discordClient,
+          telegramClient,
+          queue,
+        );
       }
       res.sendStatus(200);
     },

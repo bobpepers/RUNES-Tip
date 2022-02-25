@@ -165,12 +165,12 @@ export const withdrawDiscordCreate = async (
     const userId = user.user_id.replace('discord-', '');
 
     if (message.channel.type === 'DM') {
-      await message.author.send({ embeds: [reviewMessage(message)] });
+      await message.author.send({ embeds: [reviewMessage(message, transaction)] });
     }
 
     if (message.channel.type === 'GUILD_TEXT') {
       await message.channel.send({ embeds: [warnDirectMessage(userId, 'Balance')] });
-      await message.author.send({ embeds: [reviewMessage(message)] });
+      await message.author.send({ embeds: [reviewMessage(message, transaction)] });
     }
 
     t.afterCommit(() => {

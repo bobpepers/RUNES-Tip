@@ -127,10 +127,10 @@ export const discordRouter = (
   });
 
   discordClient.on('voiceStateUpdate', async (oldMember, newMember) => {
-    const groupTask = await updateDiscordGroup(discordClient, newMember);
-    await queue.add(() => groupTask);
-    const channelTask = await updateDiscordChannel(discordClient, newMember, groupTask);
-    await queue.add(() => channelTask);
+    await queue.add(async () => {
+      const groupTask = await updateDiscordGroup(discordClient, newMember);
+      const channelTask = await updateDiscordChannel(discordClient, newMember, groupTask);
+    });
   });
 
   discordClient.on("messageCreate", async (message) => {

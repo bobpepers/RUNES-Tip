@@ -1,21 +1,20 @@
 /* eslint no-underscore-dangle: [2, { "allow": ["_eventName", "_address", "_time", "_orderId"] }] */
-
-import PQueue from 'p-queue';
 import _ from "lodash";
 import { Transaction, Op } from "sequelize";
 import db from '../models';
 import {
   telegramDepositConfirmedMessage,
+  telegramWithdrawalConfirmedMessage,
 } from '../messages/telegram';
 import {
   discordDepositConfirmedMessage,
+  discordWithdrawalConfirmedMessage,
 } from '../messages/discord';
+
 import getCoinSettings from '../config/settings';
 import { getInstance } from "./rclient";
 
 const settings = getCoinSettings();
-
-const queue = new PQueue({ concurrency: 1 });
 
 const sequentialLoop = async (iterations, process, exit) => {
   let index = 0;
@@ -31,7 +30,8 @@ const sequentialLoop = async (iterations, process, exit) => {
       }
 
       if (index < iterations) {
-        index++;
+        // index++;
+        index += 1;
         await process(loop);
       } else {
         done = true;
@@ -69,14 +69,13 @@ const syncTransactions = async (discordClient, telegramClient) => {
       }],
     }],
   });
-  // console.log('transactions');
 
-  // console.log(transactions);
   // eslint-disable-next-line no-restricted-syntax
   for await (const trans of transactions) {
+    let isWithdrawalComplete = false;
+    let isDepositComplete = false;
+    let userToMessage;
     const transaction = await getInstance().getTransaction(trans.txid);
-    console.log(transaction);
-
     // eslint-disable-next-line no-await-in-loop
     await db.sequelize.transaction({
       isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -89,11 +88,8 @@ const syncTransactions = async (discordClient, telegramClient) => {
         lock: t.LOCK.UPDATE,
       });
 
-      // console.log('update transaction');
-      // console.log(transaction);
       let updatedTransaction;
       let updatedWallet;
-      // console.log(transaction.confirmations);
       if (transaction.confirmations < Number(settings.min.confirmations)) {
         updatedTransaction = await trans.update({
           confirmations: transaction.confirmations,
@@ -151,9 +147,16 @@ const syncTransactions = async (discordClient, telegramClient) => {
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
+          userToMessage = await db.user.findOne({
+            where: {
+              id: updatedWallet.userId,
+            },
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+          isWithdrawalComplete = true;
         }
         if (transaction.details[0].category === 'receive' && trans.type === 'receive') {
-          // console.log('updating balance');
           updatedWallet = await wallet.update({
             available: wallet.available + (transaction.details[0].amount * 1e8),
           }, {
@@ -177,14 +180,19 @@ const syncTransactions = async (discordClient, telegramClient) => {
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
-          const userToMessage = await db.user.findOne({
+          userToMessage = await db.user.findOne({
             where: {
               id: updatedWallet.userId,
             },
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
-          let userClientId;
+          isDepositComplete = true;
+        }
+      }
+      t.afterCommit(async () => {
+        let userClientId;
+        if (isDepositComplete) {
           if (userToMessage.user_id.startsWith('discord')) {
             userClientId = userToMessage.user_id.replace('discord-', '');
             const myClient = await discordClient.users.fetch(userClientId, false);
@@ -195,8 +203,17 @@ const syncTransactions = async (discordClient, telegramClient) => {
             telegramClient.telegram.sendMessage(userClientId, telegramDepositConfirmedMessage(transaction.details[0].amount));
           }
         }
-      }
-      t.afterCommit(() => {
+        if (isWithdrawalComplete) {
+          if (userToMessage.user_id.startsWith('discord')) {
+            userClientId = userToMessage.user_id.replace('discord-', '');
+            const myClient = await discordClient.users.fetch(userClientId, false);
+            await myClient.send({ embeds: [discordWithdrawalConfirmedMessage(userClientId, trans)] });
+          }
+          if (userToMessage.user_id.startsWith('telegram')) {
+            userClientId = userToMessage.user_id.replace('telegram-', '');
+            telegramClient.telegram.sendMessage(userClientId, telegramWithdrawalConfirmedMessage(userToMessage));
+          }
+        }
         console.log('done');
       });
     });
@@ -236,7 +253,11 @@ const insertBlock = async (startBlock) => {
   }
 };
 
-export const startKomodoSync = async (discordClient, telegramClient) => {
+export const startKomodoSync = async (
+  discordClient,
+  telegramClient,
+  queue,
+) => {
   const currentBlockCount = Math.max(0, await getInstance().getBlockCount());
   let startBlock = Number(settings.startSyncBlock);
 
@@ -256,19 +277,19 @@ export const startKomodoSync = async (discordClient, telegramClient) => {
     async (loop) => {
       const endBlock = Math.min((startBlock + 1) - 1, currentBlockCount);
 
-      // await syncTransactions(startBlock, endBlock);
-      await queue.add(() => syncTransactions(discordClient, telegramClient));
+      await queue.add(async () => {
+        const task = await syncTransactions(discordClient, telegramClient);
+      });
 
-      const task = await insertBlock(startBlock);
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const task = await insertBlock(startBlock);
+      });
 
       startBlock = endBlock + 1;
-      console.log('Synced block');
       await loop.next();
     },
     async () => {
-      console.log('sleep');
-      // setTimeout(startSync, 5000);
+      console.log('Synced block');
     },
   );
 };

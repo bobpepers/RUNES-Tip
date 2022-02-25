@@ -15,6 +15,7 @@ export const router = (
     discordClient,
     telegramClient,
     settings,
+    queue,
   );
 
   discordRouter(

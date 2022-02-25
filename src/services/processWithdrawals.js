@@ -20,7 +20,6 @@ export const processWithdrawals = async (
     let updatedTrans;
     const transaction = await db.transaction.findOne({
       where: {
-        // id: withdrawalId,
         phase: 'review',
       },
       include: [
@@ -45,7 +44,6 @@ export const processWithdrawals = async (
     if (!transaction) {
       console.log('No withdrawal to process');
       return;
-      // ctx.reply('Transaction not found');
     }
     if (transaction) {
       const [
