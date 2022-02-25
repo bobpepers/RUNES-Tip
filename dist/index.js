@@ -563,7 +563,7 @@ var telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN); // 
 }))();
 (0, _updatePrice.updatePrice)();
 
-var schedulePriceUpdate = _nodeSchedule["default"].scheduleJob('*/10 * * * *', function () {
+var schedulePriceUpdate = _nodeSchedule["default"].scheduleJob('*/20 * * * *', function () {
   (0, _updatePrice.updatePrice)();
 });
 

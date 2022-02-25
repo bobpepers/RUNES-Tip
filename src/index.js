@@ -396,7 +396,7 @@ const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 }());
 
 updatePrice();
-const schedulePriceUpdate = schedule.scheduleJob('*/10 * * * *', () => {
+const schedulePriceUpdate = schedule.scheduleJob('*/20 * * * *', () => {
   updatePrice();
 });
 
