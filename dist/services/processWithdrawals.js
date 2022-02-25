@@ -47,7 +47,6 @@ var processWithdrawals = /*#__PURE__*/function () {
                         _context2.next = 2;
                         return _models["default"].transaction.findOne({
                           where: {
-                            // id: withdrawalId,
                             phase: 'review'
                           },
                           include: [{

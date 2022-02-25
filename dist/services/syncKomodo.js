@@ -11,8 +11,6 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _pQueue = _interopRequireDefault(require("p-queue"));
-
 var _lodash = _interopRequireDefault(require("lodash"));
 
 var _sequelize = require("sequelize");
@@ -32,9 +30,6 @@ function _asyncIterator(iterable) { var method, async, sync, retry = 2; for ("un
 function AsyncFromSyncIterator(s) { function AsyncFromSyncIteratorContinuation(r) { if (Object(r) !== r) return Promise.reject(new TypeError(r + " is not an object.")); var done = r.done; return Promise.resolve(r.value).then(function (value) { return { value: value, done: done }; }); } return AsyncFromSyncIterator = function AsyncFromSyncIterator(s) { this.s = s, this.n = s.next; }, AsyncFromSyncIterator.prototype = { s: null, n: null, next: function next() { return AsyncFromSyncIteratorContinuation(this.n.apply(this.s, arguments)); }, "return": function _return(value) { var ret = this.s["return"]; return void 0 === ret ? Promise.resolve({ value: value, done: !0 }) : AsyncFromSyncIteratorContinuation(ret.apply(this.s, arguments)); }, "throw": function _throw(value) { var thr = this.s["return"]; return void 0 === thr ? Promise.reject(value) : AsyncFromSyncIteratorContinuation(thr.apply(this.s, arguments)); } }, new AsyncFromSyncIterator(s); }
 
 var settings = (0, _settings["default"])();
-var queue = new _pQueue["default"]({
-  concurrency: 1
-});
 
 var sequentialLoop = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(iterations, process, exit) {
@@ -71,7 +66,8 @@ var sequentialLoop = /*#__PURE__*/function () {
                             break;
                           }
 
-                          index++;
+                          // index++;
+                          index += 1;
                           _context.next = 7;
                           return process(loop);
 
@@ -122,14 +118,14 @@ var sequentialLoop = /*#__PURE__*/function () {
 }();
 
 var syncTransactions = /*#__PURE__*/function () {
-  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(discordClient, telegramClient) {
+  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(discordClient, telegramClient) {
     var transactions, _iteratorAbruptCompletion, _didIteratorError, _iteratorError, _loop, _iterator, _step;
 
-    return _regenerator["default"].wrap(function _callee4$(_context5) {
+    return _regenerator["default"].wrap(function _callee5$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
-            _context5.next = 2;
+            _context6.next = 2;
             return _models["default"].transaction.findAll({
               where: {
                 phase: 'confirming'
@@ -145,39 +141,38 @@ var syncTransactions = /*#__PURE__*/function () {
             });
 
           case 2:
-            transactions = _context5.sent;
-            // console.log('transactions');
-            // console.log(transactions);
+            transactions = _context6.sent;
             // eslint-disable-next-line no-restricted-syntax
             _iteratorAbruptCompletion = false;
             _didIteratorError = false;
-            _context5.prev = 5;
+            _context6.prev = 5;
             _loop = /*#__PURE__*/_regenerator["default"].mark(function _loop() {
-              var trans, transaction;
-              return _regenerator["default"].wrap(function _loop$(_context4) {
+              var trans, isWithdrawalComplete, isDepositComplete, userToMessage, transaction;
+              return _regenerator["default"].wrap(function _loop$(_context5) {
                 while (1) {
-                  switch (_context4.prev = _context4.next) {
+                  switch (_context5.prev = _context5.next) {
                     case 0:
                       trans = _step.value;
-                      _context4.next = 3;
+                      isWithdrawalComplete = false;
+                      isDepositComplete = false;
+                      userToMessage = void 0;
+                      _context5.next = 6;
                       return (0, _rclient.getInstance)().getTransaction(trans.txid);
 
-                    case 3:
-                      transaction = _context4.sent;
-                      console.log(transaction); // eslint-disable-next-line no-await-in-loop
-
-                      _context4.next = 7;
+                    case 6:
+                      transaction = _context5.sent;
+                      _context5.next = 9;
                       return _models["default"].sequelize.transaction({
                         isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
                       }, /*#__PURE__*/function () {
-                        var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(t) {
-                          var wallet, updatedTransaction, updatedWallet, prepareLockedAmount, removeLockedAmount, createActivity, faucet, createFaucetActivity, _createActivity, userToMessage, userClientId, myClient;
+                        var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(t) {
+                          var wallet, updatedTransaction, updatedWallet, prepareLockedAmount, removeLockedAmount, createActivity, faucet, createFaucetActivity, _createActivity;
 
-                          return _regenerator["default"].wrap(function _callee3$(_context3) {
+                          return _regenerator["default"].wrap(function _callee4$(_context4) {
                             while (1) {
-                              switch (_context3.prev = _context3.next) {
+                              switch (_context4.prev = _context4.next) {
                                 case 0:
-                                  _context3.next = 2;
+                                  _context4.next = 2;
                                   return _models["default"].wallet.findOne({
                                     where: {
                                       userId: trans.address.wallet.userId
@@ -187,14 +182,14 @@ var syncTransactions = /*#__PURE__*/function () {
                                   });
 
                                 case 2:
-                                  wallet = _context3.sent;
+                                  wallet = _context4.sent;
 
                                   if (!(transaction.confirmations < Number(settings.min.confirmations))) {
-                                    _context3.next = 7;
+                                    _context4.next = 7;
                                     break;
                                   }
 
-                                  _context3.next = 6;
+                                  _context4.next = 6;
                                   return trans.update({
                                     confirmations: transaction.confirmations
                                   }, {
@@ -203,22 +198,22 @@ var syncTransactions = /*#__PURE__*/function () {
                                   });
 
                                 case 6:
-                                  updatedTransaction = _context3.sent;
+                                  updatedTransaction = _context4.sent;
 
                                 case 7:
                                   if (!(transaction.confirmations >= Number(settings.min.confirmations))) {
-                                    _context3.next = 50;
+                                    _context4.next = 47;
                                     break;
                                   }
 
                                   if (!(transaction.details[1] && transaction.details[1].category === 'send' && trans.type === 'send')) {
-                                    _context3.next = 29;
+                                    _context4.next = 33;
                                     break;
                                   }
 
                                   prepareLockedAmount = transaction.details[1].amount * 1e8 - Number(trans.feeAmount);
                                   removeLockedAmount = Math.abs(prepareLockedAmount);
-                                  _context3.next = 13;
+                                  _context4.next = 13;
                                   return wallet.update({
                                     locked: wallet.locked - removeLockedAmount
                                   }, {
@@ -227,8 +222,8 @@ var syncTransactions = /*#__PURE__*/function () {
                                   });
 
                                 case 13:
-                                  updatedWallet = _context3.sent;
-                                  _context3.next = 16;
+                                  updatedWallet = _context4.sent;
+                                  _context4.next = 16;
                                   return trans.update({
                                     confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
                                     phase: 'confirmed'
@@ -238,8 +233,8 @@ var syncTransactions = /*#__PURE__*/function () {
                                   });
 
                                 case 16:
-                                  updatedTransaction = _context3.sent;
-                                  _context3.next = 19;
+                                  updatedTransaction = _context4.sent;
+                                  _context4.next = 19;
                                   return _models["default"].activity.create({
                                     spenderId: updatedWallet.userId,
                                     type: 'withdrawComplete',
@@ -252,22 +247,22 @@ var syncTransactions = /*#__PURE__*/function () {
                                   });
 
                                 case 19:
-                                  createActivity = _context3.sent;
-                                  _context3.next = 22;
+                                  createActivity = _context4.sent;
+                                  _context4.next = 22;
                                   return _models["default"].faucet.findOne({
                                     transaction: t,
                                     lock: t.LOCK.UPDATE
                                   });
 
                                 case 22:
-                                  faucet = _context3.sent;
+                                  faucet = _context4.sent;
 
                                   if (!faucet) {
-                                    _context3.next = 26;
+                                    _context4.next = 26;
                                     break;
                                   }
 
-                                  _context3.next = 26;
+                                  _context4.next = 26;
                                   return faucet.update({
                                     amount: Number(faucet.amount) + Number(trans.feeAmount / 2)
                                   }, {
@@ -276,7 +271,7 @@ var syncTransactions = /*#__PURE__*/function () {
                                   });
 
                                 case 26:
-                                  _context3.next = 28;
+                                  _context4.next = 28;
                                   return _models["default"].activity.create({
                                     spenderId: updatedWallet.userId,
                                     type: 'faucet_add',
@@ -287,15 +282,27 @@ var syncTransactions = /*#__PURE__*/function () {
                                   });
 
                                 case 28:
-                                  createFaucetActivity = _context3.sent;
+                                  createFaucetActivity = _context4.sent;
+                                  _context4.next = 31;
+                                  return _models["default"].user.findOne({
+                                    where: {
+                                      id: updatedWallet.userId
+                                    },
+                                    transaction: t,
+                                    lock: t.LOCK.UPDATE
+                                  });
 
-                                case 29:
+                                case 31:
+                                  userToMessage = _context4.sent;
+                                  isWithdrawalComplete = true;
+
+                                case 33:
                                   if (!(transaction.details[0].category === 'receive' && trans.type === 'receive')) {
-                                    _context3.next = 50;
+                                    _context4.next = 47;
                                     break;
                                   }
 
-                                  _context3.next = 32;
+                                  _context4.next = 36;
                                   return wallet.update({
                                     available: wallet.available + transaction.details[0].amount * 1e8
                                   }, {
@@ -303,9 +310,9 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 32:
-                                  updatedWallet = _context3.sent;
-                                  _context3.next = 35;
+                                case 36:
+                                  updatedWallet = _context4.sent;
+                                  _context4.next = 39;
                                   return trans.update({
                                     confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
                                     phase: 'confirmed'
@@ -314,9 +321,9 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 35:
-                                  updatedTransaction = _context3.sent;
-                                  _context3.next = 38;
+                                case 39:
+                                  updatedTransaction = _context4.sent;
+                                  _context4.next = 42;
                                   return _models["default"].activity.create({
                                     earnerId: updatedWallet.userId,
                                     type: 'depositComplete',
@@ -328,9 +335,9 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 38:
-                                  _createActivity = _context3.sent;
-                                  _context3.next = 41;
+                                case 42:
+                                  _createActivity = _context4.sent;
+                                  _context4.next = 45;
                                   return _models["default"].user.findOne({
                                     where: {
                                       id: updatedWallet.userId
@@ -339,42 +346,90 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 41:
-                                  userToMessage = _context3.sent;
+                                case 45:
+                                  userToMessage = _context4.sent;
+                                  isDepositComplete = true;
 
-                                  if (!userToMessage.user_id.startsWith('discord')) {
-                                    _context3.next = 49;
-                                    break;
-                                  }
+                                case 47:
+                                  t.afterCommit( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
+                                    var userClientId, myClient, _myClient;
 
-                                  userClientId = userToMessage.user_id.replace('discord-', '');
-                                  _context3.next = 46;
-                                  return discordClient.users.fetch(userClientId, false);
+                                    return _regenerator["default"].wrap(function _callee3$(_context3) {
+                                      while (1) {
+                                        switch (_context3.prev = _context3.next) {
+                                          case 0:
+                                            if (!isDepositComplete) {
+                                              _context3.next = 9;
+                                              break;
+                                            }
 
-                                case 46:
-                                  myClient = _context3.sent;
-                                  _context3.next = 49;
-                                  return myClient.send({
-                                    embeds: [(0, _discord.discordDepositConfirmedMessage)(transaction.details[0].amount)]
-                                  });
+                                            if (!userToMessage.user_id.startsWith('discord')) {
+                                              _context3.next = 8;
+                                              break;
+                                            }
 
-                                case 49:
-                                  if (userToMessage.user_id.startsWith('telegram')) {
-                                    userClientId = userToMessage.user_id.replace('telegram-', '');
-                                    telegramClient.telegram.sendMessage(userClientId, (0, _telegram.telegramDepositConfirmedMessage)(transaction.details[0].amount));
-                                  }
+                                            userClientId = userToMessage.user_id.replace('discord-', '');
+                                            _context3.next = 5;
+                                            return discordClient.users.fetch(userClientId, false);
 
-                                case 50:
-                                  t.afterCommit(function () {
-                                    console.log('done');
-                                  });
+                                          case 5:
+                                            myClient = _context3.sent;
+                                            _context3.next = 8;
+                                            return myClient.send({
+                                              embeds: [(0, _discord.discordDepositConfirmedMessage)(transaction.details[0].amount)]
+                                            });
 
-                                case 51:
+                                          case 8:
+                                            if (userToMessage.user_id.startsWith('telegram')) {
+                                              userClientId = userToMessage.user_id.replace('telegram-', '');
+                                              telegramClient.telegram.sendMessage(userClientId, (0, _telegram.telegramDepositConfirmedMessage)(transaction.details[0].amount));
+                                            }
+
+                                          case 9:
+                                            if (!isWithdrawalComplete) {
+                                              _context3.next = 18;
+                                              break;
+                                            }
+
+                                            if (!userToMessage.user_id.startsWith('discord')) {
+                                              _context3.next = 17;
+                                              break;
+                                            }
+
+                                            userClientId = userToMessage.user_id.replace('discord-', '');
+                                            _context3.next = 14;
+                                            return discordClient.users.fetch(userClientId, false);
+
+                                          case 14:
+                                            _myClient = _context3.sent;
+                                            _context3.next = 17;
+                                            return _myClient.send({
+                                              embeds: [(0, _discord.discordWithdrawalConfirmedMessage)(userClientId, trans)]
+                                            });
+
+                                          case 17:
+                                            if (userToMessage.user_id.startsWith('telegram')) {
+                                              userClientId = userToMessage.user_id.replace('telegram-', '');
+                                              telegramClient.telegram.sendMessage(userClientId, (0, _telegram.telegramWithdrawalConfirmedMessage)(userToMessage));
+                                            }
+
+                                          case 18:
+                                            console.log('done');
+
+                                          case 19:
+                                          case "end":
+                                            return _context3.stop();
+                                        }
+                                      }
+                                    }, _callee3);
+                                  })));
+
+                                case 48:
                                 case "end":
-                                  return _context3.stop();
+                                  return _context4.stop();
                               }
                             }
-                          }, _callee3);
+                          }, _callee4);
                         }));
 
                         return function (_x6) {
@@ -382,9 +437,9 @@ var syncTransactions = /*#__PURE__*/function () {
                         };
                       }());
 
-                    case 7:
+                    case 9:
                     case "end":
-                      return _context4.stop();
+                      return _context5.stop();
                   }
                 }
               }, _loop);
@@ -392,69 +447,69 @@ var syncTransactions = /*#__PURE__*/function () {
             _iterator = _asyncIterator(transactions);
 
           case 8:
-            _context5.next = 10;
+            _context6.next = 10;
             return _iterator.next();
 
           case 10:
-            if (!(_iteratorAbruptCompletion = !(_step = _context5.sent).done)) {
-              _context5.next = 15;
+            if (!(_iteratorAbruptCompletion = !(_step = _context6.sent).done)) {
+              _context6.next = 15;
               break;
             }
 
-            return _context5.delegateYield(_loop(), "t0", 12);
+            return _context6.delegateYield(_loop(), "t0", 12);
 
           case 12:
             _iteratorAbruptCompletion = false;
-            _context5.next = 8;
+            _context6.next = 8;
             break;
 
           case 15:
-            _context5.next = 21;
+            _context6.next = 21;
             break;
 
           case 17:
-            _context5.prev = 17;
-            _context5.t1 = _context5["catch"](5);
+            _context6.prev = 17;
+            _context6.t1 = _context6["catch"](5);
             _didIteratorError = true;
-            _iteratorError = _context5.t1;
+            _iteratorError = _context6.t1;
 
           case 21:
-            _context5.prev = 21;
-            _context5.prev = 22;
+            _context6.prev = 21;
+            _context6.prev = 22;
 
             if (!(_iteratorAbruptCompletion && _iterator["return"] != null)) {
-              _context5.next = 26;
+              _context6.next = 26;
               break;
             }
 
-            _context5.next = 26;
+            _context6.next = 26;
             return _iterator["return"]();
 
           case 26:
-            _context5.prev = 26;
+            _context6.prev = 26;
 
             if (!_didIteratorError) {
-              _context5.next = 29;
+              _context6.next = 29;
               break;
             }
 
             throw _iteratorError;
 
           case 29:
-            return _context5.finish(26);
+            return _context6.finish(26);
 
           case 30:
-            return _context5.finish(21);
+            return _context6.finish(21);
 
           case 31:
-            return _context5.abrupt("return", true);
+            return _context6.abrupt("return", true);
 
           case 32:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
       }
-    }, _callee4, null, [[5, 17, 21, 31], [22,, 26, 30]]);
+    }, _callee5, null, [[5, 17, 21, 31], [22,, 26, 30]]);
   }));
 
   return function syncTransactions(_x4, _x5) {
@@ -463,32 +518,32 @@ var syncTransactions = /*#__PURE__*/function () {
 }();
 
 var insertBlock = /*#__PURE__*/function () {
-  var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(startBlock) {
+  var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(startBlock) {
     var blockHash, block, dbBlock;
-    return _regenerator["default"].wrap(function _callee5$(_context6) {
+    return _regenerator["default"].wrap(function _callee6$(_context7) {
       while (1) {
-        switch (_context6.prev = _context6.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
-            _context6.prev = 0;
-            _context6.next = 3;
+            _context7.prev = 0;
+            _context7.next = 3;
             return (0, _rclient.getInstance)().getBlockHash(startBlock);
 
           case 3:
-            blockHash = _context6.sent;
+            blockHash = _context7.sent;
 
             if (!blockHash) {
-              _context6.next = 16;
+              _context7.next = 16;
               break;
             }
 
             block = (0, _rclient.getInstance)().getBlock(blockHash, 2);
 
             if (!block) {
-              _context6.next = 16;
+              _context7.next = 16;
               break;
             }
 
-            _context6.next = 9;
+            _context7.next = 9;
             return _models["default"].block.findOne({
               where: {
                 id: Number(startBlock)
@@ -496,14 +551,14 @@ var insertBlock = /*#__PURE__*/function () {
             });
 
           case 9:
-            dbBlock = _context6.sent;
+            dbBlock = _context7.sent;
 
             if (!dbBlock) {
-              _context6.next = 13;
+              _context7.next = 13;
               break;
             }
 
-            _context6.next = 13;
+            _context7.next = 13;
             return dbBlock.update({
               id: Number(startBlock),
               blockTime: block.time
@@ -511,135 +566,160 @@ var insertBlock = /*#__PURE__*/function () {
 
           case 13:
             if (dbBlock) {
-              _context6.next = 16;
+              _context7.next = 16;
               break;
             }
 
-            _context6.next = 16;
+            _context7.next = 16;
             return _models["default"].block.create({
               id: startBlock,
               blockTime: block.time
             });
 
           case 16:
-            return _context6.abrupt("return", true);
+            return _context7.abrupt("return", true);
 
           case 19:
-            _context6.prev = 19;
-            _context6.t0 = _context6["catch"](0);
-            console.log(_context6.t0);
-            return _context6.abrupt("return", false);
+            _context7.prev = 19;
+            _context7.t0 = _context7["catch"](0);
+            console.log(_context7.t0);
+            return _context7.abrupt("return", false);
 
           case 23:
           case "end":
-            return _context6.stop();
+            return _context7.stop();
         }
       }
-    }, _callee5, null, [[0, 19]]);
+    }, _callee6, null, [[0, 19]]);
   }));
 
   return function insertBlock(_x7) {
-    return _ref4.apply(this, arguments);
+    return _ref5.apply(this, arguments);
   };
 }();
 
 var startKomodoSync = /*#__PURE__*/function () {
-  var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee8(discordClient, telegramClient) {
+  var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee11(discordClient, telegramClient, queue) {
     var currentBlockCount, startBlock, blocks, numOfIterations;
-    return _regenerator["default"].wrap(function _callee8$(_context9) {
+    return _regenerator["default"].wrap(function _callee11$(_context12) {
       while (1) {
-        switch (_context9.prev = _context9.next) {
+        switch (_context12.prev = _context12.next) {
           case 0:
-            _context9.t0 = Math;
-            _context9.next = 3;
+            _context12.t0 = Math;
+            _context12.next = 3;
             return (0, _rclient.getInstance)().getBlockCount();
 
           case 3:
-            _context9.t1 = _context9.sent;
-            currentBlockCount = _context9.t0.max.call(_context9.t0, 0, _context9.t1);
+            _context12.t1 = _context12.sent;
+            currentBlockCount = _context12.t0.max.call(_context12.t0, 0, _context12.t1);
             startBlock = Number(settings.startSyncBlock);
-            _context9.next = 8;
+            _context12.next = 8;
             return _models["default"].block.findAll({
               limit: 1,
               order: [['id', 'DESC']]
             });
 
           case 8:
-            blocks = _context9.sent;
+            blocks = _context12.sent;
 
             if (blocks.length > 0) {
               startBlock = Math.max(blocks[0].id + 1, startBlock);
             }
 
             numOfIterations = Math.ceil((currentBlockCount - startBlock + 1) / 1);
-            _context9.next = 13;
+            _context12.next = 13;
             return sequentialLoop(numOfIterations, /*#__PURE__*/function () {
-              var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(loop) {
-                var endBlock, task;
-                return _regenerator["default"].wrap(function _callee6$(_context7) {
+              var _ref7 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee9(loop) {
+                var endBlock;
+                return _regenerator["default"].wrap(function _callee9$(_context10) {
                   while (1) {
-                    switch (_context7.prev = _context7.next) {
+                    switch (_context10.prev = _context10.next) {
                       case 0:
-                        endBlock = Math.min(startBlock + 1 - 1, currentBlockCount); // await syncTransactions(startBlock, endBlock);
+                        endBlock = Math.min(startBlock + 1 - 1, currentBlockCount);
+                        _context10.next = 3;
+                        return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee7() {
+                          var task;
+                          return _regenerator["default"].wrap(function _callee7$(_context8) {
+                            while (1) {
+                              switch (_context8.prev = _context8.next) {
+                                case 0:
+                                  _context8.next = 2;
+                                  return syncTransactions(discordClient, telegramClient);
 
-                        _context7.next = 3;
-                        return queue.add(function () {
-                          return syncTransactions(discordClient, telegramClient);
-                        });
+                                case 2:
+                                  task = _context8.sent;
+
+                                case 3:
+                                case "end":
+                                  return _context8.stop();
+                              }
+                            }
+                          }, _callee7);
+                        })));
 
                       case 3:
-                        _context7.next = 5;
-                        return insertBlock(startBlock);
+                        _context10.next = 5;
+                        return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee8() {
+                          var task;
+                          return _regenerator["default"].wrap(function _callee8$(_context9) {
+                            while (1) {
+                              switch (_context9.prev = _context9.next) {
+                                case 0:
+                                  _context9.next = 2;
+                                  return insertBlock(startBlock);
+
+                                case 2:
+                                  task = _context9.sent;
+
+                                case 3:
+                                case "end":
+                                  return _context9.stop();
+                              }
+                            }
+                          }, _callee8);
+                        })));
 
                       case 5:
-                        task = _context7.sent;
-                        _context7.next = 8;
-                        return queue.add(function () {
-                          return task;
-                        });
-
-                      case 8:
                         startBlock = endBlock + 1;
-                        console.log('Synced block');
-                        _context7.next = 12;
+                        _context10.next = 8;
                         return loop.next();
 
-                      case 12:
+                      case 8:
                       case "end":
-                        return _context7.stop();
+                        return _context10.stop();
                     }
                   }
-                }, _callee6);
+                }, _callee9);
               }));
 
-              return function (_x10) {
-                return _ref6.apply(this, arguments);
+              return function (_x11) {
+                return _ref7.apply(this, arguments);
               };
-            }(), /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee7() {
-              return _regenerator["default"].wrap(function _callee7$(_context8) {
+            }(), /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee10() {
+              return _regenerator["default"].wrap(function _callee10$(_context11) {
                 while (1) {
-                  switch (_context8.prev = _context8.next) {
+                  switch (_context11.prev = _context11.next) {
                     case 0:
-                      console.log('sleep'); // setTimeout(startSync, 5000);
+                      console.log('Synced block');
 
                     case 1:
                     case "end":
-                      return _context8.stop();
+                      return _context11.stop();
                   }
                 }
-              }, _callee7);
+              }, _callee10);
             })));
 
           case 13:
           case "end":
-            return _context9.stop();
+            return _context12.stop();
         }
       }
-    }, _callee8);
+    }, _callee11);
   }));
 
-  return function startKomodoSync(_x8, _x9) {
-    return _ref5.apply(this, arguments);
+  return function startKomodoSync(_x8, _x9, _x10) {
+    return _ref6.apply(this, arguments);
   };
 }();
 

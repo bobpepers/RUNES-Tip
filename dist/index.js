@@ -483,7 +483,7 @@ var telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN); // 
           }
 
           _context6.next = 47;
-          return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient);
+          return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, queue);
 
         case 47:
           _context6.next = 49;
@@ -503,7 +503,7 @@ var telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN); // 
           }
 
           _context6.next = 55;
-          return (0, _syncPirate.startPirateSync)(discordClient, telegramClient);
+          return (0, _syncPirate.startPirateSync)(discordClient, telegramClient, queue);
 
         case 55:
           _context6.next = 57;
@@ -523,7 +523,7 @@ var telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN); // 
           }
 
           _context6.next = 63;
-          return (0, _syncKomodo.startKomodoSync)(discordClient, telegramClient);
+          return (0, _syncKomodo.startKomodoSync)(discordClient, telegramClient, queue);
 
         case 63:
           _context6.next = 65;
@@ -538,7 +538,7 @@ var telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN); // 
 
         case 68:
           _context6.next = 70;
-          return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient);
+          return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, queue);
 
         case 70:
           _context6.next = 72;

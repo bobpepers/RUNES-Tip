@@ -305,7 +305,7 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
 
                         _context.next = 89;
                         return message.author.send({
-                          embeds: [(0, _discord.reviewMessage)(message)]
+                          embeds: [(0, _discord.reviewMessage)(message, transaction)]
                         });
 
                       case 89:
@@ -322,7 +322,7 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                       case 92:
                         _context.next = 94;
                         return message.author.send({
-                          embeds: [(0, _discord.reviewMessage)(message)]
+                          embeds: [(0, _discord.reviewMessage)(message, transaction)]
                         });
 
                       case 94:

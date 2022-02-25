@@ -19,7 +19,7 @@ module.exports = {
     // Supported names for setting (Runebase, Pirate) // default fallback settings are Runebase
     name: "Runebase",
     ticker: "RUNES",
-    logo: "https://downloads.runebase.io/logo-512x512.png",
+    logo: "https://downloads.runebase.io/runes.png",
     website: "https://www.runebase.io",
     explorer: "https://explorer.runebase.io",
     github: "https://github.com/runebase",

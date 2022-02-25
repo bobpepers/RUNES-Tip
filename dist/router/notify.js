@@ -37,16 +37,16 @@ var localhostOnly = function localhostOnly(req, res, next) {
   next();
 };
 
-var notifyRouter = function notifyRouter(app, discordClient, telegramClient, settings) {
+var notifyRouter = function notifyRouter(app, discordClient, telegramClient, settings, queue) {
   app.post('/api/chaininfo/block', localhostOnly, function (req, res) {
     if (settings.coin.setting === 'Runebase') {
-      (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient);
+      (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, queue);
     } else if (settings.coin.setting === 'Pirate') {
-      (0, _syncPirate.startPirateSync)(discordClient, telegramClient);
+      (0, _syncPirate.startPirateSync)(discordClient, telegramClient, queue);
     } else if (settings.coin.setting === 'Komodo') {
-      (0, _syncKomodo.startKomodoSync)(discordClient, telegramClient);
+      (0, _syncKomodo.startKomodoSync)(discordClient, telegramClient, queue);
     } else {
-      (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient);
+      (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, queue);
     }
 
     res.sendStatus(200);

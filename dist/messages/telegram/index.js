@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.withdrawalReviewMessage = exports.withdrawalAcceptedMessage = exports.withdrawalAcceptedAdminMessage = exports.welcomeMessage = exports.userNotFoundMessage = exports.unableToFindUserMessage = exports.tipSuccessMessage = exports.telegramWithdrawalRejectedMessage = exports.telegramIncomingDepositMessage = exports.telegramDepositConfirmedMessage = exports.rainSuccessMessage = exports.rainErrorMessage = exports.notEnoughActiveUsersMessage = exports.minimumMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.helpMessage = exports.groupNotFoundMessage = exports.generalErrorMessage = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.faucetClaimedMessage = exports.depositAddressNotFoundMessage = exports.depositAddressMessage = exports.claimTooFastFaucetMessage = exports.balanceMessage = exports.InfoMessage = void 0;
+exports.withdrawalReviewMessage = exports.withdrawalAcceptedMessage = exports.withdrawalAcceptedAdminMessage = exports.welcomeMessage = exports.userNotFoundMessage = exports.unableToFindUserMessage = exports.tipSuccessMessage = exports.telegramWithdrawalRejectedMessage = exports.telegramWithdrawalConfirmedMessage = exports.telegramIncomingDepositMessage = exports.telegramDepositConfirmedMessage = exports.rainSuccessMessage = exports.rainErrorMessage = exports.notEnoughActiveUsersMessage = exports.minimumMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.helpMessage = exports.groupNotFoundMessage = exports.generalErrorMessage = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.faucetClaimedMessage = exports.depositAddressNotFoundMessage = exports.depositAddressMessage = exports.claimTooFastFaucetMessage = exports.balanceMessage = exports.InfoMessage = void 0;
 
 var _settings = _interopRequireDefault(require("../../config/settings"));
 
@@ -53,6 +53,13 @@ var withdrawalAcceptedMessage = function withdrawalAcceptedMessage(transaction, 
 };
 
 exports.withdrawalAcceptedMessage = withdrawalAcceptedMessage;
+
+var telegramWithdrawalConfirmedMessage = function telegramWithdrawalConfirmedMessage(user) {
+  var result = "".concat(user.username, "'s withdrawal has been complete");
+  return result;
+};
+
+exports.telegramWithdrawalConfirmedMessage = telegramWithdrawalConfirmedMessage;
 
 var balanceMessage = function balanceMessage(telegramUserName, user, priceInfo) {
   var result = "".concat(telegramUserName, "'s current available balance: ").concat(user.wallet.available / 1e8, " ").concat(settings.coin.ticker, "\n").concat(telegramUserName, "'s current locked balance: ").concat(user.wallet.locked / 1e8, " ").concat(settings.coin.ticker, "\nEstimated value of ").concat(telegramUserName, "'s balance: $").concat(((user.wallet.available + user.wallet.locked) / 1e8 * priceInfo.price).toFixed(2));

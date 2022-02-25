@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.warnDirectMessage = exports.walletNotFoundMessage = exports.userNotFoundMessage = exports.unableToFindUserTipMessage = exports.unIngoreMeMessage = exports.triviaReturnInitiatorMessage = exports.triviaMessageDiscord = exports.transactionNotFoundMessage = exports.tipSuccessMessage = exports.tipFaucetSuccessMessage = exports.timeOutAllAmoutMessageDiscord = exports.thunderstormUserZeroAmountMessage = exports.thunderstormMaxUserAmountMessage = exports.thunderstormInvalidUserAmount = exports.statsMessage = exports.reviewMessage = exports.reactDropMessage = exports.priceMessage = exports.notEnoughUsersToTip = exports.notEnoughActiveUsersMessage = exports.noTriviaQuestionFoundMessage = exports.minimumWithdrawalMessage = exports.minimumTimeReactDropMessage = exports.minimumMessage = exports.maxTimeTriviaMessage = exports.maxTimeReactdropMessage = exports.invalidTimeMessage = exports.invalidPeopleAmountMessage = exports.invalidEmojiMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.ignoreMeMessage = exports.hurricaneUserZeroAmountMessage = exports.hurricaneMaxUserAmountMessage = exports.hurricaneInvalidUserAmount = exports.helpMessageTwo = exports.helpMessageOne = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.featureDisabledChannelMessage = exports.faucetClaimedMessage = exports.enablePublicStatsMeMessage = exports.dryFaucetMessage = exports.discordWithdrawalRejectedMessage = exports.discordWithdrawalAcceptedMessage = exports.discordUserWithdrawalRejectMessage = exports.discordUserBannedMessage = exports.discordServerBannedMessage = exports.discordLimitSpamMessage = exports.discordIncomingDepositMessage = exports.discordErrorMessage = exports.discordDepositConfirmedMessage = exports.discordChannelBannedMessage = exports.disablePublicStatsMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessageDiscord = exports.coinInfoMessage = exports.claimTooFactFaucetMessage = exports.canceledAllAmoutMessageDiscord = exports.balanceMessage = exports.ReactdropCaptchaMessage = exports.ReactDropReturnInitiatorMessage = exports.NotInDirectMessage = exports.DiscordFeeMessage = exports.AfterTriviaSuccessMessage = exports.AfterThunderSuccess = exports.AfterSuccessMessage = exports.AfterReactDropSuccessMessage = void 0;
+exports.warnDirectMessage = exports.walletNotFoundMessage = exports.userNotFoundMessage = exports.unableToFindUserTipMessage = exports.unIngoreMeMessage = exports.triviaReturnInitiatorMessage = exports.triviaMessageDiscord = exports.transactionNotFoundMessage = exports.tipSuccessMessage = exports.tipFaucetSuccessMessage = exports.timeOutAllAmoutMessageDiscord = exports.thunderstormUserZeroAmountMessage = exports.thunderstormMaxUserAmountMessage = exports.thunderstormInvalidUserAmount = exports.statsMessage = exports.reviewMessage = exports.reactDropMessage = exports.priceMessage = exports.notEnoughUsersToTip = exports.notEnoughActiveUsersMessage = exports.noTriviaQuestionFoundMessage = exports.minimumWithdrawalMessage = exports.minimumTimeReactDropMessage = exports.minimumMessage = exports.maxTimeTriviaMessage = exports.maxTimeReactdropMessage = exports.invalidTimeMessage = exports.invalidPeopleAmountMessage = exports.invalidEmojiMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.ignoreMeMessage = exports.hurricaneUserZeroAmountMessage = exports.hurricaneMaxUserAmountMessage = exports.hurricaneInvalidUserAmount = exports.helpMessageTwo = exports.helpMessageOne = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.featureDisabledChannelMessage = exports.faucetClaimedMessage = exports.enablePublicStatsMeMessage = exports.dryFaucetMessage = exports.discordWithdrawalRejectedMessage = exports.discordWithdrawalConfirmedMessage = exports.discordWithdrawalAcceptedMessage = exports.discordUserWithdrawalRejectMessage = exports.discordUserBannedMessage = exports.discordServerBannedMessage = exports.discordLimitSpamMessage = exports.discordIncomingDepositMessage = exports.discordErrorMessage = exports.discordDepositConfirmedMessage = exports.discordChannelBannedMessage = exports.disablePublicStatsMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessageDiscord = exports.coinInfoMessage = exports.claimTooFactFaucetMessage = exports.canceledAllAmoutMessageDiscord = exports.balanceMessage = exports.ReactdropCaptchaMessage = exports.ReactDropReturnInitiatorMessage = exports.NotInDirectMessage = exports.DiscordFeeMessage = exports.AfterTriviaSuccessMessage = exports.AfterThunderSuccess = exports.AfterSuccessMessage = exports.AfterReactDropSuccessMessage = void 0;
 
 var _discord = require("discord.js");
 
@@ -248,8 +248,24 @@ var transactionNotFoundMessage = function transactionNotFoundMessage(title) {
 
 exports.transactionNotFoundMessage = transactionNotFoundMessage;
 
+var reviewMessage = function reviewMessage(message, transaction) {
+  var amount = (transaction.amount / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
+  var fee = (transaction.feeAmount / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
+  var total = ((transaction.amount - transaction.feeAmount) / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Withdraw #".concat(transaction.id)).setDescription("<@".concat(message.author.id, ">, Your withdrawal is being reviewed\n    \namount: ").concat(amount, "\nfee: ").concat(fee, "\ntotal: ").concat(total)).setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.reviewMessage = reviewMessage;
+
 var discordWithdrawalAcceptedMessage = function discordWithdrawalAcceptedMessage(updatedTrans) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Withdraw').setDescription("Your withdrawal has been accepted\n".concat(settings.coin.explorer, "/tx/").concat(updatedTrans.txid)).setTimestamp().setFooter({
+  var amount = (updatedTrans.amount / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
+  var fee = (updatedTrans.feeAmount / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
+  var total = ((updatedTrans.amount - updatedTrans.feeAmount) / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Withdraw #".concat(updatedTrans.id)).setDescription("Your withdrawal has been accepted\n\namount: ".concat(amount, "\nfee: ").concat(fee, "\ntotal: ").concat(total, "\n\n").concat(settings.coin.explorer, "/tx/").concat(updatedTrans.txid)).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -257,6 +273,16 @@ var discordWithdrawalAcceptedMessage = function discordWithdrawalAcceptedMessage
 };
 
 exports.discordWithdrawalAcceptedMessage = discordWithdrawalAcceptedMessage;
+
+var discordWithdrawalConfirmedMessage = function discordWithdrawalConfirmedMessage(userId, trans) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Withdraw #".concat(trans.id)).setDescription("<@".concat(userId, ">, Your withdrawal has been complete")).setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.discordWithdrawalConfirmedMessage = discordWithdrawalConfirmedMessage;
 
 var balanceMessage = function balanceMessage(userId, user, priceInfo) {
   var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Balance').setDescription("<@".concat(userId, ">'s current available balance: ").concat(user.wallet.available / 1e8, " ").concat(settings.coin.ticker, "\n<@").concat(userId, ">'s current locked balance: ").concat(user.wallet.locked / 1e8, " ").concat(settings.coin.ticker, "\nEstimated value of <@").concat(userId, ">'s balance: $").concat(((user.wallet.available + user.wallet.locked) / 1e8 * priceInfo.price).toFixed(2))).setThumbnail(settings.coin.logo).setTimestamp().setFooter({
@@ -549,16 +575,6 @@ var AfterThunderSuccess = function AfterThunderSuccess(message, amount, userThun
 };
 
 exports.AfterThunderSuccess = AfterThunderSuccess;
-
-var reviewMessage = function reviewMessage(message) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Withdraw').setDescription("<@".concat(message.author.id, ">, Your withdrawal is being reviewed")).setTimestamp().setFooter({
-    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
-    iconURL: settings.coin.logo
-  });
-  return result;
-};
-
-exports.reviewMessage = reviewMessage;
 
 var invalidPeopleAmountMessage = function invalidPeopleAmountMessage(message, title) {
   var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(title).setDescription("<@".concat(message.author.id, ">, Invalid amount of people to win ").concat(title)).setTimestamp().setFooter({
