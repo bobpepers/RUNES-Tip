@@ -94,16 +94,27 @@ export const createUpdateUser = async (ctx) => {
         );
         if (!address) {
           const newAddress = await getInstance().getNewAddress();
-          address = await db.address.create({
-            address: newAddress,
-            walletId: wallet.id,
-            type: 'deposit',
-            confirmed: true,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
-          ctx.reply(welcomeMessage(ctx));
+          const addressAlreadyExist = await db.address.findOne(
+            {
+              where: {
+                address: newAddress,
+              },
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            },
+          );
+          if (!addressAlreadyExist) {
+            address = await db.address.create({
+              address: newAddress,
+              walletId: wallet.id,
+              type: 'deposit',
+              confirmed: true,
+            }, {
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            });
+            ctx.reply(welcomeMessage(ctx));
+          }
         }
       }
 

@@ -35,8 +35,6 @@ export async function patchRunebaseDeposits() {
           await db.sequelize.transaction({
             isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
           }, async (t) => {
-            console.log('begin transaction');
-
             const newTrans = await db.transaction.findOrCreate({
               where: {
                 txid: trans.txid,
@@ -48,13 +46,12 @@ export async function patchRunebaseDeposits() {
                 phase: 'confirming',
                 type: trans.category,
                 amount: trans.amount * 1e8,
+                userId: address.wallet.userId,
               },
               transaction: t,
               lock: t.LOCK.UPDATE,
             });
 
-            console.log('newTrans');
-            console.log(newTrans);
             t.afterCommit(() => {
               console.log('commited');
             });

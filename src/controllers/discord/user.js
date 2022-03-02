@@ -76,15 +76,26 @@ export const createUpdateDiscordUser = async (
         );
         if (!address) {
           const newAddress = await getInstance().getNewAddress();
-          address = await db.address.create({
-            address: newAddress,
-            walletId: wallet.id,
-            type: 'deposit',
-            confirmed: true,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
+          const addressAlreadyExist = await db.address.findOne(
+            {
+              where: {
+                address: newAddress,
+              },
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            },
+          );
+          if (!addressAlreadyExist) {
+            address = await db.address.create({
+              address: newAddress,
+              walletId: wallet.id,
+              type: 'deposit',
+              confirmed: true,
+            }, {
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            });
+          }
           message.author.send(`Welcome ${message.author.username}, we created a wallet for you.
 Type "${settings.bot.command.discord} help" for usage info`);
         }

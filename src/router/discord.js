@@ -42,6 +42,8 @@ import { discordHelp } from '../controllers/discord/help';
 
 import { discordPrice } from '../controllers/discord/price';
 
+import { fetchDiscordListTransactions } from '../controllers/discord/listTransactions';
+
 import {
   limitReactDrop,
   limitTip,
@@ -64,6 +66,7 @@ import {
   limitThunderStorm,
   limitPrice,
   limitTrivia,
+  limitListTransactions,
 } from '../helpers/rateLimit';
 
 import { discordTrivia } from '../controllers/discord/trivia';
@@ -248,6 +251,13 @@ export const discordRouter = (
       if (limited) return;
       await queue.add(async () => {
         const task = await fetchDiscordWalletBalance(message, io);
+      });
+    }
+    if (filteredMessageDiscord[1].toLowerCase() === 'listtransactions') {
+      const limited = await limitListTransactions(message);
+      if (limited) return;
+      await queue.add(async () => {
+        const task = await fetchDiscordListTransactions(message, io);
       });
     }
     if (filteredMessageDiscord[1].toLowerCase() === 'price') {

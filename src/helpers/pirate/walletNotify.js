@@ -62,6 +62,7 @@ const walletNotifyPirate = async (req, res, next) => {
             phase: 'confirming',
             type: 'receive',
             amount: transaction.received[0].value * 1e8,
+            userId: address.wallet.userId,
           },
           transaction: t,
           lock: t.LOCK.UPDATE,

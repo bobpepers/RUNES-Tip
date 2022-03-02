@@ -416,6 +416,32 @@ export const discordWithdrawalConfirmedMessage = (userId, trans) => {
   return result;
 };
 
+export const listTransactionsMessage = (userId, user, transactions) => {
+  let myString = '';
+  // const confirmations = '';
+  // eslint-disable-next-line no-restricted-syntax
+  for (const transaction of transactions) {
+    console.log(transaction);
+    myString = myString.concat(`__#${transaction.id} -- ${transaction.type === 'receive' ? 'Deposit' : 'Withdrawal'} -- ${capitalize(transaction.phase)}__
+__date:__ ${transaction.createdAt.toLocaleDateString("en-US")}
+__txId:__ ${transaction.txid}\n\n`);
+  }
+
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('List Transactions')
+    .setDescription(`<@${userId}>'s latest withdrawals and deposits\n
+${myString}`)
+    .setThumbnail(settings.coin.logo)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
 export const balanceMessage = (userId, user, priceInfo) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)

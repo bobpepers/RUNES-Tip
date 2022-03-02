@@ -112,18 +112,27 @@ export const mapMembers = async (
           },
         );
         if (!address) {
-          console.log('adress not found');
           const newAddress = await getInstance().getNewAddress();
-          console.log(newAddress);
-          address = await db.address.create({
-            address: newAddress,
-            walletId: wallet.id,
-            type: 'deposit',
-            confirmed: true,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
+          const addressAlreadyExist = await db.address.findOne(
+            {
+              where: {
+                address: newAddress,
+              },
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            },
+          );
+          if (!addressAlreadyExist) {
+            address = await db.address.create({
+              address: newAddress,
+              walletId: wallet.id,
+              type: 'deposit',
+              confirmed: true,
+            }, {
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            });
+          }
         }
       }
       const userExistNew = await db.user.findOne({

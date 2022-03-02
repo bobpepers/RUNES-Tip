@@ -97,6 +97,28 @@ const rateLimiterTrivia = new RateLimiterFlexible.default.RateLimiterMemory({
   duration: 120,
 });
 
+const rateLimiterListTransactions = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 4,
+  duration: 120,
+});
+
+export const limitListTransactions = async (message) => {
+  try {
+    const limited = await rateLimiterListTransactions.consume(message.author.id, 1);
+    return false;
+  } catch (err) {
+    try {
+      const notError = await errorConsumer.consume(message.author.id, 1);
+      if (notError.remainingPoints > 0) {
+        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'List Transactions')] });
+      }
+      return true;
+    } catch (e) {
+      return true;
+    }
+  }
+};
+
 export const limitTrivia = async (message) => {
   try {
     const limited = await rateLimiterTrivia.consume(message.author.id, 1);

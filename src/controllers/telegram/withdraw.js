@@ -85,6 +85,7 @@ export const withdrawTelegramCreate = async (
       to_from: withdrawalAddress,
       amount,
       feeAmount: Number(fee),
+      userId: user.id,
     }, {
       transaction: t,
       lock: t.LOCK.UPDATE,

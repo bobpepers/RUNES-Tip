@@ -146,6 +146,7 @@ export const withdrawDiscordCreate = async (
       to_from: filteredMessage[2],
       amount,
       feeAmount: Number(fee),
+      userId: user.id,
     }, {
       transaction: t,
       lock: t.LOCK.UPDATE,
