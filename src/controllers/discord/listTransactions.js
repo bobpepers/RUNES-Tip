@@ -88,7 +88,15 @@ export const fetchDiscordListTransactions = async (
       // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
       console.log('done list transactions request');
     });
-  }).catch((err) => {
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'listTransactions',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Discord: ${e}`);
+    }
     logger.error(`Error Discord List Transactions Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
     message.channel.send({ embeds: [discordErrorMessage("List transactions")] });
   });

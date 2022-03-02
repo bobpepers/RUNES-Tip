@@ -1,5 +1,6 @@
 import { Transaction } from "sequelize";
 import db from '../../models';
+import logger from "../../helpers/logger";
 
 export const updateDiscordChannel = async (
   client,
@@ -62,7 +63,16 @@ export const updateDiscordChannel = async (
     t.afterCommit(() => {
       console.log('done');
     });
-  }).catch((err) => {
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'channel',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Discord: ${e}`);
+    }
+    logger.error(`channel error: ${err}`);
     console.log(err.message);
   });
   return channelRecord;

@@ -221,7 +221,8 @@ export const discordRouter = (
       const limited = await limitLeaderboard(message);
       if (limited) return;
       await queue.add(async () => {
-        const task = await discordLeaderboard(message, io);
+        console.log('unavailable');
+        // const task = await discordLeaderboard(message, io);
       });
     }
 

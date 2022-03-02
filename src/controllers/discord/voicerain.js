@@ -247,14 +247,20 @@ export const discordVoiceRain = async (
 
     await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, 'Rain', 'rained')] });
 
-    // logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
-
     t.afterCommit(() => {
       console.log('done');
     });
-  }).catch((err) => {
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'voicerain',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Discord: ${e}`);
+    }
     logger.error(`voicerain error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("VoirceRain")] });
+    message.channel.send({ embeds: [discordErrorMessage("VoiceRain")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,

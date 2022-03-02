@@ -262,14 +262,18 @@ export const tipRunesToDiscordUser = async (
     }
     await message.channel.send({ embeds: [tipSuccessMessage(message, listOfUsersRained, userTipAmount, type)] });
 
-    // await message.channel.send({ embeds: [AfterThunderStormSuccess(message, amount, amountPerUser, listOfUsersRained)] });
-
-    // logger.info(`Success Tip Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
-
     t.afterCommit(() => {
       console.log('done');
     });
-  }).catch((err) => {
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'tip',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Discord: ${e}`);
+    }
     console.log(err);
     logger.error(`tip error: ${err}`);
     message.channel.send({ embeds: [discordErrorMessage("Tip")] });

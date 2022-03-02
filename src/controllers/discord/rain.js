@@ -239,7 +239,15 @@ export const discordRain = async (
     t.afterCommit(() => {
       console.log('done');
     });
-  }).catch((err) => {
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'rain',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Discord: ${e}`);
+    }
     console.log(err);
     logger.error(`rain error: ${err}`);
     message.channel.send({ embeds: [discordErrorMessage("Rain")] });

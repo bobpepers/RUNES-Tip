@@ -141,7 +141,15 @@ export const listenTrivia = async (
             // reaction.deferUpdate();
             console.log('done');
           });
-        }).catch((err) => {
+        }).catch(async (err) => {
+          try {
+            await db.error.create({
+              type: 'answerTrivia',
+              error: `${err}`,
+            });
+          } catch (e) {
+            logger.error(`Error Discord: ${e}`);
+          }
           console.log(err);
           logger.error(`trivia error: ${err}`);
         });
@@ -241,8 +249,7 @@ export const listenTrivia = async (
               lock: t.LOCK.UPDATE,
               transaction: t,
             });
-            // reactMessage.channel.send('Nobody claimed, returning funds to reactdrop initiator');
-            triviaMessage.channel.send({ embeds: [triviaReturnInitiatorMessage()] });
+            await triviaMessage.channel.send({ embeds: [triviaReturnInitiatorMessage()] });
           } else {
             // Get Faucet Settings
             let faucetSetting;
@@ -372,14 +379,22 @@ export const listenTrivia = async (
               await triviaMessage.channel.send(element);
             }
             const initiator = endTriviaDrop.user.user_id.replace('discord-', '');
-            triviaMessage.channel.send({ embeds: [AfterTriviaSuccessMessage(endTriviaDrop, amountEach, initiator)] });
+            await triviaMessage.channel.send({ embeds: [AfterTriviaSuccessMessage(endTriviaDrop, amountEach, initiator)] });
           }
         }
 
         t.afterCommit(() => {
           console.log('done');
         });
-      }).catch((err) => {
+      }).catch(async (err) => {
+        try {
+          await db.error.create({
+            type: 'endTrivia',
+            error: `${err}`,
+          });
+        } catch (e) {
+          logger.error(`Error Discord: ${e}`);
+        }
         console.log(err);
         logger.error(`trivia error: ${err}`);
       });
@@ -589,8 +604,7 @@ export const discordTrivia = async (
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
-          // console.log(distance);
-          // console.log('distance');
+
           const row = new MessageActionRow();
           const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
           const answers = _.shuffle(randomQuestion.triviaanswers);
@@ -739,12 +753,19 @@ export const discordTrivia = async (
     t.afterCommit(() => {
       console.log('done');
     });
-  }).catch((err) => {
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'trivia',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Discord: ${e}`);
+    }
     console.log(err);
     logger.error(`trivia error: ${err}`);
     message.channel.send({ embeds: [discordErrorMessage("Trivia")] });
   });
-
   io.to('admin').emit('updateActivity', {
     activity,
   });

@@ -230,7 +230,15 @@ export const discordFlood = async (
     t.afterCommit(() => {
       console.log('done');
     });
-  }).catch((err) => {
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'flood',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Discord: ${e}`);
+    }
     console.log(err);
     logger.error(`flood error: ${err}`);
     message.channel.send({ embeds: [discordErrorMessage("Flood")] });

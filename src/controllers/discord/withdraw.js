@@ -24,7 +24,6 @@ export const withdrawDiscordCreate = async (
   channelTask,
   setting,
 ) => {
-  // logger.info(`Start Withdrawal Request: ${message.author.id}-${message.author.username}`);
   let user;
   let activity;
   await db.sequelize.transaction({
@@ -177,7 +176,15 @@ export const withdrawDiscordCreate = async (
     t.afterCommit(() => {
       console.log('done');
     });
-  }).catch((err) => {
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'withdraw',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Discord: ${e}`);
+    }
     console.log(err);
     logger.error(`withdraw error: ${err}`);
     message.channel.send({ embeds: [discordErrorMessage("Withdraw")] });

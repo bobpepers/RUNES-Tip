@@ -149,7 +149,6 @@ export const listenReactDrop = async (
             captcha = await preCaptcha.generateCaptcha();
           }
 
-          console.log(captcha);
           captchaPng = await svg2png({
             input: `${captcha.image}`.trim(),
             encoding: 'dataURL',
@@ -177,7 +176,7 @@ export const listenReactDrop = async (
         }
 
         if (reactDrop.emoji !== constructEmoji) {
-          collector.send('Failed, pressed wrong emoji');
+          await collector.send('Failed, pressed wrong emoji');
           await findReactTip.update({ status: 'failed' });
         } else {
           const captchaPngFixed = captchaPng.replace('data:image/png;base64,', '');
@@ -270,7 +269,15 @@ Solution: **${findReactTip.solution}**`,
               t.afterCommit(() => {
                 console.log('done');
               });
-            }).catch((err) => {
+            }).catch(async (err) => {
+              try {
+                await db.error.create({
+                  type: 'collectAnswerReactDrop',
+                  error: `${err}`,
+                });
+              } catch (e) {
+                logger.error(`Error Discord: ${e}`);
+              }
               console.log('failed');
             });
             // await queue.add(() => collectReactdrop);
@@ -308,9 +315,17 @@ Solution: **${findReactTip.solution}**`,
               t.afterCommit(() => {
                 console.log('done');
               });
-            }).catch((err) => {
+            }).catch(async (err) => {
+              try {
+                await db.error.create({
+                  type: 'endAnswerReactDrop',
+                  error: `${err}`,
+                });
+              } catch (e) {
+                logger.error(`Error Discord: ${e}`);
+              }
               console.log(err);
-              collector.send('Something went wrong');
+              await collector.send('Something went wrong');
             });
             await queue.add(() => endingCollectReactdrop);
           });
@@ -509,14 +524,22 @@ Solution: **${findReactTip.solution}**`,
             await reactMessage.channel.send(element);
           }
           const initiator = endReactDrop.user.user_id.replace('discord-', '');
-          reactMessage.channel.send({ embeds: [AfterReactDropSuccessMessage(endReactDrop, amountEach, initiator)] });
+          await reactMessage.channel.send({ embeds: [AfterReactDropSuccessMessage(endReactDrop, amountEach, initiator)] });
         }
       }
 
       t.afterCommit(() => {
         console.log('done');
       });
-    }).catch((err) => {
+    }).catch(async (err) => {
+      try {
+        await db.error.create({
+          type: 'endReactDrop',
+          error: `${err}`,
+        });
+      } catch (e) {
+        logger.error(`Error Discord: ${e}`);
+      }
       console.log(err);
       console.log('error');
     });
@@ -714,8 +737,7 @@ export const discordReactDrop = async (
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
-          // console.log(distance);
-          // console.log('distance');
+
           const sendReactDropMessage = await message.channel.send({ embeds: [reactDropMessage(distance, message.author.id, filteredMessage[4], amount)] });
           const group = await db.group.findOne({
             where: {
@@ -803,7 +825,6 @@ export const discordReactDrop = async (
               clearInterval(updateMessage);
             }
           }, 10000);
-          // logger.info(`Success started reactdrop Requested by: ${user.user_id}-${user.username} with ${amount / 1e8} ${settings.coin.ticker}`);
         }
       }
     }
@@ -811,14 +832,21 @@ export const discordReactDrop = async (
     t.afterCommit(() => {
       console.log('done');
     });
-  }).catch((err) => {
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'reactDrop',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Discord: ${e}`);
+    }
     console.log(err);
     console.log(useEmojis);
     logger.error(`reactdrop error: ${err}
 Emojis used: ${useEmojis}`);
-    message.channel.send({ embeds: [discordErrorMessage("ReactDrop")] });
+    await message.channel.send({ embeds: [discordErrorMessage("ReactDrop")] });
   });
-
   io.to('admin').emit('updateActivity', {
     activity,
   });

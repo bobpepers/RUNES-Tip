@@ -1,5 +1,6 @@
 import { Transaction } from "sequelize";
 import db from '../../models';
+import logger from "../../helpers/logger";
 
 import { getInstance } from "../../services/rclient";
 import getCoinSettings from '../../config/settings';
@@ -105,7 +106,15 @@ Type "${settings.bot.command.discord} help" for usage info`);
         console.log('done');
         // ctx.reply(`done`);
       });
-    }).catch((err) => {
+    }).catch(async (err) => {
+      try {
+        await db.error.create({
+          type: 'createUser',
+          error: `${err}`,
+        });
+      } catch (e) {
+        logger.error(`Error Discord: ${e}`);
+      }
       console.log(err.message);
     });
     return true;
@@ -193,7 +202,15 @@ export const updateDiscordLastSeen = async (client, message) => {
       t.afterCommit(() => {
         console.log('done');
       });
-    }).catch((err) => {
+    }).catch(async (err) => {
+      try {
+        await db.error.create({
+          type: 'updateUser',
+          error: `${err}`,
+        });
+      } catch (e) {
+        logger.error(`Error Discord: ${e}`);
+      }
       console.log(err.message);
     });
   }

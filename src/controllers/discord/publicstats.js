@@ -82,7 +82,15 @@ export const discordPublicStats = async (
     t.afterCommit(() => {
       console.log('done');
     });
-  }).catch((err) => {
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'publicStats',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Discord: ${e}`);
+    }
     console.log(err);
     logger.error(`publicstats error: ${err}`);
     message.channel.send({ embeds: [discordErrorMessage("PublicStats")] });

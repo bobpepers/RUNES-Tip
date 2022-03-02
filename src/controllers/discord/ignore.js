@@ -73,7 +73,15 @@ export const setIgnoreMe = async (message, io) => {
     t.afterCommit(() => {
       console.log('done');
     });
-  }).catch((err) => {
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'ignoreme',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Discord: ${e}`);
+    }
     console.log(err);
     logger.error(`ignoreme error: ${err}`);
     message.channel.send({ embeds: [discordErrorMessage("Ignore me")] });

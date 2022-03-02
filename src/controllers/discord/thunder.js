@@ -226,7 +226,15 @@ export const discordThunder = async (
     t.afterCommit(() => {
       console.log('done');
     });
-  }).catch((err) => {
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'thunder',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Discord: ${e}`);
+    }
     console.log(err);
     logger.error(`thunder error: ${err}`);
     message.channel.send({ embeds: [discordErrorMessage("Thunder")] });

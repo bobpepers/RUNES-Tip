@@ -6,7 +6,12 @@ import {
 } from '../../messages/discord';
 import db from '../../models';
 
-export const discordSettings = async (message, name, groupId = null, channelId = null) => {
+export const discordSettings = async (
+  message,
+  name,
+  groupId = null,
+  channelId = null,
+) => {
   console.log(name);
   console.log(groupId);
   console.log(channelId);
