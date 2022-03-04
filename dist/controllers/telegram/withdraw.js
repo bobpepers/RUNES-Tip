@@ -150,7 +150,8 @@ var withdrawTelegramCreate = /*#__PURE__*/function () {
                           type: 'send',
                           to_from: withdrawalAddress,
                           amount: amount,
-                          feeAmount: Number(fee)
+                          feeAmount: Number(fee),
+                          userId: user.id
                         }, {
                           transaction: t,
                           lock: t.LOCK.UPDATE
