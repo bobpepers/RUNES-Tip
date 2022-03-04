@@ -118,7 +118,8 @@ function _patchPirateDeposits() {
                                       addressId: address.id,
                                       phase: 'confirming',
                                       type: category,
-                                      amount: trans.received[0].value * 1e8
+                                      amount: trans.received[0].value * 1e8,
+                                      userId: address.wallet.userId
                                     },
                                     transaction: t,
                                     lock: t.LOCK.UPDATE

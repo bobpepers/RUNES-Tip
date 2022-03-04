@@ -97,8 +97,7 @@ function _patchKomodoDeposits() {
                             while (1) {
                               switch (_context.prev = _context.next) {
                                 case 0:
-                                  console.log('begin transaction');
-                                  _context.next = 3;
+                                  _context.next = 2;
                                   return _models["default"].transaction.findOrCreate({
                                     where: {
                                       txid: trans.txid,
@@ -109,21 +108,20 @@ function _patchKomodoDeposits() {
                                       addressId: address.id,
                                       phase: 'confirming',
                                       type: trans.category,
-                                      amount: trans.amount * 1e8
+                                      amount: trans.amount * 1e8,
+                                      userId: address.wallet.userId
                                     },
                                     transaction: t,
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 3:
+                                case 2:
                                   newTrans = _context.sent;
-                                  console.log('newTrans');
-                                  console.log(newTrans);
                                   t.afterCommit(function () {
                                     console.log('commited');
                                   });
 
-                                case 7:
+                                case 4:
                                 case "end":
                                   return _context.stop();
                               }

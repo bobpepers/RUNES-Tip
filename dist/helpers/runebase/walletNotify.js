@@ -104,7 +104,8 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
                                         addressId: address.id,
                                         phase: 'confirming',
                                         type: detail.category,
-                                        amount: detail.amount * 1e8
+                                        amount: detail.amount * 1e8,
+                                        userId: address.wallet.userId
                                       },
                                       transaction: t,
                                       lock: t.LOCK.UPDATE

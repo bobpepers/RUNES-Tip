@@ -33,13 +33,13 @@ var _userWalletExist = require("../../helpers/discord/userWalletExist");
 var settings = (0, _settings["default"])();
 
 var withdrawDiscordCreate = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(discordClient, message, filteredMessage, io, groupTask, channelTask, setting) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(discordClient, message, filteredMessage, io, groupTask, channelTask, setting) {
     var user, activity;
-    return _regenerator["default"].wrap(function _callee2$(_context2) {
+    return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
-            _context2.next = 2;
+            _context3.next = 2;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -275,7 +275,8 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           type: 'send',
                           to_from: filteredMessage[2],
                           amount: amount,
-                          feeAmount: Number(fee)
+                          feeAmount: Number(fee),
+                          userId: user.id
                         }, {
                           transaction: t,
                           lock: t.LOCK.UPDATE
@@ -341,22 +342,57 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
               return function (_x8) {
                 return _ref2.apply(this, arguments);
               };
-            }())["catch"](function (err) {
-              console.log(err);
+            }())["catch"]( /*#__PURE__*/function () {
+              var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(err) {
+                return _regenerator["default"].wrap(function _callee2$(_context2) {
+                  while (1) {
+                    switch (_context2.prev = _context2.next) {
+                      case 0:
+                        _context2.prev = 0;
+                        _context2.next = 3;
+                        return _models["default"].error.create({
+                          type: 'withdraw',
+                          error: "".concat(err)
+                        });
 
-              _logger["default"].error("withdraw error: ".concat(err));
+                      case 3:
+                        _context2.next = 8;
+                        break;
 
-              message.channel.send({
-                embeds: [(0, _discord.discordErrorMessage)("Withdraw")]
-              });
-            });
+                      case 5:
+                        _context2.prev = 5;
+                        _context2.t0 = _context2["catch"](0);
+
+                        _logger["default"].error("Error Discord: ".concat(_context2.t0));
+
+                      case 8:
+                        console.log(err);
+
+                        _logger["default"].error("withdraw error: ".concat(err));
+
+                        message.channel.send({
+                          embeds: [(0, _discord.discordErrorMessage)("Withdraw")]
+                        });
+
+                      case 11:
+                      case "end":
+                        return _context2.stop();
+                    }
+                  }
+                }, _callee2, null, [[0, 5]]);
+              }));
+
+              return function (_x9) {
+                return _ref3.apply(this, arguments);
+              };
+            }());
 
           case 2:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
-    }, _callee2);
+    }, _callee3);
   }));
 
   return function withdrawDiscordCreate(_x, _x2, _x3, _x4, _x5, _x6, _x7) {

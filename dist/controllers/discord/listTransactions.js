@@ -5,25 +5,21 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.fetchDiscordWalletDepositAddress = void 0;
+exports.fetchDiscordListTransactions = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _discord = require("discord.js");
-
 var _sequelize = require("sequelize");
 
-var _qrcode = _interopRequireDefault(require("qrcode"));
+var _discord = require("../../messages/discord");
 
 var _models = _interopRequireDefault(require("../../models"));
 
-var _discord2 = require("../../messages/discord");
-
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
-var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
+var fetchDiscordListTransactions = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(message, io) {
     var activity;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
@@ -36,7 +32,7 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var user, depositQr, depositQrFixed, userId, preActivity, finalActivity;
+                var user, createFailActivity, userId, transactions, createActivity, findActivity;
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
@@ -46,14 +42,6 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                           where: {
                             user_id: "discord-".concat(message.author.id)
                           },
-                          include: [{
-                            model: _models["default"].wallet,
-                            as: 'wallet',
-                            include: [{
-                              model: _models["default"].address,
-                              as: 'addresses'
-                            }]
-                          }],
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
@@ -61,73 +49,90 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                       case 2:
                         user = _context.sent;
 
-                        if (!(!user && !user.wallet && !user.wallet.addresses)) {
-                          _context.next = 6;
+                        if (user) {
+                          _context.next = 10;
                           break;
                         }
 
                         _context.next = 6;
-                        return message.author.send("Deposit Address not found");
-
-                      case 6:
-                        if (!(user && user.wallet && user.wallet.addresses)) {
-                          _context.next = 27;
-                          break;
-                        }
-
-                        _context.next = 9;
-                        return _qrcode["default"].toDataURL(user.wallet.addresses[0].address);
-
-                      case 9:
-                        depositQr = _context.sent;
-                        depositQrFixed = depositQr.replace('data:image/png;base64,', '');
-                        userId = user.user_id.replace('discord-', '');
-
-                        if (!(message.channel.type === 'DM')) {
-                          _context.next = 15;
-                          break;
-                        }
-
-                        _context.next = 15;
-                        return message.author.send({
-                          embeds: [(0, _discord2.depositAddressMessage)(userId, user)],
-                          files: [new _discord.MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')]
-                        });
-
-                      case 15:
-                        if (!(message.channel.type === 'GUILD_TEXT')) {
-                          _context.next = 20;
-                          break;
-                        }
-
-                        _context.next = 18;
-                        return message.channel.send({
-                          embeds: [(0, _discord2.warnDirectMessage)(userId, 'Balance')]
-                        });
-
-                      case 18:
-                        _context.next = 20;
-                        return message.author.send({
-                          embeds: [(0, _discord2.depositAddressMessage)(userId, user)],
-                          files: [new _discord.MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')]
-                        });
-
-                      case 20:
-                        _context.next = 22;
                         return _models["default"].activity.create({
-                          type: 'deposit',
+                          type: 'listtransactions_f',
                           earnerId: user.id
                         }, {
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 22:
-                        preActivity = _context.sent;
+                      case 6:
+                        createFailActivity = _context.sent;
+                        activity.unshift(createFailActivity);
+                        _context.next = 10;
+                        return message.author.send("User not found");
+
+                      case 10:
+                        if (!user) {
+                          _context.next = 30;
+                          break;
+                        }
+
+                        userId = user.user_id.replace('discord-', '');
+                        _context.next = 14;
+                        return _models["default"].transaction.findAll({
+                          where: {
+                            userId: user.id
+                          },
+                          order: [['id', 'DESC']],
+                          limit: 10,
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 14:
+                        transactions = _context.sent;
+
+                        if (!(message.channel.type === 'DM')) {
+                          _context.next = 18;
+                          break;
+                        }
+
+                        _context.next = 18;
+                        return message.author.send({
+                          embeds: [(0, _discord.listTransactionsMessage)(userId, user, transactions)]
+                        });
+
+                      case 18:
+                        if (!(message.channel.type === 'GUILD_TEXT')) {
+                          _context.next = 23;
+                          break;
+                        }
+
+                        _context.next = 21;
+                        return message.channel.send({
+                          embeds: [(0, _discord.warnDirectMessage)(userId, 'Balance')]
+                        });
+
+                      case 21:
+                        _context.next = 23;
+                        return message.author.send({
+                          embeds: [(0, _discord.listTransactionsMessage)(userId, user, transactions)]
+                        });
+
+                      case 23:
                         _context.next = 25;
+                        return _models["default"].activity.create({
+                          type: 'listtransactions_s',
+                          earnerId: user.id
+                        }, {
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 25:
+                        createActivity = _context.sent;
+                        _context.next = 28;
                         return _models["default"].activity.findOne({
                           where: {
-                            id: preActivity.id
+                            id: createActivity.id
                           },
                           include: [{
                             model: _models["default"].user,
@@ -137,16 +142,17 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 25:
-                        finalActivity = _context.sent;
-                        activity.unshift(finalActivity);
+                      case 28:
+                        findActivity = _context.sent;
+                        activity.unshift(findActivity);
 
-                      case 27:
+                      case 30:
                         t.afterCommit(function () {
-                          _logger["default"].info("Success Deposit Address Requested by: ".concat(message.author.id, "-").concat(message.author.username, "#").concat(message.author.discriminator));
+                          // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
+                          console.log('done list transactions request');
                         });
 
-                      case 28:
+                      case 31:
                       case "end":
                         return _context.stop();
                     }
@@ -166,7 +172,7 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                         _context2.prev = 0;
                         _context2.next = 3;
                         return _models["default"].error.create({
-                          type: 'deposit',
+                          type: 'listTransactions',
                           error: "".concat(err)
                         });
 
@@ -181,9 +187,11 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                         _logger["default"].error("Error Discord: ".concat(_context2.t0));
 
                       case 8:
-                        console.log(err);
+                        _logger["default"].error("Error Discord List Transactions Requested by: ".concat(message.author.id, "-").concat(message.author.username, "#").concat(message.author.discriminator, " - ").concat(err));
 
-                        _logger["default"].error("Error Deposit Address Requested by: ".concat(message.author.id, "-").concat(message.author.username, "#").concat(message.author.discriminator, " - ").concat(err));
+                        message.channel.send({
+                          embeds: [(0, _discord.discordErrorMessage)("List transactions")]
+                        });
 
                       case 10:
                       case "end":
@@ -211,9 +219,9 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
     }, _callee3);
   }));
 
-  return function fetchDiscordWalletDepositAddress(_x, _x2) {
+  return function fetchDiscordListTransactions(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 }();
 
-exports.fetchDiscordWalletDepositAddress = fetchDiscordWalletDepositAddress;
+exports.fetchDiscordListTransactions = fetchDiscordListTransactions;

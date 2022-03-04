@@ -25,6 +25,8 @@ var _settings = _interopRequireDefault(require("../config/settings"));
 
 var _rclient = require("./rclient");
 
+var _waterFaucet = require("../helpers/discord/waterFaucet");
+
 function _asyncIterator(iterable) { var method, async, sync, retry = 2; for ("undefined" != typeof Symbol && (async = Symbol.asyncIterator, sync = Symbol.iterator); retry--;) { if (async && null != (method = iterable[async])) return method.call(iterable); if (sync && null != (method = iterable[sync])) return new AsyncFromSyncIterator(method.call(iterable)); async = "@@asyncIterator", sync = "@@iterator"; } throw new TypeError("Object is not async iterable"); }
 
 function AsyncFromSyncIterator(s) { function AsyncFromSyncIteratorContinuation(r) { if (Object(r) !== r) return Promise.reject(new TypeError(r + " is not an object.")); var done = r.done; return Promise.resolve(r.value).then(function (value) { return { value: value, done: done }; }); } return AsyncFromSyncIterator = function AsyncFromSyncIterator(s) { this.s = s, this.n = s.next; }, AsyncFromSyncIterator.prototype = { s: null, n: null, next: function next() { return AsyncFromSyncIteratorContinuation(this.n.apply(this.s, arguments)); }, "return": function _return(value) { var ret = this.s["return"]; return void 0 === ret ? Promise.resolve({ value: value, done: !0 }) : AsyncFromSyncIteratorContinuation(ret.apply(this.s, arguments)); }, "throw": function _throw(value) { var thr = this.s["return"]; return void 0 === thr ? Promise.reject(value) : AsyncFromSyncIteratorContinuation(thr.apply(this.s, arguments)); } }, new AsyncFromSyncIterator(s); }
@@ -66,7 +68,6 @@ var sequentialLoop = /*#__PURE__*/function () {
                             break;
                           }
 
-                          // index++;
                           index += 1;
                           _context.next = 7;
                           return process(loop);
@@ -167,7 +168,7 @@ var syncTransactions = /*#__PURE__*/function () {
 
                       }, /*#__PURE__*/function () {
                         var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(t) {
-                          var wallet, updatedTransaction, updatedWallet, prepareLockedAmount, removeLockedAmount, createActivity, faucet, createFaucetActivity, _createActivity;
+                          var wallet, updatedTransaction, updatedWallet, prepareLockedAmount, removeLockedAmount, createActivity, faucetSetting, faucetWatered, _createActivity;
 
                           return _regenerator["default"].wrap(function _callee4$(_context4) {
                             while (1) {
@@ -203,12 +204,12 @@ var syncTransactions = /*#__PURE__*/function () {
 
                                 case 7:
                                   if (!(transaction.confirmations >= Number(settings.min.confirmations))) {
-                                    _context4.next = 48;
+                                    _context4.next = 45;
                                     break;
                                   }
 
                                   if (!(transaction.sent.length > 0 && trans.type === 'send')) {
-                                    _context4.next = 33;
+                                    _context4.next = 30;
                                     break;
                                   }
 
@@ -250,41 +251,23 @@ var syncTransactions = /*#__PURE__*/function () {
                                 case 19:
                                   createActivity = _context4.sent;
                                   _context4.next = 22;
-                                  return _models["default"].faucet.findOne({
+                                  return _models["default"].features.findOne({
+                                    where: {
+                                      type: 'global',
+                                      name: 'faucet'
+                                    },
                                     transaction: t,
                                     lock: t.LOCK.UPDATE
                                   });
 
                                 case 22:
-                                  faucet = _context4.sent;
+                                  faucetSetting = _context4.sent;
+                                  _context4.next = 25;
+                                  return (0, _waterFaucet.waterFaucet)(t, Number(trans.feeAmount), faucetSetting);
 
-                                  if (!faucet) {
-                                    _context4.next = 26;
-                                    break;
-                                  }
-
-                                  _context4.next = 26;
-                                  return faucet.update({
-                                    amount: Number(faucet.amount) + Number(trans.feeAmount / 2)
-                                  }, {
-                                    transaction: t,
-                                    lock: t.LOCK.UPDATE
-                                  });
-
-                                case 26:
+                                case 25:
+                                  faucetWatered = _context4.sent;
                                   _context4.next = 28;
-                                  return _models["default"].activity.create({
-                                    spenderId: updatedWallet.userId,
-                                    type: 'faucet_add',
-                                    amount: trans.feeAmount / 2
-                                  }, {
-                                    transaction: t,
-                                    lock: t.LOCK.UPDATE
-                                  });
-
-                                case 28:
-                                  createFaucetActivity = _context4.sent;
-                                  _context4.next = 31;
                                   return _models["default"].user.findOne({
                                     where: {
                                       id: updatedWallet.userId
@@ -293,18 +276,18 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 31:
+                                case 28:
                                   userToMessage = _context4.sent;
                                   isWithdrawalComplete = true;
 
-                                case 33:
+                                case 30:
                                   if (!(transaction.received.length > 0 && trans.type === 'receive')) {
-                                    _context4.next = 48;
+                                    _context4.next = 45;
                                     break;
                                   }
 
                                   console.log('updating balance');
-                                  _context4.next = 37;
+                                  _context4.next = 34;
                                   return wallet.update({
                                     available: wallet.available + transaction.received[0].value * 1e8
                                   }, {
@@ -312,9 +295,9 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 37:
+                                case 34:
                                   updatedWallet = _context4.sent;
-                                  _context4.next = 40;
+                                  _context4.next = 37;
                                   return trans.update({
                                     confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
                                     phase: 'confirmed'
@@ -323,9 +306,9 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 40:
+                                case 37:
                                   updatedTransaction = _context4.sent;
-                                  _context4.next = 43;
+                                  _context4.next = 40;
                                   return _models["default"].activity.create({
                                     earnerId: updatedWallet.userId,
                                     type: 'depositComplete',
@@ -337,9 +320,9 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 43:
+                                case 40:
                                   _createActivity = _context4.sent;
-                                  _context4.next = 46;
+                                  _context4.next = 43;
                                   return _models["default"].user.findOne({
                                     where: {
                                       id: updatedWallet.userId
@@ -348,11 +331,11 @@ var syncTransactions = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 46:
+                                case 43:
                                   userToMessage = _context4.sent;
                                   isDepositComplete = true;
 
-                                case 48:
+                                case 45:
                                   t.afterCommit( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
                                     var userClientId, myClient, _myClient;
 
@@ -426,7 +409,7 @@ var syncTransactions = /*#__PURE__*/function () {
                                     }, _callee3);
                                   })));
 
-                                case 49:
+                                case 46:
                                 case "end":
                                   return _context4.stop();
                               }

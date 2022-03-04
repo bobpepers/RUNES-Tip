@@ -66,6 +66,7 @@ module.exports = function (sequelize, DataTypes) {
   UserModel.associate = function (model) {
     UserModel.hasOne(model.wallet);
     UserModel.hasMany(model.referral);
+    UserModel.hasMany(model.transaction);
     UserModel.hasMany(model.referralReward);
     UserModel.hasMany(model.active, {
       foreignKey: 'userId',

@@ -36,39 +36,39 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var discordFlood = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(discordClient, message, filteredMessage, io, groupTask, channelTask, setting, faucetSetting, queue) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(discordClient, message, filteredMessage, io, groupTask, channelTask, setting, faucetSetting, queue) {
     var members, onlineMembers, user, userActivity, activity;
-    return _regenerator["default"].wrap(function _callee2$(_context2) {
+    return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
             if (!(!groupTask || !channelTask)) {
-              _context2.next = 4;
+              _context3.next = 4;
               break;
             }
 
-            _context2.next = 3;
+            _context3.next = 3;
             return message.channel.send({
               embeds: [(0, _discord.NotInDirectMessage)(message, 'Flood')]
             });
 
           case 3:
-            return _context2.abrupt("return");
+            return _context3.abrupt("return");
 
           case 4:
-            _context2.next = 6;
+            _context3.next = 6;
             return discordClient.guilds.cache.get(message.guildId).members.fetch({
               withPresences: true
             });
 
           case 6:
-            members = _context2.sent;
+            members = _context3.sent;
             onlineMembers = members.filter(function (member) {
               console.log(member.presence);
               return member;
             });
             activity = [];
-            _context2.next = 11;
+            _context3.next = 11;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -389,15 +389,50 @@ var discordFlood = /*#__PURE__*/function () {
               return function (_x10) {
                 return _ref2.apply(this, arguments);
               };
-            }())["catch"](function (err) {
-              console.log(err);
+            }())["catch"]( /*#__PURE__*/function () {
+              var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(err) {
+                return _regenerator["default"].wrap(function _callee2$(_context2) {
+                  while (1) {
+                    switch (_context2.prev = _context2.next) {
+                      case 0:
+                        _context2.prev = 0;
+                        _context2.next = 3;
+                        return _models["default"].error.create({
+                          type: 'flood',
+                          error: "".concat(err)
+                        });
 
-              _logger["default"].error("flood error: ".concat(err));
+                      case 3:
+                        _context2.next = 8;
+                        break;
 
-              message.channel.send({
-                embeds: [(0, _discord.discordErrorMessage)("Flood")]
-              });
-            });
+                      case 5:
+                        _context2.prev = 5;
+                        _context2.t0 = _context2["catch"](0);
+
+                        _logger["default"].error("Error Discord: ".concat(_context2.t0));
+
+                      case 8:
+                        console.log(err);
+
+                        _logger["default"].error("flood error: ".concat(err));
+
+                        message.channel.send({
+                          embeds: [(0, _discord.discordErrorMessage)("Flood")]
+                        });
+
+                      case 11:
+                      case "end":
+                        return _context2.stop();
+                    }
+                  }
+                }, _callee2, null, [[0, 5]]);
+              }));
+
+              return function (_x11) {
+                return _ref3.apply(this, arguments);
+              };
+            }());
 
           case 11:
             io.to('admin').emit('updateActivity', {
@@ -406,10 +441,10 @@ var discordFlood = /*#__PURE__*/function () {
 
           case 12:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
-    }, _callee2);
+    }, _callee3);
   }));
 
   return function discordFlood(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9) {

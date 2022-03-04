@@ -15,12 +15,14 @@ var _sequelize = require("sequelize");
 
 var _models = _interopRequireDefault(require("../../models"));
 
+var _logger = _interopRequireDefault(require("../../helpers/logger"));
+
 var updateDiscordChannel = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(client, message, group) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(client, message, group) {
     var channelId, channelRecord;
-    return _regenerator["default"].wrap(function _callee2$(_context2) {
+    return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
             if (message.type && message.type === "GUILD_VOICE") {
               console.log('GUILD_VOICE');
@@ -31,7 +33,7 @@ var updateDiscordChannel = /*#__PURE__*/function () {
               channelId = message.channelId;
             }
 
-            _context2.next = 3;
+            _context3.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -116,19 +118,56 @@ var updateDiscordChannel = /*#__PURE__*/function () {
               return function (_x4) {
                 return _ref2.apply(this, arguments);
               };
-            }())["catch"](function (err) {
-              console.log(err.message);
-            });
+            }())["catch"]( /*#__PURE__*/function () {
+              var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(err) {
+                return _regenerator["default"].wrap(function _callee2$(_context2) {
+                  while (1) {
+                    switch (_context2.prev = _context2.next) {
+                      case 0:
+                        _context2.prev = 0;
+                        _context2.next = 3;
+                        return _models["default"].error.create({
+                          type: 'channel',
+                          error: "".concat(err)
+                        });
+
+                      case 3:
+                        _context2.next = 8;
+                        break;
+
+                      case 5:
+                        _context2.prev = 5;
+                        _context2.t0 = _context2["catch"](0);
+
+                        _logger["default"].error("Error Discord: ".concat(_context2.t0));
+
+                      case 8:
+                        _logger["default"].error("channel error: ".concat(err));
+
+                        console.log(err.message);
+
+                      case 10:
+                      case "end":
+                        return _context2.stop();
+                    }
+                  }
+                }, _callee2, null, [[0, 5]]);
+              }));
+
+              return function (_x5) {
+                return _ref3.apply(this, arguments);
+              };
+            }());
 
           case 3:
-            return _context2.abrupt("return", channelRecord);
+            return _context3.abrupt("return", channelRecord);
 
           case 4:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
-    }, _callee2);
+    }, _callee3);
   }));
 
   return function updateDiscordChannel(_x, _x2, _x3) {

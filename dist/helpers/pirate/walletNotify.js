@@ -105,7 +105,8 @@ var walletNotifyPirate = /*#__PURE__*/function () {
                             addressId: address.id,
                             phase: 'confirming',
                             type: 'receive',
-                            amount: transaction.received[0].value * 1e8
+                            amount: transaction.received[0].value * 1e8,
+                            userId: address.wallet.userId
                           },
                           transaction: t,
                           lock: t.LOCK.UPDATE

@@ -35,7 +35,7 @@ var createUpdateUser = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var user, wallet, address, newAddress;
+                var user, wallet, address, newAddress, addressAlreadyExist;
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
@@ -73,7 +73,7 @@ var createUpdateUser = /*#__PURE__*/function () {
 
                       case 7:
                         if (!user) {
-                          _context.next = 38;
+                          _context.next = 42;
                           break;
                         }
 
@@ -172,7 +172,7 @@ var createUpdateUser = /*#__PURE__*/function () {
                         address = _context.sent;
 
                         if (address) {
-                          _context.next = 38;
+                          _context.next = 42;
                           break;
                         }
 
@@ -182,6 +182,23 @@ var createUpdateUser = /*#__PURE__*/function () {
                       case 33:
                         newAddress = _context.sent;
                         _context.next = 36;
+                        return _models["default"].address.findOne({
+                          where: {
+                            address: newAddress
+                          },
+                          transaction: t,
+                          lock: t.LOCK.UPDATE
+                        });
+
+                      case 36:
+                        addressAlreadyExist = _context.sent;
+
+                        if (addressAlreadyExist) {
+                          _context.next = 42;
+                          break;
+                        }
+
+                        _context.next = 40;
                         return _models["default"].address.create({
                           address: newAddress,
                           walletId: wallet.id,
@@ -192,16 +209,16 @@ var createUpdateUser = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 36:
+                      case 40:
                         address = _context.sent;
                         ctx.reply((0, _telegram.welcomeMessage)(ctx));
 
-                      case 38:
+                      case 42:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 39:
+                      case 43:
                       case "end":
                         return _context.stop();
                     }

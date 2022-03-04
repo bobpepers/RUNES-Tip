@@ -21,14 +21,14 @@ var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
 /* eslint-disable import/prefer-default-export */
 var setIgnoreMe = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(message, io) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(message, io) {
     var activity;
-    return _regenerator["default"].wrap(function _callee2$(_context2) {
+    return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
             activity = [];
-            _context2.next = 3;
+            _context3.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -153,15 +153,50 @@ var setIgnoreMe = /*#__PURE__*/function () {
               return function (_x3) {
                 return _ref2.apply(this, arguments);
               };
-            }())["catch"](function (err) {
-              console.log(err);
+            }())["catch"]( /*#__PURE__*/function () {
+              var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(err) {
+                return _regenerator["default"].wrap(function _callee2$(_context2) {
+                  while (1) {
+                    switch (_context2.prev = _context2.next) {
+                      case 0:
+                        _context2.prev = 0;
+                        _context2.next = 3;
+                        return _models["default"].error.create({
+                          type: 'ignoreme',
+                          error: "".concat(err)
+                        });
 
-              _logger["default"].error("ignoreme error: ".concat(err));
+                      case 3:
+                        _context2.next = 8;
+                        break;
 
-              message.channel.send({
-                embeds: [(0, _discord.discordErrorMessage)("Ignore me")]
-              });
-            });
+                      case 5:
+                        _context2.prev = 5;
+                        _context2.t0 = _context2["catch"](0);
+
+                        _logger["default"].error("Error Discord: ".concat(_context2.t0));
+
+                      case 8:
+                        console.log(err);
+
+                        _logger["default"].error("ignoreme error: ".concat(err));
+
+                        message.channel.send({
+                          embeds: [(0, _discord.discordErrorMessage)("Ignore me")]
+                        });
+
+                      case 11:
+                      case "end":
+                        return _context2.stop();
+                    }
+                  }
+                }, _callee2, null, [[0, 5]]);
+              }));
+
+              return function (_x4) {
+                return _ref3.apply(this, arguments);
+              };
+            }());
 
           case 3:
             io.to('admin').emit('updateActivity', {
@@ -170,10 +205,10 @@ var setIgnoreMe = /*#__PURE__*/function () {
 
           case 4:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
-    }, _callee2);
+    }, _callee3);
   }));
 
   return function setIgnoreMe(_x, _x2) {

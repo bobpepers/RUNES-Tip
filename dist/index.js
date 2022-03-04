@@ -564,10 +564,11 @@ var telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN); // 
 (0, _updatePrice.updatePrice)();
 
 var schedulePriceUpdate = _nodeSchedule["default"].scheduleJob('*/20 * * * *', function () {
+  // Update price every 20 minutes
   (0, _updatePrice.updatePrice)();
 });
 
-var scheduleWithdrawal = _nodeSchedule["default"].scheduleJob('*/2 * * * *', /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5() {
+var scheduleWithdrawal = _nodeSchedule["default"].scheduleJob('*/5 * * * *', /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5() {
   var autoWithdrawalSetting;
   return _regenerator["default"].wrap(function _callee5$(_context7) {
     while (1) {
