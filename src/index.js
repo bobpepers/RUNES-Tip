@@ -396,11 +396,11 @@ const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 }());
 
 updatePrice();
-const schedulePriceUpdate = schedule.scheduleJob('*/20 * * * *', () => {
+const schedulePriceUpdate = schedule.scheduleJob('*/20 * * * *', () => { // Update price every 20 minutes
   updatePrice();
 });
 
-const scheduleWithdrawal = schedule.scheduleJob('*/2 * * * *', async () => { // Process a withdrawal every 2 minutes
+const scheduleWithdrawal = schedule.scheduleJob('*/5 * * * *', async () => { // Process a withdrawal every 5 minutes
   const autoWithdrawalSetting = await db.features.findOne({
     where: {
       name: 'autoWithdrawal',

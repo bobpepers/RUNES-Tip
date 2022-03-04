@@ -15,7 +15,7 @@ export const discordHelp = async (message, io) => {
       },
     },
   );
-  console.log(withdraw);
+
   if (message.channel.type === 'DM') {
     await message.author.send({ embeds: [helpMessageOne(withdraw)] });
     await message.author.send({ embeds: [helpMessageTwo(withdraw)] });

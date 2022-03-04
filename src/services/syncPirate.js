@@ -11,8 +11,8 @@ import {
   discordWithdrawalConfirmedMessage,
 } from '../messages/discord';
 import getCoinSettings from '../config/settings';
-
 import { getInstance } from "./rclient";
+import { waterFaucet } from "../helpers/discord/waterFaucet";
 
 const settings = getCoinSettings();
 
@@ -30,7 +30,6 @@ const sequentialLoop = async (iterations, process, exit) => {
       }
 
       if (index < iterations) {
-        // index++;
         index += 1;
         await process(loop);
       } else {
@@ -128,26 +127,21 @@ const syncTransactions = async (discordClient, telegramClient) => {
             lock: t.LOCK.UPDATE,
           });
           /// Add To faucet
-          const faucet = await db.faucet.findOne({
+          const faucetSetting = await db.features.findOne({
+            where: {
+              type: 'global',
+              name: 'faucet',
+            },
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
-          if (faucet) {
-            await faucet.update({
-              amount: Number(faucet.amount) + Number(trans.feeAmount / 2),
-            }, {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            });
-          }
-          const createFaucetActivity = await db.activity.create({
-            spenderId: updatedWallet.userId,
-            type: 'faucet_add',
-            amount: trans.feeAmount / 2,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
+
+          const faucetWatered = await waterFaucet(
+            t,
+            Number(trans.feeAmount),
+            faucetSetting,
+          );
+
           userToMessage = await db.user.findOne({
             where: {
               id: updatedWallet.userId,
