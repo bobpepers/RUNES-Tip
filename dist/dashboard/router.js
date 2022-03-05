@@ -25,6 +25,8 @@ var _ip = require("./controllers/ip");
 
 var _servers = require("./controllers/servers");
 
+var _errors = require("./controllers/errors");
+
 var _status = require("./controllers/status");
 
 var _withdrawals = require("./controllers/withdrawals");
@@ -403,6 +405,17 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
     if (res.locals.servers) {
       res.json({
         servers: res.locals.servers
+      });
+    } else {
+      res.status(401).send({
+        error: "ERROR"
+      });
+    }
+  });
+  app.post('/api/errors', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _errors.fetchErrors, function (req, res) {
+    if (res.locals.errors) {
+      res.json({
+        errors: res.locals.errors
       });
     } else {
       res.status(401).send({
