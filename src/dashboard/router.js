@@ -25,6 +25,10 @@ import {
   banServer,
 } from './controllers/servers';
 
+import {
+  fetchErrors,
+} from './controllers/errors';
+
 import { fetchNodeStatus } from './controllers/status';
 
 import {
@@ -668,6 +672,26 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
       if (res.locals.servers) {
         res.json({
           servers: res.locals.servers,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/errors',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    fetchErrors,
+    (req, res) => {
+      if (res.locals.errors) {
+        res.json({
+          errors: res.locals.errors,
         });
       } else {
         res.status(401).send({
