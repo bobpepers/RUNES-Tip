@@ -81,13 +81,14 @@ export const discordFaucetClaim = async (
     const dateFuture = lastFaucetTip && lastFaucetTip.createdAt.getTime() + (4 * 60 * 60 * 1000);
     const dateNow = new Date().getTime();
     const distance = dateFuture && dateFuture - dateNow;
-    console.log(distance);
+    // console.log(distance);
 
     if (distance
       && distance > 0
     ) {
       const activityT = await db.activity.create({
         type: 'faucettip_t',
+        earnerId: user.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
@@ -113,8 +114,7 @@ export const discordFaucetClaim = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    console.log(Number(user.wallet.available));
-    console.log(amountToTip);
+
     const updateWallet = await user.wallet.update({
       available: Number(user.wallet.available) + amountToTip,
     }, {
@@ -125,6 +125,9 @@ export const discordFaucetClaim = async (
       type: 'faucettip_s',
       earnerId: user.id,
       faucettipId: faucetTip.id,
+      amount: amountToTip,
+      spender_balance: updateFaucet.amount,
+      earner_balance: updateWallet.available + updateWallet.locked,
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
