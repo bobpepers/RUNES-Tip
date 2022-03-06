@@ -63,7 +63,7 @@ export const discordFaucetClaim = async (
         transaction: t,
       });
       activity.push(fActivity);
-      await message.channel.send({ embeds: [dryFaucetMessage(message)] });
+      await message.channel.send({ embeds: [dryFaucetMessage()] });
       return;
     }
     const lastFaucetTip = await db.faucettip.findOne({
@@ -77,7 +77,7 @@ export const discordFaucetClaim = async (
       ],
     });
     const userId = user.user_id.replace('discord-', '');
-    const username = user.ignoreme ? `<@${userId}>` : `${user.username}`;
+    const username = user.ignoreMe ? `${user.username}` : `<@${userId}>`;
     const dateFuture = lastFaucetTip && lastFaucetTip.createdAt.getTime() + (4 * 60 * 60 * 1000);
     const dateNow = new Date().getTime();
     const distance = dateFuture && dateFuture - dateNow;
@@ -94,7 +94,7 @@ export const discordFaucetClaim = async (
         transaction: t,
       });
       activity.push(activityT);
-      await message.channel.send({ embeds: [claimTooFactFaucetMessage(message, username, distance)] });
+      await message.channel.send({ embeds: [claimTooFactFaucetMessage(username, distance)] });
       return;
     }
     const amountToTip = Number(((faucet.amount / 100) * (settings.faucet / 1e2)).toFixed(0));
@@ -147,7 +147,7 @@ export const discordFaucetClaim = async (
       transaction: t,
     });
     activity.push(finalActivity);
-    await message.channel.send({ embeds: [faucetClaimedMessage(message, username, amountToTip)] });
+    await message.channel.send({ embeds: [faucetClaimedMessage(username, amountToTip)] });
   }).catch(async (err) => {
     try {
       await db.error.create({

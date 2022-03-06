@@ -717,14 +717,14 @@ export const confirmAllAmoutMessageDiscord = (
   return result;
 };
 
-export const claimTooFactFaucetMessage = (message, username, distance) => {
+export const claimTooFactFaucetMessage = (username, distance) => {
   const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((distance % (1000 * 60)) / 1000);
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Faucet')
-    .setDescription(`${username}, you have to wait ${hours === 1 ? `${hours} hour` : ''} ${hours > 1 ? `${hours} hours,` : ''} ${minutes === 1 ? `${minutes} minute` : ''} ${minutes > 1 ? `${minutes} minutes and` : ''} ${seconds === 1 ? `${seconds} second` : ''} ${seconds > 1 ? `${seconds} seconds` : ''} before claiming the faucet again (the faucet can be claimed every 4 hours).`)
+    .setDescription(`⏱️ ${username}, you have to wait ${hours === 1 ? `${hours} hour` : ''}${hours > 1 ? `${hours} hours,` : ''} ${minutes === 1 ? `${minutes} minute` : ''}${minutes > 1 ? `${minutes} minutes and` : ''} ${seconds === 1 ? `${seconds} second` : ''}${seconds > 1 ? `${seconds} seconds` : ''} before claiming the faucet again (the faucet can be claimed every 4 hours).`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
@@ -734,11 +734,11 @@ export const claimTooFactFaucetMessage = (message, username, distance) => {
   return result;
 };
 
-export const faucetClaimedMessage = (message, username, amount) => {
+export const faucetClaimedMessage = (username, amount) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Faucet')
-    .setDescription(`${username}, you have been tipped ${amount / 1e8} ${settings.coin.ticker} from the faucet.`)
+    .setDescription(`💧 ${username}, you have been tipped **${amount / 1e8} ${settings.coin.ticker}** from the faucet.`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
@@ -748,11 +748,11 @@ export const faucetClaimedMessage = (message, username, amount) => {
   return result;
 };
 
-export const dryFaucetMessage = (message) => {
+export const dryFaucetMessage = () => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Faucet')
-    .setDescription(`Faucet is dry`)
+    .setDescription(`🏜️ Faucet is dry`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
