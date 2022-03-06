@@ -62,6 +62,7 @@ export const fetchDiscordWalletBalance = async (
       const createActivity = await db.activity.create({
         type: 'balance',
         earnerId: user.id,
+        earner_balance: user.wallet.available + user.wallet.locked,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
