@@ -38,13 +38,11 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.STRING,
       allowNull: false
     }
-  }; // 2: The model options.
-
+  };
   var modelOptions = {
     freezeTableName: true
-  }; // 3: Define the Wallet model.
-
-  var ReactdropModel = sequelize.define('reactdrop', modelDefinition, modelOptions); // 4: Wallet belongs to User
+  };
+  var ReactdropModel = sequelize.define('reactdrop', modelDefinition, modelOptions);
 
   ReactdropModel.associate = function (model) {
     ReactdropModel.belongsTo(model.user);
@@ -54,8 +52,7 @@ module.exports = function (sequelize, DataTypes) {
     ReactdropModel.hasMany(model.activity, {
       as: 'reactdrop'
     });
-  }; // 5: Wallet has many addresses
-
+  };
 
   return ReactdropModel;
 };

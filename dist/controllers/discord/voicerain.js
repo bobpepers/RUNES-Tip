@@ -402,7 +402,7 @@ var discordVoiceRain = /*#__PURE__*/function () {
                       case 97:
                         _context.next = 99;
                         return message.channel.send({
-                          embeds: [(0, _discord.AfterSuccessMessage)(message, amount, withoutBots, amountPerUser, 'Rain', 'rained')]
+                          embeds: [(0, _discord.AfterSuccessMessage)(message, rainRecord.id, amount, withoutBots, amountPerUser, 'VoiceRain', 'rained')]
                         });
 
                       case 99:

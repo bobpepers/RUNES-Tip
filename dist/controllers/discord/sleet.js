@@ -499,7 +499,7 @@ var discordSleet = /*#__PURE__*/function () {
                       case 133:
                         _context.next = 135;
                         return message.channel.send({
-                          embeds: [(0, _discord.AfterSuccessMessage)(message, amount, usersToRain, amountPerUser, 'Sleet', 'sleeted')]
+                          embeds: [(0, _discord.AfterSuccessMessage)(message, sleetRecord.id, amount, usersToRain, amountPerUser, 'Sleet', 'sleeted')]
                         });
 
                       case 135:

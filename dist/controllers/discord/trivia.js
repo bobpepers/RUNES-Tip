@@ -299,7 +299,7 @@ var listenTrivia = /*#__PURE__*/function () {
                                 actualUserId = triviaRecord.user.user_id.replace('discord-', '');
                                 _context7.next = 4;
                                 return triviaMessage.edit({
-                                  embeds: [(0, _discord2.triviaMessageDiscord)(-1, actualUserId, triviaRecord.triviaquestion.question, answerString, triviaRecord.amount, triviaRecord.userCount)],
+                                  embeds: [(0, _discord2.triviaMessageDiscord)(triviaRecord.id, -1, actualUserId, triviaRecord.triviaquestion.question, answerString, triviaRecord.amount, triviaRecord.userCount)],
                                   components: []
                                 });
 
@@ -770,7 +770,7 @@ var discordTrivia = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref11 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee11(t) {
-                var failActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, totalPeople, isnumPeople, textTime, cutLastTimeLetter, cutNumberTime, isnum, amountPeopleFailActivity, timeFailActivity, _timeFailActivity, randomQuestion, failFindTriviaQuestion, timeDay, timeHour, timeMinute, timeSecond, dateObj, countDownDate, now, distance, findGroup, wallet, row, alphabet, answers, answerString, positionAlphabet, _iterator3, _step3, answer, sendTriviaMessage, group, channel, fee, newTriviaCreate, newTrivia, preActivity, finalActivity, triviaMessage, updateMessage;
+                var failActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, totalPeople, isnumPeople, textTime, cutLastTimeLetter, cutNumberTime, isnum, amountPeopleFailActivity, timeFailActivity, _timeFailActivity, randomQuestion, failFindTriviaQuestion, timeDay, timeHour, timeMinute, timeSecond, dateObj, countDownDate, now, distance, findGroup, wallet, row, alphabet, answers, answerString, positionAlphabet, group, channel, fee, _iterator3, _step3, answer, newTriviaCreate, sendTriviaMessage, newUpdatedTriviaCreate, newTrivia, preActivity, finalActivity, triviaMessage, updateMessage;
 
                 return _regenerator["default"].wrap(function _callee11$(_context11) {
                   while (1) {
@@ -883,7 +883,7 @@ var discordTrivia = /*#__PURE__*/function () {
                         });
 
                       case 35:
-                        _context11.next = 138;
+                        _context11.next = 140;
                         break;
 
                       case 37:
@@ -911,7 +911,7 @@ var discordTrivia = /*#__PURE__*/function () {
                         });
 
                       case 44:
-                        _context11.next = 138;
+                        _context11.next = 140;
                         break;
 
                       case 46:
@@ -938,7 +938,7 @@ var discordTrivia = /*#__PURE__*/function () {
                         });
 
                       case 53:
-                        _context11.next = 138;
+                        _context11.next = 140;
                         break;
 
                       case 55:
@@ -982,7 +982,7 @@ var discordTrivia = /*#__PURE__*/function () {
                         });
 
                       case 65:
-                        _context11.next = 138;
+                        _context11.next = 140;
                         break;
 
                       case 67:
@@ -1062,7 +1062,7 @@ var discordTrivia = /*#__PURE__*/function () {
                         }
 
                         console.log('group not found');
-                        _context11.next = 138;
+                        _context11.next = 140;
                         break;
 
                       case 99:
@@ -1080,8 +1080,31 @@ var discordTrivia = /*#__PURE__*/function () {
                         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
                         answers = _lodash["default"].shuffle(randomQuestion.triviaanswers);
                         answerString = '';
-                        positionAlphabet = 0;
-                        console.log(answers); // eslint-disable-next-line no-restricted-syntax
+                        positionAlphabet = 0; // console.log(answers);
+
+                        _context11.next = 109;
+                        return _models["default"].group.findOne({
+                          where: {
+                            groupId: "discord-".concat(message.guildId)
+                          },
+                          transaction: t,
+                          lock: t.LOCK.UPDATE
+                        });
+
+                      case 109:
+                        group = _context11.sent;
+                        _context11.next = 112;
+                        return _models["default"].channel.findOne({
+                          where: {
+                            channelId: "discord-".concat(message.channelId)
+                          },
+                          transaction: t,
+                          lock: t.LOCK.UPDATE
+                        });
+
+                      case 112:
+                        channel = _context11.sent;
+                        fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0); // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator3 = _createForOfIteratorHelper(answers);
@@ -1100,38 +1123,7 @@ var discordTrivia = /*#__PURE__*/function () {
                           _iterator3.f();
                         }
 
-                        _context11.next = 112;
-                        return message.channel.send({
-                          embeds: [(0, _discord2.triviaMessageDiscord)(distance, message.author.id, randomQuestion.question, answerString, amount, totalPeople)],
-                          components: [row]
-                        });
-
-                      case 112:
-                        sendTriviaMessage = _context11.sent;
-                        _context11.next = 115;
-                        return _models["default"].group.findOne({
-                          where: {
-                            groupId: "discord-".concat(message.guildId)
-                          },
-                          transaction: t,
-                          lock: t.LOCK.UPDATE
-                        });
-
-                      case 115:
-                        group = _context11.sent;
                         _context11.next = 118;
-                        return _models["default"].channel.findOne({
-                          where: {
-                            channelId: "discord-".concat(message.channelId)
-                          },
-                          transaction: t,
-                          lock: t.LOCK.UPDATE
-                        });
-
-                      case 118:
-                        channel = _context11.sent;
-                        fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
-                        _context11.next = 122;
                         return _models["default"].trivia.create({
                           feeAmount: Number(fee),
                           amount: amount,
@@ -1140,19 +1132,37 @@ var discordTrivia = /*#__PURE__*/function () {
                           channelId: channel.id,
                           ends: dateObj,
                           triviaquestionId: randomQuestion.id,
-                          discordMessageId: sendTriviaMessage.id,
+                          discordMessageId: 'notYetSpecified',
                           userId: user.id
                         }, {
                           transaction: t,
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 122:
+                      case 118:
                         newTriviaCreate = _context11.sent;
-                        _context11.next = 125;
+                        _context11.next = 121;
+                        return message.channel.send({
+                          embeds: [(0, _discord2.triviaMessageDiscord)(newTriviaCreate.id, distance, message.author.id, randomQuestion.question, answerString, amount, totalPeople)],
+                          components: [row]
+                        });
+
+                      case 121:
+                        sendTriviaMessage = _context11.sent;
+                        _context11.next = 124;
+                        return newTriviaCreate.update({
+                          discordMessageId: sendTriviaMessage.id
+                        }, {
+                          transaction: t,
+                          lock: t.LOCK.UPDATE
+                        });
+
+                      case 124:
+                        newUpdatedTriviaCreate = _context11.sent;
+                        _context11.next = 127;
                         return _models["default"].trivia.findOne({
                           where: {
-                            id: newTriviaCreate.id
+                            id: newUpdatedTriviaCreate.id
                           },
                           include: [{
                             model: _models["default"].triviaquestion,
@@ -1165,9 +1175,9 @@ var discordTrivia = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 125:
+                      case 127:
                         newTrivia = _context11.sent;
-                        _context11.next = 128;
+                        _context11.next = 130;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'trivia_s',
@@ -1179,9 +1189,9 @@ var discordTrivia = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 128:
+                      case 130:
                         preActivity = _context11.sent;
-                        _context11.next = 131;
+                        _context11.next = 133;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -1197,13 +1207,13 @@ var discordTrivia = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 131:
+                      case 133:
                         finalActivity = _context11.sent;
                         activity.unshift(finalActivity);
-                        _context11.next = 135;
+                        _context11.next = 137;
                         return discordClient.guilds.cache.get(sendTriviaMessage.guildId).channels.cache.get(sendTriviaMessage.channelId).messages.fetch(sendTriviaMessage.id);
 
-                      case 135:
+                      case 137:
                         triviaMessage = _context11.sent;
                         updateMessage = setInterval( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee10() {
                           return _regenerator["default"].wrap(function _callee10$(_context10) {
@@ -1215,7 +1225,7 @@ var discordTrivia = /*#__PURE__*/function () {
                                   distance = countDownDate - now;
                                   _context10.next = 5;
                                   return triviaMessage.edit({
-                                    embeds: [(0, _discord2.triviaMessageDiscord)(distance, message.author.id, randomQuestion.question, answerString, amount, totalPeople)]
+                                    embeds: [(0, _discord2.triviaMessageDiscord)(newTrivia.id, distance, message.author.id, randomQuestion.question, answerString, amount, totalPeople)]
                                   });
 
                                 case 5:
@@ -1232,12 +1242,12 @@ var discordTrivia = /*#__PURE__*/function () {
                         })), 10000);
                         listenTrivia(triviaMessage, distance, newTrivia, io, queue, updateMessage, answerString);
 
-                      case 138:
+                      case 140:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 139:
+                      case 141:
                       case "end":
                         return _context11.stop();
                     }

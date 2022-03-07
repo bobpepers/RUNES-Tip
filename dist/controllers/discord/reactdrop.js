@@ -67,11 +67,11 @@ function shuffle(array) {
 }
 
 var listenReactDrop = /*#__PURE__*/function () {
-  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee11(reactMessage, distance, reactDrop, io, queue) {
+  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee12(reactMessage, distance, reactDrop, io, queue) {
     var filter, collector;
-    return _regenerator["default"].wrap(function _callee11$(_context11) {
+    return _regenerator["default"].wrap(function _callee12$(_context12) {
       while (1) {
-        switch (_context11.prev = _context11.next) {
+        switch (_context12.prev = _context12.next) {
           case 0:
             filter = function filter() {
               return true;
@@ -90,7 +90,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                     switch (_context7.prev = _context7.next) {
                       case 0:
                         if (collector.bot) {
-                          _context7.next = 55;
+                          _context7.next = 54;
                           break;
                         }
 
@@ -115,7 +115,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                         findReactTip = _context7.sent;
 
                         if (findReactTip) {
-                          _context7.next = 55;
+                          _context7.next = 54;
                           break;
                         }
 
@@ -125,7 +125,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                         randomBackground = backgroundArray[Math.floor(Math.random() * backgroundArray.length)];
 
                         if (!(randomFunc === 'svg')) {
-                          _context7.next = 21;
+                          _context7.next = 20;
                           break;
                         }
 
@@ -138,10 +138,10 @@ var listenReactDrop = /*#__PURE__*/function () {
                             noise: 15,
                             color: true
                           });
-                        }
+                        } // console.log(captcha);
 
-                        console.log(captcha);
-                        _context7.next = 17;
+
+                        _context7.next = 16;
                         return (0, _svgPngConverter.svg2png)({
                           input: "".concat(captcha.data).trim(),
                           encoding: 'dataURL',
@@ -152,9 +152,9 @@ var listenReactDrop = /*#__PURE__*/function () {
                           quality: 1
                         });
 
-                      case 17:
+                      case 16:
                         captchaPng = _context7.sent;
-                        _context7.next = 20;
+                        _context7.next = 19;
                         return _models["default"].reactdroptip.create({
                           status: 'waiting',
                           captchaType: 'svg',
@@ -163,20 +163,20 @@ var listenReactDrop = /*#__PURE__*/function () {
                           reactdropId: reactDrop.id
                         });
 
-                      case 20:
+                      case 19:
                         _findReactTip = _context7.sent;
 
-                      case 21:
+                      case 20:
                         if (!(randomFunc === 'algebraic')) {
-                          _context7.next = 36;
+                          _context7.next = 35;
                           break;
                         }
 
                         modes = ['formula', 'equation'];
 
-                      case 23:
+                      case 22:
                         if (!(!captcha || Number(captcha.answer) < 0)) {
-                          _context7.next = 30;
+                          _context7.next = 29;
                           break;
                         }
 
@@ -193,16 +193,16 @@ var listenReactDrop = /*#__PURE__*/function () {
                           targetSymbol: '?'
                         }); // eslint-disable-next-line no-await-in-loop
 
-                        _context7.next = 27;
+                        _context7.next = 26;
                         return preCaptcha.generateCaptcha();
 
-                      case 27:
+                      case 26:
                         captcha = _context7.sent;
-                        _context7.next = 23;
+                        _context7.next = 22;
                         break;
 
-                      case 30:
-                        _context7.next = 32;
+                      case 29:
+                        _context7.next = 31;
                         return (0, _svgPngConverter.svg2png)({
                           input: "".concat(captcha.image).trim(),
                           encoding: 'dataURL',
@@ -213,9 +213,9 @@ var listenReactDrop = /*#__PURE__*/function () {
                           quality: 1
                         });
 
-                      case 32:
+                      case 31:
                         captchaPng = _context7.sent;
-                        _context7.next = 35;
+                        _context7.next = 34;
                         return _models["default"].reactdroptip.create({
                           status: 'waiting',
                           captchaType: 'algebraic',
@@ -224,10 +224,10 @@ var listenReactDrop = /*#__PURE__*/function () {
                           reactdropId: reactDrop.id
                         });
 
-                      case 35:
+                      case 34:
                         _findReactTip = _context7.sent;
 
-                      case 36:
+                      case 35:
                         if (reaction._emoji && reaction._emoji.animated) {
                           constructEmoji = reaction._emoji.id ? "<a:".concat(reaction._emoji.name, ":").concat(reaction._emoji.id, ">") : reaction._emoji.name;
                         } else if (reaction._emoji && !reaction._emoji.animated) {
@@ -235,46 +235,45 @@ var listenReactDrop = /*#__PURE__*/function () {
                         }
 
                         if (!(reactDrop.emoji !== constructEmoji)) {
-                          _context7.next = 44;
+                          _context7.next = 43;
                           break;
                         }
 
-                        _context7.next = 40;
+                        _context7.next = 39;
                         return collector.send('Failed, pressed wrong emoji');
 
-                      case 40:
-                        _context7.next = 42;
+                      case 39:
+                        _context7.next = 41;
                         return _findReactTip.update({
                           status: 'failed'
                         });
 
-                      case 42:
-                        _context7.next = 55;
+                      case 41:
+                        _context7.next = 54;
                         break;
 
-                      case 44:
+                      case 43:
                         captchaPngFixed = captchaPng.replace('data:image/png;base64,', '');
-                        _context7.next = 47;
+                        _context7.next = 46;
                         return collector.send({
                           embeds: [(0, _discord2.ReactdropCaptchaMessage)(collector.id)],
                           files: [new _discord.MessageAttachment(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')]
                         });
 
-                      case 47:
+                      case 46:
                         awaitCaptchaMessage = _context7.sent;
-                        _context7.next = 50;
+                        _context7.next = 49;
                         return awaitCaptchaMessage.channel.createMessageCollector({
                           filter: filter,
                           time: 60000,
                           max: 1
                         });
 
-                      case 50:
+                      case 49:
                         Ccollector = _context7.sent;
-                        _context7.next = 53;
+                        _context7.next = 52;
                         return Ccollector.on('collect', /*#__PURE__*/function () {
                           var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(m) {
-                            var collectReactdrop;
                             return _regenerator["default"].wrap(function _callee3$(_context3) {
                               while (1) {
                                 switch (_context3.prev = _context3.next) {
@@ -437,9 +436,6 @@ var listenReactDrop = /*#__PURE__*/function () {
                                     }());
 
                                   case 2:
-                                    collectReactdrop = _context3.sent;
-
-                                  case 3:
                                   case "end":
                                     return _context3.stop();
                                 }
@@ -452,17 +448,16 @@ var listenReactDrop = /*#__PURE__*/function () {
                           };
                         }());
 
-                      case 53:
-                        _context7.next = 55;
+                      case 52:
+                        _context7.next = 54;
                         return Ccollector.on('end', /*#__PURE__*/function () {
                           var _ref7 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(collected) {
-                            var endingCollectReactdrop;
                             return _regenerator["default"].wrap(function _callee6$(_context6) {
                               while (1) {
                                 switch (_context6.prev = _context6.next) {
                                   case 0:
                                     _context6.next = 2;
-                                    return Promise(function (r) {
+                                    return new Promise(function (r) {
                                       return setTimeout(r, 200);
                                     });
 
@@ -575,13 +570,6 @@ var listenReactDrop = /*#__PURE__*/function () {
                                     }());
 
                                   case 4:
-                                    endingCollectReactdrop = _context6.sent;
-                                    _context6.next = 7;
-                                    return queue.add(function () {
-                                      return endingCollectReactdrop;
-                                    });
-
-                                  case 7:
                                   case "end":
                                     return _context6.stop();
                                 }
@@ -594,7 +582,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                           };
                         }());
 
-                      case 55:
+                      case 54:
                       case "end":
                         return _context7.stop();
                     }
@@ -606,416 +594,424 @@ var listenReactDrop = /*#__PURE__*/function () {
                 return _ref3.apply(this, arguments);
               };
             }());
-            collector.on('end', /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee10() {
-              var activity, endingReactdrop;
-              return _regenerator["default"].wrap(function _callee10$(_context10) {
+            collector.on('end', /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee11() {
+              return _regenerator["default"].wrap(function _callee11$(_context11) {
                 while (1) {
-                  switch (_context10.prev = _context10.next) {
+                  switch (_context11.prev = _context11.next) {
                     case 0:
-                      activity = [];
-                      _context10.next = 3;
-                      return _models["default"].sequelize.transaction({
-                        isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
-                      }, /*#__PURE__*/function () {
-                        var _ref11 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee8(t) {
-                          var endReactDrop, returnWallet, updatedWallet, faucetSetting, faucetWatered, amountEach, listOfUsersRained, withoutBotsSorted, _iterator, _step, receiver, earnerWallet, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element, initiator;
+                      _context11.next = 2;
+                      return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee10() {
+                        var activity, endingReactdrop;
+                        return _regenerator["default"].wrap(function _callee10$(_context10) {
+                          while (1) {
+                            switch (_context10.prev = _context10.next) {
+                              case 0:
+                                activity = [];
+                                _context10.next = 3;
+                                return _models["default"].sequelize.transaction({
+                                  isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
+                                }, /*#__PURE__*/function () {
+                                  var _ref12 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee8(t) {
+                                    var endReactDrop, returnWallet, updatedWallet, faucetSetting, faucetWatered, amountEach, listOfUsersRained, withoutBotsSorted, _iterator, _step, receiver, earnerWallet, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element, initiator;
 
-                          return _regenerator["default"].wrap(function _callee8$(_context8) {
-                            while (1) {
-                              switch (_context8.prev = _context8.next) {
-                                case 0:
-                                  _context8.next = 2;
-                                  return _models["default"].reactdrop.findOne({
-                                    where: {
-                                      id: reactDrop.id,
-                                      ended: false
-                                    },
-                                    lock: t.LOCK.UPDATE,
-                                    transaction: t,
-                                    include: [{
-                                      model: _models["default"].group,
-                                      as: 'group'
-                                    }, {
-                                      model: _models["default"].channel,
-                                      as: 'channel'
-                                    }, {
-                                      model: _models["default"].reactdroptip,
-                                      as: 'reactdroptips',
-                                      required: false,
-                                      where: {
-                                        status: 'success'
-                                      },
-                                      include: [{
-                                        model: _models["default"].user,
-                                        as: 'user',
-                                        include: [{
-                                          model: _models["default"].wallet,
-                                          as: 'wallet'
-                                        }]
-                                      }]
-                                    }, {
-                                      model: _models["default"].user,
-                                      as: 'user'
-                                    }]
-                                  });
+                                    return _regenerator["default"].wrap(function _callee8$(_context8) {
+                                      while (1) {
+                                        switch (_context8.prev = _context8.next) {
+                                          case 0:
+                                            _context8.next = 2;
+                                            return _models["default"].reactdrop.findOne({
+                                              where: {
+                                                id: reactDrop.id,
+                                                ended: false
+                                              },
+                                              lock: t.LOCK.UPDATE,
+                                              transaction: t,
+                                              include: [{
+                                                model: _models["default"].group,
+                                                as: 'group'
+                                              }, {
+                                                model: _models["default"].channel,
+                                                as: 'channel'
+                                              }, {
+                                                model: _models["default"].reactdroptip,
+                                                as: 'reactdroptips',
+                                                required: false,
+                                                where: {
+                                                  status: 'success'
+                                                },
+                                                include: [{
+                                                  model: _models["default"].user,
+                                                  as: 'user',
+                                                  include: [{
+                                                    model: _models["default"].wallet,
+                                                    as: 'wallet'
+                                                  }]
+                                                }]
+                                              }, {
+                                                model: _models["default"].user,
+                                                as: 'user'
+                                              }]
+                                            });
 
-                                case 2:
-                                  endReactDrop = _context8.sent;
+                                          case 2:
+                                            endReactDrop = _context8.sent;
 
-                                  if (!endReactDrop) {
-                                    _context8.next = 86;
-                                    break;
-                                  }
+                                            if (!endReactDrop) {
+                                              _context8.next = 87;
+                                              break;
+                                            }
 
-                                  if (!(endReactDrop.reactdroptips.length <= 0)) {
-                                    _context8.next = 16;
-                                    break;
-                                  }
+                                            if (!(endReactDrop.reactdroptips.length <= 0)) {
+                                              _context8.next = 17;
+                                              break;
+                                            }
 
-                                  _context8.next = 7;
-                                  return _models["default"].wallet.findOne({
-                                    where: {
-                                      userId: endReactDrop.userId
-                                    },
-                                    lock: t.LOCK.UPDATE,
-                                    transaction: t
-                                  });
+                                            _context8.next = 7;
+                                            return _models["default"].wallet.findOne({
+                                              where: {
+                                                userId: endReactDrop.userId
+                                              },
+                                              lock: t.LOCK.UPDATE,
+                                              transaction: t
+                                            });
 
-                                case 7:
-                                  returnWallet = _context8.sent;
-                                  _context8.next = 10;
-                                  return returnWallet.update({
-                                    available: returnWallet.available + endReactDrop.amount
-                                  }, {
-                                    lock: t.LOCK.UPDATE,
-                                    transaction: t
-                                  });
+                                          case 7:
+                                            returnWallet = _context8.sent;
+                                            _context8.next = 10;
+                                            return returnWallet.update({
+                                              available: returnWallet.available + endReactDrop.amount
+                                            }, {
+                                              lock: t.LOCK.UPDATE,
+                                              transaction: t
+                                            });
 
-                                case 10:
-                                  updatedWallet = _context8.sent;
-                                  _context8.next = 13;
-                                  return endReactDrop.update({
-                                    ended: true
-                                  }, {
-                                    lock: t.LOCK.UPDATE,
-                                    transaction: t
-                                  });
+                                          case 10:
+                                            updatedWallet = _context8.sent;
+                                            _context8.next = 13;
+                                            return endReactDrop.update({
+                                              ended: true
+                                            }, {
+                                              lock: t.LOCK.UPDATE,
+                                              transaction: t
+                                            });
 
-                                case 13:
-                                  // reactMessage.channel.send('Nobody claimed, returning funds to reactdrop initiator');
-                                  reactMessage.channel.send({
-                                    embeds: [(0, _discord2.ReactDropReturnInitiatorMessage)()]
-                                  });
-                                  _context8.next = 86;
-                                  break;
+                                          case 13:
+                                            _context8.next = 15;
+                                            return reactMessage.channel.send({
+                                              embeds: [(0, _discord2.ReactDropReturnInitiatorMessage)()]
+                                            });
 
-                                case 16:
-                                  _context8.next = 18;
-                                  return _models["default"].features.findOne({
-                                    where: {
-                                      type: 'local',
-                                      name: 'faucet',
-                                      groupId: endReactDrop.group.id,
-                                      channelId: endReactDrop.channel.id
-                                    },
-                                    lock: t.LOCK.UPDATE,
-                                    transaction: t
-                                  });
+                                          case 15:
+                                            _context8.next = 87;
+                                            break;
 
-                                case 18:
-                                  faucetSetting = _context8.sent;
+                                          case 17:
+                                            _context8.next = 19;
+                                            return _models["default"].features.findOne({
+                                              where: {
+                                                type: 'local',
+                                                name: 'faucet',
+                                                groupId: endReactDrop.group.id,
+                                                channelId: endReactDrop.channel.id
+                                              },
+                                              lock: t.LOCK.UPDATE,
+                                              transaction: t
+                                            });
 
-                                  if (faucetSetting) {
-                                    _context8.next = 23;
-                                    break;
-                                  }
+                                          case 19:
+                                            faucetSetting = _context8.sent;
 
-                                  _context8.next = 22;
-                                  return _models["default"].features.findOne({
-                                    where: {
-                                      type: 'local',
-                                      name: 'faucet',
-                                      groupId: endReactDrop.group.id,
-                                      channelId: null
-                                    },
-                                    lock: t.LOCK.UPDATE,
-                                    transaction: t
-                                  });
+                                            if (faucetSetting) {
+                                              _context8.next = 24;
+                                              break;
+                                            }
 
-                                case 22:
-                                  faucetSetting = _context8.sent;
+                                            _context8.next = 23;
+                                            return _models["default"].features.findOne({
+                                              where: {
+                                                type: 'local',
+                                                name: 'faucet',
+                                                groupId: endReactDrop.group.id,
+                                                channelId: null
+                                              },
+                                              lock: t.LOCK.UPDATE,
+                                              transaction: t
+                                            });
 
-                                case 23:
-                                  if (faucetSetting) {
-                                    _context8.next = 27;
-                                    break;
-                                  }
+                                          case 23:
+                                            faucetSetting = _context8.sent;
 
-                                  _context8.next = 26;
-                                  return _models["default"].features.findOne({
-                                    where: {
-                                      type: 'global',
-                                      name: 'faucet'
-                                    },
-                                    lock: t.LOCK.UPDATE,
-                                    transaction: t
-                                  });
+                                          case 24:
+                                            if (faucetSetting) {
+                                              _context8.next = 28;
+                                              break;
+                                            }
 
-                                case 26:
-                                  faucetSetting = _context8.sent;
+                                            _context8.next = 27;
+                                            return _models["default"].features.findOne({
+                                              where: {
+                                                type: 'global',
+                                                name: 'faucet'
+                                              },
+                                              lock: t.LOCK.UPDATE,
+                                              transaction: t
+                                            });
 
-                                case 27:
-                                  _context8.next = 29;
-                                  return (0, _waterFaucet.waterFaucet)(t, Number(endReactDrop.feeAmount), faucetSetting);
+                                          case 27:
+                                            faucetSetting = _context8.sent;
 
-                                case 29:
-                                  faucetWatered = _context8.sent;
-                                  //
-                                  amountEach = ((Number(endReactDrop.amount) - Number(endReactDrop.feeAmount)) / Number(endReactDrop.reactdroptips.length)).toFixed(0);
-                                  _context8.next = 33;
-                                  return endReactDrop.update({
-                                    ended: true,
-                                    userCount: Number(endReactDrop.reactdroptips.length)
-                                  }, {
-                                    lock: t.LOCK.UPDATE,
-                                    transaction: t
-                                  });
+                                          case 28:
+                                            _context8.next = 30;
+                                            return (0, _waterFaucet.waterFaucet)(t, Number(endReactDrop.feeAmount), faucetSetting);
 
-                                case 33:
-                                  listOfUsersRained = [];
-                                  _context8.next = 36;
-                                  return _lodash["default"].sortBy(endReactDrop.reactdroptips, 'createdAt');
+                                          case 30:
+                                            faucetWatered = _context8.sent;
+                                            //
+                                            amountEach = ((Number(endReactDrop.amount) - Number(endReactDrop.feeAmount)) / Number(endReactDrop.reactdroptips.length)).toFixed(0);
+                                            _context8.next = 34;
+                                            return endReactDrop.update({
+                                              ended: true,
+                                              userCount: Number(endReactDrop.reactdroptips.length)
+                                            }, {
+                                              lock: t.LOCK.UPDATE,
+                                              transaction: t
+                                            });
 
-                                case 36:
-                                  withoutBotsSorted = _context8.sent;
-                                  // eslint-disable-next-line no-restricted-syntax
-                                  _iterator = _createForOfIteratorHelper(withoutBotsSorted);
-                                  _context8.prev = 38;
+                                          case 34:
+                                            listOfUsersRained = [];
+                                            _context8.next = 37;
+                                            return _lodash["default"].sortBy(endReactDrop.reactdroptips, 'createdAt');
 
-                                  _iterator.s();
+                                          case 37:
+                                            withoutBotsSorted = _context8.sent;
+                                            // eslint-disable-next-line no-restricted-syntax
+                                            _iterator = _createForOfIteratorHelper(withoutBotsSorted);
+                                            _context8.prev = 39;
 
-                                case 40:
-                                  if ((_step = _iterator.n()).done) {
-                                    _context8.next = 56;
-                                    break;
-                                  }
+                                            _iterator.s();
 
-                                  receiver = _step.value;
-                                  _context8.next = 44;
-                                  return receiver.user.wallet.update({
-                                    available: receiver.user.wallet.available + Number(amountEach)
-                                  }, {
-                                    lock: t.LOCK.UPDATE,
-                                    transaction: t
-                                  });
+                                          case 41:
+                                            if ((_step = _iterator.n()).done) {
+                                              _context8.next = 57;
+                                              break;
+                                            }
 
-                                case 44:
-                                  earnerWallet = _context8.sent;
+                                            receiver = _step.value;
+                                            _context8.next = 45;
+                                            return receiver.user.wallet.update({
+                                              available: receiver.user.wallet.available + Number(amountEach)
+                                            }, {
+                                              lock: t.LOCK.UPDATE,
+                                              transaction: t
+                                            });
 
-                                  if (receiver.user.ignoreMe) {
-                                    listOfUsersRained.push("".concat(receiver.user.username));
-                                  } else {
-                                    userIdReceivedRain = receiver.user.user_id.replace('discord-', '');
-                                    listOfUsersRained.push("<@".concat(userIdReceivedRain, ">"));
-                                  }
+                                          case 45:
+                                            earnerWallet = _context8.sent;
 
-                                  tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
+                                            if (receiver.user.ignoreMe) {
+                                              listOfUsersRained.push("".concat(receiver.user.username));
+                                            } else {
+                                              userIdReceivedRain = receiver.user.user_id.replace('discord-', '');
+                                              listOfUsersRained.push("<@".concat(userIdReceivedRain, ">"));
+                                            }
 
-                                  _context8.next = 49;
-                                  return _models["default"].activity.create({
-                                    amount: Number(amountEach),
-                                    type: 'reactdroptip_s',
-                                    spenderId: endReactDrop.user.id,
-                                    earnerId: receiver.user.id,
-                                    reactdropId: endReactDrop.id,
-                                    reactdroptipId: receiver.id,
-                                    earner_balance: earnerWallet.available + earnerWallet.locked
-                                  }, {
-                                    lock: t.LOCK.UPDATE,
-                                    transaction: t
-                                  });
+                                            tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                                case 49:
-                                  tipActivity = _context8.sent;
-                                  _context8.next = 52;
-                                  return _models["default"].activity.findOne({
-                                    where: {
-                                      id: tipActivity.id
-                                    },
-                                    include: [{
-                                      model: _models["default"].user,
-                                      as: 'earner'
-                                    }, {
-                                      model: _models["default"].user,
-                                      as: 'spender'
-                                    }, {
-                                      model: _models["default"].reactdrop,
-                                      as: 'reactdrop'
-                                    }, {
-                                      model: _models["default"].reactdroptip,
-                                      as: 'reactdroptip'
-                                    }],
-                                    lock: t.LOCK.UPDATE,
-                                    transaction: t
-                                  });
+                                            _context8.next = 50;
+                                            return _models["default"].activity.create({
+                                              amount: Number(amountEach),
+                                              type: 'reactdroptip_s',
+                                              spenderId: endReactDrop.user.id,
+                                              earnerId: receiver.user.id,
+                                              reactdropId: endReactDrop.id,
+                                              reactdroptipId: receiver.id,
+                                              earner_balance: earnerWallet.available + earnerWallet.locked
+                                            }, {
+                                              lock: t.LOCK.UPDATE,
+                                              transaction: t
+                                            });
 
-                                case 52:
-                                  tipActivity = _context8.sent;
-                                  activity.unshift(tipActivity);
+                                          case 50:
+                                            tipActivity = _context8.sent;
+                                            _context8.next = 53;
+                                            return _models["default"].activity.findOne({
+                                              where: {
+                                                id: tipActivity.id
+                                              },
+                                              include: [{
+                                                model: _models["default"].user,
+                                                as: 'earner'
+                                              }, {
+                                                model: _models["default"].user,
+                                                as: 'spender'
+                                              }, {
+                                                model: _models["default"].reactdrop,
+                                                as: 'reactdrop'
+                                              }, {
+                                                model: _models["default"].reactdroptip,
+                                                as: 'reactdroptip'
+                                              }],
+                                              lock: t.LOCK.UPDATE,
+                                              transaction: t
+                                            });
 
-                                case 54:
-                                  _context8.next = 40;
-                                  break;
+                                          case 53:
+                                            tipActivity = _context8.sent;
+                                            activity.unshift(tipActivity);
 
-                                case 56:
-                                  _context8.next = 61;
-                                  break;
+                                          case 55:
+                                            _context8.next = 41;
+                                            break;
 
-                                case 58:
-                                  _context8.prev = 58;
-                                  _context8.t0 = _context8["catch"](38);
+                                          case 57:
+                                            _context8.next = 62;
+                                            break;
 
-                                  _iterator.e(_context8.t0);
+                                          case 59:
+                                            _context8.prev = 59;
+                                            _context8.t0 = _context8["catch"](39);
 
-                                case 61:
-                                  _context8.prev = 61;
+                                            _iterator.e(_context8.t0);
 
-                                  _iterator.f();
+                                          case 62:
+                                            _context8.prev = 62;
 
-                                  return _context8.finish(61);
+                                            _iterator.f();
 
-                                case 64:
-                                  newStringListUsers = listOfUsersRained.join(", "); // console.log(newStringListUsers);
+                                            return _context8.finish(62);
 
-                                  // console.log(newStringListUsers);
-                                  cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
+                                          case 65:
+                                            newStringListUsers = listOfUsersRained.join(", ");
+                                            cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
-                                  // eslint-disable-next-line no-restricted-syntax
-                                  _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                                  _context8.prev = 67;
+                                            // eslint-disable-next-line no-restricted-syntax
+                                            _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
+                                            _context8.prev = 68;
 
-                                  _iterator2.s();
+                                            _iterator2.s();
 
-                                case 69:
-                                  if ((_step2 = _iterator2.n()).done) {
-                                    _context8.next = 75;
-                                    break;
-                                  }
+                                          case 70:
+                                            if ((_step2 = _iterator2.n()).done) {
+                                              _context8.next = 76;
+                                              break;
+                                            }
 
-                                  element = _step2.value;
-                                  _context8.next = 73;
-                                  return reactMessage.channel.send(element);
+                                            element = _step2.value;
+                                            _context8.next = 74;
+                                            return reactMessage.channel.send(element);
 
-                                case 73:
-                                  _context8.next = 69;
-                                  break;
+                                          case 74:
+                                            _context8.next = 70;
+                                            break;
 
-                                case 75:
-                                  _context8.next = 80;
-                                  break;
+                                          case 76:
+                                            _context8.next = 81;
+                                            break;
 
-                                case 77:
-                                  _context8.prev = 77;
-                                  _context8.t1 = _context8["catch"](67);
+                                          case 78:
+                                            _context8.prev = 78;
+                                            _context8.t1 = _context8["catch"](68);
 
-                                  _iterator2.e(_context8.t1);
+                                            _iterator2.e(_context8.t1);
 
-                                case 80:
-                                  _context8.prev = 80;
+                                          case 81:
+                                            _context8.prev = 81;
 
-                                  _iterator2.f();
+                                            _iterator2.f();
 
-                                  return _context8.finish(80);
+                                            return _context8.finish(81);
 
-                                case 83:
-                                  initiator = endReactDrop.user.user_id.replace('discord-', '');
-                                  _context8.next = 86;
-                                  return reactMessage.channel.send({
-                                    embeds: [(0, _discord2.AfterReactDropSuccessMessage)(endReactDrop, amountEach, initiator)]
-                                  });
+                                          case 84:
+                                            initiator = endReactDrop.user.user_id.replace('discord-', '');
+                                            _context8.next = 87;
+                                            return reactMessage.channel.send({
+                                              embeds: [(0, _discord2.AfterReactDropSuccessMessage)(endReactDrop, amountEach, initiator)]
+                                            });
 
-                                case 86:
-                                  t.afterCommit(function () {
-                                    console.log('done');
-                                  });
+                                          case 87:
+                                            t.afterCommit(function () {
+                                              console.log('done');
+                                            });
 
-                                case 87:
-                                case "end":
-                                  return _context8.stop();
-                              }
+                                          case 88:
+                                          case "end":
+                                            return _context8.stop();
+                                        }
+                                      }
+                                    }, _callee8, null, [[39, 59, 62, 65], [68, 78, 81, 84]]);
+                                  }));
+
+                                  return function (_x14) {
+                                    return _ref12.apply(this, arguments);
+                                  };
+                                }())["catch"]( /*#__PURE__*/function () {
+                                  var _ref13 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee9(err) {
+                                    return _regenerator["default"].wrap(function _callee9$(_context9) {
+                                      while (1) {
+                                        switch (_context9.prev = _context9.next) {
+                                          case 0:
+                                            _context9.prev = 0;
+                                            _context9.next = 3;
+                                            return _models["default"].error.create({
+                                              type: 'endReactDrop',
+                                              error: "".concat(err)
+                                            });
+
+                                          case 3:
+                                            _context9.next = 8;
+                                            break;
+
+                                          case 5:
+                                            _context9.prev = 5;
+                                            _context9.t0 = _context9["catch"](0);
+
+                                            _logger["default"].error("Error Discord: ".concat(_context9.t0));
+
+                                          case 8:
+                                            console.log(err);
+                                            console.log('error');
+
+                                          case 10:
+                                          case "end":
+                                            return _context9.stop();
+                                        }
+                                      }
+                                    }, _callee9, null, [[0, 5]]);
+                                  }));
+
+                                  return function (_x15) {
+                                    return _ref13.apply(this, arguments);
+                                  };
+                                }());
+
+                              case 3:
+                                endingReactdrop = _context10.sent;
+                                io.to('admin').emit('updateActivity', {
+                                  activity: activity
+                                });
+
+                              case 5:
+                              case "end":
+                                return _context10.stop();
                             }
-                          }, _callee8, null, [[38, 58, 61, 64], [67, 77, 80, 83]]);
-                        }));
+                          }
+                        }, _callee10);
+                      })));
 
-                        return function (_x14) {
-                          return _ref11.apply(this, arguments);
-                        };
-                      }())["catch"]( /*#__PURE__*/function () {
-                        var _ref12 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee9(err) {
-                          return _regenerator["default"].wrap(function _callee9$(_context9) {
-                            while (1) {
-                              switch (_context9.prev = _context9.next) {
-                                case 0:
-                                  _context9.prev = 0;
-                                  _context9.next = 3;
-                                  return _models["default"].error.create({
-                                    type: 'endReactDrop',
-                                    error: "".concat(err)
-                                  });
-
-                                case 3:
-                                  _context9.next = 8;
-                                  break;
-
-                                case 5:
-                                  _context9.prev = 5;
-                                  _context9.t0 = _context9["catch"](0);
-
-                                  _logger["default"].error("Error Discord: ".concat(_context9.t0));
-
-                                case 8:
-                                  console.log(err);
-                                  console.log('error');
-
-                                case 10:
-                                case "end":
-                                  return _context9.stop();
-                              }
-                            }
-                          }, _callee9, null, [[0, 5]]);
-                        }));
-
-                        return function (_x15) {
-                          return _ref12.apply(this, arguments);
-                        };
-                      }());
-
-                    case 3:
-                      endingReactdrop = _context10.sent;
-                      _context10.next = 6;
-                      return queue.add(function () {
-                        return endingReactdrop;
-                      });
-
-                    case 6:
-                      io.to('admin').emit('updateActivity', {
-                        activity: activity
-                      });
-
-                    case 7:
+                    case 2:
                     case "end":
-                      return _context10.stop();
+                      return _context11.stop();
                   }
                 }
-              }, _callee10);
+              }, _callee11);
             })));
 
           case 4:
           case "end":
-            return _context11.stop();
+            return _context12.stop();
         }
       }
-    }, _callee11);
+    }, _callee12);
   }));
 
   return function listenReactDrop(_x, _x2, _x3, _x4, _x5) {
@@ -1026,40 +1022,40 @@ var listenReactDrop = /*#__PURE__*/function () {
 exports.listenReactDrop = listenReactDrop;
 
 var discordReactDrop = /*#__PURE__*/function () {
-  var _ref13 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee15(discordClient, message, filteredMessage, io, groupTask, channelTask, setting, faucetSetting, queue) {
+  var _ref14 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee16(discordClient, message, filteredMessage, io, groupTask, channelTask, setting, faucetSetting, queue) {
     var activity, useEmojis, user;
-    return _regenerator["default"].wrap(function _callee15$(_context15) {
+    return _regenerator["default"].wrap(function _callee16$(_context16) {
       while (1) {
-        switch (_context15.prev = _context15.next) {
+        switch (_context16.prev = _context16.next) {
           case 0:
             if (!(!groupTask || !channelTask)) {
-              _context15.next = 4;
+              _context16.next = 4;
               break;
             }
 
-            _context15.next = 3;
+            _context16.next = 3;
             return message.channel.send({
               embeds: [(0, _discord2.NotInDirectMessage)(message, 'Reactdrop')]
             });
 
           case 3:
-            return _context15.abrupt("return");
+            return _context16.abrupt("return");
 
           case 4:
             activity = [];
             useEmojis = [];
-            _context15.next = 8;
+            _context16.next = 8;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
-              var _ref14 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee13(t) {
-                var failActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, textTime, cutLastTimeLetter, cutNumberTime, isnum, timeFailActivity, _timeFailActivity, allEmojis, failEmojiActivity, timeDay, timeHour, timeMinute, timeSecond, dateObj, countDownDate, now, distance, randomAmount, i, randomX, shuffeledEmojisArray, findGroup, wallet, sendReactDropMessage, group, channel, fee, newReactDrop, preActivity, finalActivity, reactMessage, _iterator3, _step3, shufEmoji, updateMessage;
+              var _ref15 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee14(t) {
+                var failActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, textTime, cutLastTimeLetter, cutNumberTime, isnum, timeFailActivity, _timeFailActivity, allEmojis, failEmojiActivity, timeDay, timeHour, timeMinute, timeSecond, dateObj, countDownDate, now, distance, randomAmount, i, randomX, shuffeledEmojisArray, findGroup, wallet, group, channel, fee, newReactDrop, sendReactDropMessage, newUpdatedReactDrop, preActivity, finalActivity, reactMessage, _iterator3, _step3, shufEmoji, updateMessage;
 
-                return _regenerator["default"].wrap(function _callee13$(_context13) {
+                return _regenerator["default"].wrap(function _callee14$(_context14) {
                   while (1) {
-                    switch (_context13.prev = _context13.next) {
+                    switch (_context14.prev = _context14.next) {
                       case 0:
-                        _context13.next = 2;
+                        _context14.next = 2;
                         return _models["default"].user.findOne({
                           where: {
                             user_id: "discord-".concat(message.author.id)
@@ -1073,14 +1069,14 @@ var discordReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 2:
-                        user = _context13.sent;
+                        user = _context14.sent;
 
                         if (user) {
-                          _context13.next = 11;
+                          _context14.next = 11;
                           break;
                         }
 
-                        _context13.next = 6;
+                        _context14.next = 6;
                         return _models["default"].activity.create({
                           type: 'reactdrop_f'
                         }, {
@@ -1089,33 +1085,33 @@ var discordReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 6:
-                        failActivity = _context13.sent;
+                        failActivity = _context14.sent;
                         activity.unshift(failActivity);
-                        _context13.next = 10;
+                        _context14.next = 10;
                         return message.channel.send({
                           embeds: [(0, _discord2.userNotFoundMessage)(message, 'ReactDrop')]
                         });
 
                       case 10:
-                        return _context13.abrupt("return");
+                        return _context14.abrupt("return");
 
                       case 11:
-                        _context13.next = 13;
+                        _context14.next = 13;
                         return (0, _validateAmount.validateAmount)(message, t, filteredMessage[2], user, setting, 'reactdrop');
 
                       case 13:
-                        _yield$validateAmount = _context13.sent;
+                        _yield$validateAmount = _context14.sent;
                         _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
                         activityValiateAmount = _yield$validateAmount2[0];
                         amount = _yield$validateAmount2[1];
 
                         if (!activityValiateAmount) {
-                          _context13.next = 20;
+                          _context14.next = 20;
                           break;
                         }
 
                         activity = activityValiateAmount;
-                        return _context13.abrupt("return");
+                        return _context14.abrupt("return");
 
                       case 20:
                         /// Reactdrop
@@ -1135,11 +1131,11 @@ var discordReactDrop = /*#__PURE__*/function () {
 
                         if (!(!isnum // && Number(cutNumberTime) < 0
                         || cutLastTimeLetter !== 'd' && cutLastTimeLetter !== 'h' && cutLastTimeLetter !== 'm' && cutLastTimeLetter !== 's')) {
-                          _context13.next = 34;
+                          _context14.next = 34;
                           break;
                         }
 
-                        _context13.next = 28;
+                        _context14.next = 28;
                         return _models["default"].activity.create({
                           type: 'reactdrop_f',
                           spenderId: user.id
@@ -1149,24 +1145,24 @@ var discordReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 28:
-                        timeFailActivity = _context13.sent;
+                        timeFailActivity = _context14.sent;
                         activity.unshift(timeFailActivity);
-                        _context13.next = 32;
+                        _context14.next = 32;
                         return message.channel.send({
                           embeds: [(0, _discord2.invalidTimeMessage)(message, 'Reactdrop')]
                         });
 
                       case 32:
-                        _context13.next = 141;
+                        _context14.next = 144;
                         break;
 
                       case 34:
                         if (!(cutLastTimeLetter === 's' && Number(cutNumberTime) < 60)) {
-                          _context13.next = 43;
+                          _context14.next = 43;
                           break;
                         }
 
-                        _context13.next = 37;
+                        _context14.next = 37;
                         return _models["default"].activity.create({
                           type: 'reactdrop_f',
                           spenderId: user.id
@@ -1176,20 +1172,20 @@ var discordReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 37:
-                        _timeFailActivity = _context13.sent;
+                        _timeFailActivity = _context14.sent;
                         activity.unshift(_timeFailActivity);
-                        _context13.next = 41;
+                        _context14.next = 41;
                         return message.channel.send({
                           embeds: [(0, _discord2.minimumTimeReactDropMessage)(message)]
                         });
 
                       case 41:
-                        _context13.next = 141;
+                        _context14.next = 144;
                         break;
 
                       case 43:
                         allEmojis = _emoji["default"];
-                        _context13.next = 46;
+                        _context14.next = 46;
                         return message.guild.emojis.cache.forEach(function (customEmoji) {
                           if (customEmoji.animated) {
                             allEmojis.push("<a:".concat(customEmoji.name, ":").concat(customEmoji.id, ">"));
@@ -1207,11 +1203,11 @@ var discordReactDrop = /*#__PURE__*/function () {
                         console.log(filteredMessage[4]);
 
                         if (allEmojis.includes(filteredMessage[4])) {
-                          _context13.next = 57;
+                          _context14.next = 57;
                           break;
                         }
 
-                        _context13.next = 51;
+                        _context14.next = 51;
                         return _models["default"].activity.create({
                           type: 'reactdrop_f',
                           spenderId: user.id
@@ -1221,15 +1217,15 @@ var discordReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 51:
-                        failEmojiActivity = _context13.sent;
+                        failEmojiActivity = _context14.sent;
                         activity.unshift(failEmojiActivity);
-                        _context13.next = 55;
+                        _context14.next = 55;
                         return message.channel.send({
                           embeds: [(0, _discord2.invalidEmojiMessage)(message, 'Reactdrop')]
                         });
 
                       case 55:
-                        _context13.next = 141;
+                        _context14.next = 144;
                         break;
 
                       case 57:
@@ -1239,24 +1235,24 @@ var discordReactDrop = /*#__PURE__*/function () {
                         timeSecond = Number(cutNumberTime) * 1000;
 
                         if (!(cutLastTimeLetter === 'd' && timeDay > 172800000 || cutLastTimeLetter === 'h' && timeHour > 172800000 || cutLastTimeLetter === 'm' && timeMinute > 172800000 || cutLastTimeLetter === 's' && timeSecond > 172800000)) {
-                          _context13.next = 65;
+                          _context14.next = 65;
                           break;
                         }
 
-                        _context13.next = 64;
+                        _context14.next = 64;
                         return message.channel.send({
                           embeds: [(0, _discord2.maxTimeReactdropMessage)(message)]
                         });
 
                       case 64:
-                        return _context13.abrupt("return");
+                        return _context14.abrupt("return");
 
                       case 65:
-                        _context13.next = 67;
+                        _context14.next = 67;
                         return new Date().getTime();
 
                       case 67:
-                        dateObj = _context13.sent;
+                        dateObj = _context14.sent;
 
                         if (cutLastTimeLetter === 'd') {
                           dateObj += timeDay;
@@ -1274,21 +1270,21 @@ var discordReactDrop = /*#__PURE__*/function () {
                           dateObj += timeSecond;
                         }
 
-                        _context13.next = 74;
+                        _context14.next = 74;
                         return new Date(dateObj);
 
                       case 74:
-                        dateObj = _context13.sent;
-                        _context13.next = 77;
+                        dateObj = _context14.sent;
+                        _context14.next = 77;
                         return dateObj.getTime();
 
                       case 77:
-                        countDownDate = _context13.sent;
-                        _context13.next = 80;
+                        countDownDate = _context14.sent;
+                        _context14.next = 80;
                         return new Date().getTime();
 
                       case 80:
-                        now = _context13.sent;
+                        now = _context14.sent;
                         distance = countDownDate - now;
                         randomAmount = Math.floor(Math.random() * 3) + 1;
 
@@ -1297,16 +1293,16 @@ var discordReactDrop = /*#__PURE__*/function () {
                           useEmojis.push(allEmojis[randomX]);
                         }
 
-                        _context13.next = 86;
+                        _context14.next = 86;
                         return useEmojis.push(filteredMessage[4]);
 
                       case 86:
-                        _context13.next = 88;
+                        _context14.next = 88;
                         return shuffle(useEmojis);
 
                       case 88:
-                        shuffeledEmojisArray = _context13.sent;
-                        _context13.next = 91;
+                        shuffeledEmojisArray = _context14.sent;
+                        _context14.next = 91;
                         return _models["default"].group.findOne({
                           where: {
                             groupId: "discord-".concat(message.guildId)
@@ -1316,19 +1312,19 @@ var discordReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 91:
-                        findGroup = _context13.sent;
+                        findGroup = _context14.sent;
 
                         if (findGroup) {
-                          _context13.next = 96;
+                          _context14.next = 96;
                           break;
                         }
 
                         console.log('group not found');
-                        _context13.next = 141;
+                        _context14.next = 144;
                         break;
 
                       case 96:
-                        _context13.next = 98;
+                        _context14.next = 98;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -1337,15 +1333,8 @@ var discordReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 98:
-                        wallet = _context13.sent;
-                        _context13.next = 101;
-                        return message.channel.send({
-                          embeds: [(0, _discord2.reactDropMessage)(distance, message.author.id, filteredMessage[4], amount)]
-                        });
-
-                      case 101:
-                        sendReactDropMessage = _context13.sent;
-                        _context13.next = 104;
+                        wallet = _context14.sent;
+                        _context14.next = 101;
                         return _models["default"].group.findOne({
                           where: {
                             groupId: "discord-".concat(message.guildId)
@@ -1354,9 +1343,9 @@ var discordReactDrop = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 104:
-                        group = _context13.sent;
-                        _context13.next = 107;
+                      case 101:
+                        group = _context14.sent;
+                        _context14.next = 104;
                         return _models["default"].channel.findOne({
                           where: {
                             channelId: "discord-".concat(message.channelId)
@@ -1365,10 +1354,10 @@ var discordReactDrop = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 107:
-                        channel = _context13.sent;
+                      case 104:
+                        channel = _context14.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
-                        _context13.next = 111;
+                        _context14.next = 108;
                         return _models["default"].reactdrop.create({
                           feeAmount: Number(fee),
                           amount: amount,
@@ -1376,30 +1365,47 @@ var discordReactDrop = /*#__PURE__*/function () {
                           channelId: channel.id,
                           ends: dateObj,
                           emoji: filteredMessage[4],
-                          discordMessageId: sendReactDropMessage.id,
+                          discordMessageId: 'notYetSpecified',
                           userId: user.id
                         }, {
                           transaction: t,
                           lock: t.LOCK.UPDATE
                         });
 
+                      case 108:
+                        newReactDrop = _context14.sent;
+                        _context14.next = 111;
+                        return message.channel.send({
+                          embeds: [(0, _discord2.reactDropMessage)(newReactDrop.id, distance, message.author.id, filteredMessage[4], amount)]
+                        });
+
                       case 111:
-                        newReactDrop = _context13.sent;
-                        _context13.next = 114;
+                        sendReactDropMessage = _context14.sent;
+                        _context14.next = 114;
+                        return newReactDrop.update({
+                          discordMessageId: sendReactDropMessage.id
+                        }, {
+                          transaction: t,
+                          lock: t.LOCK.UPDATE
+                        });
+
+                      case 114:
+                        newUpdatedReactDrop = _context14.sent;
+                        _context14.next = 117;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'reactdrop_s',
                           spenderId: user.id,
-                          reactdropId: newReactDrop.id,
+                          reactdropId: newUpdatedReactDrop.id,
                           spender_balance: wallet.available + wallet.locked
                         }, {
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 114:
-                        preActivity = _context13.sent;
-                        _context13.next = 117;
+                      case 117:
+                        preActivity = _context14.sent;
+                        _context14.next = 120;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -1415,65 +1421,65 @@ var discordReactDrop = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 117:
-                        finalActivity = _context13.sent;
+                      case 120:
+                        finalActivity = _context14.sent;
                         activity.unshift(finalActivity);
-                        _context13.next = 121;
+                        _context14.next = 124;
                         return discordClient.guilds.cache.get(sendReactDropMessage.guildId).channels.cache.get(sendReactDropMessage.channelId).messages.fetch(sendReactDropMessage.id);
 
-                      case 121:
-                        reactMessage = _context13.sent;
-                        listenReactDrop(reactMessage, distance, newReactDrop, io, queue); // eslint-disable-next-line no-restricted-syntax
+                      case 124:
+                        reactMessage = _context14.sent;
+                        listenReactDrop(reactMessage, distance, newUpdatedReactDrop, io, queue); // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator3 = _createForOfIteratorHelper(shuffeledEmojisArray);
-                        _context13.prev = 124;
+                        _context14.prev = 127;
 
                         _iterator3.s();
 
-                      case 126:
+                      case 129:
                         if ((_step3 = _iterator3.n()).done) {
-                          _context13.next = 132;
+                          _context14.next = 135;
                           break;
                         }
 
                         shufEmoji = _step3.value;
-                        _context13.next = 130;
+                        _context14.next = 133;
                         return reactMessage.react(shufEmoji);
 
-                      case 130:
-                        _context13.next = 126;
+                      case 133:
+                        _context14.next = 129;
                         break;
 
-                      case 132:
-                        _context13.next = 137;
+                      case 135:
+                        _context14.next = 140;
                         break;
-
-                      case 134:
-                        _context13.prev = 134;
-                        _context13.t0 = _context13["catch"](124);
-
-                        _iterator3.e(_context13.t0);
 
                       case 137:
-                        _context13.prev = 137;
+                        _context14.prev = 137;
+                        _context14.t0 = _context14["catch"](127);
+
+                        _iterator3.e(_context14.t0);
+
+                      case 140:
+                        _context14.prev = 140;
 
                         _iterator3.f();
 
-                        return _context13.finish(137);
+                        return _context14.finish(140);
 
-                      case 140:
-                        updateMessage = setInterval( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee12() {
-                          return _regenerator["default"].wrap(function _callee12$(_context12) {
+                      case 143:
+                        updateMessage = setInterval( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee13() {
+                          return _regenerator["default"].wrap(function _callee13$(_context13) {
                             while (1) {
-                              switch (_context12.prev = _context12.next) {
+                              switch (_context13.prev = _context13.next) {
                                 case 0:
                                   now = new Date().getTime();
                                   console.log('listen');
                                   distance = countDownDate - now;
-                                  _context12.next = 5;
+                                  _context13.next = 5;
                                   return reactMessage.edit({
-                                    embeds: [(0, _discord2.reactDropMessage)(distance, message.author.id, filteredMessage[4], amount)]
+                                    embeds: [(0, _discord2.reactDropMessage)(newUpdatedReactDrop.id, distance, message.author.id, filteredMessage[4], amount)]
                                   });
 
                                 case 5:
@@ -1483,50 +1489,50 @@ var discordReactDrop = /*#__PURE__*/function () {
 
                                 case 6:
                                 case "end":
-                                  return _context12.stop();
+                                  return _context13.stop();
                               }
                             }
-                          }, _callee12);
+                          }, _callee13);
                         })), 10000);
 
-                      case 141:
+                      case 144:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 142:
+                      case 145:
                       case "end":
-                        return _context13.stop();
+                        return _context14.stop();
                     }
                   }
-                }, _callee13, null, [[124, 134, 137, 140]]);
+                }, _callee14, null, [[127, 137, 140, 143]]);
               }));
 
               return function (_x25) {
-                return _ref14.apply(this, arguments);
+                return _ref15.apply(this, arguments);
               };
             }())["catch"]( /*#__PURE__*/function () {
-              var _ref16 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee14(err) {
-                return _regenerator["default"].wrap(function _callee14$(_context14) {
+              var _ref17 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee15(err) {
+                return _regenerator["default"].wrap(function _callee15$(_context15) {
                   while (1) {
-                    switch (_context14.prev = _context14.next) {
+                    switch (_context15.prev = _context15.next) {
                       case 0:
-                        _context14.prev = 0;
-                        _context14.next = 3;
+                        _context15.prev = 0;
+                        _context15.next = 3;
                         return _models["default"].error.create({
                           type: 'reactDrop',
                           error: "".concat(err)
                         });
 
                       case 3:
-                        _context14.next = 8;
+                        _context15.next = 8;
                         break;
 
                       case 5:
-                        _context14.prev = 5;
-                        _context14.t0 = _context14["catch"](0);
+                        _context15.prev = 5;
+                        _context15.t0 = _context15["catch"](0);
 
-                        _logger["default"].error("Error Discord: ".concat(_context14.t0));
+                        _logger["default"].error("Error Discord: ".concat(_context15.t0));
 
                       case 8:
                         console.log(err);
@@ -1534,21 +1540,21 @@ var discordReactDrop = /*#__PURE__*/function () {
 
                         _logger["default"].error("reactdrop error: ".concat(err, "\nEmojis used: ").concat(useEmojis));
 
-                        _context14.next = 13;
+                        _context15.next = 13;
                         return message.channel.send({
                           embeds: [(0, _discord2.discordErrorMessage)("ReactDrop")]
                         });
 
                       case 13:
                       case "end":
-                        return _context14.stop();
+                        return _context15.stop();
                     }
                   }
-                }, _callee14, null, [[0, 5]]);
+                }, _callee15, null, [[0, 5]]);
               }));
 
               return function (_x26) {
-                return _ref16.apply(this, arguments);
+                return _ref17.apply(this, arguments);
               };
             }());
 
@@ -1559,14 +1565,14 @@ var discordReactDrop = /*#__PURE__*/function () {
 
           case 9:
           case "end":
-            return _context15.stop();
+            return _context16.stop();
         }
       }
-    }, _callee15);
+    }, _callee16);
   }));
 
   return function discordReactDrop(_x16, _x17, _x18, _x19, _x20, _x21, _x22, _x23, _x24) {
-    return _ref13.apply(this, arguments);
+    return _ref14.apply(this, arguments);
   };
 }();
 

@@ -115,7 +115,8 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
                         _context.next = 21;
                         return _models["default"].activity.create({
                           type: 'balance',
-                          earnerId: user.id
+                          earnerId: user.id,
+                          earner_balance: user.wallet.available + user.wallet.locked
                         }, {
                           lock: t.LOCK.UPDATE,
                           transaction: t

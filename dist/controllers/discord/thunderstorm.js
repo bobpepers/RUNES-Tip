@@ -413,7 +413,7 @@ var discordThunderStorm = /*#__PURE__*/function () {
                       case 98:
                         _context.next = 100;
                         return message.channel.send({
-                          embeds: [(0, _discord.AfterSuccessMessage)(message, amount, withoutBots, amountPerUser, '⛈ Thunderstorm ⛈', 'thunderstormed')]
+                          embeds: [(0, _discord.AfterSuccessMessage)(message, thunderstormRecord.id, amount, withoutBots, amountPerUser, '⛈ Thunderstorm ⛈', 'thunderstormed')]
                         });
 
                       case 100:

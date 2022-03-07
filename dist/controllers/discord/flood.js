@@ -369,11 +369,10 @@ var discordFlood = /*#__PURE__*/function () {
                       case 97:
                         _context.next = 99;
                         return message.channel.send({
-                          embeds: [(0, _discord.AfterSuccessMessage)(message, amount, withoutBots, amountPerUser, 'Flood', 'flooded')]
+                          embeds: [(0, _discord.AfterSuccessMessage)(message, floodRecord.id, amount, withoutBots, amountPerUser, 'Flood', 'flooded')]
                         });
 
                       case 99:
-                        // logger.info(`Success Flood Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
                         t.afterCommit(function () {
                           console.log('done');
                         });

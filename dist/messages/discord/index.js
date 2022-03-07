@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.warnDirectMessage = exports.walletNotFoundMessage = exports.userNotFoundMessage = exports.unableToFindUserTipMessage = exports.unIngoreMeMessage = exports.triviaReturnInitiatorMessage = exports.triviaMessageDiscord = exports.transactionNotFoundMessage = exports.tipSuccessMessage = exports.tipFaucetSuccessMessage = exports.timeOutAllAmoutMessageDiscord = exports.thunderstormUserZeroAmountMessage = exports.thunderstormMaxUserAmountMessage = exports.thunderstormInvalidUserAmount = exports.statsMessage = exports.reviewMessage = exports.reactDropMessage = exports.priceMessage = exports.notEnoughUsersToTip = exports.notEnoughActiveUsersMessage = exports.noTriviaQuestionFoundMessage = exports.minimumWithdrawalMessage = exports.minimumTimeReactDropMessage = exports.minimumMessage = exports.maxTimeTriviaMessage = exports.maxTimeReactdropMessage = exports.listTransactionsMessage = exports.invalidTimeMessage = exports.invalidPeopleAmountMessage = exports.invalidEmojiMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.ignoreMeMessage = exports.hurricaneUserZeroAmountMessage = exports.hurricaneMaxUserAmountMessage = exports.hurricaneInvalidUserAmount = exports.helpMessageTwo = exports.helpMessageOne = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.featureDisabledChannelMessage = exports.faucetClaimedMessage = exports.enablePublicStatsMeMessage = exports.dryFaucetMessage = exports.discordWithdrawalRejectedMessage = exports.discordWithdrawalConfirmedMessage = exports.discordWithdrawalAcceptedMessage = exports.discordUserWithdrawalRejectMessage = exports.discordUserBannedMessage = exports.discordServerBannedMessage = exports.discordLimitSpamMessage = exports.discordIncomingDepositMessage = exports.discordErrorMessage = exports.discordDepositConfirmedMessage = exports.discordChannelBannedMessage = exports.disablePublicStatsMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessageDiscord = exports.coinInfoMessage = exports.claimTooFactFaucetMessage = exports.canceledAllAmoutMessageDiscord = exports.balanceMessage = exports.ReactdropCaptchaMessage = exports.ReactDropReturnInitiatorMessage = exports.NotInDirectMessage = exports.DiscordFeeMessage = exports.AfterTriviaSuccessMessage = exports.AfterThunderSuccess = exports.AfterSuccessMessage = exports.AfterReactDropSuccessMessage = void 0;
+exports.warnDirectMessage = exports.walletNotFoundMessage = exports.userNotFoundMessage = exports.unableToFindUserTipMessage = exports.unIngoreMeMessage = exports.triviaReturnInitiatorMessage = exports.triviaMessageDiscord = exports.transactionNotFoundMessage = exports.tipSingleSuccessMessage = exports.tipMultipleSuccessMessage = exports.tipFaucetSuccessMessage = exports.timeOutAllAmoutMessageDiscord = exports.thunderstormUserZeroAmountMessage = exports.thunderstormMaxUserAmountMessage = exports.thunderstormInvalidUserAmount = exports.statsMessage = exports.reviewMessage = exports.reactDropMessage = exports.priceMessage = exports.notEnoughUsersToTip = exports.notEnoughActiveUsersMessage = exports.noTriviaQuestionFoundMessage = exports.minimumWithdrawalMessage = exports.minimumTimeReactDropMessage = exports.minimumMessage = exports.maxTimeTriviaMessage = exports.maxTimeReactdropMessage = exports.listTransactionsMessage = exports.invalidTimeMessage = exports.invalidPeopleAmountMessage = exports.invalidEmojiMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.ignoreMeMessage = exports.hurricaneUserZeroAmountMessage = exports.hurricaneMaxUserAmountMessage = exports.hurricaneInvalidUserAmount = exports.helpMessageTwo = exports.helpMessageOne = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.featureDisabledChannelMessage = exports.faucetClaimedMessage = exports.enablePublicStatsMeMessage = exports.dryFaucetMessage = exports.discordWithdrawalRejectedMessage = exports.discordWithdrawalConfirmedMessage = exports.discordWithdrawalAcceptedMessage = exports.discordUserWithdrawalRejectMessage = exports.discordUserBannedMessage = exports.discordServerBannedMessage = exports.discordLimitSpamMessage = exports.discordIncomingDepositMessage = exports.discordErrorMessage = exports.discordDepositConfirmedMessage = exports.discordChannelBannedMessage = exports.disablePublicStatsMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessageDiscord = exports.coinInfoMessage = exports.claimTooFactFaucetMessage = exports.canceledAllAmoutMessageDiscord = exports.balanceMessage = exports.ReactdropCaptchaMessage = exports.ReactDropReturnInitiatorMessage = exports.NotInDirectMessage = exports.DiscordFeeMessage = exports.AfterTriviaSuccessMessage = exports.AfterThunderSuccess = exports.AfterSuccessMessage = exports.AfterReactDropSuccessMessage = void 0;
 
 var _discord = require("discord.js");
 
@@ -91,14 +91,14 @@ var coinInfoMessage = function coinInfoMessage(blockHeight, priceInfo) {
 
 exports.coinInfoMessage = coinInfoMessage;
 
-var triviaMessageDiscord = function triviaMessageDiscord(distance, author, question, answers, amount, totalPeople) {
+var triviaMessageDiscord = function triviaMessageDiscord(id, distance, author, question, answers, amount, totalPeople) {
   // Time calculations for days, hours, minutes and seconds
   var days = Math.floor(distance % (1000 * 60 * 60 * 24 * 60) / (1000 * 60 * 60 * 24));
   var hours = Math.floor(distance % (1000 * 60 * 60 * 24) / (1000 * 60 * 60));
   var minutes = Math.floor(distance % (1000 * 60 * 60) / (1000 * 60));
   var seconds = Math.floor(distance % (1000 * 60) / 1000);
   var ended = days < 1 && hours < 1 && minutes < 1 && seconds < 1;
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Trivia').setDescription(":tada: <@".concat(author, "> has started a trivia question for ").concat(totalPeople, " ").concat(Number(totalPeople) === 1 ? 'person' : 'people', "! :tada:\n\n:information_source: Click the correct answer for a chance to win a share in ").concat(amount / 1e8, " ").concat(settings.coin.ticker, "!\n\nQuestion: ").concat(question, "\n\n").concat(answers, "\n\n").concat(!ended ? ":clock9: Time remaining ".concat(days > 0 ? "".concat(days, " days") : '', "  ").concat(hours > 0 ? "".concat(hours, " hours") : '', " ").concat(minutes > 0 ? "".concat(minutes, " minutes") : '', " ").concat(seconds > 0 ? "".concat(seconds, " seconds") : '') : "Ended", "\n")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Trivia #".concat(id)).setDescription("\uD83D\uDC68\u200D\uD83C\uDFEB <@".concat(author, "> has started a trivia question for ").concat(totalPeople, " ").concat(Number(totalPeople) === 1 ? 'person' : 'people', "! \uD83D\uDC68\u200D\uD83C\uDFEB\n\n:information_source: Click the correct answer for a chance to win a share in ").concat(amount / 1e8, " ").concat(settings.coin.ticker, "!\n\nQuestion: ").concat(question, "\n\n").concat(answers, "\n\n").concat(!ended ? ":clock9: Time remaining ".concat(days > 0 ? "".concat(days, " days") : '', "  ").concat(hours > 0 ? "".concat(hours, " hours") : '', " ").concat(minutes > 0 ? "".concat(minutes, " minutes") : '', " ").concat(seconds > 0 ? "".concat(seconds, " seconds") : '') : "Ended", "\n")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -107,14 +107,14 @@ var triviaMessageDiscord = function triviaMessageDiscord(distance, author, quest
 
 exports.triviaMessageDiscord = triviaMessageDiscord;
 
-var reactDropMessage = function reactDropMessage(distance, author, emoji, amount) {
+var reactDropMessage = function reactDropMessage(id, distance, author, emoji, amount) {
   // Time calculations for days, hours, minutes and seconds
   var days = Math.floor(distance % (1000 * 60 * 60 * 24 * 60) / (1000 * 60 * 60 * 24));
   var hours = Math.floor(distance % (1000 * 60 * 60 * 24) / (1000 * 60 * 60));
   var minutes = Math.floor(distance % (1000 * 60 * 60) / (1000 * 60));
   var seconds = Math.floor(distance % (1000 * 60) / 1000);
   var ended = days < 1 && hours < 1 && minutes < 1 && seconds < 1;
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Reactdrop').setDescription(":tada: <@".concat(author, "> has started a react airdrop! :tada:\n\n:information_source: React to this message ONLY with ").concat(emoji, " to win a share in ").concat(amount / 1e8, " ").concat(settings.coin.ticker, "! You will also be presented with a simple math question in your direct messages which you need to solve to be eligible.\n\n").concat(!ended ? ":clock9: Time remaining ".concat(days > 0 ? "".concat(days, " days") : '', "  ").concat(hours > 0 ? "".concat(hours, " hours") : '', " ").concat(minutes > 0 ? "".concat(minutes, " minutes") : '', " ").concat(seconds > 0 ? "".concat(seconds, " seconds") : '') : "Ended", "\n")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Reactdrop #".concat(id)).setDescription(":tada: <@".concat(author, "> has started a react airdrop! :tada:\n\n:information_source: React to this message ONLY with ").concat(emoji, " to win a share in ").concat(amount / 1e8, " ").concat(settings.coin.ticker, "! You will also be presented with a simple math question in your direct messages which you need to solve to be eligible.\n\n").concat(!ended ? ":clock9: Time remaining ".concat(days > 0 ? "".concat(days, " days") : '', "  ").concat(hours > 0 ? "".concat(hours, " hours") : '', " ").concat(minutes > 0 ? "".concat(minutes, " minutes") : '', " ").concat(seconds > 0 ? "".concat(seconds, " seconds") : '') : "Ended", "\n")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -124,7 +124,7 @@ var reactDropMessage = function reactDropMessage(distance, author, emoji, amount
 exports.reactDropMessage = reactDropMessage;
 
 var AfterTriviaSuccessMessage = function AfterTriviaSuccessMessage(endTrivia, amountEach, initiator) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Trivia').setDescription(":tada:[Trivia](https://discord.com/channels/".concat(endTrivia.group.groupId.replace("discord-", ""), "/").concat(endTrivia.channel.channelId.replace("discord-", ""), "/").concat(endTrivia.discordMessageId, ") started by <@").concat(initiator, "> has finished!:tada:\n    \n:money_with_wings:").concat(endTrivia.triviatips.length, " ").concat(endTrivia.triviatips.length === 1 ? 'user' : 'users', " will share ").concat(endTrivia.amount / 1e8, " ").concat(settings.coin.ticker, " (").concat(amountEach / 1e8, " each)!:money_with_wings:")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Trivia #".concat(endTrivia.id)).setDescription(":tada:[Trivia](https://discord.com/channels/".concat(endTrivia.group.groupId.replace("discord-", ""), "/").concat(endTrivia.channel.channelId.replace("discord-", ""), "/").concat(endTrivia.discordMessageId, ") started by <@").concat(initiator, "> has finished!:tada:\n    \n:money_with_wings:").concat(endTrivia.triviatips.length, " ").concat(endTrivia.triviatips.length === 1 ? 'user' : 'users', " will share ").concat(endTrivia.amount / 1e8, " ").concat(settings.coin.ticker, " (").concat(amountEach / 1e8, " each)!:money_with_wings:")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -134,7 +134,7 @@ var AfterTriviaSuccessMessage = function AfterTriviaSuccessMessage(endTrivia, am
 exports.AfterTriviaSuccessMessage = AfterTriviaSuccessMessage;
 
 var AfterReactDropSuccessMessage = function AfterReactDropSuccessMessage(endReactDrop, amountEach, initiator) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Reactdrop').setDescription(":tada:[React airdrop](https://discord.com/channels/".concat(endReactDrop.group.groupId.replace("discord-", ""), "/").concat(endReactDrop.channel.channelId.replace("discord-", ""), "/").concat(endReactDrop.discordMessageId, ") started by <@").concat(initiator, "> has finished!:tada:\n    \n:money_with_wings:").concat(endReactDrop.reactdroptips.length, " user(s) will share ").concat(endReactDrop.amount / 1e8, " ").concat(settings.coin.ticker, " (").concat(amountEach / 1e8, " each)!:money_with_wings:")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Reactdrop #".concat(endReactDrop.id)).setDescription(":tada:[React airdrop](https://discord.com/channels/".concat(endReactDrop.group.groupId.replace("discord-", ""), "/").concat(endReactDrop.channel.channelId.replace("discord-", ""), "/").concat(endReactDrop.discordMessageId, ") started by <@").concat(initiator, "> has finished!:tada:\n    \n:money_with_wings:").concat(endReactDrop.reactdroptips.length, " user(s) will share ").concat(endReactDrop.amount / 1e8, " ").concat(settings.coin.ticker, " (").concat(amountEach / 1e8, " each)!:money_with_wings:")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -406,16 +406,26 @@ var tipFaucetSuccessMessage = function tipFaucetSuccessMessage(message, amount) 
 
 exports.tipFaucetSuccessMessage = tipFaucetSuccessMessage;
 
-var tipSuccessMessage = function tipSuccessMessage(message, listOfUsersRained, amount, type) {
-  var userText = listOfUsersRained.join(", ");
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Tip').setDescription("\n    ".concat(listOfUsersRained.length === 1 ? "<@".concat(message.author.id, "> tipped ").concat(amount / 1e8, " ").concat(settings.coin.ticker, " to ").concat(listOfUsersRained[0]) : "", "\n    ").concat(listOfUsersRained.length > 1 ? "<@".concat(message.author.id, "> tipped ").concat(amount / 1e8, " ").concat(settings.coin.ticker, " to ").concat(userText, " (").concat(type, ")") : "", "\n")).setTimestamp().setFooter({
+var tipSingleSuccessMessage = function tipSingleSuccessMessage(message, id, listOfUsersRained, amount) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Tip #".concat(id)).setDescription("<@".concat(message.author.id, "> tipped ").concat(amount / 1e8, " ").concat(settings.coin.ticker, " to ").concat(listOfUsersRained[0])).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
   return result;
 };
 
-exports.tipSuccessMessage = tipSuccessMessage;
+exports.tipSingleSuccessMessage = tipSingleSuccessMessage;
+
+var tipMultipleSuccessMessage = function tipMultipleSuccessMessage(message, id, listOfUsersRained, amount, type) {
+  var userText = listOfUsersRained.join(", ");
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Tip #".concat(id)).setDescription("<@".concat(message.author.id, "> tipped **").concat(amount * listOfUsersRained.length / 1e8, " ").concat(settings.coin.ticker, "** to ").concat(listOfUsersRained.length, " users\n\nType: **").concat(capitalize(type), "**  \n\n\uD83D\uDCB8 **").concat(amount / 1e8, " ").concat(settings.coin.ticker, "** each \uD83D\uDCB8")).setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.tipMultipleSuccessMessage = tipMultipleSuccessMessage;
 
 var unableToFindUserTipMessage = function unableToFindUserTipMessage(message, amount) {
   var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Tip').setDescription("Unable to find user to tip.").setTimestamp().setFooter({
@@ -427,8 +437,8 @@ var unableToFindUserTipMessage = function unableToFindUserTipMessage(message, am
 
 exports.unableToFindUserTipMessage = unableToFindUserTipMessage;
 
-var AfterSuccessMessage = function AfterSuccessMessage(message, amount, withoutBots, amountPerUser, type, typeH) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(type).setDescription("<@".concat(message.author.id, "> ").concat(typeH, " ").concat(amount / 1e8, " ").concat(settings.coin.ticker, " on ").concat(withoutBots.length, " users -- ").concat(amountPerUser / 1e8, " ").concat(settings.coin.ticker, " each")).setTimestamp().setFooter({
+var AfterSuccessMessage = function AfterSuccessMessage(message, id, amount, withoutBots, amountPerUser, type, typeH) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("".concat(type, " #").concat(id)).setDescription("<@".concat(message.author.id, "> ").concat(typeH, " **").concat(amount / 1e8, " ").concat(settings.coin.ticker, "** on ").concat(withoutBots.length, " users\n\uD83D\uDCB8 **").concat(amountPerUser / 1e8, " ").concat(settings.coin.ticker, "** each \uD83D\uDCB8")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -507,11 +517,11 @@ var confirmAllAmoutMessageDiscord = function confirmAllAmoutMessageDiscord(messa
 
 exports.confirmAllAmoutMessageDiscord = confirmAllAmoutMessageDiscord;
 
-var claimTooFactFaucetMessage = function claimTooFactFaucetMessage(message, username, distance) {
+var claimTooFactFaucetMessage = function claimTooFactFaucetMessage(username, distance) {
   var hours = Math.floor(distance % (1000 * 60 * 60 * 24) / (1000 * 60 * 60));
   var minutes = Math.floor(distance % (1000 * 60 * 60) / (1000 * 60));
   var seconds = Math.floor(distance % (1000 * 60) / 1000);
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Faucet').setDescription("".concat(username, ", you have to wait ").concat(hours === 1 ? "".concat(hours, " hour") : '', " ").concat(hours > 1 ? "".concat(hours, " hours,") : '', " ").concat(minutes === 1 ? "".concat(minutes, " minute") : '', " ").concat(minutes > 1 ? "".concat(minutes, " minutes and") : '', " ").concat(seconds === 1 ? "".concat(seconds, " second") : '', " ").concat(seconds > 1 ? "".concat(seconds, " seconds") : '', " before claiming the faucet again (the faucet can be claimed every 4 hours).")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Faucet').setDescription("\u23F1\uFE0F ".concat(username, ", you have to wait ").concat(hours === 1 ? "".concat(hours, " hour") : '').concat(hours > 1 ? "".concat(hours, " hours,") : '', " ").concat(minutes === 1 ? "".concat(minutes, " minute") : '').concat(minutes > 1 ? "".concat(minutes, " minutes and") : '', " ").concat(seconds === 1 ? "".concat(seconds, " second") : '').concat(seconds > 1 ? "".concat(seconds, " seconds") : '', " before claiming the faucet again (the faucet can be claimed every 4 hours).")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -520,8 +530,8 @@ var claimTooFactFaucetMessage = function claimTooFactFaucetMessage(message, user
 
 exports.claimTooFactFaucetMessage = claimTooFactFaucetMessage;
 
-var faucetClaimedMessage = function faucetClaimedMessage(message, username, amount) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Faucet').setDescription("".concat(username, ", you have been tipped ").concat(amount / 1e8, " ").concat(settings.coin.ticker, " from the faucet.")).setTimestamp().setFooter({
+var faucetClaimedMessage = function faucetClaimedMessage(username, amount) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Faucet').setDescription("\uD83D\uDCA7 ".concat(username, ", you have been tipped **").concat(amount / 1e8, " ").concat(settings.coin.ticker, "** from the faucet.")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -530,8 +540,8 @@ var faucetClaimedMessage = function faucetClaimedMessage(message, username, amou
 
 exports.faucetClaimedMessage = faucetClaimedMessage;
 
-var dryFaucetMessage = function dryFaucetMessage(message) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Faucet').setDescription("Faucet is dry").setTimestamp().setFooter({
+var dryFaucetMessage = function dryFaucetMessage() {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Faucet').setDescription("\uD83C\uDFDC\uFE0F Faucet is dry").setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -600,8 +610,8 @@ var thunderstormUserZeroAmountMessage = function thunderstormUserZeroAmountMessa
 
 exports.thunderstormUserZeroAmountMessage = thunderstormUserZeroAmountMessage;
 
-var AfterThunderSuccess = function AfterThunderSuccess(message, amount, userThunder) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Thunder').setDescription("\u26C8 ".concat(userThunder, " has been hit with ").concat(amount / 1e8, " ").concat(settings.coin.ticker, " \u26C8")).setTimestamp().setFooter({
+var AfterThunderSuccess = function AfterThunderSuccess(message, id, amount, userThunder) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Thunder #".concat(id)).setDescription("\u26C8 ".concat(userThunder, " has been hit with ").concat(amount / 1e8, " ").concat(settings.coin.ticker, " \u26C8")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });

@@ -375,7 +375,7 @@ var discordRain = /*#__PURE__*/function () {
                       case 99:
                         _context.next = 101;
                         return message.channel.send({
-                          embeds: [(0, _discord.AfterSuccessMessage)(message, amount, withoutBots, amountPerUser, 'Rain', 'rained')]
+                          embeds: [(0, _discord.AfterSuccessMessage)(message, rainRecord.id, amount, withoutBots, amountPerUser, 'Rain', 'rained')]
                         });
 
                       case 101:

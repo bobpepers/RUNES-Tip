@@ -344,7 +344,7 @@ var discordThunder = /*#__PURE__*/function () {
                         userThunder = _listOfUsersRained[_i];
                         _context.next = 85;
                         return message.channel.send({
-                          embeds: [(0, _discord.AfterThunderSuccess)(message, amount, userThunder)]
+                          embeds: [(0, _discord.AfterThunderSuccess)(message, thunderRecord.id, amount, userThunder)]
                         });
 
                       case 85:

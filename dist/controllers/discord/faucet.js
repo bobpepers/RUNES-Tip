@@ -118,7 +118,7 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                         activity.push(fActivity);
                         _context.next = 26;
                         return message.channel.send({
-                          embeds: [(0, _discord.dryFaucetMessage)(message)]
+                          embeds: [(0, _discord.dryFaucetMessage)()]
                         });
 
                       case 26:
@@ -138,39 +138,39 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                       case 29:
                         lastFaucetTip = _context.sent;
                         userId = user.user_id.replace('discord-', '');
-                        username = user.ignoreme ? "<@".concat(userId, ">") : "".concat(user.username);
+                        username = user.ignoreMe ? "".concat(user.username) : "<@".concat(userId, ">");
                         dateFuture = lastFaucetTip && lastFaucetTip.createdAt.getTime() + 4 * 60 * 60 * 1000;
                         dateNow = new Date().getTime();
-                        distance = dateFuture && dateFuture - dateNow;
-                        console.log(distance);
+                        distance = dateFuture && dateFuture - dateNow; // console.log(distance);
 
                         if (!(distance && distance > 0)) {
-                          _context.next = 44;
+                          _context.next = 43;
                           break;
                         }
 
-                        _context.next = 39;
+                        _context.next = 38;
                         return _models["default"].activity.create({
-                          type: 'faucettip_t'
+                          type: 'faucettip_t',
+                          earnerId: user.id
                         }, {
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 39:
+                      case 38:
                         activityT = _context.sent;
                         activity.push(activityT);
-                        _context.next = 43;
+                        _context.next = 42;
                         return message.channel.send({
-                          embeds: [(0, _discord.claimTooFactFaucetMessage)(message, username, distance)]
+                          embeds: [(0, _discord.claimTooFactFaucetMessage)(username, distance)]
                         });
 
-                      case 43:
+                      case 42:
                         return _context.abrupt("return");
 
-                      case 44:
+                      case 43:
                         amountToTip = Number((faucet.amount / 100 * (settings.faucet / 1e2)).toFixed(0));
-                        _context.next = 47;
+                        _context.next = 46;
                         return _models["default"].faucettip.create({
                           amount: amountToTip,
                           faucetId: faucet.id,
@@ -180,9 +180,9 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 47:
+                      case 46:
                         faucetTip = _context.sent;
-                        _context.next = 50;
+                        _context.next = 49;
                         return faucet.update({
                           amount: Number(faucet.amount) - Number(amountToTip),
                           claims: faucet.claims + 1,
@@ -192,11 +192,9 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 50:
+                      case 49:
                         updateFaucet = _context.sent;
-                        console.log(Number(user.wallet.available));
-                        console.log(amountToTip);
-                        _context.next = 55;
+                        _context.next = 52;
                         return user.wallet.update({
                           available: Number(user.wallet.available) + amountToTip
                         }, {
@@ -204,21 +202,24 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 55:
+                      case 52:
                         updateWallet = _context.sent;
-                        _context.next = 58;
+                        _context.next = 55;
                         return _models["default"].activity.create({
                           type: 'faucettip_s',
                           earnerId: user.id,
-                          faucettipId: faucetTip.id
+                          faucettipId: faucetTip.id,
+                          amount: amountToTip,
+                          spender_balance: updateFaucet.amount,
+                          earner_balance: updateWallet.available + updateWallet.locked
                         }, {
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 58:
+                      case 55:
                         preActivity = _context.sent;
-                        _context.next = 61;
+                        _context.next = 58;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -231,15 +232,15 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 61:
+                      case 58:
                         finalActivity = _context.sent;
                         activity.push(finalActivity);
-                        _context.next = 65;
+                        _context.next = 62;
                         return message.channel.send({
-                          embeds: [(0, _discord.faucetClaimedMessage)(message, username, amountToTip)]
+                          embeds: [(0, _discord.faucetClaimedMessage)(username, amountToTip)]
                         });
 
-                      case 65:
+                      case 62:
                       case "end":
                         return _context.stop();
                     }

@@ -369,11 +369,10 @@ var discordSoak = /*#__PURE__*/function () {
                       case 98:
                         _context.next = 100;
                         return message.channel.send({
-                          embeds: [(0, _discord.AfterSuccessMessage)(message, amount, withoutBots, amountPerUser, 'Soak', 'soaked')]
+                          embeds: [(0, _discord.AfterSuccessMessage)(message, soakRecord.id, amount, withoutBots, amountPerUser, 'Soak', 'soaked')]
                         });
 
                       case 100:
-                        // logger.info(`Success Soak Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
                         t.afterCommit(function () {
                           console.log('done');
                         });

@@ -269,7 +269,7 @@ var telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN); // 
                               distance = countDownDate - now;
                               _context2.next = 4;
                               return reactMessage.edit({
-                                embeds: [(0, _discord2.reactDropMessage)(distance, actualUserId, runningReactDrop.emoji, runningReactDrop.amount)]
+                                embeds: [(0, _discord2.reactDropMessage)(runningReactDrop.id, distance, actualUserId, runningReactDrop.emoji, runningReactDrop.amount)]
                               });
 
                             case 4:
@@ -403,7 +403,7 @@ var telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN); // 
 
                     _context5.next = 21;
                     return triviaMessage.edit({
-                      embeds: [(0, _discord2.triviaMessageDiscord)(distance, actualUserId, runningTrivia.triviaquestion.question, answerString, runningTrivia.amount, runningTrivia.userCount)],
+                      embeds: [(0, _discord2.triviaMessageDiscord)(runningTrivia.id, distance, actualUserId, runningTrivia.triviaquestion.question, answerString, runningTrivia.amount, runningTrivia.userCount)],
                       components: [row]
                     });
 
@@ -418,7 +418,7 @@ var telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN); // 
                               distance = countDownDate - now;
                               _context4.next = 4;
                               return triviaMessage.edit({
-                                embeds: [(0, _discord2.triviaMessageDiscord)(distance, actualUserId, runningTrivia.triviaquestion.question, answerString, runningTrivia.amount, runningTrivia.userCount)]
+                                embeds: [(0, _discord2.triviaMessageDiscord)(runningTrivia.id, distance, actualUserId, runningTrivia.triviaquestion.question, answerString, runningTrivia.amount, runningTrivia.userCount)]
                               });
 
                             case 4:
