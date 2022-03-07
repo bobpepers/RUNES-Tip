@@ -775,10 +775,14 @@ export const claimTooFactFaucetMessage = (username, distance) => {
   return result;
 };
 
-export const faucetClaimedMessage = (username, amount) => {
+export const faucetClaimedMessage = (
+  id,
+  username,
+  amount,
+) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle('Faucet')
+    .setTitle(`Faucet #${id}`)
     .setDescription(`💧 ${username}, you have been tipped **${amount / 1e8} ${settings.coin.ticker}** from the faucet.`)
     .setTimestamp()
     .setFooter({

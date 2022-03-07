@@ -6,7 +6,6 @@ import {
   MessageActionRow,
   MessageButton,
 } from "discord.js";
-import getCoinSettings from '../../config/settings';
 import {
   triviaMessageDiscord,
   userNotFoundMessage,
@@ -25,8 +24,6 @@ import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { waterFaucet } from "../../helpers/discord/waterFaucet";
 
-const settings = getCoinSettings();
-
 export const listenTrivia = async (
   triviaMessage,
   distance,
@@ -36,11 +33,9 @@ export const listenTrivia = async (
   updateMessage,
   answerString,
 ) => {
-  // const filter = () => true;
   const collector = triviaMessage.createMessageComponentCollector({ componentType: 'BUTTON', time: distance });
   collector.on('collect', async (
     reaction,
-    // collector,
   ) => {
     if (!reaction.user.bot) {
       await queue.add(async () => {
@@ -87,8 +82,6 @@ export const listenTrivia = async (
                 });
               }
               if (!findTriviaTip) {
-                console.log('trivia tip not found');
-                console.log(reaction.customId);
                 const findTriviaAnswer = await db.triviaanswer.findOne({
                   where: {
                     answer: reaction.customId,
@@ -97,12 +90,12 @@ export const listenTrivia = async (
                   lock: t.LOCK.UPDATE,
                   transaction: t,
                 });
-                console.log('triviaAnswer');
-                console.log(findTriviaAnswer);
                 const insertTriviaTip = await db.triviatip.create({
                   userId: findTrivUser.id,
                   triviaId: triviaRecord.id,
                   triviaanswerId: findTriviaAnswer.id,
+                  groupId: triviaRecord.groupId,
+                  channelId: triviaRecord.channelId,
                 }, {
                   lock: t.LOCK.UPDATE,
                   transaction: t,
@@ -132,7 +125,6 @@ export const listenTrivia = async (
                   content: `Thank you, we received your answer\nYou answered: ${reaction.customId}`,
                   ephemeral: true,
                 });
-                // console.log(findAllCorrectUserTriviaAnswers);
               }
             }
           }

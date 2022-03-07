@@ -147,7 +147,15 @@ export const discordFaucetClaim = async (
       transaction: t,
     });
     activity.push(finalActivity);
-    await message.channel.send({ embeds: [faucetClaimedMessage(username, amountToTip)] });
+    await message.channel.send({
+      embeds: [
+        faucetClaimedMessage(
+          faucetTip.id,
+          username,
+          amountToTip,
+        ),
+      ],
+    });
   }).catch(async (err) => {
     try {
       await db.error.create({

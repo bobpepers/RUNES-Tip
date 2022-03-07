@@ -18,10 +18,20 @@ const _ = require('lodash');
 
 function groupGlobal(arr, type, whichGroup) {
   return arr.reduce((res, obj) => {
-    const newObj = { amount: obj.amount };
-    if (!res.global) { res.global = {}; }
-    if (!res.global[type]) { res.global[type] = {}; }
-    if (res.global[type][whichGroup]) { res.global[type][whichGroup].push(newObj); } else { res.global[type][whichGroup] = [newObj]; }
+    const newObj = {
+      amount: obj.amount,
+    };
+    if (!res.global) {
+      res.global = {};
+    }
+    if (!res.global[type]) {
+      res.global[type] = {};
+    }
+    if (res.global[type][whichGroup]) {
+      res.global[type][whichGroup].push(newObj);
+    } else {
+      res.global[type][whichGroup] = [newObj];
+    }
     return res;
   }, {});
 }
@@ -29,10 +39,20 @@ function groupGlobal(arr, type, whichGroup) {
 function group(arr, type, whichGroup) {
   return arr.reduce((res, obj) => {
     const key = obj.group && obj.group.groupName ? obj.group.groupName : 'undefined';
-    const newObj = { amount: obj.amount };
-    if (!res[key]) { res[key] = {}; }
-    if (!res[key][type]) { res[key][type] = {}; }
-    if (res[key][type][whichGroup]) { res[key][type][whichGroup].push(newObj); } else { res[key][type][whichGroup] = [newObj]; }
+    const newObj = {
+      amount: obj.amount,
+    };
+    if (!res[key]) {
+      res[key] = {};
+    }
+    if (!res[key][type]) {
+      res[key][type] = {};
+    }
+    if (res[key][type][whichGroup]) {
+      res[key][type][whichGroup].push(newObj);
+    } else {
+      res[key][type][whichGroup] = [newObj];
+    }
     return res;
   }, {});
 }
@@ -125,16 +145,12 @@ export const discordStats = async (
     childWhereOptionsTriviaTips.createdAt = { [Op.gte]: dateObj };
   }
   childWhereOptionsTriviaTips.amount = { [Op.ne]: null };
-
   parentWhereOptions.user_id = `discord-${message.author.id}`;
 
-  if (message.channel.type === 'DM') {
-    // message.author.send({ embeds: [statsMessage(message)] });
-  }
   if (message.channel.type === 'GUILD_TEXT') {
     childWhereOptions.groupId = groupTask.id;
+    childWhereOptionsTriviaTips.groupId = groupTask.id;
     message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Statistics')] });
-    // message.author.send({ embeds: [statsMessage(message, serverString)] });
   }
 
   user = await db.user.findOne({
@@ -474,7 +490,6 @@ export const discordStats = async (
     groupedSleetTips = user.sleettips ? group(user.sleettips, 'earned', 'sleets') : {};
     groupedTriviaTips = user.triviatips ? group(user.triviatips, 'earned', 'trivias') : {};
   }
-  // group the resuts by server and type
 
   // merge results into a single object
   const mergedObject = _.merge(
@@ -501,7 +516,6 @@ export const discordStats = async (
     groupedSleetTips,
     groupedTriviaTips,
   );
-  console.log(groupedTriviaTips);
 
   if (_.isEmpty(mergedObject)) {
     await message.author.send({ embeds: [statsMessage(message, "No data found!")] });
