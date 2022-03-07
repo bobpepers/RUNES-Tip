@@ -237,7 +237,7 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                         activity.push(finalActivity);
                         _context.next = 62;
                         return message.channel.send({
-                          embeds: [(0, _discord.faucetClaimedMessage)(username, amountToTip)]
+                          embeds: [(0, _discord.faucetClaimedMessage)(faucetTip.id, username, amountToTip)]
                         });
 
                       case 62:

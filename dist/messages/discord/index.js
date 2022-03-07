@@ -508,7 +508,7 @@ var canceledAllAmoutMessageDiscord = function canceledAllAmoutMessageDiscord(mes
 exports.canceledAllAmoutMessageDiscord = canceledAllAmoutMessageDiscord;
 
 var confirmAllAmoutMessageDiscord = function confirmAllAmoutMessageDiscord(message, operationName, userBeingTipped) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(capitalize(operationName)).setDescription("<@".concat(message.author.id, ">, are you sure that you want to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker, "?\n    Accepted answers: yes/no/y/n; \n    Auto-cancel in 30 seconds.")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(capitalize(operationName)).setDescription("<@".concat(message.author.id, ">, are you sure that you want to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker, "?\nAccepted answers: **yes/no/y/n**; \nAuto-cancel in 30 seconds.")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -530,8 +530,8 @@ var claimTooFactFaucetMessage = function claimTooFactFaucetMessage(username, dis
 
 exports.claimTooFactFaucetMessage = claimTooFactFaucetMessage;
 
-var faucetClaimedMessage = function faucetClaimedMessage(username, amount) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Faucet').setDescription("\uD83D\uDCA7 ".concat(username, ", you have been tipped **").concat(amount / 1e8, " ").concat(settings.coin.ticker, "** from the faucet.")).setTimestamp().setFooter({
+var faucetClaimedMessage = function faucetClaimedMessage(id, username, amount) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Faucet #".concat(id)).setDescription("\uD83D\uDCA7 ".concat(username, ", you have been tipped **").concat(amount / 1e8, " ").concat(settings.coin.ticker, "** from the faucet.")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });

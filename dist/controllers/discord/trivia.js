@@ -19,8 +19,6 @@ var _sequelize = require("sequelize");
 
 var _discord = require("discord.js");
 
-var _settings = _interopRequireDefault(require("../../config/settings"));
-
 var _discord2 = require("../../messages/discord");
 
 var _models = _interopRequireDefault(require("../../models"));
@@ -37,8 +35,6 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-var settings = (0, _settings["default"])();
-
 var listenTrivia = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee9(triviaMessage, distance, triviaRecord, io, queue, updateMessage, answerString) {
     var collector;
@@ -46,14 +42,12 @@ var listenTrivia = /*#__PURE__*/function () {
       while (1) {
         switch (_context9.prev = _context9.next) {
           case 0:
-            // const filter = () => true;
             collector = triviaMessage.createMessageComponentCollector({
               componentType: 'BUTTON',
               time: distance
             });
             collector.on('collect', /*#__PURE__*/function () {
-              var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(reaction // collector,
-              ) {
+              var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(reaction) {
                 return _regenerator["default"].wrap(function _callee4$(_context4) {
                   while (1) {
                     switch (_context4.prev = _context4.next) {
@@ -99,7 +93,7 @@ var listenTrivia = /*#__PURE__*/function () {
                                               findAllCorrectUserTriviaAnswersStart = _context.sent;
 
                                               if (!(Number(findAllCorrectUserTriviaAnswersStart.length) < Number(triviaRecord.userCount))) {
-                                                _context.next = 28;
+                                                _context.next = 24;
                                                 break;
                                               }
 
@@ -116,7 +110,7 @@ var listenTrivia = /*#__PURE__*/function () {
                                               findTrivUser = _context.sent;
 
                                               if (!findTrivUser) {
-                                                _context.next = 28;
+                                                _context.next = 24;
                                                 break;
                                               }
 
@@ -141,13 +135,11 @@ var listenTrivia = /*#__PURE__*/function () {
                                               }
 
                                               if (findTriviaTip) {
-                                                _context.next = 28;
+                                                _context.next = 24;
                                                 break;
                                               }
 
-                                              console.log('trivia tip not found');
-                                              console.log(reaction.customId);
-                                              _context.next = 17;
+                                              _context.next = 15;
                                               return _models["default"].triviaanswer.findOne({
                                                 where: {
                                                   answer: reaction.customId,
@@ -157,23 +149,23 @@ var listenTrivia = /*#__PURE__*/function () {
                                                 transaction: t
                                               });
 
-                                            case 17:
+                                            case 15:
                                               findTriviaAnswer = _context.sent;
-                                              console.log('triviaAnswer');
-                                              console.log(findTriviaAnswer);
-                                              _context.next = 22;
+                                              _context.next = 18;
                                               return _models["default"].triviatip.create({
                                                 userId: findTrivUser.id,
                                                 triviaId: triviaRecord.id,
-                                                triviaanswerId: findTriviaAnswer.id
+                                                triviaanswerId: findTriviaAnswer.id,
+                                                groupId: triviaRecord.groupId,
+                                                channelId: triviaRecord.channelId
                                               }, {
                                                 lock: t.LOCK.UPDATE,
                                                 transaction: t
                                               });
 
-                                            case 22:
+                                            case 18:
                                               insertTriviaTip = _context.sent;
-                                              _context.next = 25;
+                                              _context.next = 21;
                                               return _models["default"].triviatip.findAll({
                                                 where: {
                                                   triviaId: triviaRecord.id
@@ -190,7 +182,7 @@ var listenTrivia = /*#__PURE__*/function () {
                                                 transaction: t
                                               });
 
-                                            case 25:
+                                            case 21:
                                               findAllCorrectUserTriviaAnswers = _context.sent;
 
                                               if (Number(findAllCorrectUserTriviaAnswers.length) >= Number(triviaRecord.userCount)) {
@@ -200,15 +192,14 @@ var listenTrivia = /*#__PURE__*/function () {
                                               reaction.reply({
                                                 content: "Thank you, we received your answer\nYou answered: ".concat(reaction.customId),
                                                 ephemeral: true
-                                              }); // console.log(findAllCorrectUserTriviaAnswers);
+                                              });
 
-                                            case 28:
+                                            case 24:
                                               t.afterCommit(function () {
-                                                // reaction.deferUpdate();
                                                 console.log('done');
                                               });
 
-                                            case 29:
+                                            case 25:
                                             case "end":
                                               return _context.stop();
                                           }
