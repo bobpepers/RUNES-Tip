@@ -130,7 +130,6 @@ export const listenTrivia = async (
           }
 
           t.afterCommit(() => {
-            // reaction.deferUpdate();
             console.log('done');
           });
         }).catch(async (err) => {

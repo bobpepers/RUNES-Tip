@@ -21,14 +21,31 @@ export const executeTipFunction = async (
 ) => {
   let operationName;
   let userBeingTipped;
-  if (filteredMessageDiscord[1].startsWith('<@!')) {
+  if (
+    filteredMessageDiscord[1].startsWith('<@')
+    && !filteredMessageDiscord[2].startsWith('<@')
+  ) {
     operationName = 'tip';
     userBeingTipped = filteredMessageDiscord[1];
+  } else if (
+    filteredMessageDiscord[1].startsWith('<@')
+    && filteredMessageDiscord[2].startsWith('<@')
+  ) {
+    operationName = 'tip';
+    userBeingTipped = 'multiple users';
   } else {
     operationName = filteredMessageDiscord[1];
   }
   if (amount && amount.toLowerCase() === 'all') {
-    message.channel.send({ embeds: [confirmAllAmoutMessageDiscord(message, operationName, userBeingTipped)] }).then(async () => {
+    message.channel.send({
+      embeds: [
+        confirmAllAmoutMessageDiscord(
+          message,
+          operationName,
+          userBeingTipped,
+        ),
+      ],
+    }).then(async () => {
       const msgFilter = (m) => {
         const filtered = m.author.id === message.author.id
           && (
@@ -67,10 +84,26 @@ export const executeTipFunction = async (
           collectedMessage.content.toUpperCase() === 'NO'
           || collectedMessage.content.toUpperCase() === 'N'
         ) {
-          message.channel.send({ embeds: [canceledAllAmoutMessageDiscord(message, operationName, userBeingTipped)] });
+          message.channel.send({
+            embeds: [
+              canceledAllAmoutMessageDiscord(
+                message,
+                operationName,
+                userBeingTipped,
+              ),
+            ],
+          });
         }
       }).catch((collected) => {
-        message.channel.send({ embeds: [timeOutAllAmoutMessageDiscord(message, operationName, userBeingTipped)] });
+        message.channel.send({
+          embeds: [
+            timeOutAllAmoutMessageDiscord(
+              message,
+              operationName,
+              userBeingTipped,
+            ),
+          ],
+        });
       });
     });
   } else {

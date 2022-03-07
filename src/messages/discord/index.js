@@ -747,8 +747,8 @@ export const confirmAllAmoutMessageDiscord = (
     .setColor(settings.bot.color)
     .setTitle(capitalize(operationName))
     .setDescription(`<@${message.author.id}>, are you sure that you want to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}?
-    Accepted answers: yes/no/y/n; 
-    Auto-cancel in 30 seconds.`)
+Accepted answers: **yes/no/y/n**; 
+Auto-cancel in 30 seconds.`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
