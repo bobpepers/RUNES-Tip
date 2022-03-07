@@ -223,8 +223,19 @@ export const discordSoak = async (
       await message.channel.send(element);
     }
 
-    await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, 'Soak', 'soaked')] });
-    // logger.info(`Success Soak Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+    await message.channel.send({
+      embeds: [
+        AfterSuccessMessage(
+          message,
+          soakRecord.id,
+          amount,
+          withoutBots,
+          amountPerUser,
+          'Soak',
+          'soaked',
+        ),
+      ],
+    });
 
     t.afterCommit(() => {
       console.log('done');

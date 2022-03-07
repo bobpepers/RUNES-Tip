@@ -233,7 +233,19 @@ export const discordRain = async (
       await message.channel.send(element);
     }
 
-    await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, 'Rain', 'rained')] });
+    await message.channel.send({
+      embeds: [
+        AfterSuccessMessage(
+          message,
+          rainRecord.id,
+          amount,
+          withoutBots,
+          amountPerUser,
+          'Rain',
+          'rained',
+        ),
+      ],
+    });
     // logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 
     t.afterCommit(() => {

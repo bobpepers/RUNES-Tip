@@ -237,7 +237,19 @@ export const discordThunderStorm = async (
       // eslint-disable-next-line no-await-in-loop
       await message.channel.send(element);
     }
-    await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, '⛈ Thunderstorm ⛈', 'thunderstormed')] });
+    await message.channel.send({
+      embeds: [
+        AfterSuccessMessage(
+          message,
+          thunderstormRecord.id,
+          amount,
+          withoutBots,
+          amountPerUser,
+          '⛈ Thunderstorm ⛈',
+          'thunderstormed',
+        ),
+      ],
+    });
 
     // logger.info(`Success ThunderStorm Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 

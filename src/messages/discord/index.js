@@ -99,6 +99,7 @@ export const coinInfoMessage = (blockHeight, priceInfo) => {
 };
 
 export const triviaMessageDiscord = (
+  id,
   distance,
   author,
   question,
@@ -115,8 +116,8 @@ export const triviaMessageDiscord = (
 
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle('Trivia')
-    .setDescription(`:tada: <@${author}> has started a trivia question for ${totalPeople} ${Number(totalPeople) === 1 ? 'person' : 'people'}! :tada:
+    .setTitle(`Trivia #${id}`)
+    .setDescription(`👨‍🏫 <@${author}> has started a trivia question for ${totalPeople} ${Number(totalPeople) === 1 ? 'person' : 'people'}! 👨‍🏫
 
 :information_source: Click the correct answer for a chance to win a share in ${amount / 1e8} ${settings.coin.ticker}!
 
@@ -135,7 +136,13 @@ ${!ended ? `:clock9: Time remaining ${days > 0 ? `${days} days` : ''}  ${hours >
   return result;
 };
 
-export const reactDropMessage = (distance, author, emoji, amount) => {
+export const reactDropMessage = (
+  id,
+  distance,
+  author,
+  emoji,
+  amount,
+) => {
   // Time calculations for days, hours, minutes and seconds
   const days = Math.floor((distance % (1000 * 60 * 60 * 24 * 60)) / (1000 * 60 * 60 * 24));
   const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -145,7 +152,7 @@ export const reactDropMessage = (distance, author, emoji, amount) => {
 
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle('Reactdrop')
+    .setTitle(`Reactdrop #${id}`)
     .setDescription(`:tada: <@${author}> has started a react airdrop! :tada:
 
 :information_source: React to this message ONLY with ${emoji} to win a share in ${amount / 1e8} ${settings.coin.ticker}! You will also be presented with a simple math question in your direct messages which you need to solve to be eligible.
@@ -168,7 +175,7 @@ export const AfterTriviaSuccessMessage = (
 ) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle('Trivia')
+    .setTitle(`Trivia #${endTrivia.id}`)
     .setDescription(`:tada:[Trivia](https://discord.com/channels/${endTrivia.group.groupId.replace("discord-", "")}/${endTrivia.channel.channelId.replace("discord-", "")}/${endTrivia.discordMessageId}) started by <@${initiator}> has finished!:tada:
     
 :money_with_wings:${endTrivia.triviatips.length} ${endTrivia.triviatips.length === 1 ? 'user' : 'users'} will share ${endTrivia.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)!:money_with_wings:`)
@@ -184,7 +191,7 @@ export const AfterTriviaSuccessMessage = (
 export const AfterReactDropSuccessMessage = (endReactDrop, amountEach, initiator) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle('Reactdrop')
+    .setTitle(`Reactdrop #${endReactDrop.id}`)
     .setDescription(`:tada:[React airdrop](https://discord.com/channels/${endReactDrop.group.groupId.replace("discord-", "")}/${endReactDrop.channel.channelId.replace("discord-", "")}/${endReactDrop.discordMessageId}) started by <@${initiator}> has finished!:tada:
     
 :money_with_wings:${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)!:money_with_wings:`)
@@ -568,15 +575,41 @@ export const tipFaucetSuccessMessage = (message, amount) => {
   return result;
 };
 
-export const tipSuccessMessage = (message, listOfUsersRained, amount, type) => {
+export const tipSingleSuccessMessage = (
+  message,
+  id,
+  listOfUsersRained,
+  amount,
+) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(`Tip #${id}`)
+    .setDescription(`<@${message.author.id}> tipped ${amount / 1e8} ${settings.coin.ticker} to ${listOfUsersRained[0]}`)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
+export const tipMultipleSuccessMessage = (
+  message,
+  id,
+  listOfUsersRained,
+  amount,
+  type,
+) => {
   const userText = listOfUsersRained.join(", ");
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle('Tip')
-    .setDescription(`
-    ${listOfUsersRained.length === 1 ? `<@${message.author.id}> tipped ${amount / 1e8} ${settings.coin.ticker} to ${listOfUsersRained[0]}` : ``}
-    ${listOfUsersRained.length > 1 ? `<@${message.author.id}> tipped ${amount / 1e8} ${settings.coin.ticker} to ${userText} (${type})` : ``}
-`)
+    .setTitle(`Tip #${id}`)
+    .setDescription(`<@${message.author.id}> tipped **${(amount * listOfUsersRained.length) / 1e8} ${settings.coin.ticker}** to ${listOfUsersRained.length} users
+
+Type: **${capitalize(type)}**  
+
+💸 **${amount / 1e8} ${settings.coin.ticker}** each 💸`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
@@ -600,11 +633,19 @@ export const unableToFindUserTipMessage = (message, amount) => {
   return result;
 };
 
-export const AfterSuccessMessage = (message, amount, withoutBots, amountPerUser, type, typeH) => {
+export const AfterSuccessMessage = (
+  message,
+  id,
+  amount,
+  withoutBots,
+  amountPerUser,
+  type,
+  typeH,
+) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle(type)
-    .setDescription(`<@${message.author.id}> ${typeH} ${amount / 1e8} ${settings.coin.ticker} on ${withoutBots.length} users -- ${amountPerUser / 1e8} ${settings.coin.ticker} each`)
+    .setTitle(`${type} #${id}`)
+    .setDescription(`<@${message.author.id}> ${typeH} **${amount / 1e8} ${settings.coin.ticker}** on ${withoutBots.length} users\n💸 **${amountPerUser / 1e8} ${settings.coin.ticker}** each 💸`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
@@ -775,6 +816,7 @@ export const hurricaneMaxUserAmountMessage = (message) => {
 
   return result;
 };
+
 export const hurricaneInvalidUserAmount = (message) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
@@ -845,10 +887,15 @@ export const thunderstormUserZeroAmountMessage = (message) => {
   return result;
 };
 
-export const AfterThunderSuccess = (message, amount, userThunder) => {
+export const AfterThunderSuccess = (
+  message,
+  id,
+  amount,
+  userThunder,
+) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle('Thunder')
+    .setTitle(`Thunder #${id}`)
     .setDescription(`⛈ ${userThunder} has been hit with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
     .setTimestamp()
     .setFooter({

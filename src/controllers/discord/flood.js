@@ -224,8 +224,19 @@ export const discordFlood = async (
       await message.channel.send(element);
     }
 
-    await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, 'Flood', 'flooded')] });
-    // logger.info(`Success Flood Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+    await message.channel.send({
+      embeds: [
+        AfterSuccessMessage(
+          message,
+          floodRecord.id,
+          amount,
+          withoutBots,
+          amountPerUser,
+          'Flood',
+          'flooded',
+        ),
+      ],
+    });
 
     t.afterCommit(() => {
       console.log('done');

@@ -219,9 +219,17 @@ export const discordThunder = async (
       // eslint-disable-next-line no-restricted-syntax
       for (const userThunder of listOfUsersRained) {
         // eslint-disable-next-line no-await-in-loop
-        await message.channel.send({ embeds: [AfterThunderSuccess(message, amount, userThunder)] });
+        await message.channel.send({
+          embeds: [
+            AfterThunderSuccess(
+              message,
+              thunderRecord.id,
+              amount,
+              userThunder,
+            ),
+          ],
+        });
       }
-      // logger.info(`Success Thunder Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
     }
     t.afterCommit(() => {
       console.log('done');

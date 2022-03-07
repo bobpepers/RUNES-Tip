@@ -3,7 +3,8 @@ import _ from "lodash";
 import { Transaction } from "sequelize";
 import db from '../../models';
 import {
-  tipSuccessMessage,
+  tipSingleSuccessMessage,
+  tipMultipleSuccessMessage,
   NotInDirectMessage,
   notEnoughUsersToTip,
   tipFaucetSuccessMessage,
@@ -260,7 +261,39 @@ export const tipRunesToDiscordUser = async (
         listOfUsersRained.push(`<@${userIdReceivedRain}>`);
       }
     }
-    await message.channel.send({ embeds: [tipSuccessMessage(message, listOfUsersRained, userTipAmount, type)] });
+
+    if (listOfUsersRained.length === 1) {
+      await message.channel.send({
+        embeds: [
+          tipSingleSuccessMessage(
+            message,
+            tipRecord.id,
+            listOfUsersRained,
+            userTipAmount,
+          ),
+        ],
+      });
+    } else if (listOfUsersRained.length > 1) {
+      const newStringListUsers = listOfUsersRained.join(", ");
+      const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
+      // eslint-disable-next-line no-restricted-syntax
+      for (const element of cutStringListUsers) {
+      // eslint-disable-next-line no-await-in-loop
+        await message.channel.send(element);
+      }
+
+      await message.channel.send({
+        embeds: [
+          tipMultipleSuccessMessage(
+            message,
+            tipRecord.id,
+            listOfUsersRained,
+            userTipAmount,
+            type,
+          ),
+        ],
+      });
+    }
 
     t.afterCommit(() => {
       console.log('done');

@@ -108,8 +108,7 @@ export const listenReactDrop = async (
               color: true,
             });
           }
-
-          console.log(captcha);
+          // console.log(captcha);
           captchaPng = await svg2png({
             input: `${captcha.data}`.trim(),
             encoding: 'dataURL',
@@ -186,7 +185,7 @@ export const listenReactDrop = async (
           });
           const Ccollector = await awaitCaptchaMessage.channel.createMessageCollector({ filter, time: 60000, max: 1 });
           await Ccollector.on('collect', async (m) => {
-            const collectReactdrop = await db.sequelize.transaction({
+            await db.sequelize.transaction({
               isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
             }, async (t) => {
               if (m.content === findReactTip.solution) {
@@ -280,12 +279,12 @@ Solution: **${findReactTip.solution}**`,
               }
               console.log('failed');
             });
-            // await queue.add(() => collectReactdrop);
           });
 
           await Ccollector.on('end', async (collected) => {
-            await Promise((r) => setTimeout(r, 200));
-            const endingCollectReactdrop = await db.sequelize.transaction({
+            // eslint-disable-next-line no-promise-executor-return
+            await new Promise((r) => setTimeout(r, 200));
+            await db.sequelize.transaction({
               isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
             }, async (t) => {
               const findReactUserTwo = await db.user.findOne({
@@ -327,225 +326,224 @@ Solution: **${findReactTip.solution}**`,
               console.log(err);
               await collector.send('Something went wrong');
             });
-            await queue.add(() => endingCollectReactdrop);
+            // await queue.add(() => endingCollectReactdrop);
           });
         }
       }
     }
   });
   collector.on('end', async () => {
-    const activity = [];
-    const endingReactdrop = await db.sequelize.transaction({
-      isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-    }, async (t) => {
-      const endReactDrop = await db.reactdrop.findOne({
-        where: {
-          id: reactDrop.id,
-          ended: false,
-        },
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-        include: [
-          {
-            model: db.group,
-            as: 'group',
+    await queue.add(async () => {
+      const activity = [];
+      const endingReactdrop = await db.sequelize.transaction({
+        isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+      }, async (t) => {
+        const endReactDrop = await db.reactdrop.findOne({
+          where: {
+            id: reactDrop.id,
+            ended: false,
           },
-          {
-            model: db.channel,
-            as: 'channel',
-          },
-          {
-            model: db.reactdroptip,
-            as: 'reactdroptips',
-            required: false,
-            where: {
-              status: 'success',
+          lock: t.LOCK.UPDATE,
+          transaction: t,
+          include: [
+            {
+              model: db.group,
+              as: 'group',
             },
-            include: [
-              {
-                model: db.user,
-                as: 'user',
-                include: [
-                  {
-                    model: db.wallet,
-                    as: 'wallet',
-                  },
-                ],
+            {
+              model: db.channel,
+              as: 'channel',
+            },
+            {
+              model: db.reactdroptip,
+              as: 'reactdroptips',
+              required: false,
+              where: {
+                status: 'success',
               },
-            ],
-          },
-          {
-            model: db.user,
-            as: 'user',
-          },
-        ],
-      });
-      if (endReactDrop) {
-        if (endReactDrop.reactdroptips.length <= 0) {
-          const returnWallet = await db.wallet.findOne({
-            where: {
-              userId: endReactDrop.userId,
+              include: [
+                {
+                  model: db.user,
+                  as: 'user',
+                  include: [
+                    {
+                      model: db.wallet,
+                      as: 'wallet',
+                    },
+                  ],
+                },
+              ],
             },
-            lock: t.LOCK.UPDATE,
-            transaction: t,
-          });
-          const updatedWallet = await returnWallet.update({
-            available: returnWallet.available + endReactDrop.amount,
-          }, {
-            lock: t.LOCK.UPDATE,
-            transaction: t,
-          });
-          await endReactDrop.update({
-            ended: true,
-          }, {
-            lock: t.LOCK.UPDATE,
-            transaction: t,
-          });
-          // reactMessage.channel.send('Nobody claimed, returning funds to reactdrop initiator');
-          reactMessage.channel.send({ embeds: [ReactDropReturnInitiatorMessage()] });
-        } else {
+            {
+              model: db.user,
+              as: 'user',
+            },
+          ],
+        });
+        if (endReactDrop) {
+          if (endReactDrop.reactdroptips.length <= 0) {
+            const returnWallet = await db.wallet.findOne({
+              where: {
+                userId: endReactDrop.userId,
+              },
+              lock: t.LOCK.UPDATE,
+              transaction: t,
+            });
+            const updatedWallet = await returnWallet.update({
+              available: returnWallet.available + endReactDrop.amount,
+            }, {
+              lock: t.LOCK.UPDATE,
+              transaction: t,
+            });
+            await endReactDrop.update({
+              ended: true,
+            }, {
+              lock: t.LOCK.UPDATE,
+              transaction: t,
+            });
+            await reactMessage.channel.send({ embeds: [ReactDropReturnInitiatorMessage()] });
+          } else {
           // Get Faucet Settings
-          let faucetSetting;
-          faucetSetting = await db.features.findOne({
-            where: {
-              type: 'local',
-              name: 'faucet',
-              groupId: endReactDrop.group.id,
-              channelId: endReactDrop.channel.id,
-            },
-            lock: t.LOCK.UPDATE,
-            transaction: t,
-          });
-          if (!faucetSetting) {
+            let faucetSetting;
             faucetSetting = await db.features.findOne({
               where: {
                 type: 'local',
                 name: 'faucet',
                 groupId: endReactDrop.group.id,
-                channelId: null,
+                channelId: endReactDrop.channel.id,
               },
               lock: t.LOCK.UPDATE,
               transaction: t,
             });
-          }
-          if (!faucetSetting) {
-            faucetSetting = await db.features.findOne({
-              where: {
-                type: 'global',
-                name: 'faucet',
-              },
-              lock: t.LOCK.UPDATE,
-              transaction: t,
-            });
-          }
-          // water the faucet
-          const faucetWatered = await waterFaucet(
-            t,
-            Number(endReactDrop.feeAmount),
-            faucetSetting,
-          );
-          //
-          const amountEach = ((Number(endReactDrop.amount) - Number(endReactDrop.feeAmount)) / Number(endReactDrop.reactdroptips.length)).toFixed(0);
-
-          await endReactDrop.update({
-            ended: true,
-            userCount: Number(endReactDrop.reactdroptips.length),
-          }, {
-            lock: t.LOCK.UPDATE,
-            transaction: t,
-          });
-
-          const listOfUsersRained = [];
-          const withoutBotsSorted = await _.sortBy(endReactDrop.reactdroptips, 'createdAt');
-          // eslint-disable-next-line no-restricted-syntax
-          for (const receiver of withoutBotsSorted) {
-            // eslint-disable-next-line no-await-in-loop
-            const earnerWallet = await receiver.user.wallet.update({
-              available: receiver.user.wallet.available + Number(amountEach),
-            }, {
-              lock: t.LOCK.UPDATE,
-              transaction: t,
-            });
-
-            if (receiver.user.ignoreMe) {
-              listOfUsersRained.push(`${receiver.user.username}`);
-            } else {
-              const userIdReceivedRain = receiver.user.user_id.replace('discord-', '');
-              listOfUsersRained.push(`<@${userIdReceivedRain}>`);
+            if (!faucetSetting) {
+              faucetSetting = await db.features.findOne({
+                where: {
+                  type: 'local',
+                  name: 'faucet',
+                  groupId: endReactDrop.group.id,
+                  channelId: null,
+                },
+                lock: t.LOCK.UPDATE,
+                transaction: t,
+              });
             }
-            let tipActivity;
-            // eslint-disable-next-line no-await-in-loop
-            tipActivity = await db.activity.create({
-              amount: Number(amountEach),
-              type: 'reactdroptip_s',
-              spenderId: endReactDrop.user.id,
-              earnerId: receiver.user.id,
-              reactdropId: endReactDrop.id,
-              reactdroptipId: receiver.id,
-              earner_balance: earnerWallet.available + earnerWallet.locked,
+            if (!faucetSetting) {
+              faucetSetting = await db.features.findOne({
+                where: {
+                  type: 'global',
+                  name: 'faucet',
+                },
+                lock: t.LOCK.UPDATE,
+                transaction: t,
+              });
+            }
+            // water the faucet
+            const faucetWatered = await waterFaucet(
+              t,
+              Number(endReactDrop.feeAmount),
+              faucetSetting,
+            );
+            //
+            const amountEach = ((Number(endReactDrop.amount) - Number(endReactDrop.feeAmount)) / Number(endReactDrop.reactdroptips.length)).toFixed(0);
+
+            await endReactDrop.update({
+              ended: true,
+              userCount: Number(endReactDrop.reactdroptips.length),
             }, {
               lock: t.LOCK.UPDATE,
               transaction: t,
             });
-            // eslint-disable-next-line no-await-in-loop
-            tipActivity = await db.activity.findOne({
-              where: {
-                id: tipActivity.id,
-              },
-              include: [
-                {
-                  model: db.user,
-                  as: 'earner',
-                },
-                {
-                  model: db.user,
-                  as: 'spender',
-                },
-                {
-                  model: db.reactdrop,
-                  as: 'reactdrop',
-                },
-                {
-                  model: db.reactdroptip,
-                  as: 'reactdroptip',
-                },
-              ],
-              lock: t.LOCK.UPDATE,
-              transaction: t,
-            });
-            activity.unshift(tipActivity);
-          }
-          const newStringListUsers = listOfUsersRained.join(", ");
-          // console.log(newStringListUsers);
-          const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
-          // eslint-disable-next-line no-restricted-syntax
-          for (const element of cutStringListUsers) {
-            // eslint-disable-next-line no-await-in-loop
-            await reactMessage.channel.send(element);
-          }
-          const initiator = endReactDrop.user.user_id.replace('discord-', '');
-          await reactMessage.channel.send({ embeds: [AfterReactDropSuccessMessage(endReactDrop, amountEach, initiator)] });
-        }
-      }
 
-      t.afterCommit(() => {
-        console.log('done');
-      });
-    }).catch(async (err) => {
-      try {
-        await db.error.create({
-          type: 'endReactDrop',
-          error: `${err}`,
+            const listOfUsersRained = [];
+            const withoutBotsSorted = await _.sortBy(endReactDrop.reactdroptips, 'createdAt');
+            // eslint-disable-next-line no-restricted-syntax
+            for (const receiver of withoutBotsSorted) {
+            // eslint-disable-next-line no-await-in-loop
+              const earnerWallet = await receiver.user.wallet.update({
+                available: receiver.user.wallet.available + Number(amountEach),
+              }, {
+                lock: t.LOCK.UPDATE,
+                transaction: t,
+              });
+
+              if (receiver.user.ignoreMe) {
+                listOfUsersRained.push(`${receiver.user.username}`);
+              } else {
+                const userIdReceivedRain = receiver.user.user_id.replace('discord-', '');
+                listOfUsersRained.push(`<@${userIdReceivedRain}>`);
+              }
+              let tipActivity;
+              // eslint-disable-next-line no-await-in-loop
+              tipActivity = await db.activity.create({
+                amount: Number(amountEach),
+                type: 'reactdroptip_s',
+                spenderId: endReactDrop.user.id,
+                earnerId: receiver.user.id,
+                reactdropId: endReactDrop.id,
+                reactdroptipId: receiver.id,
+                earner_balance: earnerWallet.available + earnerWallet.locked,
+              }, {
+                lock: t.LOCK.UPDATE,
+                transaction: t,
+              });
+              // eslint-disable-next-line no-await-in-loop
+              tipActivity = await db.activity.findOne({
+                where: {
+                  id: tipActivity.id,
+                },
+                include: [
+                  {
+                    model: db.user,
+                    as: 'earner',
+                  },
+                  {
+                    model: db.user,
+                    as: 'spender',
+                  },
+                  {
+                    model: db.reactdrop,
+                    as: 'reactdrop',
+                  },
+                  {
+                    model: db.reactdroptip,
+                    as: 'reactdroptip',
+                  },
+                ],
+                lock: t.LOCK.UPDATE,
+                transaction: t,
+              });
+              activity.unshift(tipActivity);
+            }
+            const newStringListUsers = listOfUsersRained.join(", ");
+            const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
+            // eslint-disable-next-line no-restricted-syntax
+            for (const element of cutStringListUsers) {
+            // eslint-disable-next-line no-await-in-loop
+              await reactMessage.channel.send(element);
+            }
+            const initiator = endReactDrop.user.user_id.replace('discord-', '');
+            await reactMessage.channel.send({ embeds: [AfterReactDropSuccessMessage(endReactDrop, amountEach, initiator)] });
+          }
+        }
+
+        t.afterCommit(() => {
+          console.log('done');
         });
-      } catch (e) {
-        logger.error(`Error Discord: ${e}`);
-      }
-      console.log(err);
-      console.log('error');
-    });
-    await queue.add(() => endingReactdrop);
-    io.to('admin').emit('updateActivity', {
-      activity,
+      }).catch(async (err) => {
+        try {
+          await db.error.create({
+            type: 'endReactDrop',
+            error: `${err}`,
+          });
+        } catch (e) {
+          logger.error(`Error Discord: ${e}`);
+        }
+        console.log(err);
+        console.log('error');
+      });
+      io.to('admin').emit('updateActivity', {
+        activity,
+      });
     });
   });
 };
@@ -738,7 +736,6 @@ export const discordReactDrop = async (
             lock: t.LOCK.UPDATE,
           });
 
-          const sendReactDropMessage = await message.channel.send({ embeds: [reactDropMessage(distance, message.author.id, filteredMessage[4], amount)] });
           const group = await db.group.findOne({
             where: {
               groupId: `discord-${message.guildId}`,
@@ -746,6 +743,7 @@ export const discordReactDrop = async (
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
+
           const channel = await db.channel.findOne({
             where: {
               channelId: `discord-${message.channelId}`,
@@ -753,7 +751,9 @@ export const discordReactDrop = async (
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
+
           const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
+
           const newReactDrop = await db.reactdrop.create({
             feeAmount: Number(fee),
             amount,
@@ -761,8 +761,27 @@ export const discordReactDrop = async (
             channelId: channel.id,
             ends: dateObj,
             emoji: filteredMessage[4],
-            discordMessageId: sendReactDropMessage.id,
+            discordMessageId: 'notYetSpecified',
             userId: user.id,
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+
+          const sendReactDropMessage = await message.channel.send({
+            embeds: [
+              reactDropMessage(
+                newReactDrop.id,
+                distance,
+                message.author.id,
+                filteredMessage[4],
+                amount,
+              ),
+            ],
+          });
+
+          const newUpdatedReactDrop = await newReactDrop.update({
+            discordMessageId: sendReactDropMessage.id,
           }, {
             transaction: t,
             lock: t.LOCK.UPDATE,
@@ -772,7 +791,7 @@ export const discordReactDrop = async (
             amount,
             type: 'reactdrop_s',
             spenderId: user.id,
-            reactdropId: newReactDrop.id,
+            reactdropId: newUpdatedReactDrop.id,
             spender_balance: wallet.available + wallet.locked,
           }, {
             lock: t.LOCK.UPDATE,
@@ -804,7 +823,7 @@ export const discordReactDrop = async (
           listenReactDrop(
             reactMessage,
             distance,
-            newReactDrop,
+            newUpdatedReactDrop,
             io,
             queue,
           );
@@ -820,7 +839,17 @@ export const discordReactDrop = async (
             now = new Date().getTime();
             console.log('listen');
             distance = countDownDate - now;
-            await reactMessage.edit({ embeds: [reactDropMessage(distance, message.author.id, filteredMessage[4], amount)] });
+            await reactMessage.edit({
+              embeds: [
+                reactDropMessage(
+                  newUpdatedReactDrop.id,
+                  distance,
+                  message.author.id,
+                  filteredMessage[4],
+                  amount,
+                ),
+              ],
+            });
             if (distance < 0) {
               clearInterval(updateMessage);
             }

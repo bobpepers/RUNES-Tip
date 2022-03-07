@@ -329,8 +329,19 @@ export const discordSleet = async (
         await message.channel.send(element);
       }
 
-      await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, usersToRain, amountPerUser, 'Sleet', 'sleeted')] });
-      // logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+      await message.channel.send({
+        embeds: [
+          AfterSuccessMessage(
+            message,
+            sleetRecord.id,
+            amount,
+            usersToRain,
+            amountPerUser,
+            'Sleet',
+            'sleeted',
+          ),
+        ],
+      });
     }
 
     t.afterCommit(() => {

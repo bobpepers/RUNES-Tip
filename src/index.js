@@ -206,6 +206,7 @@ const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
       await reactMessage.edit({
         embeds: [
           reactDropMessage(
+            runningReactDrop.id,
             distance,
             actualUserId,
             runningReactDrop.emoji,
@@ -286,6 +287,7 @@ const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
     await triviaMessage.edit({
       embeds: [
         triviaMessageDiscord(
+          runningTrivia.id,
           distance,
           actualUserId,
           runningTrivia.triviaquestion.question,
@@ -303,6 +305,7 @@ const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
       await triviaMessage.edit({
         embeds: [
           triviaMessageDiscord(
+            runningTrivia.id,
             distance,
             actualUserId,
             runningTrivia.triviaquestion.question,

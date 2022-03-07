@@ -166,6 +166,7 @@ export const listenTrivia = async (
       await triviaMessage.edit({
         embeds: [
           triviaMessageDiscord(
+            triviaRecord.id,
             -1,
             actualUserId,
             triviaRecord.triviaquestion.question,
@@ -379,7 +380,15 @@ export const listenTrivia = async (
               await triviaMessage.channel.send(element);
             }
             const initiator = endTriviaDrop.user.user_id.replace('discord-', '');
-            await triviaMessage.channel.send({ embeds: [AfterTriviaSuccessMessage(endTriviaDrop, amountEach, initiator)] });
+            await triviaMessage.channel.send({
+              embeds: [
+                AfterTriviaSuccessMessage(
+                  endTriviaDrop,
+                  amountEach,
+                  initiator,
+                ),
+              ],
+            });
           }
         }
 
@@ -610,32 +619,8 @@ export const discordTrivia = async (
           const answers = _.shuffle(randomQuestion.triviaanswers);
           let answerString = '';
           let positionAlphabet = 0;
-          console.log(answers);
-          // eslint-disable-next-line no-restricted-syntax
-          for (const answer of answers) {
-            row.addComponents(
-              new MessageButton()
-                .setCustomId(answer.answer)
-                .setLabel(alphabet[parseInt(positionAlphabet, 10)])
-                .setStyle('PRIMARY'),
-            );
-            answerString += `${alphabet[parseInt(positionAlphabet, 10)]}. ${answer.answer}\n`;
-            positionAlphabet += 1;
-          }
+          // console.log(answers);
 
-          const sendTriviaMessage = await message.channel.send({
-            embeds: [
-              triviaMessageDiscord(
-                distance,
-                message.author.id,
-                randomQuestion.question,
-                answerString,
-                amount,
-                totalPeople,
-              ),
-            ],
-            components: [row],
-          });
           const group = await db.group.findOne({
             where: {
               groupId: `discord-${message.guildId}`,
@@ -651,6 +636,19 @@ export const discordTrivia = async (
             lock: t.LOCK.UPDATE,
           });
           const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
+
+          // eslint-disable-next-line no-restricted-syntax
+          for (const answer of answers) {
+            row.addComponents(
+              new MessageButton()
+                .setCustomId(answer.answer)
+                .setLabel(alphabet[parseInt(positionAlphabet, 10)])
+                .setStyle('PRIMARY'),
+            );
+            answerString += `${alphabet[parseInt(positionAlphabet, 10)]}. ${answer.answer}\n`;
+            positionAlphabet += 1;
+          }
+
           const newTriviaCreate = await db.trivia.create({
             feeAmount: Number(fee),
             amount,
@@ -659,8 +657,30 @@ export const discordTrivia = async (
             channelId: channel.id,
             ends: dateObj,
             triviaquestionId: randomQuestion.id,
-            discordMessageId: sendTriviaMessage.id,
+            discordMessageId: 'notYetSpecified',
             userId: user.id,
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+
+          const sendTriviaMessage = await message.channel.send({
+            embeds: [
+              triviaMessageDiscord(
+                newTriviaCreate.id,
+                distance,
+                message.author.id,
+                randomQuestion.question,
+                answerString,
+                amount,
+                totalPeople,
+              ),
+            ],
+            components: [row],
+          });
+
+          const newUpdatedTriviaCreate = await newTriviaCreate.update({
+            discordMessageId: sendTriviaMessage.id,
           }, {
             transaction: t,
             lock: t.LOCK.UPDATE,
@@ -668,7 +688,7 @@ export const discordTrivia = async (
 
           const newTrivia = await db.trivia.findOne({
             where: {
-              id: newTriviaCreate.id,
+              id: newUpdatedTriviaCreate.id,
             },
             include: [
               {
@@ -724,6 +744,7 @@ export const discordTrivia = async (
             await triviaMessage.edit({
               embeds: [
                 triviaMessageDiscord(
+                  newTrivia.id,
                   distance,
                   message.author.id,
                   randomQuestion.question,

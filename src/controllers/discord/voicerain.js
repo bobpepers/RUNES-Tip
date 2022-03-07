@@ -245,7 +245,19 @@ export const discordVoiceRain = async (
       await message.channel.send(element);
     }
 
-    await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, 'Rain', 'rained')] });
+    await message.channel.send({
+      embeds: [
+        AfterSuccessMessage(
+          message,
+          rainRecord.id,
+          amount,
+          withoutBots,
+          amountPerUser,
+          'VoiceRain',
+          'rained',
+        ),
+      ],
+    });
 
     t.afterCommit(() => {
       console.log('done');

@@ -238,9 +238,19 @@ export const discordHurricane = async (
       // eslint-disable-next-line no-await-in-loop
       await message.channel.send(element);
     }
-    await message.channel.send({ embeds: [AfterSuccessMessage(message, amount, withoutBots, amountPerUser, '⛈ Hurricane ⛈', 'hurricaned')] });
-
-    // logger.info(`Success Hurricane Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
+    await message.channel.send({
+      embeds: [
+        AfterSuccessMessage(
+          message,
+          hurricaneRecord.id,
+          amount,
+          withoutBots,
+          amountPerUser,
+          '⛈ Hurricane ⛈',
+          'hurricaned',
+        ),
+      ],
+    });
 
     t.afterCommit(() => {
       console.log('done');
