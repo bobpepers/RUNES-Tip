@@ -1,6 +1,6 @@
 {
   "name": "runes-tip",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "Tipbot for coins with bitcoin codebase",
   "scripts": {
     "dev": "nodemon --exec babel-node --max-old-space-size=8192 src/index.js",
@@ -10,12 +10,13 @@
     "db:makemigrations": "./node_modules/sequelize-auto-migrations/bin/makemigration.js"
   },
   "keywords": [
-    "bot",
-    "tip",
+    "Bot",
+    "Tip",
     "Runebase",
     "RUNES",
     "Reactdrop",
     "Rain",
+    "Flood",
     "Thunder",
     "Soak",
     "Sleet",
@@ -51,7 +52,7 @@
   "dependencies": {
     "algebraic-captcha": "^1.0.1",
     "arrrweb3": "github:The-ARRRmy/ARRRweb3.js#0.1.0",
-    "axios": "^0.26.0",
+    "axios": "^0.26.1",
     "bcrypt-nodejs": "^0.0.3",
     "bignumber.js": "^9.0.2",
     "bluebird": "^3.7.2",

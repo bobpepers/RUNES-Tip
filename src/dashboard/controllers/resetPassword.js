@@ -6,130 +6,168 @@ import timingSafeEqual from '../helpers/timingSafeEqual';
 
 import db from '../../models';
 
-const { Sequelize, Transaction, Op } = require('sequelize');
+const {
+  Sequelize,
+  Transaction,
+  Op,
+} = require('sequelize');
 
 /**
  * Reset password
  */
-export const resetPassword = (req, res, next) => {
-  const { email } = req.body;
-  db.user.findOne({
-    where: {
-      [Op.or]: [
-        { email },
-      ],
-    },
-  }).then(async (user) => {
-    if (!user) {
-      return res.status(422).send({ error: "email doesn't exists" });
-    }
-    const verificationToken = await generateVerificationToken(1);
-    user.update({
-      resetpassexpires: verificationToken.expires,
-      resetpasstoken: verificationToken.token,
-      resetpassused: false,
-    }).then((updatedUser) => {
-      sendResetPassword(email, updatedUser.firstname, updatedUser.resetpasstoken);
-      res.json({ success: true });
-    }).catch((err) => {
-      next(err);
+export const resetPassword = async (req, res, next) => {
+  console.log(req.body);
+  console.log("initiate reset password");
+  try {
+    const { email } = req.body;
+    const user = await db.dashboardUser.findOne({
+      where: {
+        [Op.or]: [
+          { email },
+        ],
+      },
     });
-  }).catch((err) => next(err));
+    if (!user) {
+      res.locals.error = "email doesn't exists";
+      return next();
+      // return res.status(422).send({ error: "email doesn't exists" });
+    }
+    if (user) {
+      const verificationToken = await generateVerificationToken(1);
+      const updatedUser = await user.update({
+        resetpassexpires: verificationToken.expires,
+        resetpasstoken: verificationToken.token,
+        resetpassused: false,
+      });
+      sendResetPassword(email, updatedUser.username, updatedUser.resetpasstoken);
+      res.locals.resetPassword = true;
+      return next();
+    }
+  } catch (e) {
+    res.locals.error = e;
+    return next();
+  }
 };
 
 /**
  * Verify reset password
  */
-export const verifyResetPassword = (req, res, next) => {
-  const { email, token } = req.body;
+export const verifyResetPassword = async (
+  req,
+  res,
+  next,
+) => {
+  try {
+    const {
+      email,
+      token,
+    } = req.body;
 
-  db.user.findOne({
-    where: {
-      [Op.or]: [
-        { email },
-      ],
-    },
-  }).then(async (user) => {
+    const user = await db.dashboardUser.findOne({
+      where: {
+        [Op.or]: [
+          { email },
+        ],
+      },
+    });
+
     if (!user) {
-      return res.status(422).send({ error: { message: "email doesn't exists", resend: false } });
+      res.locals.error = "email doesn't exists";
+      return next();
     }
-
-    if (user.resetpassused) {
-      console.log('already used resetpass token1');
-      return res.status(422).send({ error: { message: "link already used, please request reset password again", resend: true } });
+    if (user) {
+      if (user.resetpassused) {
+        res.locals.error = "link already used, please request reset password again";
+        return next();
+      }
+      if (new Date() > user.resetpassexpires) {
+        res.locals.error = "link already expired, please request reset password again";
+        return next();
+      }
+      if (!timingSafeEqual(token, user.resetpasstoken)) {
+        res.locals.error = "something has gone wrong, please request reset password again";
+        return next();
+      }
+      res.locals.resetPasswordVerify = true;
+      return next();
     }
-
-    if (new Date() > user.resetpassexpires) {
-      return res.status(422).send({ error: { message: "link already expired, please request reset password again", resend: true } });
-    }
-    console.log('timingSafeEqual(token, user.resetpasstoken)');
-    console.log(token);
-    console.log(user.resetpasstoken);
-    console.log(timingSafeEqual(token, user.resetpasstoken));
-
-    if (!timingSafeEqual(token, user.resetpasstoken)) {
-      return res.status(422).send({ error: { message: "something has gone wrong, please request reset password again", resend: true } });
-    }
-
-    res.json({ success: true });
-  }).catch((err) => {
-    next(err);
-  });
+  } catch (e) {
+    res.locals.error = e;
+    return next();
+  }
 };
 
 /**
  * Reset password, new password
  */
-export const resetPasswordNew = (req, res, next) => {
-  const { email, newpassword, token } = req.body;
+export const resetPasswordNew = async (
+  req,
+  res,
+  next,
+) => {
+  try {
+    const {
+      email,
+      newpassword,
+      token,
+    } = req.body;
 
-  db.user.findOne({
-    where: {
-      [Op.or]: [
-        { email },
-      ],
-    },
-  }).then(async (user) => {
+    const user = await db.dashboardUser.findOne({
+      where: {
+        [Op.or]: [
+          { email },
+        ],
+      },
+    });
     if (!user) {
-      return res.status(422).send({ error: { message: "email doesn't exists", resend: false } });
+      res.locals.error = "email doesn't exists";
+      return next();
     }
+    if (user) {
+      if (user.resetpassused) {
+        res.locals.error = "link already used, please request reset password again";
+        return next();
+      }
+      if (new Date() > user.resetpassexpires) {
+        res.locals.error = "link already expired, please request reset password again";
+        return next();
+      }
+      if (!timingSafeEqual(token, user.resetpasstoken)) {
+        res.locals.error = "something has gone wrong, please request reset password again";
+        return next();
+      }
+      bcrypt.genSalt(10, (err, salt) => {
+        console.log(salt);
+        if (err) {
+          res.locals.error = err;
+          return next();
+        }
 
-    if (user.resetpassused) {
-      console.log('already used resetpass token');
-      return res.status(422).send({ error: { message: "link already used, please request reset password again", resend: true } });
-    }
+        bcrypt.hash(newpassword, salt, null, (err, hash) => {
+          if (err) {
+            res.locals.error = err;
+            return next();
+          }
 
-    if (new Date() > user.resetpassexpires) {
-      return res.status(422).send({ error: { message: "link already expired, please request reset password again", resend: true } });
-    }
-
-    if (!timingSafeEqual(token, user.resetpasstoken)) {
-      return res.status(422).send({ error: { message: "something has gone wrong, please request reset password again", resend: true } });
-    }
-
-    bcrypt.genSalt(10, (err, salt) => {
-      console.log(salt);
-      if (err) { return next(err); }
-
-      bcrypt.hash(newpassword, salt, null, (err, hash) => {
-        if (err) { return next(err); }
-
-        user.update({
-          password: hash,
-          resetpassused: true,
-        }).then((updatedUser) => {
-          console.log(updatedUser);
-          console.log('done updating user');
-          const { firstname, lastname, email } = updatedUser;
-          res.json({
-            firstname, lastname, email,
+          user.update({
+            password: hash,
+            resetpassused: true,
+          }).then((updatedUser) => {
+            const {
+              username,
+              email,
+            } = updatedUser;
+            res.locals.username = username;
+            res.locals.email = email;
+            next();
+          }).catch((err) => {
+            next(err);
           });
-        }).catch((err) => {
-          next(err);
         });
       });
-    });
-  }).catch((err) => {
-    next(err);
-  });
+    }
+  } catch (e) {
+    res.locals.error = e;
+    return next();
+  }
 };

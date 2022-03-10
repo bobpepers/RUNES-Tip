@@ -874,16 +874,56 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     '/api/reset-password',
     verifyMyCaptcha,
     resetPassword,
+    (req, res) => {
+      console.log(res.locals.error);
+      if (res.locals.error) {
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      }
+      if (res.locals.resetPassword) {
+        res.json({
+          success: true,
+        });
+      }
+    },
   );
 
   app.post(
     '/api/reset-password/verify',
     verifyResetPassword,
+    (req, res) => {
+      console.log(res.locals.error);
+      if (res.locals.error) {
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      }
+      if (res.locals.resetPasswordVerify) {
+        res.json({
+          success: true,
+        });
+      }
+    },
   );
 
   app.post(
     '/api/reset-password/new',
     resetPasswordNew,
+    (req, res) => {
+      console.log(res.locals.error);
+      if (res.locals.error) {
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      }
+      if (res.locals.email && res.locals.username) {
+        res.json({
+          username: res.locals.username,
+          email: res.locals.email,
+        });
+      }
+    },
   );
 
   app.post(

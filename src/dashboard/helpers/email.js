@@ -74,7 +74,11 @@ export function sendVerificationEmail(email, token) {
   // }, (err) => { if (err) { return err; } });
 }
 
-export function sendResetPassword(email, firstName, token) {
+export function sendResetPassword(
+  email,
+  firstName,
+  token,
+) {
   const html = "<div style='margin: 0; padding: 0; width: 100%; font-family: Trebuchet MS, sans-serif;'>"
     + "<div style='background-color: #f2f2f2; padding: 45px;'>"
     + "<div style='background-color: #ffffff; padding: 40px; text-align: center;'>"

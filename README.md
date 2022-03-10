@@ -111,7 +111,7 @@ npx sequelize-cli seed:generate --name demo-jackpot
 daemon=1
 rpcuser=runebaseinfo
 rpcpassword=runebaseinfo
-blocknotify= curl -X POST -d "{ \"payload\" : \"%s\"}" http://127.0.0.1:8080/api/chaininfo/block
+blocknotify=curl -X POST -d "{ \"payload\" : \"%s\"}" http://127.0.0.1:8080/api/chaininfo/block
 walletnotify=curl --header "Content-Type: application/json" --request POST --data "{ \"payload\" : \"%s\"}" http://127.0.0.1:8080/api/rpc/walletnotify
 server=1
 txindex=1
