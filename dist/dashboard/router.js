@@ -57,6 +57,8 @@ var _passport2 = _interopRequireDefault(require("./services/passport"));
 
 var _tfa = require("./controllers/tfa");
 
+var _user = require("./controllers/user");
+
 // import storeIp from './helpers/storeIp';
 // const requireAuth = passport.authenticate('jwt', { session: true, failWithError: true });
 var requireSignin = _passport["default"].authenticate('local', {
@@ -86,7 +88,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
     }
   }, _tfa.istfa);
   app.post('/api/signup', _recaptcha.verifyMyCaptcha, _ip.insertIp, _auth.signup);
-  app.post('/api/withdrawal/accept', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, function (req, res, next) {
+  app.post('/api/withdrawal/accept', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, _ip.insertIp, function (req, res, next) {
     res.locals.discordClient = discordClient;
     res.locals.telegramClient = telegramClient;
     next();
@@ -105,7 +107,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/withdrawal/decline', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, function (req, res, next) {
+  app.post('/api/withdrawal/decline', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, _ip.insertIp, function (req, res, next) {
     res.locals.discordClient = discordClient;
     res.locals.telegramClient = telegramClient;
     next();
@@ -124,7 +126,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/ban/user', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _users.banUser, function (req, res) {
+  app.post('/api/ban/user', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _users.banUser, function (req, res) {
     if (res.locals.user) {
       res.json({
         user: res.locals.user
@@ -135,7 +137,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/ban/channel', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _channels.banChannel, function (req, res) {
+  app.post('/api/ban/channel', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _channels.banChannel, function (req, res) {
     if (res.locals.channel) {
       res.json({
         channel: res.locals.channel
@@ -146,7 +148,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/ban/server', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _servers.banServer, function (req, res) {
+  app.post('/api/ban/server', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _servers.banServer, function (req, res) {
     if (res.locals.server) {
       res.json({
         server: res.locals.server
@@ -157,7 +159,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/feature/remove', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _features.removeFeature, function (req, res) {
+  app.post('/api/feature/remove', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _features.removeFeature, function (req, res) {
     if (res.locals.error) {
       res.status(401).send({
         error: res.locals.error
@@ -172,7 +174,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/feature/update', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _features.updateFeature, function (req, res) {
+  app.post('/api/feature/update', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _features.updateFeature, function (req, res) {
     if (res.locals.error) {
       res.status(401).send({
         error: res.locals.error
@@ -187,7 +189,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/feature/add', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _features.addFeature, function (req, res) {
+  app.post('/api/feature/add', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _features.addFeature, function (req, res) {
     if (res.locals.error) {
       res.status(401).send({
         error: res.locals.error
@@ -202,7 +204,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/features', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _features.fetchFeatures, function (req, res) {
+  app.post('/api/features', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _features.fetchFeatures, function (req, res) {
     if (res.locals.features) {
       res.json({
         features: res.locals.features
@@ -213,7 +215,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/bot/settings/update', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _bots.updateBotSettings, function (req, res) {
+  app.post('/api/bot/settings/update', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _bots.updateBotSettings, function (req, res) {
     if (res.locals.settings) {
       res.json({
         settings: res.locals.settings
@@ -224,7 +226,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/bot/settings', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _bots.fetchBotSettings, function (req, res) {
+  app.post('/api/bot/settings', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _bots.fetchBotSettings, function (req, res) {
     if (res.locals.settings) {
       res.json({
         settings: res.locals.settings
@@ -235,7 +237,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/channels', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _channels.fetchChannels, function (req, res) {
+  app.post('/api/channels', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _channels.fetchChannels, function (req, res) {
     if (res.locals.channels) {
       res.json({
         channels: res.locals.channels
@@ -246,7 +248,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.get('/api/triviaquestions', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _trivia.fetchTriviaQuestions, function (req, res) {
+  app.get('/api/triviaquestions', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _trivia.fetchTriviaQuestions, function (req, res) {
     if (res.locals.error) {
       console.log('found error');
       console.log(res.locals.error);
@@ -263,7 +265,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/trivia/switch', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _trivia.switchTriviaQuestion, function (req, res) {
+  app.post('/api/trivia/switch', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _trivia.switchTriviaQuestion, function (req, res) {
     if (res.locals.error) {
       console.log('found error');
       console.log(res.locals.error);
@@ -280,7 +282,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/trivia/remove', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _trivia.removeTriviaQuestion, function (req, res) {
+  app.post('/api/trivia/remove', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _trivia.removeTriviaQuestion, function (req, res) {
     if (res.locals.error) {
       console.log('found error');
       console.log(res.locals.error);
@@ -297,7 +299,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/trivia/insert', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _trivia.insertTrivia, function (req, res) {
+  app.post('/api/trivia/insert', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _trivia.insertTrivia, function (req, res) {
     if (res.locals.error) {
       console.log('found error');
       console.log(res.locals.error);
@@ -314,7 +316,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.get('/api/sync/blocks', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _sync.startSyncBlocks, function (req, res) {
+  app.get('/api/sync/blocks', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _sync.startSyncBlocks, function (req, res) {
     if (res.locals.sync) {
       res.json({
         sync: res.locals.sync
@@ -325,7 +327,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.get('/api/blocknumber', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _blockNumber.fetchBlockNumber, function (req, res) {
+  app.get('/api/blocknumber', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _blockNumber.fetchBlockNumber, function (req, res) {
     console.log('after fetchblocknumber');
 
     if (res.locals.blockNumberNode && res.locals.blockNumberDb) {
@@ -341,7 +343,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/activity', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _activity.fetchActivity, function (req, res) {
+  app.post('/api/activity', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _activity.fetchActivity, function (req, res) {
     if (res.locals.activity) {
       res.json({
         activity: res.locals.activity
@@ -352,7 +354,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/withdrawals', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _withdrawals.fetchWithdrawals, function (req, res) {
+  app.post('/api/withdrawals', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _withdrawals.fetchWithdrawals, function (req, res) {
     if (res.locals.withdrawals) {
       res.json({
         withdrawals: res.locals.withdrawals
@@ -363,7 +365,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/deposits', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _deposits.fetchDeposits, function (req, res) {
+  app.post('/api/deposits', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _deposits.fetchDeposits, function (req, res) {
     if (res.locals.deposits) {
       res.json({
         deposits: res.locals.deposits
@@ -374,12 +376,24 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/deposits/patch', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _deposits.patchDeposits, function (req, res) {
+  app.post('/api/deposits/patch', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _deposits.patchDeposits, function (req, res) {
     res.json({
       deposits: 'true'
     });
   });
-  app.post('/api/users', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _users.fetchUsers, function (req, res) {
+  app.get('/api/user', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _user.fetchUser, function (req, res, next) {
+    if (res.locals.error) {
+      console.log(res.locals.error);
+      res.status(401).send({
+        error: res.locals.error
+      });
+    }
+
+    if (res.locals.user) {
+      res.json(res.locals.user);
+    }
+  });
+  app.post('/api/users', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _users.fetchUsers, function (req, res) {
     if (res.locals.users) {
       res.json({
         users: res.locals.users
@@ -390,7 +404,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/dashboardusers', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _dashboardUsers.fetchDashboardUsers, function (req, res) {
+  app.post('/api/dashboardusers', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _dashboardUsers.fetchDashboardUsers, function (req, res) {
     if (res.locals.dashboardusers) {
       res.json({
         dashboardusers: res.locals.dashboardusers
@@ -401,7 +415,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/servers', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _servers.fetchServers, function (req, res) {
+  app.post('/api/servers', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _servers.fetchServers, function (req, res) {
     if (res.locals.servers) {
       res.json({
         servers: res.locals.servers
@@ -412,7 +426,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/errors', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _errors.fetchErrors, function (req, res) {
+  app.post('/api/errors', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _errors.fetchErrors, function (req, res) {
     if (res.locals.errors) {
       res.json({
         errors: res.locals.errors
@@ -423,7 +437,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.get('/api/status', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _status.fetchNodeStatus, function (req, res) {
+  app.get('/api/status', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _status.fetchNodeStatus, function (req, res) {
     if (res.locals.status && res.locals.peers) {
       res.json({
         status: res.locals.status,
@@ -535,8 +549,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       res.status(401).send({
         error: 'LOGIN_ERROR'
       });
-    } // console.log(req);
-    // console.log('Login Successful');
+    } // console.log('Login Successful');
     // console.log(req.user.username);
 
 
@@ -544,9 +557,52 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       username: req.user.username
     });
   });
-  app.post('/api/reset-password', _recaptcha.verifyMyCaptcha, _resetPassword.resetPassword);
-  app.post('/api/reset-password/verify', _resetPassword.verifyResetPassword);
-  app.post('/api/reset-password/new', _resetPassword.resetPasswordNew);
+  app.post('/api/reset-password', _recaptcha.verifyMyCaptcha, _resetPassword.resetPassword, function (req, res) {
+    console.log(res.locals.error);
+
+    if (res.locals.error) {
+      res.status(401).send({
+        error: res.locals.error
+      });
+    }
+
+    if (res.locals.resetPassword) {
+      res.json({
+        success: true
+      });
+    }
+  });
+  app.post('/api/reset-password/verify', _resetPassword.verifyResetPassword, function (req, res) {
+    console.log(res.locals.error);
+
+    if (res.locals.error) {
+      res.status(401).send({
+        error: res.locals.error
+      });
+    }
+
+    if (res.locals.resetPasswordVerify) {
+      res.json({
+        success: true
+      });
+    }
+  });
+  app.post('/api/reset-password/new', _resetPassword.resetPasswordNew, function (req, res) {
+    console.log(res.locals.error);
+
+    if (res.locals.error) {
+      res.status(401).send({
+        error: res.locals.error
+      });
+    }
+
+    if (res.locals.email && res.locals.username) {
+      res.json({
+        username: res.locals.username,
+        email: res.locals.email
+      });
+    }
+  });
   app.post('/api/2fa/enable', IsAuthenticated, _auth.isDashboardUserBanned, // storeIp,
   _tfa.ensuretfa, // updateLastSeen,
   _tfa.enabletfa);

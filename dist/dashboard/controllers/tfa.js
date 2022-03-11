@@ -22,15 +22,14 @@ var disabletfa = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            console.log('disable tfa');
-            _context.next = 3;
-            return _models["default"].user.findOne({
+            _context.next = 2;
+            return _models["default"].dashboardUser.findOne({
               where: {
                 id: req.user.id
               }
             });
 
-          case 3:
+          case 2:
             user = _context.sent;
             verified = speakeasy.totp.verify({
               secret: user.tfa_secret,
@@ -39,11 +38,11 @@ var disabletfa = /*#__PURE__*/function () {
             });
 
             if (!(verified && user && user.tfa === true)) {
-              _context.next = 8;
+              _context.next = 7;
               break;
             }
 
-            _context.next = 8;
+            _context.next = 7;
             return user.update({
               tfa: false,
               tfa_secret: ''
@@ -53,10 +52,10 @@ var disabletfa = /*#__PURE__*/function () {
               });
             });
 
-          case 8:
+          case 7:
             next();
 
-          case 9:
+          case 8:
           case "end":
             return _context.stop();
         }
@@ -86,7 +85,7 @@ var enabletfa = /*#__PURE__*/function () {
               token: req.body.tfa
             });
             _context2.next = 4;
-            return _models["default"].user.findOne({
+            return _models["default"].dashboardUser.findOne({
               where: {
                 id: req.user.id
               }

@@ -95,6 +95,10 @@ import {
   istfa,
 } from './controllers/tfa';
 
+import {
+  fetchUser,
+} from './controllers/user';
+
 // import storeIp from './helpers/storeIp';
 
 // const requireAuth = passport.authenticate('jwt', { session: true, failWithError: true });
@@ -136,6 +140,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     IsAuthenticated,
     isAdmin,
     isDashboardUserBanned,
+    ensuretfa,
     insertIp,
     (req, res, next) => {
       res.locals.discordClient = discordClient;
@@ -165,6 +170,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     IsAuthenticated,
     isAdmin,
     isDashboardUserBanned,
+    ensuretfa,
     insertIp,
     (req, res, next) => {
       res.locals.discordClient = discordClient;
@@ -195,6 +201,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     banUser,
     (req, res) => {
       if (res.locals.user) {
@@ -215,6 +222,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     banChannel,
     (req, res) => {
       if (res.locals.channel) {
@@ -235,6 +243,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     banServer,
     (req, res) => {
       if (res.locals.server) {
@@ -255,6 +264,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     removeFeature,
     (req, res) => {
       if (res.locals.error) {
@@ -278,6 +288,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     updateFeature,
     (req, res) => {
       if (res.locals.error) {
@@ -302,6 +313,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     addFeature,
     (req, res) => {
       if (res.locals.error) {
@@ -326,6 +338,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     fetchFeatures,
     (req, res) => {
       if (res.locals.features) {
@@ -346,6 +359,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     updateBotSettings,
     (req, res) => {
       if (res.locals.settings) {
@@ -366,6 +380,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     fetchBotSettings,
     (req, res) => {
       if (res.locals.settings) {
@@ -386,6 +401,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     fetchChannels,
     (req, res) => {
       if (res.locals.channels) {
@@ -406,6 +422,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     fetchTriviaQuestions,
     (req, res) => {
       if (res.locals.error) {
@@ -432,6 +449,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     switchTriviaQuestion,
     (req, res) => {
       if (res.locals.error) {
@@ -458,6 +476,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     removeTriviaQuestion,
     (req, res) => {
       if (res.locals.error) {
@@ -484,6 +503,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     insertTrivia,
     (req, res) => {
       if (res.locals.error) {
@@ -510,6 +530,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     startSyncBlocks,
     (req, res) => {
       if (res.locals.sync) {
@@ -530,6 +551,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     fetchBlockNumber,
     (req, res) => {
       console.log('after fetchblocknumber');
@@ -554,6 +576,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     fetchActivity,
     (req, res) => {
       if (res.locals.activity) {
@@ -574,6 +597,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     fetchWithdrawals,
     (req, res) => {
       if (res.locals.withdrawals) {
@@ -594,6 +618,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     fetchDeposits,
     (req, res) => {
       if (res.locals.deposits) {
@@ -614,11 +639,33 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     patchDeposits,
     (req, res) => {
       res.json({
         deposits: 'true',
       });
+    },
+  );
+
+  app.get(
+    '/api/user',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    ensuretfa,
+    fetchUser,
+    (req, res, next) => {
+      if (res.locals.error) {
+        console.log(res.locals.error);
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      }
+      if (res.locals.user) {
+        res.json(res.locals.user);
+      }
     },
   );
 
@@ -628,6 +675,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     fetchUsers,
     (req, res) => {
       if (res.locals.users) {
@@ -647,6 +695,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     fetchDashboardUsers,
     (req, res) => {
       if (res.locals.dashboardusers) {
@@ -667,6 +716,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     fetchServers,
     (req, res) => {
       if (res.locals.servers) {
@@ -687,6 +737,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     fetchErrors,
     (req, res) => {
       if (res.locals.errors) {
@@ -707,6 +758,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     isAdmin,
     isDashboardUserBanned,
     insertIp,
+    ensuretfa,
     fetchNodeStatus,
     (req, res) => {
       if (res.locals.status && res.locals.peers) {
@@ -861,7 +913,6 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
           error: 'LOGIN_ERROR',
         });
       }
-      // console.log(req);
       // console.log('Login Successful');
       // console.log(req.user.username);
       res.json({

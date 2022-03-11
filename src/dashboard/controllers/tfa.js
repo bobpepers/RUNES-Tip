@@ -3,8 +3,7 @@ import db from '../../models';
 const speakeasy = require('speakeasy');
 
 export const disabletfa = async (req, res, next) => {
-  console.log('disable tfa');
-  const user = await db.user.findOne({
+  const user = await db.dashboardUser.findOne({
     where: {
       id: req.user.id,
     },
@@ -34,7 +33,7 @@ export const enabletfa = async (req, res, next) => {
     token: req.body.tfa,
   });
 
-  const user = await db.user.findOne({
+  const user = await db.dashboardUser.findOne({
     where: {
       id: req.user.id,
     },
