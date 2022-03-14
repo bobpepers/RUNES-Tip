@@ -181,6 +181,7 @@ let matrixClient = sdk.createClient({
       cryptoStore: new LocalStorageCryptoStore(localStorage),
       userId: matrixLoginCredentials.user_id,
       deviceId: matrixLoginCredentials.device_id,
+      timelineSupport: true,
     });
   } catch (e) {
     console.log(e);

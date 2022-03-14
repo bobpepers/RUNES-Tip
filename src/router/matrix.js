@@ -45,7 +45,10 @@ import { discordPrice } from '../controllers/discord/price';
 
 import { fetchDiscordListTransactions } from '../controllers/discord/listTransactions';
 
-import { findUserDirectMessageRoom } from '../helpers/matrix/directMessageRoom';
+import {
+  findUserDirectMessageRoom,
+  inviteUserToDirectMessageRoom,
+} from '../helpers/matrix/directMessageRoom';
 
 import {
   limitReactDrop,
@@ -112,11 +115,36 @@ export const matrixRouter = async (
     }
   });
 
-  matrixClient.on("RoomMember.membership", (event, member) => {
-    if (member.membership === "invite") {
-      matrixClient.joinRoom(member.roomId).then(() => {
-        console.log("Auto-joined %s", member.roomId);
-      });
+  matrixClient.on("RoomMember.membership", async (
+    event,
+    member,
+  ) => {
+    // if (!prepared) return;
+    const [
+      directUserMessageRoom,
+      isCurrentRoomDirectMessage,
+      userState,
+    ] = await findUserDirectMessageRoom(
+      matrixClient,
+      member.userId,
+      member.roomId,
+    );
+    if (!directUserMessageRoom && member.membership === "invite") {
+      console.log('joined');
+      try {
+        await matrixClient.joinRoom(member.roomId).then(() => {
+          console.log("Auto-joined %s", member.roomId);
+        });
+      } catch (e) {
+        console.log(e);
+        try {
+          await matrixClient.leave(member.roomId).then(() => {
+            console.log("Auto-left %s", member.roomId);
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      }
     }
   });
 
@@ -135,17 +163,10 @@ export const matrixRouter = async (
       queue,
     );
 
-    const directUserMessageRoom = await findUserDirectMessageRoom(
-      matrixClient,
-      message,
-    );
-    console.log(directUserMessageRoom);
-    console.log('directUserMessageRoom');
-
     let lastSeenMatrixTask;
     let faucetSetting;
     let body;
-    console.log(message);
+    // console.log(message);
     try {
       if (message.event.type === 'm.room.encrypted') {
         // console.log(matrixClient);
@@ -158,7 +179,7 @@ export const matrixRouter = async (
     } catch (error) {
       console.error('#### ', error);
     }
-    console.log(body);
+    // console.log(body);
     if (body) {
       const room = await matrixClient.getRoom(message.event.room_id);
       const space = await matrixClient.getRoomHierarchy(message.event.room_id);
@@ -170,19 +191,46 @@ export const matrixRouter = async (
 
       if (!body.startsWith(settings.bot.command.matrix)) return;
       if (body.startsWith(settings.bot.command.matrix)) {
-        console.log('passed startswith');
+        // let userDirectMessageRoomId;
         const preFilteredMessageDiscord = body.split(' ');
         const filteredMessageDiscord = preFilteredMessageDiscord.filter((el) => el !== '');
         console.log(filteredMessageDiscord);
+
+        const [
+          directUserMessageRoom,
+          isCurrentRoomDirectMessage,
+          userState,
+        ] = await findUserDirectMessageRoom(
+          matrixClient,
+          message.sender.userId,
+          message.sender.roomId,
+        );
+        // console.log(directUserMessageRoom);
+        // console.log(userState);
+        // console.log(isCurrentRoomDirectMessage);
+        // console.log('iserDirect');
+        const userDirectMessageRoomId = await inviteUserToDirectMessageRoom(
+          matrixClient,
+          directUserMessageRoom,
+          userState,
+          message.sender.userId,
+          message.sender.name,
+          message.sender.roomId,
+        );
+        if (!directUserMessageRoom || !userDirectMessageRoomId) return;
+        console.log(userDirectMessageRoomId);
+        // console.log(directUserMessageRoom);
+        // console.log('directUserMessageRoom');
+
         if (filteredMessageDiscord[1] === undefined) {
           // const limited = await limitHelp(message);
           // if (limited) return;
           await queue.add(async () => {
-            // const task = await discordHelp(message, io);
-            await matrixClient.sendEvent(
-              message.event.room_id,
-              "m.room.message",
-              testMessage(),
+            const task = await matrixHelp(
+              matrixClient,
+              message,
+              userDirectMessageRoomId,
+              io,
             );
           });
         }
@@ -192,10 +240,11 @@ export const matrixRouter = async (
           // if (limited) return;
           await queue.add(async () => {
             // const task = await discordHelp(message, io);
-            await matrixClient.sendEvent(
-              message.event.room_id,
-              "m.room.message",
-              testMessage(),
+            const task = await matrixHelp(
+              matrixClient,
+              message,
+              userDirectMessageRoomId,
+              io,
             );
           });
         }
@@ -206,7 +255,8 @@ export const matrixRouter = async (
   try {
     await matrixClient.initCrypto();
     await matrixClient.startClient({
-      initialSyncLimit: 4,
+      initialSyncLimit: 1,
+      includeArchivedRooms: true,
     });
   } catch (e) {
     console.log(e);

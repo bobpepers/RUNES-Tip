@@ -1,12 +1,16 @@
 /* eslint-disable import/prefer-default-export */
 import {
   warnDirectMessage,
-  helpMessageOne,
-  helpMessageTwo,
-} from '../../messages/discord';
+  helpMessage,
+} from '../../messages/matrix';
 import db from '../../models';
 
-export const matrixHelp = async (message, io) => {
+export const matrixHelp = async (
+  matrixClient,
+  message,
+  userDirectMessageRoomId,
+  io,
+) => {
   const withdraw = await db.features.findOne(
     {
       where: {
@@ -15,21 +19,31 @@ export const matrixHelp = async (message, io) => {
       },
     },
   );
-
-  if (message.channel.type === 'DM') {
-    await message.author.send({ embeds: [helpMessageOne(withdraw)] });
-    await message.author.send({ embeds: [helpMessageTwo(withdraw)] });
-  }
-  if (message.channel.type === 'GUILD_TEXT') {
-    message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Help')] });
-    await message.author.send({ embeds: [helpMessageOne(withdraw)] });
-    await message.author.send({ embeds: [helpMessageTwo(withdraw)] });
+  console.log(message.sender.roomId);
+  console.log(userDirectMessageRoomId);
+  if (message.sender.roomId === userDirectMessageRoomId) {
+    await matrixClient.sendEvent(
+      userDirectMessageRoomId,
+      "m.room.message",
+      helpMessage(),
+    );
+  } else {
+    await matrixClient.sendEvent(
+      message.sender.roomId,
+      "m.room.message",
+      warnDirectMessage(message.sender.name),
+    );
+    await matrixClient.sendEvent(
+      userDirectMessageRoomId,
+      "m.room.message",
+      helpMessage(),
+    );
   }
 
   const activity = [];
   const user = await db.user.findOne({
     where: {
-      user_id: `discord-${message.author.id}`,
+      user_id: `matrix-${message.sender.userId}`,
     },
   });
 

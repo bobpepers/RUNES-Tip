@@ -13,8 +13,6 @@ export const createUpdateMatrixUser = async (
   matrixClient,
   queue,
 ) => {
-  console.log(message);
-  console.log('message matrix');
   await queue.add(async () => {
     await db.sequelize.transaction({
       isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -69,6 +67,7 @@ export const createUpdateMatrixUser = async (
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
+          console.log("created wallet");
         }
         let address = await db.address.findOne(
           {
@@ -90,6 +89,7 @@ export const createUpdateMatrixUser = async (
               lock: t.LOCK.UPDATE,
             },
           );
+          console.log('created address');
           if (!addressAlreadyExist) {
             address = await db.address.create({
               address: newAddress,
@@ -100,6 +100,7 @@ export const createUpdateMatrixUser = async (
               transaction: t,
               lock: t.LOCK.UPDATE,
             });
+            console.log("added address");
           }
           await matrixClient.sendEvent(
             message.event.room_id,
