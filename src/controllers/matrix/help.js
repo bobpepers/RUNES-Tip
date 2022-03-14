@@ -31,7 +31,7 @@ export const matrixHelp = async (
     await matrixClient.sendEvent(
       message.sender.roomId,
       "m.room.message",
-      warnDirectMessage(message.sender.name),
+      warnDirectMessage(message.sender.name, 'Help'),
     );
     await matrixClient.sendEvent(
       userDirectMessageRoomId,

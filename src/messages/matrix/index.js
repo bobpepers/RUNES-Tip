@@ -62,14 +62,17 @@ ${settings.bot.name} v${pjson.version}`,
 
 export const warnDirectMessage = (
   username,
+  title,
 ) => {
   const result = {
-    body: `${username}, i've sent you a direct message.
+    body: `${title}
+
+${username}, i've sent you a direct message.
     
 ${settings.bot.name} v${pjson.version}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><p><strong>${username}, i've sent you a direct message</strong></p>
+    formatted_body: `<blockquote><p>${title}</p><p><strong>${username}, i've sent you a direct message</strong></p>
 <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
   };
   return result;
@@ -77,7 +80,7 @@ ${settings.bot.name} v${pjson.version}`,
 
 export const helpMessage = () => {
   const result = {
-    body: `Help message v${pjson.version}
+    body: `Help v${pjson.version}
     ${settings.bot.command.matrix} 
 show this help message
 
@@ -101,12 +104,35 @@ ${settings.bot.name} v${pjson.version}`,
 <code>${settings.bot.command.matrix} help</code>
 <p>show this message</p>
 
-<code>${settings.bot.command.matrix}  deposit</code>
+<code>${settings.bot.command.matrix} deposit</code>
 <p>Displays your deposit address</p>
 
 <code>${settings.bot.command.matrix} withdraw \<address\> \<amount|all\></code>
 <p>Withdraws the entered amount to a ${settings.coin.name} address of your choice</p>
 
+<code>${settings.bot.command.matrix} balance</code>
+<p>Displays balance</p>
+
+<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const balanceMessage = (
+  userId,
+  user,
+  priceInfo,
+) => {
+  const result = {
+    body: `${user.username}'s current available balance: ${user.wallet.available / 1e8} ${settings.coin.ticker}
+${user.username}'s current locked balance: ${user.wallet.locked / 1e8} ${settings.coin.ticker}
+Estimated value of ${user.username}'s balance: $${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(2)}`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote>
+<p>${user.username}'s current available balance: <strong>${user.wallet.available / 1e8} ${settings.coin.ticker}</strong><br>
+${user.username}'s current locked balance: <strong>${user.wallet.locked / 1e8} ${settings.coin.ticker}</strong><br>
+Estimated value of ${user.username}'s balance: <strong>$${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(2)}</strong></p>
 <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
   };
   return result;

@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 import { config } from "dotenv";
 
-import { fetchDiscordWalletBalance } from '../controllers/discord/balance';
+import { matrixBalance } from '../controllers/matrix/balance';
 import { fetchDiscordWalletDepositAddress } from '../controllers/discord/deposit';
 import { withdrawDiscordCreate } from '../controllers/discord/withdraw';
 
@@ -241,6 +241,20 @@ export const matrixRouter = async (
           await queue.add(async () => {
             // const task = await discordHelp(message, io);
             const task = await matrixHelp(
+              matrixClient,
+              message,
+              userDirectMessageRoomId,
+              io,
+            );
+          });
+        }
+
+        if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'balance') {
+          // const limited = await limitHelp(message);
+          // if (limited) return;
+          await queue.add(async () => {
+            // const task = await discordHelp(message, io);
+            const task = await matrixBalance(
               matrixClient,
               message,
               userDirectMessageRoomId,
