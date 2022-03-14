@@ -107,7 +107,7 @@ ${settings.bot.name} v${pjson.version}`,
 <code>${settings.bot.command.matrix} deposit</code>
 <p>Displays your deposit address</p>
 
-<code>${settings.bot.command.matrix} withdraw \<address\> \<amount|all\></code>
+<code>${settings.bot.command.matrix} withdraw [address] [amount|all]</code>
 <p>Withdraws the entered amount to a ${settings.coin.name} address of your choice</p>
 
 <code>${settings.bot.command.matrix} balance</code>
@@ -133,6 +133,18 @@ Estimated value of ${user.username}'s balance: $${(((user.wallet.available + use
 <p>${user.username}'s current available balance: <strong>${user.wallet.available / 1e8} ${settings.coin.ticker}</strong><br>
 ${user.username}'s current locked balance: <strong>${user.wallet.locked / 1e8} ${settings.coin.ticker}</strong><br>
 Estimated value of ${user.username}'s balance: <strong>$${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(2)}</strong></p>
+<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const depositAddressMessage = (user) => {
+  const result = {
+    body: `deposit address: ${user.wallet.addresses[0].address}
+${settings.bot.name} v${pjson.version}`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>deposit address: </strong>${user.wallet.addresses[0].address}</p>
 <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
   };
   return result;

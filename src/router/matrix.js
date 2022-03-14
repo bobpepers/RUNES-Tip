@@ -2,7 +2,7 @@
 import { config } from "dotenv";
 
 import { matrixBalance } from '../controllers/matrix/balance';
-import { fetchDiscordWalletDepositAddress } from '../controllers/discord/deposit';
+import { matrixWalletDepositAddress } from '../controllers/matrix/deposit';
 import { withdrawDiscordCreate } from '../controllers/discord/withdraw';
 
 import { discordVoiceRain } from '../controllers/discord/voicerain';
@@ -255,6 +255,20 @@ export const matrixRouter = async (
           await queue.add(async () => {
             // const task = await discordHelp(message, io);
             const task = await matrixBalance(
+              matrixClient,
+              message,
+              userDirectMessageRoomId,
+              io,
+            );
+          });
+        }
+
+        if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'deposit') {
+          // const limited = await limitHelp(message);
+          // if (limited) return;
+          await queue.add(async () => {
+            // const task = await discordHelp(message, io);
+            const task = await matrixWalletDepositAddress(
               matrixClient,
               message,
               userDirectMessageRoomId,
