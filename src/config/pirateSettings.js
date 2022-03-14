@@ -10,6 +10,7 @@ module.exports = {
     command: {
       discord: "!piratetip",
       telegram: "!piratetip",
+      matrix: "!piratetip",
     },
   },
   coin: {

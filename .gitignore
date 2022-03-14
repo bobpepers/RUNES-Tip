@@ -21,3 +21,4 @@ logs/app.log
 .env.production.pirate
 .env.development.dust
 .env.production.dust
+/scratch

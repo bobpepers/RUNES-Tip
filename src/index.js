@@ -17,6 +17,8 @@ import compression from "compression";
 import schedule from "node-schedule";
 import dotenv from 'dotenv';
 import passport from 'passport';
+import olm from '@matrix-org/olm';
+import sdk from 'matrix-js-sdk';
 import { router } from "./router";
 import { dashboardRouter } from "./dashboard/router";
 import { updatePrice } from "./helpers/updatePrice";
@@ -33,6 +35,15 @@ import { startKomodoSync } from "./services/syncKomodo";
 import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";
 import { processWithdrawals } from "./services/processWithdrawals";
+// global.Olm = require('@matrix-org/olm');
+global.Olm = olm;
+
+const { LocalStorage } = require('node-localstorage');
+
+const localStorage = new LocalStorage('./scratch');
+const {
+  LocalStorageCryptoStore,
+} = require('matrix-js-sdk/lib/crypto/store/localStorage-crypto-store');
 
 dotenv.config();
 const settings = getCoinSettings();
@@ -113,16 +124,16 @@ io.on("connection", async (socket) => {
     && (socket.request.user.role === 4
       || socket.request.user.role === 8)
   ) {
-    console.log('joined admin socket');
-    console.log(userId);
+    // console.log('joined admin socket');
+    // console.log(userId);
     socket.join('admin');
     sockets[userId] = socket;
   }
-  console.log(Object.keys(sockets).length);
+  // console.log(Object.keys(sockets).length);
   socket.on("disconnect", () => {
     delete sockets[userId];
-    console.log("Client disconnected");
-    console.log(userId);
+    // console.log("Client disconnected");
+    // console.log(userId);
   });
 });
 
@@ -149,12 +160,35 @@ const discordClient = new Client({
 });
 
 const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
-// telegramClient.use(telegrafGetChatMembers);
+
+let matrixClient = sdk.createClient({
+  baseUrl: `https://matrix.org`,
+});
 
 (async function () {
+  let matrixLoginCredentials;
   await telegramClient.launch();
   await discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
-  await initDatabaseRecords(discordClient, telegramClient);
+  try {
+    matrixLoginCredentials = await matrixClient.login("m.login.password", {
+      user: process.env.MATRIX_USER,
+      password: process.env.MATRIX_PASS,
+    });
+    matrixClient = sdk.createClient({
+      baseUrl: `https://matrix.org`,
+      accessToken: matrixLoginCredentials.access_token,
+      sessionStore: new sdk.WebStorageSessionStore(localStorage),
+      cryptoStore: new LocalStorageCryptoStore(localStorage),
+      userId: matrixLoginCredentials.user_id,
+      deviceId: matrixLoginCredentials.device_id,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+  await initDatabaseRecords(
+    discordClient,
+    telegramClient,
+  );
 
   // recover reactdrops
   const allRunningReactDrops = await db.reactdrop.findAll({
@@ -384,9 +418,11 @@ const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
     app,
     discordClient,
     telegramClient,
+    matrixClient,
     io,
     settings,
     queue,
+
   );
   dashboardRouter(
     app,

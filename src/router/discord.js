@@ -189,7 +189,7 @@ export const discordRouter = (
       });
     }
 
-    if (filteredMessageDiscord[1].toLowerCase() === 'help') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'help') {
       const limited = await limitHelp(message);
       if (limited) return;
       await queue.add(async () => {
@@ -197,14 +197,14 @@ export const discordRouter = (
       });
     }
 
-    if (filteredMessageDiscord[1].toLowerCase() === 'fees') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'fees') {
       const limited = await limitHelp(message);
       if (limited) return;
       await queue.add(async () => {
         const task = await fetchFeeSchedule(message, io, groupTaskId, channelTaskId);
       });
     }
-    if (filteredMessageDiscord[1].toLowerCase() === 'stats') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'stats') {
       const limited = await limitStats(message);
       if (limited) return;
       await queue.add(async () => {
@@ -217,7 +217,7 @@ export const discordRouter = (
         );
       });
     }
-    if (filteredMessageDiscord[1].toLowerCase() === 'leaderboard') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'leaderboard') {
       const limited = await limitLeaderboard(message);
       if (limited) return;
       await queue.add(async () => {
@@ -226,49 +226,49 @@ export const discordRouter = (
       });
     }
 
-    if (filteredMessageDiscord[1].toLowerCase() === 'publicstats') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'publicstats') {
       const limited = await limitPublicStats(message);
       if (limited) return;
       await queue.add(async () => {
         const task = await discordPublicStats(message, io);
       });
     }
-    if (filteredMessageDiscord[1].toLowerCase() === 'info') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'info') {
       const limited = await limitInfo(message);
       if (limited) return;
       await queue.add(async () => {
         const task = await discordCoinInfo(message, io);
       });
     }
-    if (filteredMessageDiscord[1].toLowerCase() === 'ignoreme') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'ignoreme') {
       const limited = await limitIgnoreMe(message);
       if (limited) return;
       await queue.add(async () => {
         const task = await setIgnoreMe(message, io);
       });
     }
-    if (filteredMessageDiscord[1].toLowerCase() === 'balance') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'balance') {
       const limited = await limitBalance(message);
       if (limited) return;
       await queue.add(async () => {
         const task = await fetchDiscordWalletBalance(message, io);
       });
     }
-    if (filteredMessageDiscord[1].toLowerCase() === 'listtransactions') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'listtransactions') {
       const limited = await limitListTransactions(message);
       if (limited) return;
       await queue.add(async () => {
         const task = await fetchDiscordListTransactions(message, io);
       });
     }
-    if (filteredMessageDiscord[1].toLowerCase() === 'price') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'price') {
       const limited = await limitPrice(message);
       if (limited) return;
       await queue.add(async () => {
         const task = await discordPrice(message, io);
       });
     }
-    if (filteredMessageDiscord[1].toLowerCase() === 'faucet') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'faucet') {
       const setting = await discordSettings(
         message,
         'faucet',
@@ -286,7 +286,7 @@ export const discordRouter = (
         );
       });
     }
-    if (filteredMessageDiscord[1].toLowerCase() === 'deposit') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'deposit') {
       const limited = await limitDeposit(message);
       if (limited) return;
       await queue.add(async () => {
@@ -294,7 +294,7 @@ export const discordRouter = (
       });
       // await queue.add(() => task);
     }
-    if (filteredMessageDiscord[1].toLowerCase() === 'withdraw') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'withdraw') {
       const setting = await discordSettings(
         message,
         'withdraw',
@@ -322,6 +322,7 @@ export const discordRouter = (
 
     if (
       filteredMessageDiscord.length > 1
+      && filteredMessageDiscord[1]
       && filteredMessageDiscord[1].startsWith('<@')
     ) {
       const setting = await discordSettings(
@@ -376,7 +377,7 @@ export const discordRouter = (
       }
     }
 
-    if (filteredMessageDiscord[1].toLowerCase() === 'voicerain') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'voicerain') {
       const setting = await discordSettings(message, 'voicerain', groupTaskId, channelTaskId);
       if (!setting) return;
       const limited = await limitRain(message);
@@ -397,7 +398,7 @@ export const discordRouter = (
       );
     }
 
-    if (filteredMessageDiscord[1].toLowerCase() === 'rain') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'rain') {
       const setting = await discordSettings(message, 'rain', groupTaskId, channelTaskId);
       if (!setting) return;
       const limited = await limitRain(message);
@@ -418,7 +419,7 @@ export const discordRouter = (
       );
     }
 
-    if (filteredMessageDiscord[1].toLowerCase() === 'flood') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'flood') {
       const setting = await discordSettings(message, 'flood', groupTaskId, channelTaskId);
       if (!setting) return;
       const limited = await limitFlood(message);
@@ -439,7 +440,7 @@ export const discordRouter = (
       );
     }
 
-    if (filteredMessageDiscord[1].toLowerCase() === 'thunder') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'thunder') {
       const setting = await discordSettings(message, 'thunder', groupTaskId, channelTaskId);
       if (!setting) return;
       const limited = await limitThunder(message);
@@ -460,7 +461,7 @@ export const discordRouter = (
       );
     }
 
-    if (filteredMessageDiscord[1].toLowerCase() === 'thunderstorm') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'thunderstorm') {
       const setting = await discordSettings(message, 'thunderstorm', groupTaskId, channelTaskId);
       if (!setting) return;
       const limited = await limitThunderStorm(message);
@@ -481,7 +482,7 @@ export const discordRouter = (
       );
     }
 
-    if (filteredMessageDiscord[1].toLowerCase() === 'hurricane') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'hurricane') {
       const setting = await discordSettings(message, 'hurricane', groupTaskId, channelTaskId);
       if (!setting) return;
       const limited = await limitHurricane(message);
@@ -502,7 +503,7 @@ export const discordRouter = (
       );
     }
 
-    if (filteredMessageDiscord[1].toLowerCase() === 'soak') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'soak') {
       const setting = await discordSettings(message, 'soak', groupTaskId, channelTaskId);
       if (!setting) return;
       const limited = await limitSoak(message);
@@ -523,7 +524,7 @@ export const discordRouter = (
       );
     }
 
-    if (filteredMessageDiscord[1].toLowerCase() === 'sleet') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'sleet') {
       const setting = await discordSettings(message, 'sleet', groupTaskId, channelTaskId);
       if (!setting) return;
       const limited = await limitSleet(message);
@@ -543,7 +544,7 @@ export const discordRouter = (
         faucetSetting,
       );
     }
-    if (filteredMessageDiscord[1].toLowerCase() === 'reactdrop') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'reactdrop') {
       const setting = await discordSettings(message, 'reactdrop', groupTaskId, channelTaskId);
       if (!setting) return;
       const limited = await limitReactDrop(message);
@@ -564,7 +565,7 @@ export const discordRouter = (
       );
     }
 
-    if (filteredMessageDiscord[1].toLowerCase() === 'trivia') {
+    if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'trivia') {
       const setting = await discordSettings(message, 'trivia', groupTaskId, channelTaskId);
       if (!setting) return;
       const limited = await limitTrivia(message);
@@ -584,6 +585,5 @@ export const discordRouter = (
         faucetSetting,
       );
     }
-    // });
   });
 };

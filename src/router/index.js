@@ -1,11 +1,13 @@
 import { discordRouter } from './discord';
 import { telegramRouter } from './telegram';
+import { matrixRouter } from './matrix';
 import { notifyRouter } from './notify';
 
 export const router = (
   app,
   discordClient,
   telegramClient,
+  matrixClient,
   io,
   settings,
   queue,
@@ -27,6 +29,13 @@ export const router = (
 
   telegramRouter(
     telegramClient,
+    queue,
+    io,
+    settings,
+  );
+
+  matrixRouter(
+    matrixClient,
     queue,
     io,
     settings,

@@ -7,10 +7,12 @@ export const featureDisabledServerMessage = () => {
   const result = `This feature has been disabled for this server`;
   return result;
 };
+
 export const featureDisabledGlobalMessage = () => {
   const result = `This feature has been disabled`;
   return result;
 };
+
 export const telegramDepositConfirmedMessage = (amount) => {
   const result = `Deposit Confirmed 
 ${amount} ${settings.coin.ticker} has been credited to your wallet`;

@@ -40,6 +40,18 @@ export const initDatabaseRecords = async (
     });
   }
 
+  // Matrix bot setting
+  const matrixBotSetting = await db.bots.findOne({
+    where: {
+      name: 'matrix',
+    },
+  });
+  if (!matrixBotSetting) {
+    await db.bots.create({
+      name: 'matrix',
+    });
+  }
+
   // Flood
   const autoWithdrawalSetting = await db.features.findOne({
     where: {

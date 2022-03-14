@@ -363,24 +363,24 @@ export const telegramRouter = (
         const task = await fetchHelp(ctx, io);
         await queue.add(() => task);
       }
-      if (filteredMessageTelegram[1] === 'price') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'price') {
         const task = await fetchPriceInfo(ctx, io);
         await queue.add(() => task);
       }
-      if (filteredMessageTelegram[1] === 'info') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'info') {
         const task = await fetchInfo(ctx);
         await queue.add(() => task);
       }
-      if (filteredMessageTelegram[1] === 'help') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'help') {
         const task = await fetchHelp(ctx, io);
         await queue.add(() => task);
       }
-      if (filteredMessageTelegram[1] === 'faucet') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'faucet') {
         const task = await telegramFaucetClaim(ctx, io);
         await queue.add(() => task);
       }
       if (settings.coin.setting === 'Runebase') {
-        if (filteredMessageTelegram[1] === 'referral' && !filteredMessageTelegram[2]) {
+        if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'referral' && !filteredMessageTelegram[2]) {
           const task = await fetchReferralCount(
             ctx,
             telegramUserId,
@@ -388,21 +388,21 @@ export const telegramRouter = (
           );
           await queue.add(() => task);
         }
-        if (filteredMessageTelegram[1] === 'referral' && filteredMessageTelegram[2] === 'top') {
+        if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'referral' && filteredMessageTelegram[2] === 'top') {
           const task = await fetchReferralTopTen(ctx);
           await queue.add(() => task);
         }
       }
 
-      if (filteredMessageTelegram[1] === 'balance') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'balance') {
         const task = await fetchWalletBalance(ctx, telegramUserId, telegramUserName, io);
         await queue.add(() => task);
       }
-      if (filteredMessageTelegram[1] === 'deposit') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'deposit') {
         const task = await fetchWalletDepositAddress(ctx, telegramUserId, telegramUserName, io);
         await queue.add(() => task);
       }
-      if (filteredMessageTelegram[1] === 'withdraw') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'withdraw') {
         if (!filteredMessageTelegram[2]) {
           ctx.reply('insufficient Arguments');
           return;
@@ -428,7 +428,7 @@ export const telegramRouter = (
         );
         await queue.add(() => task);
       }
-      if (filteredMessageTelegram[1] === 'tip') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'tip') {
         if (!filteredMessageTelegram[2]) {
           ctx.reply('insufficient Arguments');
           return;
@@ -460,7 +460,7 @@ export const telegramRouter = (
           await queue.add(() => task);
         }
       }
-      if (filteredMessageTelegram[1] === 'rain') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'rain') {
         if (!filteredMessageTelegram[2]) {
           ctx.reply('invalid amount of arguments');
           return;

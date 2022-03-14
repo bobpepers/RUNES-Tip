@@ -8,7 +8,7 @@ export async function patchRunebaseDeposits() {
 
   // eslint-disable-next-line no-restricted-syntax
   for await (const trans of transactions) {
-    console.log(trans);
+    // console.log(trans);
     if (trans.category === 'receive') {
       if (trans.address) {
         // eslint-disable-next-line no-await-in-loop
@@ -29,8 +29,8 @@ export async function patchRunebaseDeposits() {
           console.log('address not found');
         }
         if (address) {
-          console.log(trans);
-          console.log(address);
+          // console.log(trans);
+          // console.log(address);
           // eslint-disable-next-line no-await-in-loop
           await db.sequelize.transaction({
             isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,

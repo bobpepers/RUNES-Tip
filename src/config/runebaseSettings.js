@@ -10,6 +10,7 @@ module.exports = {
     command: {
       discord: "!runestip",
       telegram: "!runestip",
+      matrix: "!runestip",
     },
   },
   coin: {

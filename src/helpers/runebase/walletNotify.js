@@ -45,7 +45,7 @@ const walletNotifyRunebase = async (req, res, next) => {
             res.locals.platform = 'telegram';
             res.locals.userId = address.wallet.user.user_id.replace('telegram-', '');
           }
-          console.log(transaction);
+          // console.log(transaction);
           res.locals.transaction = await db.transaction.findOrCreate({
             where: {
               txid: transaction.txid,

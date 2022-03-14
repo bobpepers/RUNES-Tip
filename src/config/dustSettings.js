@@ -10,6 +10,7 @@ module.exports = {
     command: {
       discord: "!dusttip",
       telegram: "!dusttip",
+      matrix: "!dusttip",
     },
   },
   coin: {
