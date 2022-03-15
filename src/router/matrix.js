@@ -1,9 +1,10 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
 import { config } from "dotenv";
 
 import { matrixBalance } from '../controllers/matrix/balance';
 import { matrixWalletDepositAddress } from '../controllers/matrix/deposit';
-import { withdrawDiscordCreate } from '../controllers/discord/withdraw';
+import { withdrawMatrixCreate } from '../controllers/matrix/withdraw';
 
 import { discordVoiceRain } from '../controllers/discord/voicerain';
 import { discordRain } from '../controllers/discord/rain';
@@ -92,10 +93,10 @@ import { discordStats } from '../controllers/discord/stats';
 import { discordPublicStats } from '../controllers/discord/publicstats';
 import { discordLeaderboard } from '../controllers/discord/leaderboard';
 import {
-  discordSettings,
-  discordwaterFaucetSettings,
-} from '../controllers/discord/settings';
-import { executeTipFunction } from '../helpers/discord/executeTips';
+  matrixSettings,
+  matrixWaterFaucetSettings,
+} from '../controllers/matrix/settings';
+import { executeTipFunction } from '../helpers/matrix/executeTips';
 import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
 
 config();
@@ -148,7 +149,10 @@ export const matrixRouter = async (
     }
   });
 
-  matrixClient.on('Room.timeline', async (message, room) => {
+  matrixClient.on('Room.timeline', async (
+    message,
+    room,
+  ) => {
     if (!prepared) return;
     if (matrixClient.credentials.userId === message.event.sender) return;
     const maintenance = await isMaintenanceOrDisabled(
@@ -165,22 +169,36 @@ export const matrixRouter = async (
 
     let lastSeenMatrixTask;
     let faucetSetting;
-    let body;
+    let groupTask;
+    let channelTask;
+    let groupTaskId;
+    let channelTaskId;
+    let myBody;
+    let formatted_body;
     // console.log(message);
     try {
       if (message.event.type === 'm.room.encrypted') {
         // console.log(matrixClient);
         // const event = await matrixClient._crypto.decryptEvent(message);
         const event = await matrixClient.crypto.decryptEvent(message);
-        ({ body } = event.clearEvent.content);
+        if (event.clearEvent.content.formatted_body) {
+          myBody = event.clearEvent.content.formatted_body;
+        } else {
+          myBody = event.clearEvent.content.body;
+        }
       } else {
-        ({ body } = message.event.content);
+        if (message.event.content.formatted_body) {
+          myBody = message.event.content.formatted_body;
+        } else {
+          myBody = message.event.content.body;
+        }
+        console.log(message.event.content);
       }
     } catch (error) {
       console.error('#### ', error);
     }
     // console.log(body);
-    if (body) {
+    if (myBody) {
       const room = await matrixClient.getRoom(message.event.room_id);
       const space = await matrixClient.getRoomHierarchy(message.event.room_id);
       // console.log(room);
@@ -189,12 +207,16 @@ export const matrixRouter = async (
       // console.log(room.events);
       // console.log(space);
 
-      if (!body.startsWith(settings.bot.command.matrix)) return;
-      if (body.startsWith(settings.bot.command.matrix)) {
+      if (!myBody.startsWith(settings.bot.command.matrix)) return;
+      if (myBody.startsWith(settings.bot.command.matrix)) {
         // let userDirectMessageRoomId;
-        const preFilteredMessageDiscord = body.split(' ');
-        const filteredMessageDiscord = preFilteredMessageDiscord.filter((el) => el !== '');
-        console.log(filteredMessageDiscord);
+        const regex = /\s*((?:[^\s<]*<\w[^>]*>[\s\S]*?<\/\w[^>]*>)+[^\s<]*)\s*/;
+        const preFilteredMessageWithTags = myBody.split(regex).filter(Boolean);
+        const filteredMessageWithTags = preFilteredMessageWithTags.filter((el) => el !== '');
+        const preFilteredMessage = myBody.split(' ');
+        const filteredMessage = preFilteredMessage.filter((el) => el !== '');
+        console.log(filteredMessage);
+        console.log(filteredMessageWithTags);
 
         const [
           directUserMessageRoom,
@@ -222,7 +244,7 @@ export const matrixRouter = async (
         // console.log(directUserMessageRoom);
         // console.log('directUserMessageRoom');
 
-        if (filteredMessageDiscord[1] === undefined) {
+        if (filteredMessage[1] === undefined) {
           // const limited = await limitHelp(message);
           // if (limited) return;
           await queue.add(async () => {
@@ -235,7 +257,7 @@ export const matrixRouter = async (
           });
         }
 
-        if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'help') {
+        if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'help') {
           // const limited = await limitHelp(message);
           // if (limited) return;
           await queue.add(async () => {
@@ -249,7 +271,7 @@ export const matrixRouter = async (
           });
         }
 
-        if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'balance') {
+        if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'balance') {
           // const limited = await limitHelp(message);
           // if (limited) return;
           await queue.add(async () => {
@@ -263,7 +285,7 @@ export const matrixRouter = async (
           });
         }
 
-        if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'deposit') {
+        if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'deposit') {
           // const limited = await limitHelp(message);
           // if (limited) return;
           await queue.add(async () => {
@@ -275,6 +297,35 @@ export const matrixRouter = async (
               io,
             );
           });
+        }
+
+        if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'withdraw') {
+          const setting = await matrixSettings(
+            matrixClient,
+            message,
+            'withdraw',
+            groupTaskId,
+            channelTaskId,
+          );
+          if (!setting) return;
+          console.log(settings);
+          // const limited = await limitWithdraw(message);
+          // if (limited) return;
+
+          await executeTipFunction(
+            withdrawMatrixCreate,
+            queue,
+            filteredMessage[3],
+            matrixClient,
+            message,
+            filteredMessage,
+            io,
+            groupTask,
+            channelTask,
+            setting,
+            faucetSetting,
+            userDirectMessageRoomId,
+          );
         }
       }
     }

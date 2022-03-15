@@ -16,6 +16,7 @@ export const router = (
     app,
     discordClient,
     telegramClient,
+    matrixClient,
     settings,
     queue,
   );

@@ -4,10 +4,13 @@ import walletNotifyKomodo from '../helpers/komodo/walletNotify';
 
 import { telegramIncomingDepositMessage } from '../messages/telegram';
 import { discordIncomingDepositMessage } from '../messages/discord';
+import { matrixIncomingDepositMessage } from '../messages/matrix';
 
 import { startRunebaseSync } from "../services/syncRunebase";
 import { startPirateSync } from "../services/syncPirate";
 import { startKomodoSync } from "../services/syncKomodo";
+
+import { findUserDirectMessageRoom } from '../helpers/matrix/directMessageRoom';
 
 const localhostOnly = (req, res, next) => {
   const hostmachine = req.headers.host.split(':')[0];
@@ -24,6 +27,7 @@ export const notifyRouter = (
   app,
   discordClient,
   telegramClient,
+  matrixClient,
   settings,
   queue,
 ) => {
@@ -35,6 +39,7 @@ export const notifyRouter = (
         startRunebaseSync(
           discordClient,
           telegramClient,
+          matrixClient,
           queue,
         );
       } else if (settings.coin.setting === 'Pirate') {
@@ -53,6 +58,7 @@ export const notifyRouter = (
         startRunebaseSync(
           discordClient,
           telegramClient,
+          matrixClient,
           queue,
         );
       }
@@ -115,6 +121,23 @@ export const notifyRouter = (
             const myClient = await discordClient.users.fetch(res.locals.userId, false);
             await myClient.send({ embeds: [discordIncomingDepositMessage(res)] });
           }
+          if (res.locals.platform === 'matrix') {
+            const [
+              directUserMessageRoom,
+              isCurrentRoomDirectMessage,
+              userState,
+            ] = await findUserDirectMessageRoom(
+              matrixClient,
+              res.locals.userId,
+            );
+            if (directUserMessageRoom) {
+              await matrixClient.sendEvent(
+                directUserMessageRoom.roomId,
+                "m.room.message",
+                matrixIncomingDepositMessage(res),
+              );
+            }
+          }
         }
         res.sendStatus(200);
       },
@@ -134,6 +157,23 @@ export const notifyRouter = (
           if (res.locals.platform === 'discord') {
             const myClient = await discordClient.users.fetch(res.locals.userId, false);
             await myClient.send({ embeds: [discordIncomingDepositMessage(res)] });
+          }
+          if (res.locals.platform === 'matrix') {
+            const [
+              directUserMessageRoom,
+              isCurrentRoomDirectMessage,
+              userState,
+            ] = await findUserDirectMessageRoom(
+              matrixClient,
+              res.locals.userId,
+            );
+            if (directUserMessageRoom) {
+              await matrixClient.sendEvent(
+                directUserMessageRoom.roomId,
+                "m.room.message",
+                matrixIncomingDepositMessage(res),
+              );
+            }
           }
         }
         res.sendStatus(200);

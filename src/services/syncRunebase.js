@@ -10,9 +10,14 @@ import {
   discordDepositConfirmedMessage,
   discordWithdrawalConfirmedMessage,
 } from '../messages/discord';
+import {
+  matrixDepositConfirmedMessage,
+  matrixWithdrawalConfirmedMessage,
+} from '../messages/matrix';
 import getCoinSettings from '../config/settings';
 import { getInstance } from "./rclient";
 import { waterFaucet } from "../helpers/discord/waterFaucet";
+import { findUserDirectMessageRoom } from '../helpers/matrix/directMessageRoom';
 
 const settings = getCoinSettings();
 
@@ -54,7 +59,11 @@ const sequentialLoop = async (iterations, process, exit) => {
   return loop;
 };
 
-const syncTransactions = async (discordClient, telegramClient) => {
+const syncTransactions = async (
+  discordClient,
+  telegramClient,
+  matrixClient,
+) => {
   const transactions = await db.transaction.findAll({
     where: {
       phase: 'confirming',
@@ -199,9 +208,30 @@ const syncTransactions = async (discordClient, telegramClient) => {
               const myClient = await discordClient.users.fetch(userClientId, false);
               await myClient.send({ embeds: [discordDepositConfirmedMessage(detail.amount)] });
             }
+
             if (userToMessage.user_id.startsWith('telegram')) {
               userClientId = userToMessage.user_id.replace('telegram-', '');
               telegramClient.telegram.sendMessage(userClientId, telegramDepositConfirmedMessage(detail.amount));
+            }
+
+            if (userToMessage.user_id.startsWith('matrix')) {
+              userClientId = userToMessage.user_id.replace('matrix-', '');
+              const [
+                directUserMessageRoom,
+                isCurrentRoomDirectMessage,
+                userState,
+              ] = await findUserDirectMessageRoom(
+                matrixClient,
+                userClientId,
+                // message.sender.roomId,
+              );
+              if (directUserMessageRoom) {
+                await matrixClient.sendEvent(
+                  directUserMessageRoom.roomId,
+                  "m.room.message",
+                  matrixDepositConfirmedMessage(detail.amount),
+                );
+              }
             }
           }
 
@@ -211,9 +241,30 @@ const syncTransactions = async (discordClient, telegramClient) => {
               const myClient = await discordClient.users.fetch(userClientId, false);
               await myClient.send({ embeds: [discordWithdrawalConfirmedMessage(userClientId, trans)] });
             }
+
             if (userToMessage.user_id.startsWith('telegram')) {
               userClientId = userToMessage.user_id.replace('telegram-', '');
               telegramClient.telegram.sendMessage(userClientId, telegramWithdrawalConfirmedMessage(userToMessage));
+            }
+
+            if (userToMessage.user_id.startsWith('matrix')) {
+              userClientId = userToMessage.user_id.replace('matrix-', '');
+              const [
+                directUserMessageRoom,
+                isCurrentRoomDirectMessage,
+                userState,
+              ] = await findUserDirectMessageRoom(
+                matrixClient,
+                userClientId,
+                // message.sender.roomId,
+              );
+              if (directUserMessageRoom) {
+                await matrixClient.sendEvent(
+                  directUserMessageRoom.roomId,
+                  "m.room.message",
+                  matrixWithdrawalConfirmedMessage(userClientId, trans),
+                );
+              }
             }
           }
           console.log('done');
@@ -259,6 +310,7 @@ const insertBlock = async (startBlock) => {
 export const startRunebaseSync = async (
   discordClient,
   telegramClient,
+  matrixClient,
   queue,
 ) => {
   const currentBlockCount = Math.max(0, await getInstance().getBlockCount());
@@ -281,7 +333,11 @@ export const startRunebaseSync = async (
       const endBlock = Math.min((startBlock + 1) - 1, currentBlockCount);
 
       await queue.add(async () => {
-        const task = await syncTransactions(discordClient, telegramClient);
+        const task = await syncTransactions(
+          discordClient,
+          telegramClient,
+          matrixClient,
+        );
       });
 
       await queue.add(async () => {

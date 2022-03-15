@@ -711,7 +711,11 @@ export const minimumMessage = (message, setting, type) => {
   return result;
 };
 
-export const timeOutAllAmoutMessageDiscord = (message, operationName, userBeingTipped) => {
+export const timeOutAllAmoutMessageDiscord = (
+  message,
+  operationName,
+  userBeingTipped,
+) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle(capitalize(operationName))
@@ -724,7 +728,11 @@ export const timeOutAllAmoutMessageDiscord = (message, operationName, userBeingT
 
   return result;
 };
-export const canceledAllAmoutMessageDiscord = (message, operationName, userBeingTipped) => {
+export const canceledAllAmoutMessageDiscord = (
+  message,
+  operationName,
+  userBeingTipped,
+) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle(capitalize(operationName))
@@ -966,7 +974,10 @@ export const invalidEmojiMessage = (message, title) => {
   return result;
 };
 
-export const insufficientBalanceMessage = (message, title) => {
+export const insufficientBalanceMessage = (
+  message,
+  title,
+) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle(title)
@@ -994,7 +1005,9 @@ export const userNotFoundMessage = (message, title) => {
   return result;
 };
 
-export const invalidAddressMessage = (message) => {
+export const invalidAddressMessage = (
+  message,
+) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Withdraw')

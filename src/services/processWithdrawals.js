@@ -6,13 +6,16 @@ import {
   withdrawalAcceptedAdminMessage,
   withdrawalAcceptedMessage,
 } from "../messages/telegram";
+import { matrixWithdrawalAcceptedMessage } from "../messages/matrix";
 import { processWithdrawal } from "./processWithdrawal";
+import { findUserDirectMessageRoom } from '../helpers/matrix/directMessageRoom';
 
 config();
 
 export const processWithdrawals = async (
   telegramClient,
   discordClient,
+  matrixClient,
 ) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -113,6 +116,24 @@ export const processWithdrawals = async (
         if (transaction.address.wallet.user.user_id.startsWith('telegram-')) {
           const userTelegramId = transaction.address.wallet.user.user_id.replace('telegram-', '');
           telegramClient.telegram.sendMessage(userTelegramId, withdrawalAcceptedMessage(transaction, updatedTrans));
+        }
+        if (transaction.address.wallet.user.user_id.startsWith('matrix-')) {
+          const userMatrixId = transaction.address.wallet.user.user_id.replace('matrix-', '');
+          const [
+            directUserMessageRoom,
+            isCurrentRoomDirectMessage,
+            userState,
+          ] = await findUserDirectMessageRoom(
+            matrixClient,
+            userMatrixId,
+          );
+          if (directUserMessageRoom) {
+            await matrixClient.sendEvent(
+              directUserMessageRoom.roomId,
+              "m.room.message",
+              matrixWithdrawalAcceptedMessage(updatedTrans),
+            );
+          }
         }
         telegramClient.telegram.sendMessage(Number(process.env.TELEGRAM_ADMIN_ID), withdrawalAcceptedAdminMessage(updatedTrans));
       }

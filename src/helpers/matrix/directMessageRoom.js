@@ -40,7 +40,7 @@ export const findUserDirectMessageRoom = async (
       // console.log(invitedDMRooms[0]);
       determinUserDirectMessageState = invitedDMRooms[0].currentState.getStateEvents("m.room.member", userId).event.content.membership;
     }
-    if (determinRoom.length > 0) {
+    if (determinRoom && determinRoom.length > 0) {
       console.log('current room is DM');
     } else {
       console.log('current room is not a DM room');
@@ -52,7 +52,7 @@ export const findUserDirectMessageRoom = async (
   // console.log(invitedDMRooms);
   return [
     invitedDMRooms.length > 0 ? invitedDMRooms[0] : false,
-    determinRoom.length > 0,
+    determinRoom && determinRoom.length > 0,
     determinUserDirectMessageState,
   ];
 };

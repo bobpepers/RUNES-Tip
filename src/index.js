@@ -374,6 +374,7 @@ let matrixClient = sdk.createClient({
     await startRunebaseSync(
       discordClient,
       telegramClient,
+      matrixClient,
       queue,
     );
     await patchRunebaseDeposits();
@@ -407,6 +408,7 @@ let matrixClient = sdk.createClient({
     await startRunebaseSync(
       discordClient,
       telegramClient,
+      matrixClient,
       queue,
     );
     await patchRunebaseDeposits();
@@ -430,6 +432,7 @@ let matrixClient = sdk.createClient({
     io,
     discordClient,
     telegramClient,
+    matrixClient,
   );
 
   server.listen(port);
@@ -447,7 +450,11 @@ const scheduleWithdrawal = schedule.scheduleJob('*/5 * * * *', async () => { // 
     },
   });
   if (autoWithdrawalSetting.enabled) {
-    processWithdrawals(telegramClient, discordClient);
+    processWithdrawals(
+      telegramClient,
+      discordClient,
+      matrixClient,
+    );
   }
 });
 

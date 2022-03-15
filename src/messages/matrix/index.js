@@ -150,6 +150,293 @@ ${settings.bot.name} v${pjson.version}`,
   return result;
 };
 
+export const matrixIncomingDepositMessage = (res) => {
+  const result = {
+    body: `incoming deposit detected for ${res.locals.amount} ${settings.coin.ticker}
+Balance will be reflected in your wallet in ~${settings.min.confirmations}+ confirmations
+${settings.coin.explorer}/tx/${res.locals.transaction[0].txid}`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote>
+<p>incoming deposit detected for <strong>${res.locals.amount} ${settings.coin.ticker}</strong><br>
+Balance will be reflected in your wallet in <strong>~${settings.min.confirmations}+ confirmations</strong><br>
+${settings.coin.explorer}/tx/${res.locals.transaction[0].txid}</p>
+<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font>
+</blockquote>`,
+  };
+  return result;
+};
+
+export const matrixDepositConfirmedMessage = (amount) => {
+  const result = {
+    body: `Deposit Confirmed 
+${amount} ${settings.coin.ticker} has been credited to your wallet`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote>
+<p>Deposit Confirmed<br> 
+${amount} ${settings.coin.ticker} has been credited to your wallet</p>
+<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font>
+</blockquote>`,
+  };
+  return result;
+};
+
+/// /
+
+export const featureDisabledChannelMessage = (name) => {
+  const result = {
+    body: "This Feature has been disabled for this channel",
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>This Feature has been disabled for this channel</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const featureDisabledServerMessage = (name) => {
+  const result = {
+    body: "This Feature has been disabled for this server",
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>This Feature has been disabled for this server</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const featureDisabledGlobalMessage = (name) => {
+  const result = {
+    body: "This Feature has been disabled",
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>This Feature has been disabled</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const settingsNotFoundMessage = (name) => {
+  const result = {
+    body: "Settings not found!",
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>Settings not found!</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+  ///
+
+export const confirmAllAmoutMessage = (
+  message,
+  operationName,
+  userBeingTipped,
+) => {
+  const result = {
+    body: `${message.sender.name}, are you sure that you want to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}?
+Accepted answers: **yes/no/y/n**; 
+Auto-cancel in 30 seconds.`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>${message.sender.name}, are you sure that you want to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}?<br>
+Accepted answers: **yes/no/y/n**;<br> 
+Auto-cancel in 30 seconds.</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const canceledAllAmoutMessage = (
+  message,
+  operationName,
+  userBeingTipped,
+) => {
+  const result = {
+    body: `${message.sender.name}, you canceled the request to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>${message.sender.name}, you canceled the request to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const timeOutAllAmoutMessage = (
+  message,
+  operationName,
+  userBeingTipped,
+) => {
+  const result = {
+    body: `${message.sender.name}, the request to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker} has expired`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p>${message.sender.name}, the request to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker} has expired</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const walletNotFoundMessage = (
+  message,
+  title,
+) => {
+  const result = {
+    body: `${message.sender.name}, Wallet not found`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>${message.sender.name}, Wallet not found</strong></p>
+<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+/// /
+
+export const invalidAmountMessage = (
+  message,
+  title,
+) => {
+  const result = {
+    body: `${message.sender.name}, Invalid Amount`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>${message.sender.name}, Invalid Amount</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const insufficientBalanceMessage = (
+  message,
+  title,
+) => {
+  const result = {
+    body: `${message.sender.name}, Insufficient balance`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>${message.sender.name}, Insufficient balance</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const minimumMessage = (
+  message,
+  setting,
+  type,
+) => {
+  const result = {
+    body: `${message.sender.name}, Minimum ${type} is ${setting.min / 1e8} ${settings.coin.ticker}`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>${message.sender.name}, Minimum ${type} is ${setting.min / 1e8} ${settings.coin.ticker}</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const errorMessage = (
+  message,
+  setting,
+  type,
+) => {
+  const result = {
+    body: `Something went wrong.`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>Something went wrong.</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const reviewMessage = (
+  message,
+  transaction,
+) => {
+  const amount = ((transaction.amount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
+  const fee = ((transaction.feeAmount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
+  const total = (((transaction.amount - transaction.feeAmount) / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
+  const result = {
+    body: `${message.sender.name},  Your withdrawal is being reviewed
+    
+amount: ${amount}
+fee: ${fee}
+total: ${total}`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>
+    ${message.sender.name},  Your withdrawal is being reviewed<br><br>
+    
+amount: ${amount}<br>
+fee: ${fee}<br>
+total: ${total}<br>
+</strong></p>
+<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const invalidAddressMessage = (
+  message,
+) => {
+  const result = {
+    body: `${message.sender.name}, Invalid Runebase Address`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>${message.sender.name}, Invalid Runebase Address</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const matrixWithdrawalAcceptedMessage = (
+  updatedTrans,
+) => {
+  const amount = ((updatedTrans.amount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
+  const fee = ((updatedTrans.feeAmount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
+  const total = (((updatedTrans.amount - updatedTrans.feeAmount) / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
+  const result = {
+    body: `Your withdrawal has been accepted
+
+amount: ${amount}
+fee: ${fee}
+total: ${total}
+    
+${settings.coin.explorer}/tx/${updatedTrans.txid}`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>
+Your withdrawal has been accepted<br><br>
+amount: ${amount}<br>
+fee: ${fee}<br>
+total: ${total}<br><br>
+    
+${settings.coin.explorer}/tx/${updatedTrans.txid}
+</strong></p>
+<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const matrixWithdrawalConfirmedMessage = (
+  userId,
+  trans,
+) => {
+  const result = {
+    body: `Withdraw #${trans.id}
+${userId}, Your withdrawal has been complete`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><strong><h3>Withdraw #${trans.id}</h3><br><p>${userId}, Your withdrawal has been complete</p></strong>
+<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+/// /
 export const testMessage = () => {
   const result = {
     body: "Hello World",

@@ -115,7 +115,13 @@ const IsAuthenticated = (req, res, next) => {
   }
 };
 
-export const dashboardRouter = (app, io, discordClient, telegramClient) => {
+export const dashboardRouter = (
+  app,
+  io,
+  discordClient,
+  telegramClient,
+  matrixClient,
+) => {
   app.get(
     '/api/authenticated',
     (req, res, next) => {
@@ -145,6 +151,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     (req, res, next) => {
       res.locals.discordClient = discordClient;
       res.locals.telegramClient = telegramClient;
+      res.locals.matrixClient = matrixClient;
       next();
     },
     acceptWithdrawal,
@@ -175,6 +182,7 @@ export const dashboardRouter = (app, io, discordClient, telegramClient) => {
     (req, res, next) => {
       res.locals.discordClient = discordClient;
       res.locals.telegramClient = telegramClient;
+      res.locals.matrixClient = matrixClient;
       next();
     },
     declineWithdrawal,
