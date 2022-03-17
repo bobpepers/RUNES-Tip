@@ -21,24 +21,30 @@ export const router = (
     queue,
   );
 
-  discordRouter(
-    discordClient,
-    queue,
-    io,
-    settings,
-  );
+  if (settings.bot.enabled.discord) {
+    discordRouter(
+      discordClient,
+      queue,
+      io,
+      settings,
+    );
+  }
 
-  telegramRouter(
-    telegramClient,
-    queue,
-    io,
-    settings,
-  );
+  if (settings.bot.enabled.telegram) {
+    telegramRouter(
+      telegramClient,
+      queue,
+      io,
+      settings,
+    );
+  }
 
-  matrixRouter(
-    matrixClient,
-    queue,
-    io,
-    settings,
-  );
+  if (settings.bot.enabled.matrix) {
+    matrixRouter(
+      matrixClient,
+      queue,
+      io,
+      settings,
+    );
+  }
 };

@@ -107,35 +107,39 @@ export const processWithdrawals = async (
     }
 
     t.afterCommit(async () => {
-      if (transaction) {
-        if (transaction.address.wallet.user.user_id.startsWith('discord-')) {
-          const userDiscordId = transaction.address.wallet.user.user_id.replace('discord-', '');
-          const myClient = await discordClient.users.fetch(userDiscordId, false);
-          await myClient.send({ embeds: [discordWithdrawalAcceptedMessage(updatedTrans)] });
-        }
-        if (transaction.address.wallet.user.user_id.startsWith('telegram-')) {
-          const userTelegramId = transaction.address.wallet.user.user_id.replace('telegram-', '');
-          telegramClient.telegram.sendMessage(userTelegramId, withdrawalAcceptedMessage(transaction, updatedTrans));
-        }
-        if (transaction.address.wallet.user.user_id.startsWith('matrix-')) {
-          const userMatrixId = transaction.address.wallet.user.user_id.replace('matrix-', '');
-          const [
-            directUserMessageRoom,
-            isCurrentRoomDirectMessage,
-            userState,
-          ] = await findUserDirectMessageRoom(
-            matrixClient,
-            userMatrixId,
-          );
-          if (directUserMessageRoom) {
-            await matrixClient.sendEvent(
-              directUserMessageRoom.roomId,
-              "m.room.message",
-              matrixWithdrawalAcceptedMessage(updatedTrans),
-            );
+      try {
+        if (transaction) {
+          if (transaction.address.wallet.user.user_id.startsWith('discord-')) {
+            const userDiscordId = transaction.address.wallet.user.user_id.replace('discord-', '');
+            const myClient = await discordClient.users.fetch(userDiscordId, false);
+            await myClient.send({ embeds: [discordWithdrawalAcceptedMessage(updatedTrans)] });
           }
+          if (transaction.address.wallet.user.user_id.startsWith('telegram-')) {
+            const userTelegramId = transaction.address.wallet.user.user_id.replace('telegram-', '');
+            telegramClient.telegram.sendMessage(userTelegramId, withdrawalAcceptedMessage(transaction, updatedTrans));
+          }
+          if (transaction.address.wallet.user.user_id.startsWith('matrix-')) {
+            const userMatrixId = transaction.address.wallet.user.user_id.replace('matrix-', '');
+            const [
+              directUserMessageRoom,
+              isCurrentRoomDirectMessage,
+              userState,
+            ] = await findUserDirectMessageRoom(
+              matrixClient,
+              userMatrixId,
+            );
+            if (directUserMessageRoom) {
+              await matrixClient.sendEvent(
+                directUserMessageRoom.roomId,
+                "m.room.message",
+                matrixWithdrawalAcceptedMessage(updatedTrans),
+              );
+            }
+          }
+          telegramClient.telegram.sendMessage(Number(process.env.TELEGRAM_ADMIN_ID), withdrawalAcceptedAdminMessage(updatedTrans));
         }
-        telegramClient.telegram.sendMessage(Number(process.env.TELEGRAM_ADMIN_ID), withdrawalAcceptedAdminMessage(updatedTrans));
+      } catch (e) {
+        console.log(e);
       }
     });
   }).catch((err) => {

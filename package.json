@@ -68,7 +68,7 @@
     "express-session": "^1.17.2",
     "komodoweb3": "github:The-ARRRmy/KomodoWeb3.js#0.0.6",
     "lodash": "^4.17.21",
-    "matrix-js-sdk": "^15.6.0",
+    "matrix-js-sdk": "^16.0.0",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
     "node-localstorage": "^2.2.1",

@@ -19,25 +19,36 @@ export const matrixHelp = async (
       },
     },
   );
-  console.log(message.sender.roomId);
-  console.log(userDirectMessageRoomId);
+
   if (message.sender.roomId === userDirectMessageRoomId) {
-    await matrixClient.sendEvent(
-      userDirectMessageRoomId,
-      "m.room.message",
-      helpMessage(),
-    );
+    try {
+      await matrixClient.sendEvent(
+        userDirectMessageRoomId,
+        "m.room.message",
+        helpMessage(),
+      );
+    } catch (e) {
+      console.log(e);
+    }
   } else {
-    await matrixClient.sendEvent(
-      message.sender.roomId,
-      "m.room.message",
-      warnDirectMessage(message.sender.name, 'Help'),
-    );
-    await matrixClient.sendEvent(
-      userDirectMessageRoomId,
-      "m.room.message",
-      helpMessage(),
-    );
+    try {
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        warnDirectMessage(message.sender.name, 'Help'),
+      );
+    } catch (e) {
+      console.log(e);
+    }
+    try {
+      await matrixClient.sendEvent(
+        userDirectMessageRoomId,
+        "m.room.message",
+        helpMessage(),
+      );
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   const activity = [];

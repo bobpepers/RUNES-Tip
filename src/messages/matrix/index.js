@@ -80,6 +80,7 @@ ${settings.bot.name} v${pjson.version}`,
 
 export const helpMessage = () => {
   const result = {
+    is_direct: true,
     body: `Help v${pjson.version}
     ${settings.bot.command.matrix} 
 show this help message
@@ -431,6 +432,17 @@ ${userId}, Your withdrawal has been complete`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><strong><h3>Withdraw #${trans.id}</h3><br><p>${userId}, Your withdrawal has been complete</p></strong>
+<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const nodeOfflineMessage = () => {
+  const result = {
+    body: `Runebase node is offline`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><strong><p>Runebase node is offline</p></strong>
 <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
   };
   return result;

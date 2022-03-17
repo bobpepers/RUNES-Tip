@@ -201,71 +201,74 @@ const syncTransactions = async (
         }
 
         t.afterCommit(async () => {
-          let userClientId;
-          if (isDepositComplete) {
-            if (userToMessage.user_id.startsWith('discord')) {
-              userClientId = userToMessage.user_id.replace('discord-', '');
-              const myClient = await discordClient.users.fetch(userClientId, false);
-              await myClient.send({ embeds: [discordDepositConfirmedMessage(detail.amount)] });
-            }
+          try {
+            let userClientId;
+            if (isDepositComplete) {
+              if (userToMessage.user_id.startsWith('discord')) {
+                userClientId = userToMessage.user_id.replace('discord-', '');
+                const myClient = await discordClient.users.fetch(userClientId, false);
+                await myClient.send({ embeds: [discordDepositConfirmedMessage(detail.amount)] });
+              }
 
-            if (userToMessage.user_id.startsWith('telegram')) {
-              userClientId = userToMessage.user_id.replace('telegram-', '');
-              telegramClient.telegram.sendMessage(userClientId, telegramDepositConfirmedMessage(detail.amount));
-            }
+              if (userToMessage.user_id.startsWith('telegram')) {
+                userClientId = userToMessage.user_id.replace('telegram-', '');
+                telegramClient.telegram.sendMessage(userClientId, telegramDepositConfirmedMessage(detail.amount));
+              }
 
-            if (userToMessage.user_id.startsWith('matrix')) {
-              userClientId = userToMessage.user_id.replace('matrix-', '');
-              const [
-                directUserMessageRoom,
-                isCurrentRoomDirectMessage,
-                userState,
-              ] = await findUserDirectMessageRoom(
-                matrixClient,
-                userClientId,
-                // message.sender.roomId,
-              );
-              if (directUserMessageRoom) {
-                await matrixClient.sendEvent(
-                  directUserMessageRoom.roomId,
-                  "m.room.message",
-                  matrixDepositConfirmedMessage(detail.amount),
+              if (userToMessage.user_id.startsWith('matrix')) {
+                userClientId = userToMessage.user_id.replace('matrix-', '');
+                const [
+                  directUserMessageRoom,
+                  isCurrentRoomDirectMessage,
+                  userState,
+                ] = await findUserDirectMessageRoom(
+                  matrixClient,
+                  userClientId,
+                  // message.sender.roomId,
                 );
+                if (directUserMessageRoom) {
+                  await matrixClient.sendEvent(
+                    directUserMessageRoom.roomId,
+                    "m.room.message",
+                    matrixDepositConfirmedMessage(detail.amount),
+                  );
+                }
               }
             }
-          }
 
-          if (isWithdrawalComplete) {
-            if (userToMessage.user_id.startsWith('discord')) {
-              userClientId = userToMessage.user_id.replace('discord-', '');
-              const myClient = await discordClient.users.fetch(userClientId, false);
-              await myClient.send({ embeds: [discordWithdrawalConfirmedMessage(userClientId, trans)] });
-            }
+            if (isWithdrawalComplete) {
+              if (userToMessage.user_id.startsWith('discord')) {
+                userClientId = userToMessage.user_id.replace('discord-', '');
+                const myClient = await discordClient.users.fetch(userClientId, false);
+                await myClient.send({ embeds: [discordWithdrawalConfirmedMessage(userClientId, trans)] });
+              }
 
-            if (userToMessage.user_id.startsWith('telegram')) {
-              userClientId = userToMessage.user_id.replace('telegram-', '');
-              telegramClient.telegram.sendMessage(userClientId, telegramWithdrawalConfirmedMessage(userToMessage));
-            }
+              if (userToMessage.user_id.startsWith('telegram')) {
+                userClientId = userToMessage.user_id.replace('telegram-', '');
+                telegramClient.telegram.sendMessage(userClientId, telegramWithdrawalConfirmedMessage(userToMessage));
+              }
 
-            if (userToMessage.user_id.startsWith('matrix')) {
-              userClientId = userToMessage.user_id.replace('matrix-', '');
-              const [
-                directUserMessageRoom,
-                isCurrentRoomDirectMessage,
-                userState,
-              ] = await findUserDirectMessageRoom(
-                matrixClient,
-                userClientId,
-                // message.sender.roomId,
-              );
-              if (directUserMessageRoom) {
-                await matrixClient.sendEvent(
-                  directUserMessageRoom.roomId,
-                  "m.room.message",
-                  matrixWithdrawalConfirmedMessage(userClientId, trans),
+              if (userToMessage.user_id.startsWith('matrix')) {
+                userClientId = userToMessage.user_id.replace('matrix-', '');
+                const [
+                  directUserMessageRoom,
+                  isCurrentRoomDirectMessage,
+                  userState,
+                ] = await findUserDirectMessageRoom(
+                  matrixClient,
+                  userClientId,
                 );
+                if (directUserMessageRoom) {
+                  await matrixClient.sendEvent(
+                    directUserMessageRoom.roomId,
+                    "m.room.message",
+                    matrixWithdrawalConfirmedMessage(userClientId, trans),
+                  );
+                }
               }
             }
+          } catch (e) {
+            console.log(e);
           }
           console.log('done');
         });

@@ -12,6 +12,11 @@ module.exports = {
       telegram: "!runestip",
       matrix: "!runestip",
     },
+    enabled: {
+      telegram: true,
+      discord: true,
+      matrix: true,
+    },
   },
   coin: {
     setting: "Runebase", // Supported names for setting (Runebase, Pirate) // default fallback settings are Runebase

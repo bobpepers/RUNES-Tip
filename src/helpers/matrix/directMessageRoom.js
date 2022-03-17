@@ -1,41 +1,51 @@
 import { inviteMatrixDirectMessageRoom } from '../../messages/matrix';
 
+const asyncFilter = async (arr, predicate) => {
+  const results = await Promise.all(arr.map(predicate));
+  return arr.filter((_v, index) => results[index]);
+};
+
 export const findUserDirectMessageRoom = async (
   matrixClient,
   userId,
   roomId = null,
 ) => {
-  let type;
-  let determinRoom;
-  let determinUserDirectMessageState;
-  let determinBotDirectMessageState;
-  let invitedDMRooms;
   try {
-    const rooms = matrixClient.getRooms();
-    invitedDMRooms = rooms.filter((room) => {
-      // getMyMembership -> "invite", "join", "leave", "ban"
-      const membership = room.getMyMembership();
-      type = room.getDMInviter() ? 'directMessage' : 'room';
-      const allMembers = room.currentState.getMembers();
-      if (type === 'room' && allMembers.length <= 2) {
-        if (allMembers.some((m) => m.getDMInviter())) type = 'directMessage';
-      }
-      const members = room.getJoinedMembers();
-      // const getCurrentState = room.currentState.getStateEvents("m.room.member", userId);
-      // const getCurrentStateV = room.currentState.getStateEvents("m.room.member", matrixClient.credentials.userId);
-
-      return type === 'directMessage';
+    let determinRoom;
+    let determinUserDirectMessageState;
+    // let invitedDMRooms;
+    const rooms = await matrixClient.getRooms();
+    const invitedDMRooms = await asyncFilter(rooms, async (room) => {
+      const members = await room.currentState.getMembers();
+      if (members.length !== 2) return false;
+      // const isDirect = room.timeline[0].getContent().is_direct;
+      const isDirect = room.timeline[0].getContent();
+      console.log(isDirect);
+      return members[1]
+        && members[0]
+        && members[1].membership
+        && members[0].membership
+        && (members[1].membership === 'join' || members[1].membership === 'invite')
+        && (members[1].userId === matrixClient.credentials.userId || members[1].userId === userId)
+        && (members[0].membership === 'join' || members[0].membership === 'invite')
+        && (members[0].userId === userId || members[0].userId === matrixClient.credentials.userId);
+      // && isDirect;
     });
+    console.log(invitedDMRooms);
+    console.log('invitedDMRooms');
 
-    if (invitedDMRooms.length > 1) {
-      for (let i = 1; i < invitedDMRooms.length; i += 1) {
-        matrixClient.store.removeRoom(invitedDMRooms[parseInt(i, 10)].roomId);
-        matrixClient.leave(invitedDMRooms[parseInt(i, 10)].roomId);
-      }
-    }
     if (roomId) {
       determinRoom = invitedDMRooms.filter((i) => i.roomId === roomId);
     }
+
+    if (invitedDMRooms.length > 1) {
+      for (let i = 1; i < invitedDMRooms.length; i += 1) {
+        // matrixClient.store.removeRoom(invitedDMRooms[parseInt(i, 10)].roomId);
+        await matrixClient.leave(invitedDMRooms[parseInt(i, 10)].roomId);
+        await matrixClient.forget(invitedDMRooms[parseInt(i, 10)].roomId, true);
+      }
+    }
+
     if (invitedDMRooms.length > 0) {
       // console.log(invitedDMRooms[0]);
       determinUserDirectMessageState = invitedDMRooms[0].currentState.getStateEvents("m.room.member", userId).event.content.membership;
@@ -45,16 +55,14 @@ export const findUserDirectMessageRoom = async (
     } else {
       console.log('current room is not a DM room');
     }
+    return [
+      invitedDMRooms && invitedDMRooms.length > 0 ? invitedDMRooms[0] : false,
+      determinRoom && determinRoom.length > 0,
+      determinUserDirectMessageState,
+    ];
   } catch (e) {
     console.log(e);
   }
-
-  // console.log(invitedDMRooms);
-  return [
-    invitedDMRooms.length > 0 ? invitedDMRooms[0] : false,
-    determinRoom && determinRoom.length > 0,
-    determinUserDirectMessageState,
-  ];
 };
 
 export const inviteUserToDirectMessageRoom = async (
@@ -70,6 +78,7 @@ export const inviteUserToDirectMessageRoom = async (
     console.log(userState);
     if (userState === 'leave' || userState === 'invite') {
       console.log('reinvited user to old room');
+      console.log(directUserMessageRoom);
       userRoomId = await matrixClient.invite(
         directUserMessageRoom.roomId,
         userId,

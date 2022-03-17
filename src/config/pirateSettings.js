@@ -12,6 +12,11 @@ module.exports = {
       telegram: "!piratetip",
       matrix: "!piratetip",
     },
+    enabled: {
+      telegram: false,
+      discord: true,
+      matrix: false,
+    },
   },
   coin: {
     setting: "Pirate", // Supported names for setting (Runebase, Pirate, KmdSmart) // default fallback settings are Runebase // KmdSmart is for any komodo smartchains

@@ -12,6 +12,11 @@ module.exports = {
       telegram: "!dusttip",
       matrix: "!dusttip",
     },
+    enabled: {
+      telegram: false,
+      discord: true,
+      matrix: false,
+    },
   },
   coin: {
     setting: "Komodo", // Supported names for setting (Runebase, Pirate, Komodo) // default fallback settings are Runebase

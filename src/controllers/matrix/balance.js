@@ -53,22 +53,35 @@ export const matrixBalance = async (
       const userId = user.user_id.replace('matrix-', '');
 
       if (message.sender.roomId === userDirectMessageRoomId) {
-        await matrixClient.sendEvent(
-          userDirectMessageRoomId,
-          "m.room.message",
-          balanceMessage(userId, user, priceInfo),
-        );
+        try {
+          await matrixClient.sendEvent(
+            userDirectMessageRoomId,
+            "m.room.message",
+            balanceMessage(userId, user, priceInfo),
+          );
+        } catch (e) {
+          console.log(e);
+        }
       } else {
-        await matrixClient.sendEvent(
-          message.sender.roomId,
-          "m.room.message",
-          warnDirectMessage(message.sender.name, 'Help'),
-        );
-        await matrixClient.sendEvent(
-          userDirectMessageRoomId,
-          "m.room.message",
-          balanceMessage(userId, user, priceInfo),
-        );
+        try {
+          await matrixClient.sendEvent(
+            message.sender.roomId,
+            "m.room.message",
+            warnDirectMessage(message.sender.name, 'Help'),
+          );
+        } catch (e) {
+          console.log(e);
+        }
+
+        try {
+          await matrixClient.sendEvent(
+            userDirectMessageRoomId,
+            "m.room.message",
+            balanceMessage(userId, user, priceInfo),
+          );
+        } catch (e) {
+          console.log(e);
+        }
       }
 
       const createActivity = await db.activity.create({

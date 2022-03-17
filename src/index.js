@@ -26,7 +26,10 @@ import { initDatabaseRecords } from "./helpers/initDatabaseRecords";
 import { patchRunebaseDeposits } from "./helpers/runebase/patcher";
 import { patchPirateDeposits } from "./helpers/pirate/patcher";
 import { patchKomodoDeposits } from "./helpers/komodo/patcher";
-import { reactDropMessage, triviaMessageDiscord } from "./messages/discord";
+import {
+  reactDropMessage,
+  triviaMessageDiscord,
+} from "./messages/discord";
 import { listenReactDrop } from "./controllers/discord/reactdrop";
 import { listenTrivia } from "./controllers/discord/trivia";
 import db from "./models";
@@ -35,7 +38,7 @@ import { startKomodoSync } from "./services/syncKomodo";
 import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";
 import { processWithdrawals } from "./services/processWithdrawals";
-// global.Olm = require('@matrix-org/olm');
+
 global.Olm = olm;
 
 const { LocalStorage } = require('node-localstorage');

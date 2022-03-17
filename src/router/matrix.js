@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
 import { config } from "dotenv";
@@ -108,10 +109,34 @@ export const matrixRouter = async (
   settings,
 ) => {
   let prepared;
-  matrixClient.once('sync', (state, prevState, res) => {
+  await matrixClient.clearStores();
+  // await matrixClient.forceDiscardSession();
+
+  matrixClient.once('sync', async (
+    state,
+    prevState,
+    res,
+  ) => {
     if (state !== 'PREPARED') return;
     matrixClient.setGlobalErrorOnUnknownDevices(false);
     if (state === 'PREPARED') {
+      const allRooms = await matrixClient.getRooms();
+      // eslint-disable-next-line no-restricted-syntax
+      for (const room of allRooms) {
+        console.log(room);
+        if (room
+            && room.currentState
+            && room.currentState.joinedMemberCount === 1
+            && room.currentState.invitedMemberCount === 0) {
+          try {
+            await matrixClient.leave(room.roomId);
+            await matrixClient.forget(room.roomId, true);
+            // await matrixClient.removeRoom(room.roomId);
+          } catch (e) {
+            console.log(e);
+          }
+        }
+      }
       prepared = true;
     }
   });
@@ -120,7 +145,7 @@ export const matrixRouter = async (
     event,
     member,
   ) => {
-    // if (!prepared) return;
+    if (!prepared) return;
     const [
       directUserMessageRoom,
       isCurrentRoomDirectMessage,
@@ -139,7 +164,8 @@ export const matrixRouter = async (
       } catch (e) {
         console.log(e);
         try {
-          await matrixClient.leave(member.roomId).then(() => {
+          await matrixClient.leave(member.roomId).then(async () => {
+            await matrixClient.forget(member.roomId, true);
             console.log("Auto-left %s", member.roomId);
           });
         } catch (error) {
@@ -199,8 +225,17 @@ export const matrixRouter = async (
     }
     // console.log(body);
     if (myBody) {
+      console.log('mybody');
+      console.log(message);
       const room = await matrixClient.getRoom(message.event.room_id);
-      const space = await matrixClient.getRoomHierarchy(message.event.room_id);
+      const space = await matrixClient.getRoomHierarchy(message.event.room_id, 100, 100, false);
+      const directories = await matrixClient.getRooms();
+      const accountData = await matrixClient.getAccountDataFromServer('m.direct');
+      console.log('123');
+      console.log(accountData);
+      console.log('123');
+      // console.log(directories);
+      // console.log(space);
       // console.log(room);
       // console.log(message.event);
       // console.log(room.name);
