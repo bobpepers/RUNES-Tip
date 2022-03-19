@@ -208,8 +208,8 @@ export const matrixFlood = async (
       if (floodee.ignoreMe) {
         listOfUsersRained.push(`${floodee.username}`);
       } else {
-        const userIdReceivedRain = floodee.user_id.replace('discord-', '');
-        listOfUsersRained.push(`${floodee.username}`);
+        const userIdReceivedRain = floodee.user_id.replace('matrix-', '');
+        listOfUsersRained.push(`<a href="https://matrix.to/#/${userIdReceivedRain}">${floodee.username}</a>`);
       }
       let tipActivity;
       // eslint-disable-next-line no-await-in-loop
@@ -256,7 +256,7 @@ export const matrixFlood = async (
     }
 
     const newStringListUsers = listOfUsersRained.join(", ");
-    const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
+    const cutStringListUsers = newStringListUsers.match(/.{1,6999}(\s|$)/g);
     // eslint-disable-next-line no-restricted-syntax
     for (const element of cutStringListUsers) {
       // eslint-disable-next-line no-await-in-loop
@@ -318,7 +318,6 @@ export const matrixFlood = async (
     } catch (err) {
       console.log(err);
     }
-    // message.channel.send({ embeds: [discordErrorMessage("Flood")] });
   });
   io.to('admin').emit('updateActivity', {
     activity,

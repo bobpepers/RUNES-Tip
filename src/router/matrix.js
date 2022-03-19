@@ -417,7 +417,7 @@ export const matrixRouter = async (
           await executeTipFunction(
             matrixFlood,
             queue,
-            filteredMessage[3],
+            filteredMessage[2],
             matrixClient,
             message,
             filteredMessage,
@@ -446,7 +446,7 @@ export const matrixRouter = async (
           await executeTipFunction(
             matrixSleet,
             queue,
-            filteredMessage[3],
+            filteredMessage[2],
             matrixClient,
             message,
             filteredMessage,

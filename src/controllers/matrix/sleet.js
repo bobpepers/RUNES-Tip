@@ -316,8 +316,8 @@ export const matrixSleet = async (
         if (sleetee.ignoreMe) {
           listOfUsersRained.push(`${sleetee.username}`);
         } else {
-          // const userIdTest = sleetee.user_id.replace('discord-', '');
-          listOfUsersRained.push(`${sleetee.username}`);
+          const userIdReceivedSleet = sleetee.user_id.replace('matrix-', '');
+          listOfUsersRained.push(`<a href="https://matrix.to/#/${userIdReceivedSleet}">${sleetee.username}</a>`);
         }
         let tipActivity;
         // eslint-disable-next-line no-await-in-loop
@@ -364,7 +364,7 @@ export const matrixSleet = async (
         activity.unshift(tipActivity);
       }
       const newStringListUsers = listOfUsersRained.join(", ");
-      const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
+      const cutStringListUsers = newStringListUsers.match(/.{1,6999}(\s|$)/g);
       // eslint-disable-next-line no-restricted-syntax
       for (const element of cutStringListUsers) {
         // eslint-disable-next-line no-await-in-loop
