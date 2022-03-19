@@ -23,7 +23,7 @@ var _discord = require("../../messages/discord");
 
 var _validateAmount = require("../../helpers/discord/validateAmount");
 
-var _waterFaucet = require("../../helpers/discord/waterFaucet");
+var _waterFaucet = require("../../helpers/waterFaucet");
 
 var _userWalletExist = require("../../helpers/discord/userWalletExist");
 

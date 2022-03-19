@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.warnDirectMessage = exports.walletNotFoundMessage = exports.userListMessage = exports.unIngoreMeMessage = exports.timeOutAllAmoutMessage = exports.testMessage = exports.settingsNotFoundMessage = exports.reviewMessage = exports.notInDirectMessage = exports.notEnoughUsers = exports.nodeOfflineMessage = exports.minimumMessage = exports.matrixWithdrawalConfirmedMessage = exports.matrixWithdrawalAcceptedMessage = exports.matrixWelcomeMessage = exports.matrixUserBannedMessage = exports.matrixRoomBannedMessage = exports.matrixIncomingDepositMessage = exports.matrixDepositConfirmedMessage = exports.matrixBotMaintenanceMessage = exports.matrixBotDisabledMessage = exports.inviteMatrixDirectMessageRoom = exports.invalidTimeMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.ignoreMeMessage = exports.helpMessage = exports.groupNotFoundMessage = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.featureDisabledChannelMessage = exports.errorMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessage = exports.canceledAllAmoutMessage = exports.balanceMessage = exports.afterSuccessMessage = void 0;
+exports.warnDirectMessage = exports.walletNotFoundMessage = exports.userListMessage = exports.unIngoreMeMessage = exports.tipSingleSuccessMessage = exports.tipMultipleSuccessMessage = exports.timeOutAllAmoutMessage = exports.testMessage = exports.settingsNotFoundMessage = exports.reviewMessage = exports.notInDirectMessage = exports.notEnoughUsers = exports.nodeOfflineMessage = exports.minimumMessage = exports.matrixWithdrawalConfirmedMessage = exports.matrixWithdrawalAcceptedMessage = exports.matrixWelcomeMessage = exports.matrixUserBannedMessage = exports.matrixRoomBannedMessage = exports.matrixIncomingDepositMessage = exports.matrixDepositConfirmedMessage = exports.matrixBotMaintenanceMessage = exports.matrixBotDisabledMessage = exports.inviteMatrixDirectMessageRoom = exports.invalidTimeMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.ignoreMeMessage = exports.helpMessage = exports.groupNotFoundMessage = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.featureDisabledChannelMessage = exports.errorMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessage = exports.canceledAllAmoutMessage = exports.balanceMessage = exports.afterSuccessMessage = void 0;
 
 var _package = _interopRequireDefault(require("../../../package.json"));
 
@@ -14,12 +14,16 @@ var _settings = _interopRequireDefault(require("../../config/settings"));
 /* eslint-disable import/prefer-default-export */
 var settings = (0, _settings["default"])();
 
+var capitalize = function capitalize(s) {
+  return s && s[0].toUpperCase() + s.slice(1);
+};
+
 var matrixBotDisabledMessage = function matrixBotDisabledMessage() {
   var result = {
     body: "Matrix tipbot disabled\n\n".concat(settings.bot.name, " v").concat(_package["default"].version),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong>Matrix tipbot disabled</strong></p>\n<font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong>Matrix tipbot disabled</strong></p>\n<p><font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -31,7 +35,7 @@ var matrixBotMaintenanceMessage = function matrixBotMaintenanceMessage() {
     body: "Matrix tipbot maintenance\n\n".concat(settings.bot.name, " v").concat(_package["default"].version),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong>Matrix tipbot maintenance</strong></p>\n<font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong>Matrix tipbot maintenance</strong></p>\n<p><font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -43,7 +47,7 @@ var matrixWelcomeMessage = function matrixWelcomeMessage(username) {
     body: "Welcome ".concat(username, ", we created a wallet for you.\nType \"").concat(settings.bot.command.matrix, " help\" for usage info\n\n").concat(settings.bot.name, " v").concat(_package["default"].version),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong>Welcome ".concat(username, ", we created a wallet for you.\nType \"").concat(settings.bot.command.matrix, " help\" for usage info</strong></p>\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong>Welcome ".concat(username, ", we created a wallet for you.\nType \"").concat(settings.bot.command.matrix, " help\" for usage info</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -55,7 +59,7 @@ var inviteMatrixDirectMessageRoom = function inviteMatrixDirectMessageRoom(usern
     body: "".concat(username, ", i invited you to a direct message room.\nPlease accept the invite to allow full functionality of this bot.\n\n").concat(settings.bot.name, " v").concat(_package["default"].version),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong>".concat(username, ", i invited you to a direct message room.</strong></p>\n<p><strong>Please accept the invite to allow full functionality of this bot.</strong></p>\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong>".concat(username, ", i invited you to a direct message room.</strong></p>\n<p><strong>Please accept the invite to allow full functionality of this bot.</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -67,7 +71,7 @@ var warnDirectMessage = function warnDirectMessage(username, title) {
     body: "".concat(title, "\n\n").concat(username, ", i've sent you a direct message.\n    \n").concat(settings.bot.name, " v").concat(_package["default"].version),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p>".concat(title, "</p><p><strong>").concat(username, ", i've sent you a direct message</strong></p>\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p>".concat(title, "</p><p><strong>").concat(username, ", i've sent you a direct message</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -80,7 +84,7 @@ var helpMessage = function helpMessage() {
     body: "Help v".concat(_package["default"].version, "\n    ").concat(settings.bot.command.matrix, " \nshow this help message\n\n").concat(settings.bot.command.matrix, "  help\nshow this help message\n\n").concat(settings.bot.command.matrix, " balance\nDisplays balance\n\n").concat(settings.bot.command.matrix, "  deposit\nDisplays your deposit address\n\n").concat(settings.bot.command.matrix, " withdraw <address> <amount|all>\nWithdraws the entered amount to a ").concat(settings.coin.name, " address of your choice\n\n").concat(settings.bot.command.discord, " flood [amount|all]\nFloods the desired amount onto all users (including offline users)\nexample: ").concat(settings.bot.command.discord, " flood 5.00\n\n").concat(settings.bot.command.discord, " sleet <amount|all> [<time>]\nMakes a sleet storm with the desired amount onto all users that have been active in the room in the last 15 minutes (optionally, within specified time)\nexample: `").concat(settings.bot.command.discord, " sleet 5.00`, `").concat(settings.bot.command.discord, " sleet 5.00 @supporters\n\n").concat(settings.bot.command.discord, " ignoreme\nTurns @mentioning you during mass operations on/off\n\n").concat(settings.bot.name, " v").concat(_package["default"].version),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong>Help message v".concat(_package["default"].version, "</strong></p\n    >\n<code>").concat(settings.bot.command.matrix, "</code>\n<p>show this help message</p>\n\n<code>").concat(settings.bot.command.matrix, " help</code>\n<p>show this message</p>\n\n<code>").concat(settings.bot.command.matrix, " balance</code>\n<p>Displays balance</p>\n\n<code>").concat(settings.bot.command.matrix, " deposit</code>\n<p>Displays your deposit address</p>\n\n<code>").concat(settings.bot.command.matrix, " withdraw &lt;address&gt; &lt;amount|all&gt;</code>\n<p>Withdraws the entered amount to a ").concat(settings.coin.name, " address of your choice</p>\n\n<code>").concat(settings.bot.command.discord, " flood &lt;amount|all&gt;</code>\n<p>Floods the desired amount onto all users (including offline users)<br>\nexample: ").concat(settings.bot.command.discord, " flood 5.00</p>\n\n<code>").concat(settings.bot.command.discord, " sleet &lt;amount|all&gt; [&lt;time&gt;]</code>\n<p>Makes a sleet storm with the desired amount onto all users that have been active in the room in the last 15 minutes (optionally, within specified time)<br>\nexample: `").concat(settings.bot.command.discord, " sleet 5.00`, `").concat(settings.bot.command.discord, " sleet 5.00 @supporters</p>\n\n<code>").concat(settings.bot.command.discord, " ignoreme</code>\n<p>Turns @mentioning you during mass operations on/off</p>\n\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong>Help message v".concat(_package["default"].version, "</strong></p\n    >\n<code>").concat(settings.bot.command.matrix, "</code>\n<p>show this help message</p>\n\n<code>").concat(settings.bot.command.matrix, " help</code>\n<p>show this message</p>\n\n<code>").concat(settings.bot.command.matrix, " balance</code>\n<p>Displays balance</p>\n\n<code>").concat(settings.bot.command.matrix, " deposit</code>\n<p>Displays your deposit address</p>\n\n<code>").concat(settings.bot.command.matrix, " withdraw &lt;address&gt; &lt;amount|all&gt;</code>\n<p>Withdraws the entered amount to a ").concat(settings.coin.name, " address of your choice</p>\n\n<code>").concat(settings.bot.command.discord, " flood &lt;amount|all&gt;</code>\n<p>Floods the desired amount onto all users (including offline users)<br>\nexample: ").concat(settings.bot.command.discord, " flood 5.00</p>\n\n<code>").concat(settings.bot.command.discord, " sleet &lt;amount|all&gt; [&lt;time&gt;]</code>\n<p>Makes a sleet storm with the desired amount onto all users that have been active in the room in the last 15 minutes (optionally, within specified time)<br>\nexample: `").concat(settings.bot.command.discord, " sleet 5.00`, `").concat(settings.bot.command.discord, " sleet 5.00 @supporters</p>\n\n<code>").concat(settings.bot.command.discord, " ignoreme</code>\n<p>Turns @mentioning you during mass operations on/off</p>\n\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -93,7 +97,7 @@ var balanceMessage = function balanceMessage(userId, user, priceInfo) {
     body: "".concat(user.username, "'s current available balance: ").concat(user.wallet.available / 1e8, " ").concat(settings.coin.ticker, "\n").concat(user.username, "'s current locked balance: ").concat(user.wallet.locked / 1e8, " ").concat(settings.coin.ticker, "\nEstimated value of ").concat(user.username, "'s balance: $").concat(((user.wallet.available + user.wallet.locked) / 1e8 * priceInfo.price).toFixed(2)),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote>\n<p><a href=\"https://matrix.to/#/".concat(myUserId, "\">").concat(user.username, "</a>'s current available balance: <strong>").concat(user.wallet.available / 1e8, " ").concat(settings.coin.ticker, "</strong><br>\n").concat(user.username, "'s current locked balance: <strong>").concat(user.wallet.locked / 1e8, " ").concat(settings.coin.ticker, "</strong><br>\nEstimated value of ").concat(user.username, "'s balance: <strong>$").concat(((user.wallet.available + user.wallet.locked) / 1e8 * priceInfo.price).toFixed(2), "</strong></p>\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote>\n<p><a href=\"https://matrix.to/#/".concat(myUserId, "\">").concat(user.username, "</a>'s current available balance: <strong>").concat(user.wallet.available / 1e8, " ").concat(settings.coin.ticker, "</strong><br>\n").concat(user.username, "'s current locked balance: <strong>").concat(user.wallet.locked / 1e8, " ").concat(settings.coin.ticker, "</strong><br>\nEstimated value of ").concat(user.username, "'s balance: <strong>$").concat(((user.wallet.available + user.wallet.locked) / 1e8 * priceInfo.price).toFixed(2), "</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -105,7 +109,7 @@ var depositAddressMessage = function depositAddressMessage(user) {
     body: "deposit address: ".concat(user.wallet.addresses[0].address, "\n").concat(settings.bot.name, " v").concat(_package["default"].version),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong>deposit address: </strong>".concat(user.wallet.addresses[0].address, "</p>\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong>deposit address: </strong>".concat(user.wallet.addresses[0].address, "</p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -117,7 +121,7 @@ var matrixIncomingDepositMessage = function matrixIncomingDepositMessage(res) {
     body: "incoming deposit detected for ".concat(res.locals.amount, " ").concat(settings.coin.ticker, "\nBalance will be reflected in your wallet in ~").concat(settings.min.confirmations, "+ confirmations\n").concat(settings.coin.explorer, "/tx/").concat(res.locals.transaction[0].txid),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote>\n<p>incoming deposit detected for <strong>".concat(res.locals.amount, " ").concat(settings.coin.ticker, "</strong><br>\nBalance will be reflected in your wallet in <strong>~").concat(settings.min.confirmations, "+ confirmations</strong><br>\n").concat(settings.coin.explorer, "/tx/").concat(res.locals.transaction[0].txid, "</p>\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font>\n</blockquote>")
+    formatted_body: "<blockquote>\n<p>incoming deposit detected for <strong>".concat(res.locals.amount, " ").concat(settings.coin.ticker, "</strong><br>\nBalance will be reflected in your wallet in <strong>~").concat(settings.min.confirmations, "+ confirmations</strong><br>\n").concat(settings.coin.explorer, "/tx/").concat(res.locals.transaction[0].txid, "</p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p>\n</blockquote>")
   };
   return result;
 };
@@ -129,7 +133,7 @@ var matrixDepositConfirmedMessage = function matrixDepositConfirmedMessage(amoun
     body: "Deposit Confirmed \n".concat(amount, " ").concat(settings.coin.ticker, " has been credited to your wallet"),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote>\n<p>Deposit Confirmed<br> \n".concat(amount, " ").concat(settings.coin.ticker, " has been credited to your wallet</p>\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font>\n</blockquote>")
+    formatted_body: "<blockquote>\n<p>Deposit Confirmed<br> \n".concat(amount, " ").concat(settings.coin.ticker, " has been credited to your wallet</p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p>\n</blockquote>")
   };
   return result;
 }; /// /
@@ -142,7 +146,7 @@ var featureDisabledChannelMessage = function featureDisabledChannelMessage(name)
     body: "This Feature has been disabled for this channel",
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong>This Feature has been disabled for this channel</strong></p>\n  <font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong>This Feature has been disabled for this channel</strong></p>\n<p><font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -154,7 +158,7 @@ var featureDisabledServerMessage = function featureDisabledServerMessage(name) {
     body: "This Feature has been disabled for this server",
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong>This Feature has been disabled for this server</strong></p>\n  <font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong>This Feature has been disabled for this server</strong></p>\n<p><font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -166,7 +170,7 @@ var featureDisabledGlobalMessage = function featureDisabledGlobalMessage(name) {
     body: "This Feature has been disabled",
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong>This Feature has been disabled</strong></p>\n  <font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong>This Feature has been disabled</strong></p>\n<p><font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -178,7 +182,7 @@ var settingsNotFoundMessage = function settingsNotFoundMessage(name) {
     body: "Settings not found!",
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong>Settings not found!</strong></p>\n  <font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong>Settings not found!</strong></p>\n<p><font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 }; ///
@@ -191,7 +195,7 @@ var confirmAllAmoutMessage = function confirmAllAmoutMessage(message, operationN
     body: "".concat(message.sender.name, ", are you sure that you want to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker, "?\nAccepted answers: **yes/no/y/n**; \nAuto-cancel in 30 seconds."),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, are you sure that you want to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker, "?<br>\nAccepted answers: <u>yes/no/y/n</u>;<br> \nAuto-cancel in 30 seconds.</strong></p>\n  <font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, are you sure that you want to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker, "?<br>\nAccepted answers: <u>yes/no/y/n</u>;<br> \nAuto-cancel in 30 seconds.</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -203,7 +207,7 @@ var canceledAllAmoutMessage = function canceledAllAmoutMessage(message, operatio
     body: "".concat(message.sender.name, ", you canceled the request to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, you canceled the request to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker, "</strong></p>\n  <font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, you canceled the request to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker, "</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -215,7 +219,7 @@ var timeOutAllAmoutMessage = function timeOutAllAmoutMessage(message, operationN
     body: "".concat(message.sender.name, ", the request to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker, " has expired"),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, the request to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker, " has expired</strong></p>\n  <font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, the request to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker, " has expired</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -227,7 +231,7 @@ var walletNotFoundMessage = function walletNotFoundMessage(message, title) {
     body: "".concat(message.sender.name, ", Wallet not found"),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, Wallet not found</strong></p>\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, Wallet not found</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 }; /// /
@@ -240,7 +244,7 @@ var invalidAmountMessage = function invalidAmountMessage(message, title) {
     body: "".concat(message.sender.name, ", Invalid Amount"),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, Invalid Amount</strong></p>\n  <font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, Invalid Amount</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -252,7 +256,7 @@ var insufficientBalanceMessage = function insufficientBalanceMessage(message, ti
     body: "".concat(message.sender.name, ", Insufficient balance"),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, Insufficient balance</strong></p>\n  <font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, Insufficient balance</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -264,7 +268,7 @@ var minimumMessage = function minimumMessage(message, setting, type) {
     body: "".concat(message.sender.name, ", Minimum ").concat(type, " is ").concat(setting.min / 1e8, " ").concat(settings.coin.ticker),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, Minimum ").concat(type, " is ").concat(setting.min / 1e8, " ").concat(settings.coin.ticker, "</strong></p>\n  <font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, Minimum ").concat(type, " is ").concat(setting.min / 1e8, " ").concat(settings.coin.ticker, "</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -276,7 +280,7 @@ var errorMessage = function errorMessage(message, setting, type) {
     body: "Something went wrong.",
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong>Something went wrong.</strong></p>\n  <font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong>Something went wrong.</strong></p>\n<p><font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -291,7 +295,7 @@ var reviewMessage = function reviewMessage(message, transaction) {
     body: "Withdraw #".concat(transaction.id, "\n").concat(message.sender.name, ",  Your withdrawal is being reviewed\n    \namount: ").concat(amount, "\nfee: ").concat(fee, "\ntotal: ").concat(total),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><h6>Withdraw #".concat(transaction.id, "</h6>\n<p><strong>\n<a href=\"https://matrix.to/#/").concat(message.sender.userId, "\">").concat(message.sender.name, "</a>,  Your withdrawal is being reviewed<br><br>\n    \namount: ").concat(amount, "<br>\nfee: ").concat(fee, "<br>\ntotal: ").concat(total, "<br>\n</strong></p>\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><h5>Withdraw #".concat(transaction.id, "</h5>\n<p><strong>\n<a href=\"https://matrix.to/#/").concat(message.sender.userId, "\">").concat(message.sender.name, "</a>,  Your withdrawal is being reviewed<br><br>\n    \namount: ").concat(amount, "<br>\nfee: ").concat(fee, "<br>\ntotal: ").concat(total, "<br>\n</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -303,7 +307,7 @@ var invalidAddressMessage = function invalidAddressMessage(message) {
     body: "".concat(message.sender.name, ", Invalid ").concat(settings.coin.name, " Address"),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong>".concat(message.sender.name, ", Invalid Runebase Address</strong></p>\n  <font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong>".concat(message.sender.name, ", Invalid Runebase Address</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -318,7 +322,7 @@ var matrixWithdrawalAcceptedMessage = function matrixWithdrawalAcceptedMessage(u
     body: "Withdraw #".concat(updatedTrans.id, "\nYour withdrawal has been accepted\n\namount: ").concat(amount, "\nfee: ").concat(fee, "\ntotal: ").concat(total, "\n    \n").concat(settings.coin.explorer, "/tx/").concat(updatedTrans.txid),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><h6>Withdraw #".concat(updatedTrans.id, "</h6>\n<p><strong>\nYour withdrawal has been accepted<br><br>\namount: ").concat(amount, "<br>\nfee: ").concat(fee, "<br>\ntotal: ").concat(total, "<br><br>\n    \n").concat(settings.coin.explorer, "/tx/").concat(updatedTrans.txid, "\n</strong></p>\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><h5>Withdraw #".concat(updatedTrans.id, "</h5>\n<p><strong>\nYour withdrawal has been accepted<br><br>\namount: ").concat(amount, "<br>\nfee: ").concat(fee, "<br>\ntotal: ").concat(total, "<br><br>\n    \n").concat(settings.coin.explorer, "/tx/").concat(updatedTrans.txid, "\n</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -330,7 +334,7 @@ var matrixWithdrawalConfirmedMessage = function matrixWithdrawalConfirmedMessage
     body: "Withdraw #".concat(trans.id, "\n").concat(userId, ", Your withdrawal has been complete"),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><strong><h6>Withdraw #".concat(trans.id, "</h6><br><p>").concat(userId, ", Your withdrawal has been complete</p></strong>\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><strong><h5>Withdraw #".concat(trans.id, "</h5><br><p>").concat(userId, ", Your withdrawal has been complete</p></strong>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -342,7 +346,7 @@ var nodeOfflineMessage = function nodeOfflineMessage() {
     body: "Runebase node is offline",
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><strong><p>Runebase node is offline</p></strong>\n<font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><strong><p>Runebase node is offline</p></strong>\n<p><font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -354,7 +358,7 @@ var notInDirectMessage = function notInDirectMessage(message, title) {
     body: "".concat(title, "\n").concat(message.sender.name, ", Can't use this command in a direct message"),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><strong><h6>".concat(title, "</h6><p><a href=\"https://matrix.to/#/").concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, Can't use this command in a direct message</p></strong>\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><strong><h5>".concat(title, "</h5><p><a href=\"https://matrix.to/#/").concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, Can't use this command in a direct message</p></strong>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 }; /// //
@@ -367,7 +371,7 @@ var matrixUserBannedMessage = function matrixUserBannedMessage(user) {
     body: "\uD83D\uDEAB     User: ".concat(user.username, " Banned     \uD83D\uDEAB\nReason:\n").concat(user.banMessage),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><h6>\uD83D\uDEAB     User: ".concat(user.username, " Banned     \uD83D\uDEAB</h6>\n<p><strong>Reason:<br>\n").concat(user.banMessage, "</strong></p>\n  <font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><h5>\uD83D\uDEAB     User: ".concat(user.username, " Banned     \uD83D\uDEAB</h5>\n<p><strong>Reason:<br>\n").concat(user.banMessage, "</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -379,7 +383,7 @@ var matrixRoomBannedMessage = function matrixRoomBannedMessage(server) {
     body: "\uD83D\uDEAB     Server Banned     \uD83D\uDEAB\nReason:\n".concat(server.banMessage),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote>\n<h6>\uD83D\uDEAB     Server Banned     \uD83D\uDEAB</h6>\n<p><strong>Reason:<br>\n".concat(server.banMessage, "</strong></p>\n  <font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote>\n<h5>\uD83D\uDEAB     Server Banned     \uD83D\uDEAB</h5>\n<p><strong>Reason:<br>\n".concat(server.banMessage, "</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -391,7 +395,7 @@ var notEnoughUsers = function notEnoughUsers() {
     body: "not enough users",
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong>not enough users</strong></p>\n<font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong>not enough users</strong></p>\n<p><font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -403,7 +407,7 @@ var userListMessage = function userListMessage(list) {
     body: "".concat(list),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong>".concat(list, "</strong></p>\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong>".concat(list, "</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -415,7 +419,7 @@ var afterSuccessMessage = function afterSuccessMessage(message, id, amount, with
     body: "".concat(type, " #").concat(id, "\n").concat(message.sender.name, " ").concat(typeH, " **").concat(amount / 1e8, " ").concat(settings.coin.ticker, "** on ").concat(withoutBots.length, " users\n\uD83D\uDCB8 **").concat(amountPerUser / 1e8, " ").concat(settings.coin.ticker, "** each \uD83D\uDCB8"),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote>\n<h6>".concat(type, " #").concat(id, "</h6>\n<p><strong><a href=\"https://matrix.to/#/").concat(message.sender.userId, "\">").concat(message.sender.name, "</a> ").concat(typeH, " <u>").concat(amount / 1e8, " ").concat(settings.coin.ticker, "</u> on ").concat(withoutBots.length, " users<br>\n\uD83D\uDCB8 <u>").concat(amountPerUser / 1e8, " ").concat(settings.coin.ticker, "</u> each \uD83D\uDCB8</strong></p>\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote>\n<h5>".concat(type, " #").concat(id, "</h5>\n<p><strong><a href=\"https://matrix.to/#/").concat(message.sender.userId, "\">").concat(message.sender.name, "</a> ").concat(typeH, " <u>").concat(amount / 1e8, " ").concat(settings.coin.ticker, "</u> on ").concat(withoutBots.length, " users<br>\n\uD83D\uDCB8 <u>").concat(amountPerUser / 1e8, " ").concat(settings.coin.ticker, "</u> each \uD83D\uDCB8</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -427,7 +431,7 @@ var groupNotFoundMessage = function groupNotFoundMessage() {
     body: "Room not found",
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong>Room not found</strong></p>\n  <font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong>Room not found</strong></p>\n<p><font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -439,7 +443,7 @@ var invalidTimeMessage = function invalidTimeMessage(message, title) {
     body: "".concat(title, "\n").concat(message.sender.name, ", Invalid time"),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><h6>".concat(title, "</h6><br>\n<p><strong><a href=\"https://matrix.to/#/").concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, Invalid time</strong></p>\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><h5>".concat(title, "</h5><br>\n<p><strong><a href=\"https://matrix.to/#/").concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, Invalid time</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -451,7 +455,7 @@ var ignoreMeMessage = function ignoreMeMessage(message) {
     body: "Ignore me\n".concat(message.sender.name, ", you will no longer be @mentioned while receiving rains, soaks and other mass operations, but will continue to receive coins from them.\nIf you wish to be @mentioned, please issue this command again."),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><h6>Ignore me</h6><p><strong><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, you will no longer be @mentioned while receiving rains, soaks and other mass operations, but will continue to receive coins from them.<br>\nIf you wish to be @mentioned, please issue this command again.</strong></p>\n  <font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><h5>Ignore me</h5><p><strong><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, you will no longer be @mentioned while receiving rains, soaks and other mass operations, but will continue to receive coins from them.<br>\nIf you wish to be @mentioned, please issue this command again.</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };
@@ -463,20 +467,44 @@ var unIngoreMeMessage = function unIngoreMeMessage(message) {
     body: "Ignore me\n".concat(message.sender.name, ", you will again be @mentioned while receiving rains, soaks and other mass operations.\nIf you do not wish to be @mentioned, please issue this command again."),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><h6>Ignore me</h6><p><strong><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, you will again be @mentioned while receiving rains, soaks and other mass operations.<br>\nIf you do not wish to be @mentioned, please issue this command again.</strong></p>\n<font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><h5>Ignore me</h5><p><strong><a href=\"https://matrix.to/#/".concat(message.sender.userId, "\">").concat(message.sender.name, "</a>, you will again be @mentioned while receiving rains, soaks and other mass operations.<br>\nIf you do not wish to be @mentioned, please issue this command again.</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
+  };
+  return result;
+};
+
+exports.unIngoreMeMessage = unIngoreMeMessage;
+
+var tipSingleSuccessMessage = function tipSingleSuccessMessage(message, id, listOfUsersRained, amount) {
+  var result = {
+    body: "Tip #".concat(id, "\n").concat(message.sender.name, " tipped ").concat(amount / 1e8, " ").concat(settings.coin.ticker, " to ").concat(listOfUsersRained[0]),
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: "<blockquote>\n<h5>Tip #".concat(id, "</h5>\n<p><strong>").concat(message.sender.name, " tipped ").concat(amount / 1e8, " ").concat(settings.coin.ticker, " to ").concat(listOfUsersRained[0], "</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
+  };
+  return result;
+};
+
+exports.tipSingleSuccessMessage = tipSingleSuccessMessage;
+
+var tipMultipleSuccessMessage = function tipMultipleSuccessMessage(message, id, listOfUsersRained, amount, type) {
+  var result = {
+    body: "Tip #".concat(id, "\n").concat(message.sender.name, " tipped **").concat(amount * listOfUsersRained.length / 1e8, " ").concat(settings.coin.ticker, "** to ").concat(listOfUsersRained.length, " users\n\nType: **").concat(capitalize(type), "**  \n    \n\uD83D\uDCB8 **").concat(amount / 1e8, " ").concat(settings.coin.ticker, "** each \uD83D\uDCB8"),
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: "<blockquote>\n<h5>Tip #".concat(id, "</h5>\n<p><strong>").concat(message.sender.name, " tipped <u>").concat(amount * listOfUsersRained.length / 1e8, " ").concat(settings.coin.ticker, "</u> to ").concat(listOfUsersRained.length, " users\n<br><br>\nType: <u>").concat(capitalize(type), "</u>\n<br><br>   \n\uD83D\uDCB8 <u>").concat(amount / 1e8, " ").concat(settings.coin.ticker, "</u> each \uD83D\uDCB8</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 }; /// /
 
 
-exports.unIngoreMeMessage = unIngoreMeMessage;
+exports.tipMultipleSuccessMessage = tipMultipleSuccessMessage;
 
 var testMessage = function testMessage() {
   var result = {
     body: "Hello World",
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote><p><strong>Hello Worlds</strong></p>\n<font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></blockquote>")
+    formatted_body: "<blockquote><p><strong>Hello Worlds</strong></p>\n<p><font color=\"".concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
 };

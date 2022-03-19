@@ -25,7 +25,7 @@ var _settings = _interopRequireDefault(require("../config/settings"));
 
 var _rclient = require("./rclient");
 
-var _waterFaucet = require("../helpers/discord/waterFaucet");
+var _waterFaucet = require("../helpers/waterFaucet");
 
 function _asyncIterator(iterable) { var method, async, sync, retry = 2; for ("undefined" != typeof Symbol && (async = Symbol.asyncIterator, sync = Symbol.iterator); retry--;) { if (async && null != (method = iterable[async])) return method.call(iterable); if (sync && null != (method = iterable[sync])) return new AsyncFromSyncIterator(method.call(iterable)); async = "@@asyncIterator", sync = "@@iterator"; } throw new TypeError("Object is not async iterable"); }
 

@@ -11,8 +11,6 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _models = _interopRequireDefault(require("../../models"));
-
 var crypto = require('crypto');
 
 var _require = require('sequelize'),

@@ -11,8 +11,6 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _discord = require("discord.js");
-
 var _sequelize = require("sequelize");
 
 var _qrcode = _interopRequireDefault(require("qrcode"));

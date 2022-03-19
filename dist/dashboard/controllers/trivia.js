@@ -25,9 +25,6 @@ var _require = require('sequelize'),
     Sequelize = _require.Sequelize,
     Op = _require.Op;
 
-var _require2 = require('../../services/rclient'),
-    getInstance = _require2.getInstance;
-
 var removeTriviaQuestion = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
     var removeAnswers;

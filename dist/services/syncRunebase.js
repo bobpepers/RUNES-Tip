@@ -29,7 +29,7 @@ var _settings = _interopRequireDefault(require("../config/settings"));
 
 var _rclient = require("./rclient");
 
-var _waterFaucet = require("../helpers/discord/waterFaucet");
+var _waterFaucet = require("../helpers/waterFaucet");
 
 var _directMessageRoom = require("../helpers/matrix/directMessageRoom");
 

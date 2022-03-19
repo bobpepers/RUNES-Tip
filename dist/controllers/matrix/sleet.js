@@ -23,7 +23,7 @@ var _validateAmount = require("../../helpers/matrix/validateAmount");
 
 var _userWalletExist = require("../../helpers/matrix/userWalletExist");
 
-var _waterFaucet = require("../../helpers/discord/waterFaucet");
+var _waterFaucet = require("../../helpers/waterFaucet");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 

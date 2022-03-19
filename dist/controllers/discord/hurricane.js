@@ -27,7 +27,7 @@ var _mapMembers = require("../../helpers/discord/mapMembers");
 
 var _userWalletExist = require("../../helpers/discord/userWalletExist");
 
-var _waterFaucet = require("../../helpers/discord/waterFaucet");
+var _waterFaucet = require("../../helpers/waterFaucet");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
