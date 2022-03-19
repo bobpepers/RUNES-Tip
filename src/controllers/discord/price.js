@@ -1,6 +1,5 @@
 import { Transaction } from "sequelize";
 import {
-  warnDirectMessage,
   priceMessage,
   discordErrorMessage,
 } from '../../messages/discord';

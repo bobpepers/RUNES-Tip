@@ -1,5 +1,4 @@
 /* eslint-disable import/prefer-default-export */
-
 import { Transaction } from "sequelize";
 import db from '../../models';
 import {
@@ -14,7 +13,7 @@ import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/matrix/validateAmount";
 import { mapMembers } from "../../helpers/matrix/mapMembers";
 import { userWalletExist } from "../../helpers/matrix/userWalletExist";
-import { waterFaucet } from "../../helpers/discord/waterFaucet";
+import { waterFaucet } from "../../helpers/waterFaucet";
 
 export const matrixFlood = async (
   matrixClient,

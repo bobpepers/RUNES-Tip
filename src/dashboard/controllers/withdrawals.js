@@ -16,7 +16,7 @@ import { processWithdrawal } from '../../services/processWithdrawal';
 export const acceptWithdrawal = async (
   req,
   res,
-  next
+  next,
 ) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,

@@ -11,7 +11,7 @@ import {
   discordErrorMessage,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/discord/validateAmount";
-import { waterFaucet } from "../../helpers/discord/waterFaucet";
+import { waterFaucet } from "../../helpers/waterFaucet";
 import { userWalletExist } from "../../helpers/discord/userWalletExist";
 
 import logger from "../../helpers/logger";

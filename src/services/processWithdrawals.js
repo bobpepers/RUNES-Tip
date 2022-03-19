@@ -1,7 +1,10 @@
 import { Transaction } from "sequelize";
 import { config } from "dotenv";
 import db from '../models';
-import { discordWithdrawalAcceptedMessage, discordUserWithdrawalRejectMessage } from "../messages/discord";
+import {
+  discordWithdrawalAcceptedMessage,
+  discordUserWithdrawalRejectMessage,
+} from "../messages/discord";
 import {
   withdrawalAcceptedAdminMessage,
   withdrawalAcceptedMessage,

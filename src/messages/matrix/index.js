@@ -395,7 +395,7 @@ fee: ${fee}
 total: ${total}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h6>Withdraw #${transaction.id}</h6>
+    formatted_body: `<blockquote><h5>Withdraw #${transaction.id}</h5>
 <p><strong>
 <a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>,  Your withdrawal is being reviewed<br><br>
     
@@ -438,7 +438,7 @@ total: ${total}
 ${settings.coin.explorer}/tx/${updatedTrans.txid}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h6>Withdraw #${updatedTrans.id}</h6>
+    formatted_body: `<blockquote><h5>Withdraw #${updatedTrans.id}</h5>
 <p><strong>
 Your withdrawal has been accepted<br><br>
 amount: ${amount}<br>
@@ -461,7 +461,7 @@ export const matrixWithdrawalConfirmedMessage = (
 ${userId}, Your withdrawal has been complete`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><strong><h6>Withdraw #${trans.id}</h6><br><p>${userId}, Your withdrawal has been complete</p></strong>
+    formatted_body: `<blockquote><strong><h5>Withdraw #${trans.id}</h5><br><p>${userId}, Your withdrawal has been complete</p></strong>
 <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
   };
   return result;
@@ -484,7 +484,7 @@ export const notInDirectMessage = (message, title) => {
 ${message.sender.name}, Can't use this command in a direct message`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><strong><h6>${title}</h6><p><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Can't use this command in a direct message</p></strong>
+    formatted_body: `<blockquote><strong><h5>${title}</h5><p><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Can't use this command in a direct message</p></strong>
 <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
   };
   return result;
@@ -500,7 +500,7 @@ Reason:
 ${user.banMessage}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h6>🚫     User: ${user.username} Banned     🚫</h6>
+    formatted_body: `<blockquote><h5>🚫     User: ${user.username} Banned     🚫</h5>
 <p><strong>Reason:<br>
 ${user.banMessage}</strong></p>
   <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
@@ -518,7 +518,7 @@ ${server.banMessage}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
-<h6>🚫     Server Banned     🚫</h6>
+<h5>🚫     Server Banned     🚫</h5>
 <p><strong>Reason:<br>
 ${server.banMessage}</strong></p>
   <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
@@ -564,10 +564,10 @@ ${message.sender.name} ${typeH} **${amount / 1e8} ${settings.coin.ticker}** on $
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
-<h6>${type} #${id}</h6>
+<h5>${type} #${id}</h5>
 <p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a> ${typeH} <u>${amount / 1e8} ${settings.coin.ticker}</u> on ${withoutBots.length} users<br>
 💸 <u>${amountPerUser / 1e8} ${settings.coin.ticker}</u> each 💸</strong></p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -578,7 +578,7 @@ export const groupNotFoundMessage = () => {
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Room not found</strong></p>
-  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
   };
   return result;
 };
@@ -589,7 +589,7 @@ export const invalidTimeMessage = (message, title) => {
 ${message.sender.name}, Invalid time`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h6>${title}</h6><br>
+    formatted_body: `<blockquote><h5>${title}</h5><br>
 <p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Invalid time</strong></p>
 <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
   };
@@ -603,7 +603,7 @@ ${message.sender.name}, you will no longer be @mentioned while receiving rains, 
 If you wish to be @mentioned, please issue this command again.`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h6>Ignore me</h6><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you will no longer be @mentioned while receiving rains, soaks and other mass operations, but will continue to receive coins from them.<br>
+    formatted_body: `<blockquote><h5>Ignore me</h5><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you will no longer be @mentioned while receiving rains, soaks and other mass operations, but will continue to receive coins from them.<br>
 If you wish to be @mentioned, please issue this command again.</strong></p>
   <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
   };
@@ -617,7 +617,7 @@ ${message.sender.name}, you will again be @mentioned while receiving rains, soak
 If you do not wish to be @mentioned, please issue this command again.`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h6>Ignore me</h6><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you will again be @mentioned while receiving rains, soaks and other mass operations.<br>
+    formatted_body: `<blockquote><h5>Ignore me</h5><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you will again be @mentioned while receiving rains, soaks and other mass operations.<br>
 If you do not wish to be @mentioned, please issue this command again.</strong></p>
 <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
   };

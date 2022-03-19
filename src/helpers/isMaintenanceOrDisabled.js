@@ -34,7 +34,6 @@ export const isMaintenanceOrDisabled = async (
 
   if (side === 'matrix') {
     if (!botSetting.enabled) {
-      // message.reply('Telegram tipbot disabled');
       await matrixClient.sendEvent(
         message.event.room_id,
         "m.room.message",
@@ -48,7 +47,6 @@ export const isMaintenanceOrDisabled = async (
         matrixBotMaintenanceMessage(),
         "123",
       );
-      // message.reply('Telegram tipbot maintenance');
     }
   }
   return botSetting;

@@ -29,7 +29,7 @@ import db from '../../models';
 import emojiCompact from "../../config/emoji";
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/discord/validateAmount";
-import { waterFaucet } from "../../helpers/discord/waterFaucet";
+import { waterFaucet } from "../../helpers/waterFaucet";
 
 const settings = getCoinSettings();
 

@@ -4,7 +4,6 @@ import _ from 'lodash';
 import db from '../../models';
 
 const { Sequelize, Op } = require('sequelize');
-const { getInstance } = require('../../services/rclient');
 
 export const removeTriviaQuestion = async (
   req,

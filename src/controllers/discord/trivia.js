@@ -22,7 +22,7 @@ import {
 import db from '../../models';
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/discord/validateAmount";
-import { waterFaucet } from "../../helpers/discord/waterFaucet";
+import { waterFaucet } from "../../helpers/waterFaucet";
 
 export const listenTrivia = async (
   triviaMessage,

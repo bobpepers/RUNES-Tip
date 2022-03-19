@@ -205,6 +205,7 @@ export const rainRunesToUsers = async (
           lock: t.LOCK.UPDATE,
           transaction: t,
         });
+        // eslint-disable-next-line no-await-in-loop
         tipActivity = await db.activity.findOne({
           where: {
             id: tipActivity.id,

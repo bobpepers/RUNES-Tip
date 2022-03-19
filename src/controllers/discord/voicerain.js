@@ -9,7 +9,7 @@ import {
 import { validateAmount } from "../../helpers/discord/validateAmount";
 import { mapMembers } from "../../helpers/discord/mapMembers";
 import { userWalletExist } from "../../helpers/discord/userWalletExist";
-import { waterFaucet } from "../../helpers/discord/waterFaucet";
+import { waterFaucet } from "../../helpers/waterFaucet";
 
 import logger from "../../helpers/logger";
 

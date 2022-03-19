@@ -97,10 +97,10 @@ export const matrixRouter = async (
   settings,
 ) => {
   let prepared;
-  await matrixClient.clearStores();
-  await matrixClient.sessionStore.removeAllEndToEndSessions();
-  await matrixClient.sessionStore.removeEndToEndAccount();
-  await matrixClient.sessionStore.removeEndToEndDeviceData();
+  // await matrixClient.clearStores();
+  // await matrixClient.sessionStore.removeAllEndToEndSessions();
+  // await matrixClient.sessionStore.removeEndToEndAccount();
+  // await matrixClient.sessionStore.removeEndToEndDeviceData();
   const devices = await matrixClient.getDevices();
   for (const device of devices.devices) {
     if (device.device_id !== matrixClient.deviceId) {
@@ -169,6 +169,29 @@ export const matrixRouter = async (
         }
       }
     }
+  });
+
+  matrixClient.on("User.presence", async (
+    event,
+    user,
+  ) => {
+    const newPresence = user.presence;
+    console.log(event);
+    console.log(user);
+    console.log(newPresence);
+    console.log('presence update matrix');
+    console.log('presence update matrix');
+    console.log('presence update matrix');
+    console.log('presence update matrix');
+    console.log('presence update matrix');
+    console.log('presence update matrix');
+    console.log('presence update matrix');
+    console.log('presence update matrix');
+    console.log('presence update matrix');
+    console.log('presence update matrix');
+    console.log('presence update matrix');
+    console.log('presence update matrix');
+    console.log('presence update matrix');
   });
 
   matrixClient.on('Room.timeline', async (

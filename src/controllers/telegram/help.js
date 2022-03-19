@@ -28,17 +28,17 @@ export const fetchHelp = async (ctx, io) => {
         settings.coin.setting === 'Runebase'
           ? [
             [Markup.button.callback('Balance', 'Balance'),
-            Markup.button.callback('Price', 'Price')],
+              Markup.button.callback('Price', 'Price')],
             [Markup.button.callback('Info', 'Info'),
-            Markup.button.callback('Deposit', 'Deposit')],
+              Markup.button.callback('Deposit', 'Deposit')],
             [Markup.button.callback('Referral', 'Referral'),
-            Markup.button.callback('Referral Top 10', 'ReferralTop')],
+              Markup.button.callback('Referral Top 10', 'ReferralTop')],
           ]
           : [
             [Markup.button.callback('Balance', 'Balance'),
-            Markup.button.callback('Price', 'Price')],
+              Markup.button.callback('Price', 'Price')],
             [Markup.button.callback('Info', 'Info'),
-            Markup.button.callback('Deposit', 'Deposit')],
+              Markup.button.callback('Deposit', 'Deposit')],
           ],
       ),
     },

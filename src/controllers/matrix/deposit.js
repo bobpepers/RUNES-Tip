@@ -1,4 +1,3 @@
-import { MessageAttachment } from "discord.js";
 import { Transaction } from "sequelize";
 import QRCode from "qrcode";
 import db from '../../models';

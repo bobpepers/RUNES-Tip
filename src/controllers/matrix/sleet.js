@@ -3,7 +3,7 @@ import { Transaction, Op } from "sequelize";
 import db from '../../models';
 import { validateAmount } from "../../helpers/matrix/validateAmount";
 import { userWalletExist } from "../../helpers/matrix/userWalletExist";
-import { waterFaucet } from "../../helpers/discord/waterFaucet";
+import { waterFaucet } from "../../helpers/waterFaucet";
 
 import logger from "../../helpers/logger";
 

@@ -12,7 +12,7 @@ import {
 } from '../messages/discord';
 import getCoinSettings from '../config/settings';
 import { getInstance } from "./rclient";
-import { waterFaucet } from "../helpers/discord/waterFaucet";
+import { waterFaucet } from "../helpers/waterFaucet";
 
 const settings = getCoinSettings();
 

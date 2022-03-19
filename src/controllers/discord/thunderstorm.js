@@ -15,7 +15,7 @@ import { mapMembers } from "../../helpers/discord/mapMembers";
 import { userWalletExist } from "../../helpers/discord/userWalletExist";
 
 import logger from "../../helpers/logger";
-import { waterFaucet } from "../../helpers/discord/waterFaucet";
+import { waterFaucet } from "../../helpers/waterFaucet";
 
 export const discordThunderStorm = async (
   discordClient,
