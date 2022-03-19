@@ -13,10 +13,10 @@ export const executeTipFunction = async (
   filteredMessage,
   io,
   groupTask,
-  channelTask,
   setting,
   faucetSetting,
   userDirectMessageRoomId,
+  isCurrentRoomDirectMessage,
 ) => {
   let operationName;
   let userBeingTipped;
@@ -73,11 +73,11 @@ export const executeTipFunction = async (
                 filteredMessage,
                 io,
                 groupTask,
-                channelTask,
                 setting,
                 faucetSetting,
                 queue,
                 userDirectMessageRoomId,
+                isCurrentRoomDirectMessage,
               );
             });
           } else if (tempBody.toUpperCase() === 'NO'
@@ -121,11 +121,11 @@ export const executeTipFunction = async (
         filteredMessage,
         io,
         groupTask,
-        channelTask,
         setting,
         faucetSetting,
         queue,
         userDirectMessageRoomId,
+        isCurrentRoomDirectMessage,
       );
     });
   }

@@ -22,11 +22,11 @@ export const withdrawMatrixCreate = async (
   filteredMessage,
   io,
   groupTask,
-  channelTask,
   setting,
   faucetSetting,
   queue,
   userDirectMessageRoomId,
+  isCurrentRoomDirectMessage,
 ) => {
   let user;
   let activity;

@@ -19,8 +19,8 @@ export const findUserDirectMessageRoom = async (
       const members = await room.currentState.getMembers();
       if (members.length !== 2) return false;
       // const isDirect = room.timeline[0].getContent().is_direct;
-      const isDirect = room.timeline[0].getContent();
-      console.log(isDirect);
+      // const isDirect = room.timeline[0].getContent();
+      // console.log(isDirect);
       return members[1]
         && members[0]
         && members[1].membership
@@ -31,8 +31,8 @@ export const findUserDirectMessageRoom = async (
         && (members[0].userId === userId || members[0].userId === matrixClient.credentials.userId);
       // && isDirect;
     });
-    console.log(invitedDMRooms);
-    console.log('invitedDMRooms');
+    // console.log(invitedDMRooms);
+    // console.log('invitedDMRooms');
 
     if (roomId) {
       determinRoom = invitedDMRooms.filter((i) => i.roomId === roomId);

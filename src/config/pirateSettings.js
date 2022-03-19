@@ -13,7 +13,7 @@ module.exports = {
       matrix: "!piratetip",
     },
     enabled: {
-      telegram: false,
+      telegram: true,
       discord: true,
       matrix: false,
     },

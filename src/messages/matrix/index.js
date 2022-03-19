@@ -114,6 +114,10 @@ ${settings.bot.name} v${pjson.version}`,
 <code>${settings.bot.command.matrix} balance</code>
 <p>Displays balance</p>
 
+<code>${settings.bot.command.discord} flood [amount|all]</code>
+<p>Floods the desired amount onto all users (including offline users)<br>
+example: ${settings.bot.command.discord} flood 5.00</p>
+
 <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
   };
   return result;
@@ -448,6 +452,99 @@ export const nodeOfflineMessage = () => {
   return result;
 };
 
+export const notInDirectMessage = (message, title) => {
+  const result = {
+    body: `${title}
+${message.sender.name}, Can't use this command in a direct message`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><strong><h6>${title}</h6><p>${message.sender.name}, Can't use this command in a direct message</p></strong>
+<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+/// //
+
+export const matrixUserBannedMessage = (
+  user,
+) => {
+  const result = {
+    body: `🚫     User: ${user.username} Banned     🚫
+Reason:
+${user.banMessage}`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><h6>🚫     User: ${user.username} Banned     🚫</h6>
+<p><strong>Reason:<br>
+${user.banMessage}</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const matrixRoomBannedMessage = (
+  server,
+) => {
+  const result = {
+    body: `🚫     Server Banned     🚫
+Reason:
+${server.banMessage}`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote>
+<h6>🚫     Server Banned     🚫</h6>
+<p><strong>Reason:<br>
+${server.banMessage}</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const notEnoughUsers = () => {
+  const result = {
+    body: "not enough users",
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>not enough users</strong></p>
+<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const userListMessage = (list) => {
+  const result = {
+    body: `${list}`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>${list}</strong></p>
+<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const afterSuccessMessage = (
+  message,
+  id,
+  amount,
+  withoutBots,
+  amountPerUser,
+  type,
+  typeH,
+) => {
+  const result = {
+    body: `${type} #${id}
+${message.sender.name} ${typeH} **${amount / 1e8} ${settings.coin.ticker}** on ${withoutBots.length} users
+💸 **${amountPerUser / 1e8} ${settings.coin.ticker}** each 💸`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote>
+<h6>${type} #${id}</h6>
+<p><strong>${message.sender.name} ${typeH} **${amount / 1e8} ${settings.coin.ticker}** on ${withoutBots.length} users<br>
+💸 **${amountPerUser / 1e8} ${settings.coin.ticker}** each 💸</strong></p>
+<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
 /// /
 export const testMessage = () => {
   const result = {

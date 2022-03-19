@@ -130,22 +130,30 @@ export const createUpdateMatrixUser = async (
 };
 
 export const updateMatrixLastSeen = async (
-  client,
+  matrixClient,
   message,
 ) => {
   let updatedUser;
+  let currentRoom;
   let guildId;
-  if (message.guildId) {
-    guildId = message.guildId;
+
+  console.log(message.sender);
+  console.log('senderrrrr');
+
+  try {
+    currentRoom = await matrixClient.getRoom(message.event.room_id);
+  } catch (e) {
+    console.log(e);
   }
-  if (guildId) {
+
+  if (currentRoom) {
     await db.sequelize.transaction({
       isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
     }, async (t) => {
       const user = await db.user.findOne(
         {
           where: {
-            user_id: `discord-${message.author.id}`,
+            user_id: `matrix-${message.sender.userId}`,
           },
           transaction: t,
           lock: t.LOCK.UPDATE,
@@ -154,7 +162,7 @@ export const updateMatrixLastSeen = async (
       const group = await db.group.findOne(
         {
           where: {
-            groupId: `discord-${guildId}`,
+            groupId: `matrix-${currentRoom.roomId}`,
           },
           transaction: t,
           lock: t.LOCK.UPDATE,

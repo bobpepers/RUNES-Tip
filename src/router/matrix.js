@@ -1,31 +1,47 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable camelcase */
 /* eslint-disable no-underscore-dangle */
 import { config } from "dotenv";
 
+import { executeTipFunction } from '../helpers/matrix/executeTips';
+import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
+import { matrixHelp } from '../controllers/matrix/help';
 import { matrixBalance } from '../controllers/matrix/balance';
 import { matrixWalletDepositAddress } from '../controllers/matrix/deposit';
 import { withdrawMatrixCreate } from '../controllers/matrix/withdraw';
-
-import { discordVoiceRain } from '../controllers/discord/voicerain';
-import { discordRain } from '../controllers/discord/rain';
-import { discordSleet } from '../controllers/discord/sleet';
-import { discordFlood } from '../controllers/discord/flood';
+import { matrixFlood } from '../controllers/matrix/flood';
 import {
-  tipCoinsToDiscordFaucet,
-  tipRunesToDiscordUser,
-} from '../controllers/discord/tip';
+  findUserDirectMessageRoom,
+  inviteUserToDirectMessageRoom,
+} from '../helpers/matrix/directMessageRoom';
 
 import {
   createUpdateMatrixUser,
   updateMatrixLastSeen,
 } from '../controllers/matrix/user';
 
+import { updateMatrixGroup } from '../controllers/matrix/group';
+
+import {
+  matrixSettings,
+  matrixWaterFaucetSettings,
+} from '../controllers/matrix/settings';
+
+import {
+  matrixUserBannedMessage,
+  matrixRoomBannedMessage,
+} from '../messages/matrix';
+
+import { discordRain } from '../controllers/discord/rain';
+import { discordSleet } from '../controllers/discord/sleet';
+
+import {
+  tipCoinsToDiscordFaucet,
+  tipRunesToDiscordUser,
+} from '../controllers/discord/tip';
+
 import { fetchFeeSchedule } from '../controllers/discord/fees';
-
-import { updateMatrixChannel } from '../controllers/matrix/channel';
-
-import { updateDiscordGroup } from '../controllers/discord/group';
 
 import { discordCoinInfo } from '../controllers/discord/info';
 
@@ -41,16 +57,7 @@ import { discordFaucetClaim } from '../controllers/discord/faucet';
 
 import { setIgnoreMe } from '../controllers/discord/ignore';
 
-import { matrixHelp } from '../controllers/matrix/help';
-
 import { discordPrice } from '../controllers/discord/price';
-
-import { fetchDiscordListTransactions } from '../controllers/discord/listTransactions';
-
-import {
-  findUserDirectMessageRoom,
-  inviteUserToDirectMessageRoom,
-} from '../helpers/matrix/directMessageRoom';
 
 import {
   limitReactDrop,
@@ -80,25 +87,6 @@ import {
 import { discordTrivia } from '../controllers/discord/trivia';
 import { discordReactDrop } from '../controllers/discord/reactdrop';
 import db from '../models';
-import {
-  discordUserBannedMessage,
-  discordServerBannedMessage,
-  discordChannelBannedMessage,
-} from '../messages/discord';
-
-import {
-  testMessage,
-} from '../messages/matrix';
-
-import { discordStats } from '../controllers/discord/stats';
-import { discordPublicStats } from '../controllers/discord/publicstats';
-import { discordLeaderboard } from '../controllers/discord/leaderboard';
-import {
-  matrixSettings,
-  matrixWaterFaucetSettings,
-} from '../controllers/matrix/settings';
-import { executeTipFunction } from '../helpers/matrix/executeTips';
-import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
 
 config();
 
@@ -110,7 +98,16 @@ export const matrixRouter = async (
 ) => {
   let prepared;
   await matrixClient.clearStores();
-  // await matrixClient.forceDiscardSession();
+  await matrixClient.sessionStore.removeAllEndToEndSessions();
+  await matrixClient.sessionStore.removeEndToEndAccount();
+  await matrixClient.sessionStore.removeEndToEndDeviceData();
+  const devices = await matrixClient.getDevices();
+  for (const device of devices.devices) {
+    if (device.device_id !== matrixClient.deviceId) {
+      console.log(device.device_id);
+      await matrixClient.deleteDevice(device.device_id);
+    }
+  }
 
   matrixClient.once('sync', async (
     state,
@@ -123,7 +120,7 @@ export const matrixRouter = async (
       const allRooms = await matrixClient.getRooms();
       // eslint-disable-next-line no-restricted-syntax
       for (const room of allRooms) {
-        console.log(room);
+        // console.log(room);
         if (room
             && room.currentState
             && room.currentState.joinedMemberCount === 1
@@ -131,7 +128,6 @@ export const matrixRouter = async (
           try {
             await matrixClient.leave(room.roomId);
             await matrixClient.forget(room.roomId, true);
-            // await matrixClient.removeRoom(room.roomId);
           } catch (e) {
             console.log(e);
           }
@@ -181,6 +177,16 @@ export const matrixRouter = async (
   ) => {
     if (!prepared) return;
     if (matrixClient.credentials.userId === message.event.sender) return;
+
+    let lastSeenMatrixTask;
+    let faucetSetting;
+    let groupTask;
+    let channelTask;
+    let groupTaskId;
+    let channelTaskId;
+    let myBody;
+    let formatted_body;
+
     const maintenance = await isMaintenanceOrDisabled(
       message,
       'matrix',
@@ -192,15 +198,28 @@ export const matrixRouter = async (
       matrixClient,
       queue,
     );
+    const [
+      directUserMessageRoom,
+      isCurrentRoomDirectMessage,
+      userState,
+    ] = await findUserDirectMessageRoom(
+      matrixClient,
+      message.sender.userId,
+      message.sender.roomId,
+    );
 
-    let lastSeenMatrixTask;
-    let faucetSetting;
-    let groupTask;
-    let channelTask;
-    let groupTaskId;
-    let channelTaskId;
-    let myBody;
-    let formatted_body;
+    if (!isCurrentRoomDirectMessage) {
+      groupTask = await updateMatrixGroup(
+        matrixClient,
+        message,
+      );
+      groupTaskId = groupTask && groupTask.id;
+      lastSeenMatrixTask = await updateMatrixLastSeen(
+        matrixClient,
+        message,
+      );
+    }
+
     // console.log(message);
     try {
       if (message.event.type === 'm.room.encrypted') {
@@ -225,47 +244,54 @@ export const matrixRouter = async (
     }
     // console.log(body);
     if (myBody) {
-      console.log('mybody');
-      console.log(message);
-      const room = await matrixClient.getRoom(message.event.room_id);
       const space = await matrixClient.getRoomHierarchy(message.event.room_id, 100, 100, false);
-      const directories = await matrixClient.getRooms();
-      const accountData = await matrixClient.getAccountDataFromServer('m.direct');
-      console.log('123');
-      console.log(accountData);
-      console.log('123');
-      // console.log(directories);
-      // console.log(space);
-      // console.log(room);
-      // console.log(message.event);
-      // console.log(room.name);
-      // console.log(room.events);
-      // console.log(space);
+      const directories = await matrixClient.getRoomSummary(message.event.room_id);
+      console.log(space);
+      console.log(directories);
+      console.log('88888888888888888888');
 
       if (!myBody.startsWith(settings.bot.command.matrix)) return;
       if (myBody.startsWith(settings.bot.command.matrix)) {
+        faucetSetting = await matrixWaterFaucetSettings(
+          groupTaskId,
+          channelTaskId,
+        );
+        if (!faucetSetting) return;
+
+        if (groupTask && groupTask.banned) {
+          try {
+            await matrixClient.sendEvent(
+              message.event.room_id,
+              "m.room.message",
+              matrixRoomBannedMessage(groupTask),
+            );
+          } catch (e) {
+            console.log(e);
+          }
+          // await message.channel.send({ embeds: [discordServerBannedMessage(groupTask)] });
+          return;
+        }
+        if (lastSeenMatrixTask && lastSeenMatrixTask.banned) {
+          try {
+            await matrixClient.sendEvent(
+              message.event.room_id,
+              "m.room.message",
+              matrixUserBannedMessage(lastSeenMatrixTask),
+            );
+          } catch (e) {
+            console.log(e);
+          }
+          // await message.channel.send({ embeds: [discordUserBannedMessage(lastSeenDiscordTask)] });
+          return;
+        }
+
         // let userDirectMessageRoomId;
         const regex = /\s*((?:[^\s<]*<\w[^>]*>[\s\S]*?<\/\w[^>]*>)+[^\s<]*)\s*/;
         const preFilteredMessageWithTags = myBody.split(regex).filter(Boolean);
         const filteredMessageWithTags = preFilteredMessageWithTags.filter((el) => el !== '');
         const preFilteredMessage = myBody.split(' ');
         const filteredMessage = preFilteredMessage.filter((el) => el !== '');
-        console.log(filteredMessage);
-        console.log(filteredMessageWithTags);
 
-        const [
-          directUserMessageRoom,
-          isCurrentRoomDirectMessage,
-          userState,
-        ] = await findUserDirectMessageRoom(
-          matrixClient,
-          message.sender.userId,
-          message.sender.roomId,
-        );
-        // console.log(directUserMessageRoom);
-        // console.log(userState);
-        // console.log(isCurrentRoomDirectMessage);
-        // console.log('iserDirect');
         const userDirectMessageRoomId = await inviteUserToDirectMessageRoom(
           matrixClient,
           directUserMessageRoom,
@@ -274,10 +300,9 @@ export const matrixRouter = async (
           message.sender.name,
           message.sender.roomId,
         );
+
         if (!directUserMessageRoom || !userDirectMessageRoomId) return;
         console.log(userDirectMessageRoomId);
-        // console.log(directUserMessageRoom);
-        // console.log('directUserMessageRoom');
 
         if (filteredMessage[1] === undefined) {
           // const limited = await limitHelp(message);
@@ -356,10 +381,39 @@ export const matrixRouter = async (
             filteredMessage,
             io,
             groupTask,
-            channelTask,
             setting,
             faucetSetting,
             userDirectMessageRoomId,
+            isCurrentRoomDirectMessage,
+          );
+        }
+
+        if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'flood') {
+          const setting = await matrixSettings(
+            matrixClient,
+            message,
+            'flood',
+            groupTaskId,
+            channelTaskId,
+          );
+          if (!setting) return;
+          console.log(settings);
+          // const limited = await limitWithdraw(message);
+          // if (limited) return;
+
+          await executeTipFunction(
+            matrixFlood,
+            queue,
+            filteredMessage[3],
+            matrixClient,
+            message,
+            filteredMessage,
+            io,
+            groupTask,
+            setting,
+            faucetSetting,
+            userDirectMessageRoomId,
+            isCurrentRoomDirectMessage,
           );
         }
       }

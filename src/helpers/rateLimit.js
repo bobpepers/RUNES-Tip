@@ -12,50 +12,62 @@ const rateLimiterReactdrop = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 4, // 4 messages (4 reactdrops)
   duration: 120, // every 120 seconds
 });
+
 const rateLimiterTip = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 10,
   duration: 120,
 });
+
 const rateLimiterWithdraw = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 4,
   duration: 120,
 });
+
 const rateLimiterHelp = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 20,
   duration: 120,
 });
+
 const rateLimiterPrice = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 20,
   duration: 120,
 });
+
 const rateLimiterInfo = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 20,
   duration: 120,
 });
+
 const rateLimiterRain = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 50,
   duration: 120,
 });
+
 const rateLimiterSoak = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 50,
   duration: 120,
 });
+
 const rateLimiterFlood = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 50,
   duration: 120,
 });
+
 const rateLimiterHurricane = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 50,
   duration: 120,
 });
+
 const rateLimiterIgnoreMe = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 5,
   duration: 120,
 });
+
 const rateLimiterSleet = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 20,
   duration: 120,
 });
+
 const rateLimiterBalance = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 50,
   duration: 120,
@@ -65,6 +77,7 @@ const rateLimiterFaucet = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 4,
   duration: 120,
 });
+
 const rateLimiterDeposit = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 4,
   duration: 120,
@@ -78,6 +91,7 @@ const rateLimiterLeaderboard = new RateLimiterFlexible.default.RateLimiterMemory
   points: 10,
   duration: 120,
 });
+
 const rateLimiterPublicStats = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 8,
   duration: 120,
@@ -87,6 +101,7 @@ const rateLimiterThunder = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 180,
   duration: 120,
 });
+
 const rateLimiterThunderstorm = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 180,
   duration: 120,
@@ -102,7 +117,9 @@ const rateLimiterListTransactions = new RateLimiterFlexible.default.RateLimiterM
   duration: 120,
 });
 
-export const limitListTransactions = async (message) => {
+export const limitListTransactions = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterListTransactions.consume(message.author.id, 1);
     return false;
@@ -119,7 +136,9 @@ export const limitListTransactions = async (message) => {
   }
 };
 
-export const limitTrivia = async (message) => {
+export const limitTrivia = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterTrivia.consume(message.author.id, 1);
     return false;
@@ -136,7 +155,9 @@ export const limitTrivia = async (message) => {
   }
 };
 
-export const limitThunder = async (message) => {
+export const limitThunder = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterThunder.consume(message.author.id, 1);
     return false;
@@ -153,7 +174,9 @@ export const limitThunder = async (message) => {
   }
 };
 
-export const limitThunderStorm = async (message) => {
+export const limitThunderStorm = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterThunderstorm.consume(message.author.id, 1);
     return false;
@@ -170,7 +193,9 @@ export const limitThunderStorm = async (message) => {
   }
 };
 
-export const limitStats = async (message) => {
+export const limitStats = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterStats.consume(message.author.id, 1);
     return false;
@@ -186,7 +211,10 @@ export const limitStats = async (message) => {
     }
   }
 };
-export const limitLeaderboard = async (message) => {
+
+export const limitLeaderboard = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterLeaderboard.consume(message.author.id, 1);
     return false;
@@ -202,7 +230,10 @@ export const limitLeaderboard = async (message) => {
     }
   }
 };
-export const limitPublicStats = async (message) => {
+
+export const limitPublicStats = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterPublicStats.consume(message.author.id, 1);
     return false;
@@ -218,7 +249,10 @@ export const limitPublicStats = async (message) => {
     }
   }
 };
-export const limitFaucet = async (message) => {
+
+export const limitFaucet = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterFaucet.consume(message.author.id, 1);
     return false;
@@ -234,7 +268,10 @@ export const limitFaucet = async (message) => {
     }
   }
 };
-export const limitDeposit = async (message) => {
+
+export const limitDeposit = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterDeposit.consume(message.author.id, 1);
     return false;
@@ -251,7 +288,9 @@ export const limitDeposit = async (message) => {
   }
 };
 
-export const limitBalance = async (message) => {
+export const limitBalance = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterBalance.consume(message.author.id, 1);
     return false;
@@ -268,7 +307,9 @@ export const limitBalance = async (message) => {
   }
 };
 
-export const limitPrice = async (message) => {
+export const limitPrice = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterPrice.consume(message.author.id, 1);
     return false;
@@ -285,7 +326,9 @@ export const limitPrice = async (message) => {
   }
 };
 
-export const limitTip = async (message) => {
+export const limitTip = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterTip.consume(message.author.id, 1);
     return false;
@@ -302,7 +345,9 @@ export const limitTip = async (message) => {
   }
 };
 
-export const limitWithdraw = async (message) => {
+export const limitWithdraw = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterWithdraw.consume(message.author.id, 1);
     return false;
@@ -319,7 +364,9 @@ export const limitWithdraw = async (message) => {
   }
 };
 
-export const limitHelp = async (message) => {
+export const limitHelp = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterHelp.consume(message.author.id, 1);
     return false;
@@ -336,7 +383,9 @@ export const limitHelp = async (message) => {
   }
 };
 
-export const limitInfo = async (message) => {
+export const limitInfo = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterInfo.consume(message.author.id, 1);
     return false;
@@ -353,7 +402,9 @@ export const limitInfo = async (message) => {
   }
 };
 
-export const limitRain = async (message) => {
+export const limitRain = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterRain.consume(message.author.id, 1);
     return false;
@@ -370,7 +421,9 @@ export const limitRain = async (message) => {
   }
 };
 
-export const limitSoak = async (message) => {
+export const limitSoak = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterSoak.consume(message.author.id, 1);
     return false;
@@ -387,7 +440,9 @@ export const limitSoak = async (message) => {
   }
 };
 
-export const limitFlood = async (message) => {
+export const limitFlood = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterFlood.consume(message.author.id, 1);
     return false;
@@ -404,7 +459,9 @@ export const limitFlood = async (message) => {
   }
 };
 
-export const limitHurricane = async (message) => {
+export const limitHurricane = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterHurricane.consume(message.author.id, 1);
     return false;
@@ -421,7 +478,9 @@ export const limitHurricane = async (message) => {
   }
 };
 
-export const limitIgnoreMe = async (message) => {
+export const limitIgnoreMe = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterIgnoreMe.consume(message.author.id, 1);
     return false;
@@ -438,7 +497,9 @@ export const limitIgnoreMe = async (message) => {
   }
 };
 
-export const limitSleet = async (message) => {
+export const limitSleet = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterSleet.consume(message.author.id, 1);
     return false;
@@ -455,7 +516,9 @@ export const limitSleet = async (message) => {
   }
 };
 
-export const limitReactDrop = async (message) => {
+export const limitReactDrop = async (
+  message,
+) => {
   try {
     const limited = await rateLimiterReactdrop.consume(message.author.id, 1);
     return false;
