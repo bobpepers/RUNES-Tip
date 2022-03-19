@@ -13,6 +13,7 @@ import { withdrawMatrixCreate } from '../controllers/matrix/withdraw';
 import { matrixFlood } from '../controllers/matrix/flood';
 import { matrixSleet } from '../controllers/matrix/sleet';
 import { setIgnoreMe } from '../controllers/matrix/ignore';
+import { tipRunesToMatrixUser } from '../controllers/matrix/tip';
 
 import {
   findUserDirectMessageRoom,
@@ -37,11 +38,6 @@ import {
 } from '../messages/matrix';
 
 import { discordRain } from '../controllers/discord/rain';
-
-import {
-  tipCoinsToDiscordFaucet,
-  tipRunesToDiscordUser,
-} from '../controllers/discord/tip';
 
 import { fetchFeeSchedule } from '../controllers/discord/fees';
 
@@ -308,7 +304,7 @@ export const matrixRouter = async (
         // let userDirectMessageRoomId;
         const regex = /\s*((?:[^\s<]*<\w[^>]*>[\s\S]*?<\/\w[^>]*>)+[^\s<]*)\s*/;
         const preFilteredMessageWithTags = myBody.split(regex).filter(Boolean);
-        const filteredMessageWithTags = preFilteredMessageWithTags.filter((el) => el !== '');
+        const filteredMessageWithTags = preFilteredMessageWithTags.filter((el) => el !== '').filter(String);
         const preFilteredMessage = myBody.split(' ');
         const filteredMessage = preFilteredMessage.filter((el) => el !== '');
         console.log(filteredMessageWithTags);
@@ -473,6 +469,54 @@ export const matrixRouter = async (
             matrixClient,
             message,
             filteredMessage,
+            io,
+            groupTask,
+            setting,
+            faucetSetting,
+            userDirectMessageRoomId,
+            isCurrentRoomDirectMessage,
+          );
+        }
+
+        if (
+          filteredMessageWithTags.length > 1
+          && filteredMessageWithTags[1]
+          && filteredMessageWithTags[1].startsWith('<a')
+        ) {
+          const setting = await matrixSettings(
+            matrixClient,
+            message,
+            'tip',
+            groupTaskId,
+            channelTaskId,
+          );
+          if (!setting) return;
+          // const limited = await limitTip(message);
+          // if (limited) return;
+
+          let AmountPosition = 1;
+          let AmountPositionEnded = false;
+          while (!AmountPositionEnded) {
+            AmountPosition += 1;
+            if (!filteredMessageWithTags[AmountPosition].startsWith('<a')) {
+              AmountPositionEnded = true;
+            }
+          }
+
+          const preSplitAfterTags = filteredMessageWithTags[AmountPosition].split(' ');
+          const splitAfterTags = preSplitAfterTags.filter((el) => el !== '');
+          const filteredMessageWithTagsClean = filteredMessageWithTags.splice(0, AmountPosition);
+          const finalFilteredTipsWithTags = filteredMessageWithTagsClean.concat(splitAfterTags);
+          console.log(finalFilteredTipsWithTags);
+          console.log("myBody");
+
+          await executeTipFunction(
+            tipRunesToMatrixUser,
+            queue,
+            finalFilteredTipsWithTags[AmountPosition],
+            matrixClient,
+            message,
+            finalFilteredTipsWithTags,
             io,
             groupTask,
             setting,

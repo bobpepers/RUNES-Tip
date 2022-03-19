@@ -4,6 +4,8 @@ import getCoinSettings from '../../config/settings';
 
 const settings = getCoinSettings();
 
+const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
+
 export const matrixBotDisabledMessage = () => {
   const result = {
     body: `Matrix tipbot disabled
@@ -12,7 +14,7 @@ ${settings.bot.name} v${pjson.version}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Matrix tipbot disabled</strong></p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -25,7 +27,7 @@ ${settings.bot.name} v${pjson.version}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Matrix tipbot maintenance</strong></p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -40,7 +42,7 @@ ${settings.bot.name} v${pjson.version}`,
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Welcome ${username}, we created a wallet for you.
 Type "${settings.bot.command.matrix} help" for usage info</strong></p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -55,7 +57,7 @@ ${settings.bot.name} v${pjson.version}`,
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>${username}, i invited you to a direct message room.</strong></p>
 <p><strong>Please accept the invite to allow full functionality of this bot.</strong></p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -73,7 +75,7 @@ ${settings.bot.name} v${pjson.version}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p>${title}</p><p><strong>${username}, i've sent you a direct message</strong></p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -139,7 +141,7 @@ example: \`${settings.bot.command.discord} sleet 5.00\`, \`${settings.bot.comman
 <code>${settings.bot.command.discord} ignoreme</code>
 <p>Turns @mentioning you during mass operations on/off</p>
 
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -160,7 +162,7 @@ Estimated value of ${user.username}'s balance: $${(((user.wallet.available + use
 <p><a href="https://matrix.to/#/${myUserId}">${user.username}</a>'s current available balance: <strong>${user.wallet.available / 1e8} ${settings.coin.ticker}</strong><br>
 ${user.username}'s current locked balance: <strong>${user.wallet.locked / 1e8} ${settings.coin.ticker}</strong><br>
 Estimated value of ${user.username}'s balance: <strong>$${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(2)}</strong></p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -172,7 +174,7 @@ ${settings.bot.name} v${pjson.version}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>deposit address: </strong>${user.wallet.addresses[0].address}</p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -188,7 +190,7 @@ ${settings.coin.explorer}/tx/${res.locals.transaction[0].txid}`,
 <p>incoming deposit detected for <strong>${res.locals.amount} ${settings.coin.ticker}</strong><br>
 Balance will be reflected in your wallet in <strong>~${settings.min.confirmations}+ confirmations</strong><br>
 ${settings.coin.explorer}/tx/${res.locals.transaction[0].txid}</p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p>
 </blockquote>`,
   };
   return result;
@@ -203,7 +205,7 @@ ${amount} ${settings.coin.ticker} has been credited to your wallet`,
     formatted_body: `<blockquote>
 <p>Deposit Confirmed<br> 
 ${amount} ${settings.coin.ticker} has been credited to your wallet</p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p>
 </blockquote>`,
   };
   return result;
@@ -217,7 +219,7 @@ export const featureDisabledChannelMessage = (name) => {
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>This Feature has been disabled for this channel</strong></p>
-  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -228,7 +230,7 @@ export const featureDisabledServerMessage = (name) => {
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>This Feature has been disabled for this server</strong></p>
-  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -239,7 +241,7 @@ export const featureDisabledGlobalMessage = (name) => {
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>This Feature has been disabled</strong></p>
-  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -250,7 +252,7 @@ export const settingsNotFoundMessage = (name) => {
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Settings not found!</strong></p>
-  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -270,7 +272,7 @@ Auto-cancel in 30 seconds.`,
     formatted_body: `<blockquote><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, are you sure that you want to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}?<br>
 Accepted answers: <u>yes/no/y/n</u>;<br> 
 Auto-cancel in 30 seconds.</strong></p>
-  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -285,7 +287,7 @@ export const canceledAllAmoutMessage = (
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you canceled the request to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}</strong></p>
-  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -300,7 +302,7 @@ export const timeOutAllAmoutMessage = (
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, the request to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker} has expired</strong></p>
-  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -314,7 +316,7 @@ export const walletNotFoundMessage = (
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Wallet not found</strong></p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -330,7 +332,7 @@ export const invalidAmountMessage = (
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Invalid Amount</strong></p>
-  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -344,7 +346,7 @@ export const insufficientBalanceMessage = (
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Insufficient balance</strong></p>
-  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -359,7 +361,7 @@ export const minimumMessage = (
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Minimum ${type} is ${setting.min / 1e8} ${settings.coin.ticker}</strong></p>
-  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -374,7 +376,7 @@ export const errorMessage = (
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Something went wrong.</strong></p>
-  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -403,7 +405,7 @@ amount: ${amount}<br>
 fee: ${fee}<br>
 total: ${total}<br>
 </strong></p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -416,7 +418,7 @@ export const invalidAddressMessage = (
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>${message.sender.name}, Invalid Runebase Address</strong></p>
-  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -447,7 +449,7 @@ total: ${total}<br><br>
     
 ${settings.coin.explorer}/tx/${updatedTrans.txid}
 </strong></p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -462,7 +464,7 @@ ${userId}, Your withdrawal has been complete`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><strong><h5>Withdraw #${trans.id}</h5><br><p>${userId}, Your withdrawal has been complete</p></strong>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -473,7 +475,7 @@ export const nodeOfflineMessage = () => {
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><strong><p>Runebase node is offline</p></strong>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -485,7 +487,7 @@ ${message.sender.name}, Can't use this command in a direct message`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><strong><h5>${title}</h5><p><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Can't use this command in a direct message</p></strong>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -503,7 +505,7 @@ ${user.banMessage}`,
     formatted_body: `<blockquote><h5>🚫     User: ${user.username} Banned     🚫</h5>
 <p><strong>Reason:<br>
 ${user.banMessage}</strong></p>
-  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -521,7 +523,7 @@ ${server.banMessage}`,
 <h5>🚫     Server Banned     🚫</h5>
 <p><strong>Reason:<br>
 ${server.banMessage}</strong></p>
-  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -532,7 +534,7 @@ export const notEnoughUsers = () => {
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>not enough users</strong></p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -543,7 +545,7 @@ export const userListMessage = (list) => {
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>${list}</strong></p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -578,7 +580,7 @@ export const groupNotFoundMessage = () => {
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Room not found</strong></p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -591,7 +593,7 @@ ${message.sender.name}, Invalid time`,
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h5>${title}</h5><br>
 <p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Invalid time</strong></p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -605,7 +607,7 @@ If you wish to be @mentioned, please issue this command again.`,
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h5>Ignore me</h5><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you will no longer be @mentioned while receiving rains, soaks and other mass operations, but will continue to receive coins from them.<br>
 If you wish to be @mentioned, please issue this command again.</strong></p>
-  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -619,7 +621,54 @@ If you do not wish to be @mentioned, please issue this command again.`,
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h5>Ignore me</h5><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you will again be @mentioned while receiving rains, soaks and other mass operations.<br>
 If you do not wish to be @mentioned, please issue this command again.</strong></p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
+export const tipSingleSuccessMessage = (
+  message,
+  id,
+  listOfUsersRained,
+  amount,
+) => {
+  const result = {
+    body: `Tip #${id}
+${message.sender.name} tipped ${amount / 1e8} ${settings.coin.ticker} to ${listOfUsersRained[0]}`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote>
+<h5>Tip #${id}</h5>
+<p><strong>${message.sender.name} tipped ${amount / 1e8} ${settings.coin.ticker} to ${listOfUsersRained[0]}</strong></p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
+export const tipMultipleSuccessMessage = (
+  message,
+  id,
+  listOfUsersRained,
+  amount,
+  type,
+) => {
+  const result = {
+    body: `Tip #${id}
+${message.sender.name} tipped **${(amount * listOfUsersRained.length) / 1e8} ${settings.coin.ticker}** to ${listOfUsersRained.length} users
+
+Type: **${capitalize(type)}**  
+    
+💸 **${amount / 1e8} ${settings.coin.ticker}** each 💸`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote>
+<h5>Tip #${id}</h5>
+<p><strong>${message.sender.name} tipped <u>${(amount * listOfUsersRained.length) / 1e8} ${settings.coin.ticker}</u> to ${listOfUsersRained.length} users
+<br><br>
+Type: <u>${capitalize(type)}</u>
+<br><br>   
+💸 <u>${amount / 1e8} ${settings.coin.ticker}</u> each 💸</strong></p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };
@@ -631,7 +680,7 @@ export const testMessage = () => {
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Hello Worlds</strong></p>
-<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
 };

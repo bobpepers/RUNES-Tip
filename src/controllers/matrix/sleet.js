@@ -265,6 +265,7 @@ export const matrixSleet = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+
       const preActivity = await db.activity.create({
         amount,
         type: 'sleet_s',
@@ -275,6 +276,7 @@ export const matrixSleet = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+
       const finalActivity = await db.activity.findOne({
         where: {
           id: preActivity.id,
@@ -292,6 +294,7 @@ export const matrixSleet = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      
       activity.push(finalActivity);
       const listOfUsersRained = [];
       // eslint-disable-next-line no-restricted-syntax
@@ -380,7 +383,6 @@ export const matrixSleet = async (
         } catch (err) {
           console.log(err);
         }
-        // await message.channel.send(element);
       }
 
       try {
