@@ -387,14 +387,16 @@ export const reviewMessage = (
   const fee = ((transaction.feeAmount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
   const total = (((transaction.amount - transaction.feeAmount) / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
   const result = {
-    body: `${message.sender.name},  Your withdrawal is being reviewed
+    body: `Withdraw #${transaction.id}
+${message.sender.name},  Your withdrawal is being reviewed
     
 amount: ${amount}
 fee: ${fee}
 total: ${total}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><p><strong>
+    formatted_body: `<blockquote><h6>Withdraw #${transaction.id}</h6>
+<p><strong>
 <a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>,  Your withdrawal is being reviewed<br><br>
     
 amount: ${amount}<br>
@@ -426,7 +428,8 @@ export const matrixWithdrawalAcceptedMessage = (
   const fee = ((updatedTrans.feeAmount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
   const total = (((updatedTrans.amount - updatedTrans.feeAmount) / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
   const result = {
-    body: `Your withdrawal has been accepted
+    body: `Withdraw #${updatedTrans.id}
+Your withdrawal has been accepted
 
 amount: ${amount}
 fee: ${fee}
@@ -435,7 +438,8 @@ total: ${total}
 ${settings.coin.explorer}/tx/${updatedTrans.txid}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><p><strong>
+    formatted_body: `<blockquote><h6>Withdraw #${updatedTrans.id}</h6>
+<p><strong>
 Your withdrawal has been accepted<br><br>
 amount: ${amount}<br>
 fee: ${fee}<br>
@@ -457,7 +461,7 @@ export const matrixWithdrawalConfirmedMessage = (
 ${userId}, Your withdrawal has been complete`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><strong><h3>Withdraw #${trans.id}</h3><br><p>${userId}, Your withdrawal has been complete</p></strong>
+    formatted_body: `<blockquote><strong><h6>Withdraw #${trans.id}</h6><br><p>${userId}, Your withdrawal has been complete</p></strong>
 <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
   };
   return result;

@@ -286,8 +286,8 @@ var matrixFlood = /*#__PURE__*/function () {
                         if (floodee.ignoreMe) {
                           listOfUsersRained.push("".concat(floodee.username));
                         } else {
-                          userIdReceivedRain = floodee.user_id.replace('discord-', '');
-                          listOfUsersRained.push("".concat(floodee.username));
+                          userIdReceivedRain = floodee.user_id.replace('matrix-', '');
+                          listOfUsersRained.push("<a href=\"https://matrix.to/#/".concat(userIdReceivedRain, "\">").concat(floodee.username, "</a>"));
                         }
 
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
@@ -358,7 +358,7 @@ var matrixFlood = /*#__PURE__*/function () {
 
                       case 84:
                         newStringListUsers = listOfUsersRained.join(", ");
-                        cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
+                        cutStringListUsers = newStringListUsers.match(/.{1,6999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
