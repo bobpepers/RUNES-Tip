@@ -49,19 +49,18 @@ function _patchRunebaseDeposits() {
                   switch (_context2.prev = _context2.next) {
                     case 0:
                       trans = _step.value;
-                      console.log(trans);
 
                       if (!(trans.category === 'receive')) {
-                        _context2.next = 13;
+                        _context2.next = 10;
                         break;
                       }
 
                       if (!trans.address) {
-                        _context2.next = 13;
+                        _context2.next = 10;
                         break;
                       }
 
-                      _context2.next = 6;
+                      _context2.next = 5;
                       return _models["default"].address.findOne({
                         where: {
                           address: trans.address
@@ -72,7 +71,7 @@ function _patchRunebaseDeposits() {
                         }]
                       });
 
-                    case 6:
+                    case 5:
                       address = _context2.sent;
 
                       if (!address) {
@@ -81,14 +80,11 @@ function _patchRunebaseDeposits() {
                       }
 
                       if (!address) {
-                        _context2.next = 13;
+                        _context2.next = 10;
                         break;
                       }
 
-                      console.log(trans);
-                      console.log(address); // eslint-disable-next-line no-await-in-loop
-
-                      _context2.next = 13;
+                      _context2.next = 10;
                       return _models["default"].sequelize.transaction({
                         isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
                       }, /*#__PURE__*/function () {
@@ -135,7 +131,7 @@ function _patchRunebaseDeposits() {
                         };
                       }());
 
-                    case 13:
+                    case 10:
                     case "end":
                       return _context2.stop();
                   }

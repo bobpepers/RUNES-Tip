@@ -53,7 +53,7 @@ var walletNotifyKomodo = /*#__PURE__*/function () {
                                 switch (_context.prev = _context.next) {
                                   case 0:
                                     if (!(detail.category === 'receive')) {
-                                      _context.next = 17;
+                                      _context.next = 18;
                                       break;
                                     }
 
@@ -78,7 +78,7 @@ var walletNotifyKomodo = /*#__PURE__*/function () {
                                     address = _context.sent;
 
                                     if (!address) {
-                                      _context.next = 17;
+                                      _context.next = 18;
                                       break;
                                     }
 
@@ -92,8 +92,13 @@ var walletNotifyKomodo = /*#__PURE__*/function () {
                                       res.locals.userId = address.wallet.user.user_id.replace('telegram-', '');
                                     }
 
+                                    if (address.wallet.user.user_id.startsWith('matrix')) {
+                                      res.locals.platform = 'matrix';
+                                      res.locals.userId = address.wallet.user.user_id.replace('matrix-', '');
+                                    }
+
                                     console.log(transaction);
-                                    _context.next = 10;
+                                    _context.next = 11;
                                     return _models["default"].transaction.findOrCreate({
                                       where: {
                                         txid: transaction.txid,
@@ -111,15 +116,15 @@ var walletNotifyKomodo = /*#__PURE__*/function () {
                                       lock: t.LOCK.UPDATE
                                     });
 
-                                  case 10:
+                                  case 11:
                                     res.locals.transaction = _context.sent;
 
                                     if (!res.locals.transaction[1]) {
-                                      _context.next = 16;
+                                      _context.next = 17;
                                       break;
                                     }
 
-                                    _context.next = 14;
+                                    _context.next = 15;
                                     return _models["default"].activity.findOrCreate({
                                       where: {
                                         transactionId: res.locals.transaction[0].id
@@ -134,14 +139,14 @@ var walletNotifyKomodo = /*#__PURE__*/function () {
                                       lock: t.LOCK.UPDATE
                                     });
 
-                                  case 14:
+                                  case 15:
                                     activity = _context.sent;
                                     res.locals.amount = detail.amount;
 
-                                  case 16:
+                                  case 17:
                                     _logger["default"].info("deposit detected for addressid: ".concat(res.locals.transaction[0].addressId, " and txid: ").concat(res.locals.transaction[0].txid));
 
-                                  case 17:
+                                  case 18:
                                   case "end":
                                     return _context.stop();
                                 }

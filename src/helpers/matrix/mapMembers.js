@@ -4,6 +4,7 @@ import db from '../../models';
 import { getInstance } from "../../services/rclient";
 
 export const mapMembers = async (
+  matrixClient,
   message,
   t,
   onlineMembers,
@@ -14,7 +15,7 @@ export const mapMembers = async (
 
   console.log(onlineMembers);
 
-  mappedMembersArray = await onlineMembers.filter((a) => a.userId !== message.sender.userId);
+  mappedMembersArray = await onlineMembers.filter((a) => a.userId !== message.sender.userId && a.userId !== matrixClient.credentials.userId);
   // mappedMembersArray = await filterWithoutRoles.map((a) => a.user);
 
   if (mappedMembersArray.length > setting.maxSampleSize) {

@@ -9,6 +9,8 @@ exports.startRunebaseSync = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _lodash = _interopRequireDefault(require("lodash"));
@@ -21,11 +23,15 @@ var _telegram = require("../messages/telegram");
 
 var _discord = require("../messages/discord");
 
+var _matrix = require("../messages/matrix");
+
 var _settings = _interopRequireDefault(require("../config/settings"));
 
 var _rclient = require("./rclient");
 
 var _waterFaucet = require("../helpers/discord/waterFaucet");
+
+var _directMessageRoom = require("../helpers/matrix/directMessageRoom");
 
 function _asyncIterator(iterable) { var method, async, sync, retry = 2; for ("undefined" != typeof Symbol && (async = Symbol.asyncIterator, sync = Symbol.iterator); retry--;) { if (async && null != (method = iterable[async])) return method.call(iterable); if (sync && null != (method = iterable[sync])) return new AsyncFromSyncIterator(method.call(iterable)); async = "@@asyncIterator", sync = "@@iterator"; } throw new TypeError("Object is not async iterable"); }
 
@@ -119,7 +125,7 @@ var sequentialLoop = /*#__PURE__*/function () {
 }();
 
 var syncTransactions = /*#__PURE__*/function () {
-  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(discordClient, telegramClient) {
+  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(discordClient, telegramClient, matrixClient) {
     var transactions, _iteratorAbruptCompletion, _didIteratorError, _iteratorError, _loop, _iterator, _step, _iteratorAbruptCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2;
 
     return _regenerator["default"].wrap(function _callee5$(_context7) {
@@ -348,76 +354,136 @@ var syncTransactions = /*#__PURE__*/function () {
 
                                           case 44:
                                             t.afterCommit( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
-                                              var userClientId, myClient, _myClient;
+                                              var userClientId, myClient, _yield$findUserDirect, _yield$findUserDirect2, directUserMessageRoom, isCurrentRoomDirectMessage, userState, _myClient, _yield$findUserDirect3, _yield$findUserDirect4, _directUserMessageRoom, _isCurrentRoomDirectMessage, _userState;
 
                                               return _regenerator["default"].wrap(function _callee3$(_context3) {
                                                 while (1) {
                                                   switch (_context3.prev = _context3.next) {
                                                     case 0:
+                                                      _context3.prev = 0;
+
                                                       if (!isDepositComplete) {
-                                                        _context3.next = 9;
+                                                        _context3.next = 22;
                                                         break;
                                                       }
 
                                                       if (!userToMessage.user_id.startsWith('discord')) {
-                                                        _context3.next = 8;
+                                                        _context3.next = 9;
                                                         break;
                                                       }
 
                                                       userClientId = userToMessage.user_id.replace('discord-', '');
-                                                      _context3.next = 5;
+                                                      _context3.next = 6;
                                                       return discordClient.users.fetch(userClientId, false);
 
-                                                    case 5:
+                                                    case 6:
                                                       myClient = _context3.sent;
-                                                      _context3.next = 8;
+                                                      _context3.next = 9;
                                                       return myClient.send({
                                                         embeds: [(0, _discord.discordDepositConfirmedMessage)(detail.amount)]
                                                       });
 
-                                                    case 8:
+                                                    case 9:
                                                       if (userToMessage.user_id.startsWith('telegram')) {
                                                         userClientId = userToMessage.user_id.replace('telegram-', '');
                                                         telegramClient.telegram.sendMessage(userClientId, (0, _telegram.telegramDepositConfirmedMessage)(detail.amount));
                                                       }
 
-                                                    case 9:
+                                                      if (!userToMessage.user_id.startsWith('matrix')) {
+                                                        _context3.next = 22;
+                                                        break;
+                                                      }
+
+                                                      userClientId = userToMessage.user_id.replace('matrix-', '');
+                                                      _context3.next = 14;
+                                                      return (0, _directMessageRoom.findUserDirectMessageRoom)(matrixClient, userClientId // message.sender.roomId,
+                                                      );
+
+                                                    case 14:
+                                                      _yield$findUserDirect = _context3.sent;
+                                                      _yield$findUserDirect2 = (0, _slicedToArray2["default"])(_yield$findUserDirect, 3);
+                                                      directUserMessageRoom = _yield$findUserDirect2[0];
+                                                      isCurrentRoomDirectMessage = _yield$findUserDirect2[1];
+                                                      userState = _yield$findUserDirect2[2];
+
+                                                      if (!directUserMessageRoom) {
+                                                        _context3.next = 22;
+                                                        break;
+                                                      }
+
+                                                      _context3.next = 22;
+                                                      return matrixClient.sendEvent(directUserMessageRoom.roomId, "m.room.message", (0, _matrix.matrixDepositConfirmedMessage)(detail.amount));
+
+                                                    case 22:
                                                       if (!isWithdrawalComplete) {
-                                                        _context3.next = 18;
+                                                        _context3.next = 43;
                                                         break;
                                                       }
 
                                                       if (!userToMessage.user_id.startsWith('discord')) {
-                                                        _context3.next = 17;
+                                                        _context3.next = 30;
                                                         break;
                                                       }
 
                                                       userClientId = userToMessage.user_id.replace('discord-', '');
-                                                      _context3.next = 14;
+                                                      _context3.next = 27;
                                                       return discordClient.users.fetch(userClientId, false);
 
-                                                    case 14:
+                                                    case 27:
                                                       _myClient = _context3.sent;
-                                                      _context3.next = 17;
+                                                      _context3.next = 30;
                                                       return _myClient.send({
                                                         embeds: [(0, _discord.discordWithdrawalConfirmedMessage)(userClientId, trans)]
                                                       });
 
-                                                    case 17:
+                                                    case 30:
                                                       if (userToMessage.user_id.startsWith('telegram')) {
                                                         userClientId = userToMessage.user_id.replace('telegram-', '');
                                                         telegramClient.telegram.sendMessage(userClientId, (0, _telegram.telegramWithdrawalConfirmedMessage)(userToMessage));
                                                       }
 
-                                                    case 18:
+                                                      if (!userToMessage.user_id.startsWith('matrix')) {
+                                                        _context3.next = 43;
+                                                        break;
+                                                      }
+
+                                                      userClientId = userToMessage.user_id.replace('matrix-', '');
+                                                      _context3.next = 35;
+                                                      return (0, _directMessageRoom.findUserDirectMessageRoom)(matrixClient, userClientId);
+
+                                                    case 35:
+                                                      _yield$findUserDirect3 = _context3.sent;
+                                                      _yield$findUserDirect4 = (0, _slicedToArray2["default"])(_yield$findUserDirect3, 3);
+                                                      _directUserMessageRoom = _yield$findUserDirect4[0];
+                                                      _isCurrentRoomDirectMessage = _yield$findUserDirect4[1];
+                                                      _userState = _yield$findUserDirect4[2];
+
+                                                      if (!_directUserMessageRoom) {
+                                                        _context3.next = 43;
+                                                        break;
+                                                      }
+
+                                                      _context3.next = 43;
+                                                      return matrixClient.sendEvent(_directUserMessageRoom.roomId, "m.room.message", (0, _matrix.matrixWithdrawalConfirmedMessage)(userClientId, trans));
+
+                                                    case 43:
+                                                      _context3.next = 48;
+                                                      break;
+
+                                                    case 45:
+                                                      _context3.prev = 45;
+                                                      _context3.t0 = _context3["catch"](0);
+                                                      console.log(_context3.t0);
+
+                                                    case 48:
                                                       console.log('done');
 
-                                                    case 19:
+                                                    case 49:
                                                     case "end":
                                                       return _context3.stop();
                                                   }
                                                 }
-                                              }, _callee3);
+                                              }, _callee3, null, [[0, 45]]);
                                             })));
 
                                           case 45:
@@ -428,7 +494,7 @@ var syncTransactions = /*#__PURE__*/function () {
                                     }, _callee4);
                                   }));
 
-                                  return function (_x6) {
+                                  return function (_x7) {
                                     return _ref3.apply(this, arguments);
                                   };
                                 }());
@@ -572,7 +638,7 @@ var syncTransactions = /*#__PURE__*/function () {
     }, _callee5, null, [[5, 17, 21, 31], [22,, 26, 30]]);
   }));
 
-  return function syncTransactions(_x4, _x5) {
+  return function syncTransactions(_x4, _x5, _x6) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -653,13 +719,13 @@ var insertBlock = /*#__PURE__*/function () {
     }, _callee6, null, [[0, 19]]);
   }));
 
-  return function insertBlock(_x7) {
+  return function insertBlock(_x8) {
     return _ref5.apply(this, arguments);
   };
 }();
 
 var startRunebaseSync = /*#__PURE__*/function () {
-  var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee11(discordClient, telegramClient, queue) {
+  var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee11(discordClient, telegramClient, matrixClient, queue) {
     var currentBlockCount, startBlock, blocks, numOfIterations;
     return _regenerator["default"].wrap(function _callee11$(_context13) {
       while (1) {
@@ -704,7 +770,7 @@ var startRunebaseSync = /*#__PURE__*/function () {
                               switch (_context9.prev = _context9.next) {
                                 case 0:
                                   _context9.next = 2;
-                                  return syncTransactions(discordClient, telegramClient);
+                                  return syncTransactions(discordClient, telegramClient, matrixClient);
 
                                 case 2:
                                   task = _context9.sent;
@@ -752,7 +818,7 @@ var startRunebaseSync = /*#__PURE__*/function () {
                 }, _callee9);
               }));
 
-              return function (_x11) {
+              return function (_x13) {
                 return _ref7.apply(this, arguments);
               };
             }(), /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee10() {
@@ -778,7 +844,7 @@ var startRunebaseSync = /*#__PURE__*/function () {
     }, _callee11);
   }));
 
-  return function startRunebaseSync(_x8, _x9, _x10) {
+  return function startRunebaseSync(_x9, _x10, _x11, _x12) {
     return _ref6.apply(this, arguments);
   };
 }();

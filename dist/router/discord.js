@@ -363,7 +363,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               })));
 
             case 56:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'help')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'help')) {
                 _context17.next = 64;
                 break;
               }
@@ -404,7 +404,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               })));
 
             case 64:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'fees')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'fees')) {
                 _context17.next = 72;
                 break;
               }
@@ -445,7 +445,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               })));
 
             case 72:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'stats')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'stats')) {
                 _context17.next = 80;
                 break;
               }
@@ -486,7 +486,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               })));
 
             case 80:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'leaderboard')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'leaderboard')) {
                 _context17.next = 88;
                 break;
               }
@@ -522,7 +522,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               })));
 
             case 88:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'publicstats')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'publicstats')) {
                 _context17.next = 96;
                 break;
               }
@@ -563,7 +563,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               })));
 
             case 96:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'info')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'info')) {
                 _context17.next = 104;
                 break;
               }
@@ -604,7 +604,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               })));
 
             case 104:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'ignoreme')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'ignoreme')) {
                 _context17.next = 112;
                 break;
               }
@@ -645,7 +645,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               })));
 
             case 112:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'balance')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'balance')) {
                 _context17.next = 120;
                 break;
               }
@@ -686,7 +686,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               })));
 
             case 120:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'listtransactions')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'listtransactions')) {
                 _context17.next = 128;
                 break;
               }
@@ -727,7 +727,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               })));
 
             case 128:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'price')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'price')) {
                 _context17.next = 136;
                 break;
               }
@@ -768,7 +768,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               })));
 
             case 136:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'faucet')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'faucet')) {
                 _context17.next = 149;
                 break;
               }
@@ -823,7 +823,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               })));
 
             case 149:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'deposit')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'deposit')) {
                 _context17.next = 157;
                 break;
               }
@@ -864,7 +864,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               })));
 
             case 157:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'withdraw')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'withdraw')) {
                 _context17.next = 170;
                 break;
               }
@@ -901,7 +901,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               return (0, _executeTips.executeTipFunction)(_withdraw.withdrawDiscordCreate, queue, filteredMessageDiscord[3], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting, faucetSetting);
 
             case 170:
-              if (!(filteredMessageDiscord.length > 1 && filteredMessageDiscord[1].startsWith('<@'))) {
+              if (!(filteredMessageDiscord.length > 1 && filteredMessageDiscord[1] && filteredMessageDiscord[1].startsWith('<@'))) {
                 _context17.next = 191;
                 break;
               }
@@ -962,7 +962,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               return (0, _executeTips.executeTipFunction)(_tip.tipRunesToDiscordUser, queue, filteredMessageDiscord[AmountPosition], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting2, faucetSetting);
 
             case 191:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'voicerain')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'voicerain')) {
                 _context17.next = 204;
                 break;
               }
@@ -999,7 +999,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               return (0, _executeTips.executeTipFunction)(_voicerain.discordVoiceRain, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting3, faucetSetting);
 
             case 204:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'rain')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'rain')) {
                 _context17.next = 217;
                 break;
               }
@@ -1036,7 +1036,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               return (0, _executeTips.executeTipFunction)(_rain.discordRain, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting4, faucetSetting);
 
             case 217:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'flood')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'flood')) {
                 _context17.next = 230;
                 break;
               }
@@ -1073,7 +1073,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               return (0, _executeTips.executeTipFunction)(_flood.discordFlood, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting5, faucetSetting);
 
             case 230:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'thunder')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'thunder')) {
                 _context17.next = 243;
                 break;
               }
@@ -1110,7 +1110,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               return (0, _executeTips.executeTipFunction)(_thunder.discordThunder, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting6, faucetSetting);
 
             case 243:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'thunderstorm')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'thunderstorm')) {
                 _context17.next = 256;
                 break;
               }
@@ -1147,7 +1147,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               return (0, _executeTips.executeTipFunction)(_thunderstorm.discordThunderStorm, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting7, faucetSetting);
 
             case 256:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'hurricane')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'hurricane')) {
                 _context17.next = 269;
                 break;
               }
@@ -1184,7 +1184,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               return (0, _executeTips.executeTipFunction)(_hurricane.discordHurricane, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting8, faucetSetting);
 
             case 269:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'soak')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'soak')) {
                 _context17.next = 282;
                 break;
               }
@@ -1221,7 +1221,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               return (0, _executeTips.executeTipFunction)(_soak.discordSoak, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting9, faucetSetting);
 
             case 282:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'sleet')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'sleet')) {
                 _context17.next = 295;
                 break;
               }
@@ -1258,7 +1258,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               return (0, _executeTips.executeTipFunction)(_sleet.discordSleet, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting10, faucetSetting);
 
             case 295:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'reactdrop')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'reactdrop')) {
                 _context17.next = 308;
                 break;
               }
@@ -1295,7 +1295,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               return (0, _executeTips.executeTipFunction)(_reactdrop.discordReactDrop, queue, filteredMessageDiscord[2], discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, _setting11, faucetSetting);
 
             case 308:
-              if (!(filteredMessageDiscord[1].toLowerCase() === 'trivia')) {
+              if (!(filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'trivia')) {
                 _context17.next = 321;
                 break;
               }

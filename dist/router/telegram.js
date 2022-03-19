@@ -1332,7 +1332,7 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
               });
 
             case 33:
-              if (!(filteredMessageTelegram[1] === 'price')) {
+              if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'price')) {
                 _context22.next = 39;
                 break;
               }
@@ -1348,7 +1348,7 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
               });
 
             case 39:
-              if (!(filteredMessageTelegram[1] === 'info')) {
+              if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'info')) {
                 _context22.next = 45;
                 break;
               }
@@ -1364,7 +1364,7 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
               });
 
             case 45:
-              if (!(filteredMessageTelegram[1] === 'help')) {
+              if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'help')) {
                 _context22.next = 51;
                 break;
               }
@@ -1380,7 +1380,7 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
               });
 
             case 51:
-              if (!(filteredMessageTelegram[1] === 'faucet')) {
+              if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'faucet')) {
                 _context22.next = 57;
                 break;
               }
@@ -1401,7 +1401,7 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
                 break;
               }
 
-              if (!(filteredMessageTelegram[1] === 'referral' && !filteredMessageTelegram[2])) {
+              if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'referral' && !filteredMessageTelegram[2])) {
                 _context22.next = 64;
                 break;
               }
@@ -1417,7 +1417,7 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
               });
 
             case 64:
-              if (!(filteredMessageTelegram[1] === 'referral' && filteredMessageTelegram[2] === 'top')) {
+              if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'referral' && filteredMessageTelegram[2] === 'top')) {
                 _context22.next = 70;
                 break;
               }
@@ -1433,7 +1433,7 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
               });
 
             case 70:
-              if (!(filteredMessageTelegram[1] === 'balance')) {
+              if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'balance')) {
                 _context22.next = 76;
                 break;
               }
@@ -1449,7 +1449,7 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
               });
 
             case 76:
-              if (!(filteredMessageTelegram[1] === 'deposit')) {
+              if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'deposit')) {
                 _context22.next = 82;
                 break;
               }
@@ -1465,7 +1465,7 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
               });
 
             case 82:
-              if (!(filteredMessageTelegram[1] === 'withdraw')) {
+              if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'withdraw')) {
                 _context22.next = 109;
                 break;
               }
@@ -1532,7 +1532,7 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
               });
 
             case 109:
-              if (!(filteredMessageTelegram[1] === 'tip')) {
+              if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'tip')) {
                 _context22.next = 137;
                 break;
               }
@@ -1605,7 +1605,7 @@ var telegramRouter = function telegramRouter(telegramClient, queue, io, settings
               });
 
             case 137:
-              if (!(filteredMessageTelegram[1] === 'rain')) {
+              if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'rain')) {
                 _context22.next = 160;
                 break;
               }

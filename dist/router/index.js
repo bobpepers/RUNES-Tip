@@ -9,12 +9,24 @@ var _discord = require("./discord");
 
 var _telegram = require("./telegram");
 
+var _matrix = require("./matrix");
+
 var _notify = require("./notify");
 
-var router = function router(app, discordClient, telegramClient, io, settings, queue) {
-  (0, _notify.notifyRouter)(app, discordClient, telegramClient, settings, queue);
-  (0, _discord.discordRouter)(discordClient, queue, io, settings);
-  (0, _telegram.telegramRouter)(telegramClient, queue, io, settings);
+var router = function router(app, discordClient, telegramClient, matrixClient, io, settings, queue) {
+  (0, _notify.notifyRouter)(app, discordClient, telegramClient, matrixClient, settings, queue);
+
+  if (settings.bot.enabled.discord) {
+    (0, _discord.discordRouter)(discordClient, queue, io, settings);
+  }
+
+  if (settings.bot.enabled.telegram) {
+    (0, _telegram.telegramRouter)(telegramClient, queue, io, settings);
+  }
+
+  if (settings.bot.enabled.matrix) {
+    (0, _matrix.matrixRouter)(matrixClient, queue, io, settings);
+  }
 };
 
 exports.router = router;

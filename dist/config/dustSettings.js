@@ -11,7 +11,13 @@ module.exports = {
     },
     command: {
       discord: "!dusttip",
-      telegram: "!dusttip"
+      telegram: "!dusttip",
+      matrix: "!dusttip"
+    },
+    enabled: {
+      telegram: true,
+      discord: true,
+      matrix: false
     }
   },
   coin: {

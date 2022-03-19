@@ -244,11 +244,10 @@ export const matrixRouter = async (
     }
     // console.log(body);
     if (myBody) {
-      const space = await matrixClient.getRoomHierarchy(message.event.room_id, 100, 100, false);
-      const directories = await matrixClient.getRoomSummary(message.event.room_id);
-      console.log(space);
-      console.log(directories);
-      console.log('88888888888888888888');
+      // const space = await matrixClient.getRoomHierarchy(message.event.room_id, 100, 100, false);
+      // const directories = await matrixClient.getRoomSummary(message.event.room_id);
+      // console.log(space);
+      // console.log(directories);
 
       if (!myBody.startsWith(settings.bot.command.matrix)) return;
       if (myBody.startsWith(settings.bot.command.matrix)) {
@@ -268,7 +267,6 @@ export const matrixRouter = async (
           } catch (e) {
             console.log(e);
           }
-          // await message.channel.send({ embeds: [discordServerBannedMessage(groupTask)] });
           return;
         }
         if (lastSeenMatrixTask && lastSeenMatrixTask.banned) {
@@ -281,7 +279,6 @@ export const matrixRouter = async (
           } catch (e) {
             console.log(e);
           }
-          // await message.channel.send({ embeds: [discordUserBannedMessage(lastSeenDiscordTask)] });
           return;
         }
 

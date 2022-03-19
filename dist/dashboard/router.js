@@ -77,7 +77,7 @@ var IsAuthenticated = function IsAuthenticated(req, res, next) {
   }
 };
 
-var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramClient) {
+var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramClient, matrixClient) {
   app.get('/api/authenticated', function (req, res, next) {
     if (req.isAuthenticated()) {
       next();
@@ -91,6 +91,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
   app.post('/api/withdrawal/accept', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, _ip.insertIp, function (req, res, next) {
     res.locals.discordClient = discordClient;
     res.locals.telegramClient = telegramClient;
+    res.locals.matrixClient = matrixClient;
     next();
   }, _withdrawals.acceptWithdrawal, function (req, res) {
     if (res.locals.error) {
@@ -110,6 +111,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
   app.post('/api/withdrawal/decline', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, _ip.insertIp, function (req, res, next) {
     res.locals.discordClient = discordClient;
     res.locals.telegramClient = telegramClient;
+    res.locals.matrixClient = matrixClient;
     next();
   }, _withdrawals.declineWithdrawal, function (req, res) {
     if (res.locals.error) {

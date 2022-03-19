@@ -11,7 +11,13 @@ module.exports = {
     },
     command: {
       discord: "!piratetip",
-      telegram: "!piratetip"
+      telegram: "!piratetip",
+      matrix: "!piratetip"
+    },
+    enabled: {
+      telegram: true,
+      discord: true,
+      matrix: false
     }
   },
   coin: {

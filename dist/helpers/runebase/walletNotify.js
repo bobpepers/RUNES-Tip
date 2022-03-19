@@ -92,7 +92,12 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
                                       res.locals.userId = address.wallet.user.user_id.replace('telegram-', '');
                                     }
 
-                                    console.log(transaction);
+                                    if (address.wallet.user.user_id.startsWith('matrix')) {
+                                      res.locals.platform = 'matrix';
+                                      res.locals.userId = address.wallet.user.user_id.replace('matrix-', '');
+                                    } // console.log(transaction);
+
+
                                     _context.next = 10;
                                     return _models["default"].transaction.findOrCreate({
                                       where: {

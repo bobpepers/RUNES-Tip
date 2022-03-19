@@ -82,11 +82,13 @@ export const matrixFlood = async (
     if (!user) return;
 
     const withoutBots = await mapMembers(
+      matrixClient,
       message,
       t,
       onlineMembers,
       setting,
     );
+
     const [
       activityValiateAmount,
       amount,
@@ -99,6 +101,7 @@ export const matrixFlood = async (
       setting,
       filteredMessage[1].toLowerCase(),
     );
+
     if (activityValiateAmount) {
       activity.unshift(activityValiateAmount);
       return;
@@ -147,7 +150,6 @@ export const matrixFlood = async (
       userCount: withoutBots.length,
       userId: user.id,
       groupId: groupTask.id,
-      // channelId: channelTask.id,
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
@@ -199,7 +201,6 @@ export const matrixFlood = async (
         userId: floodee.id,
         floodId: floodRecord.id,
         groupId: groupTask.id,
-        // channelId: channelTask.id,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,

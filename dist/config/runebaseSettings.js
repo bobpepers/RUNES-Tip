@@ -11,7 +11,13 @@ module.exports = {
     },
     command: {
       discord: "!runestip",
-      telegram: "!runestip"
+      telegram: "!runestip",
+      matrix: "!runestip"
+    },
+    enabled: {
+      telegram: true,
+      discord: true,
+      matrix: true
     }
   },
   coin: {
