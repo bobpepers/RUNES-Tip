@@ -1267,7 +1267,6 @@ Performs a react airdrop with the amount, optionally within custom time, optiona
 \`${settings.bot.command.discord} trivia <amount> [<amountOfPeople>] [<time>]\`
 Performs a trivia with the amount, optionally with set amount of of people, optionally within custom time. <time> parameter accepts time interval expressions in the form of:\`60s\`, \`5m\`, \`1h\`. Default time interval is \`5m\`(5minutes), e.g. \`${settings.bot.command.discord} trivia 5\`, \`${settings.bot.command.discord} trivia 5 3 40s\`
 
-
 \`${settings.bot.command.discord} ignoreme\`
 Turns @mentioning you during mass operations on/off
 

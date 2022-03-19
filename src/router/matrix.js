@@ -11,6 +11,9 @@ import { matrixBalance } from '../controllers/matrix/balance';
 import { matrixWalletDepositAddress } from '../controllers/matrix/deposit';
 import { withdrawMatrixCreate } from '../controllers/matrix/withdraw';
 import { matrixFlood } from '../controllers/matrix/flood';
+import { matrixSleet } from '../controllers/matrix/sleet';
+import { setIgnoreMe } from '../controllers/matrix/ignore';
+
 import {
   findUserDirectMessageRoom,
   inviteUserToDirectMessageRoom,
@@ -34,7 +37,6 @@ import {
 } from '../messages/matrix';
 
 import { discordRain } from '../controllers/discord/rain';
-import { discordSleet } from '../controllers/discord/sleet';
 
 import {
   tipCoinsToDiscordFaucet,
@@ -54,8 +56,6 @@ import { discordThunderStorm } from '../controllers/discord/thunderstorm';
 import { discordHurricane } from '../controllers/discord/hurricane';
 
 import { discordFaucetClaim } from '../controllers/discord/faucet';
-
-import { setIgnoreMe } from '../controllers/discord/ignore';
 
 import { discordPrice } from '../controllers/discord/price';
 
@@ -288,6 +288,9 @@ export const matrixRouter = async (
         const filteredMessageWithTags = preFilteredMessageWithTags.filter((el) => el !== '');
         const preFilteredMessage = myBody.split(' ');
         const filteredMessage = preFilteredMessage.filter((el) => el !== '');
+        console.log(filteredMessageWithTags);
+        console.log(filteredMessage);
+        console.log("myBody");
 
         const userDirectMessageRoomId = await inviteUserToDirectMessageRoom(
           matrixClient,
@@ -337,6 +340,19 @@ export const matrixRouter = async (
               matrixClient,
               message,
               userDirectMessageRoomId,
+              io,
+            );
+          });
+        }
+
+        if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'ignoreme') {
+          // const limited = await limitHelp(message);
+          // if (limited) return;
+          await queue.add(async () => {
+            // const task = await discordHelp(message, io);
+            const task = await setIgnoreMe(
+              matrixClient,
+              message,
               io,
             );
           });
@@ -400,6 +416,35 @@ export const matrixRouter = async (
 
           await executeTipFunction(
             matrixFlood,
+            queue,
+            filteredMessage[3],
+            matrixClient,
+            message,
+            filteredMessage,
+            io,
+            groupTask,
+            setting,
+            faucetSetting,
+            userDirectMessageRoomId,
+            isCurrentRoomDirectMessage,
+          );
+        }
+
+        if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'sleet') {
+          const setting = await matrixSettings(
+            matrixClient,
+            message,
+            'sleet',
+            groupTaskId,
+            channelTaskId,
+          );
+          if (!setting) return;
+          console.log(settings);
+          // const limited = await limitWithdraw(message);
+          // if (limited) return;
+
+          await executeTipFunction(
+            matrixSleet,
             queue,
             filteredMessage[3],
             matrixClient,

@@ -88,11 +88,25 @@ show this help message
 ${settings.bot.command.matrix}  help
 show this help message
 
+${settings.bot.command.matrix} balance
+Displays balance
+
 ${settings.bot.command.matrix}  deposit
 Displays your deposit address
 
 ${settings.bot.command.matrix} withdraw <address> <amount|all>
 Withdraws the entered amount to a ${settings.coin.name} address of your choice
+
+${settings.bot.command.discord} flood [amount|all]
+Floods the desired amount onto all users (including offline users)
+example: ${settings.bot.command.discord} flood 5.00
+
+${settings.bot.command.discord} sleet <amount|all> [<time>]
+Makes a sleet storm with the desired amount onto all users that have been active in the room in the last 15 minutes (optionally, within specified time)
+example: \`${settings.bot.command.discord} sleet 5.00\`, \`${settings.bot.command.discord} sleet 5.00 @supporters
+
+${settings.bot.command.discord} ignoreme
+Turns @mentioning you during mass operations on/off
 
 ${settings.bot.name} v${pjson.version}`,
     msgtype: "m.text",
@@ -105,18 +119,25 @@ ${settings.bot.name} v${pjson.version}`,
 <code>${settings.bot.command.matrix} help</code>
 <p>show this message</p>
 
-<code>${settings.bot.command.matrix} deposit</code>
-<p>Displays your deposit address</p>
-
-<code>${settings.bot.command.matrix} withdraw [address] [amount|all]</code>
-<p>Withdraws the entered amount to a ${settings.coin.name} address of your choice</p>
-
 <code>${settings.bot.command.matrix} balance</code>
 <p>Displays balance</p>
 
-<code>${settings.bot.command.discord} flood [amount|all]</code>
+<code>${settings.bot.command.matrix} deposit</code>
+<p>Displays your deposit address</p>
+
+<code>${settings.bot.command.matrix} withdraw &lt;address&gt; &lt;amount|all&gt;</code>
+<p>Withdraws the entered amount to a ${settings.coin.name} address of your choice</p>
+
+<code>${settings.bot.command.discord} flood &lt;amount|all&gt;</code>
 <p>Floods the desired amount onto all users (including offline users)<br>
 example: ${settings.bot.command.discord} flood 5.00</p>
+
+<code>${settings.bot.command.discord} sleet &lt;amount|all&gt; [&lt;time&gt;]</code>
+<p>Makes a sleet storm with the desired amount onto all users that have been active in the room in the last 15 minutes (optionally, within specified time)<br>
+example: \`${settings.bot.command.discord} sleet 5.00\`, \`${settings.bot.command.discord} sleet 5.00 @supporters</p>
+
+<code>${settings.bot.command.discord} ignoreme</code>
+<p>Turns @mentioning you during mass operations on/off</p>
 
 <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
   };
@@ -539,12 +560,64 @@ ${message.sender.name} ${typeH} **${amount / 1e8} ${settings.coin.ticker}** on $
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
 <h6>${type} #${id}</h6>
-<p><strong>${message.sender.name} ${typeH} **${amount / 1e8} ${settings.coin.ticker}** on ${withoutBots.length} users<br>
-💸 **${amountPerUser / 1e8} ${settings.coin.ticker}** each 💸</strong></p>
+<p><strong>${message.sender.name} ${typeH} <u>${amount / 1e8} ${settings.coin.ticker}</u> on ${withoutBots.length} users<br>
+💸 <u>${amountPerUser / 1e8} ${settings.coin.ticker}</u> each 💸</strong></p>
 <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
   };
   return result;
 };
+
+export const groupNotFoundMessage = () => {
+  const result = {
+    body: "Room not found",
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>Room not found</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const invalidTimeMessage = (message, title) => {
+  const result = {
+    body: `${title}
+${message.sender.name}, Invalid time`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><h6>${title}</h6><br><p><strong>${message.sender.name}, Invalid time</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const ignoreMeMessage = (message) => {
+  const result = {
+    body: `Ignore me
+${message.sender.name}, you will no longer be @mentioned while receiving rains, soaks and other mass operations, but will continue to receive coins from them.
+If you wish to be @mentioned, please issue this command again.`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><h6>Ignore me</h6><p><strong>${message.sender.name}, you will no longer be @mentioned while receiving rains, soaks and other mass operations, but will continue to receive coins from them.<br>
+If you wish to be @mentioned, please issue this command again.</strong></p>
+  <font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
+export const unIngoreMeMessage = (message) => {
+  const result = {
+    body: `Ignore me
+${message.sender.name}, you will again be @mentioned while receiving rains, soaks and other mass operations.
+If you do not wish to be @mentioned, please issue this command again.`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><h6>Ignore me</h6><p><strong>${message.sender.name}, you will again be @mentioned while receiving rains, soaks and other mass operations.<br>
+If you do not wish to be @mentioned, please issue this command again.</strong></p>
+<font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></blockquote>`,
+  };
+  return result;
+};
+
 /// /
 export const testMessage = () => {
   const result = {
