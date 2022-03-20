@@ -85,7 +85,9 @@ export const discordStats = async (
       spenderId: user.id,
     });
     activity.unshift(activityA);
-    await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Ignore me')] });
+    await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Ignore me')] }).catch((e) => {
+      console.log(e);
+    });
     return;
   }
 
@@ -112,7 +114,9 @@ export const discordStats = async (
       spenderId: user.id,
     });
     activity.unshift(activityA);
-    await message.channel.send({ embeds: [invalidTimeMessage(message, 'Stats')] });
+    await message.channel.send({ embeds: [invalidTimeMessage(message, 'Stats')] }).catch((e) => {
+      console.log(e);
+    });
     return;
   }
 
@@ -150,7 +154,9 @@ export const discordStats = async (
   if (message.channel.type === 'GUILD_TEXT') {
     childWhereOptions.groupId = groupTask.id;
     childWhereOptionsTriviaTips.groupId = groupTask.id;
-    message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Statistics')] });
+    message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Statistics')] }).catch((e) => {
+      console.log(e);
+    });
   }
 
   user = await db.user.findOne({
@@ -518,7 +524,9 @@ export const discordStats = async (
   );
 
   if (_.isEmpty(mergedObject)) {
-    await message.author.send({ embeds: [statsMessage(message, "No data found!")] });
+    await message.author.send({ embeds: [statsMessage(message, "No data found!")] }).catch((e) => {
+      console.log(e);
+    });
   }
   // eslint-disable-next-line no-restricted-syntax
   for (const serverObj in mergedObject) {
@@ -604,7 +612,9 @@ ${spendTips ? `Tips: ${spendTips}\n` : ''}${spendRains ? `Rains: ${spendRains}\n
 ${mergedObject[serverObj].earned ? '_Earned_\n' : ''}
 ${earnedTips ? `Tips: ${earnedTips}\n` : ''}${earnedRains ? `Rains: ${earnedRains}\n` : ''}${earnedFloods ? `Floods: ${earnedFloods}\n` : ''}${earnedSoaks ? `Soaks: ${earnedSoaks}\n` : ''}${earnedHurricanes ? `Hurricanes: ${earnedHurricanes}\n` : ''}${earnedThunders ? `Thunders: ${earnedThunders}\n` : ''}${earnedThunderstorms ? `Thunderstorms: ${earnedThunderstorms}\n` : ''}${earnedReactDrops ? `ReactDrops: ${earnedReactDrops}\n` : ''}${earnedTrivias ? `Trivia: ${earnedTrivias}\n` : ''}${earnedTotal ? `Total Earned: ${earnedTotal} ${settings.coin.ticker}\n` : ''}`;
     // eslint-disable-next-line no-await-in-loop
-    await message.author.send({ embeds: [statsMessage(message, serverString)] });
+    await message.author.send({ embeds: [statsMessage(message, serverString)] }).catch((e) => {
+      console.log(e);
+    });
   }
 
   const preActivity = await db.activity.create({

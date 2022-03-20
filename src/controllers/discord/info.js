@@ -5,7 +5,10 @@ import {
 } from '../../messages/discord';
 import db from '../../models';
 
-export const discordCoinInfo = async (message, io) => {
+export const discordCoinInfo = async (
+  message,
+  io,
+) => {
   const blockHeight = await db.block.findOne({
     order: [['id', 'DESC']],
   });
@@ -13,11 +16,15 @@ export const discordCoinInfo = async (message, io) => {
     order: [['id', 'ASC']],
   });
   if (message.channel.type === 'DM') {
-    message.author.send({ embeds: [coinInfoMessage(blockHeight.id, priceInfo)] });
+    message.author.send({ embeds: [coinInfoMessage(blockHeight.id, priceInfo)] }).catch((e) => {
+      console.log(e);
+    });
   }
   if (message.channel.type === 'GUILD_TEXT') {
     message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Coin Info')] });
-    message.author.send({ embeds: [coinInfoMessage(blockHeight.id, priceInfo)] });
+    message.author.send({ embeds: [coinInfoMessage(blockHeight.id, priceInfo)] }).catch((e) => {
+      console.log(e);
+    });
   }
   const activity = [];
   const user = await db.user.findOne({

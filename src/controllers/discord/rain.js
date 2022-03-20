@@ -25,7 +25,9 @@ export const discordRain = async (
   queue,
 ) => {
   if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] }).catch((e) => {
+      console.log(e);
+    });
     return;
   }
 
@@ -93,7 +95,9 @@ export const discordRain = async (
         transaction: t,
       });
       activity.unshift(fActivity);
-      await message.channel.send('Not enough online users');
+      await message.channel.send('Not enough online users').catch((e) => {
+        console.log(e);
+      });
       return;
     }
 
@@ -262,7 +266,9 @@ export const discordRain = async (
     }
     console.log(err);
     logger.error(`rain error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Rain")] });
+    message.channel.send({ embeds: [discordErrorMessage("Rain")] }).catch((e) => {
+      console.log(e);
+    });
   });
   io.to('admin').emit('updateActivity', {
     activity,

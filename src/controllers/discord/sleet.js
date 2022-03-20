@@ -27,7 +27,9 @@ export const discordSleet = async (
   queue,
 ) => {
   if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] }).catch((e) => {
+      console.log(e);
+    });
     return;
   }
   const activity = [];
@@ -81,7 +83,9 @@ export const discordSleet = async (
         transaction: t,
       });
       activity.unshift(groupFailActivity);
-      await message.channel.send("Group not found");
+      await message.channel.send("Group not found").catch((e) => {
+        console.log(e);
+      });
       return;
     }
     let textTime;
@@ -117,7 +121,9 @@ export const discordSleet = async (
         transaction: t,
       });
       activity.unshift(activityA);
-      await message.channel.send({ embeds: [invalidTimeMessage(message, 'Sleet')] });
+      await message.channel.send({ embeds: [invalidTimeMessage(message, 'Sleet')] }).catch((e) => {
+        console.log(e);
+      });
       return;
     }
 
@@ -358,7 +364,9 @@ export const discordSleet = async (
     }
     console.log(err);
     logger.error(`sleet error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Sleet")] });
+    message.channel.send({ embeds: [discordErrorMessage("Sleet")] }).catch((e) => {
+      console.log(e);
+    });
   });
   io.to('admin').emit('updateActivity', {
     activity,

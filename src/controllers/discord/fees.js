@@ -69,7 +69,9 @@ export const fetchFeeSchedule = async (
       ],
     });
     activity.unshift(finalActivityFail);
-    await message.author.send("User not found!");
+    await message.author.send("User not found!").catch((e) => {
+      console.log(e);
+    });
   }
 
   fee.tip = await findFee(

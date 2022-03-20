@@ -328,7 +328,6 @@ export const matrixRouter = async (
           // const limited = await limitHelp(message);
           // if (limited) return;
           await queue.add(async () => {
-            // const task = await discordHelp(message, io);
             const task = await matrixHelp(
               matrixClient,
               message,
@@ -342,7 +341,6 @@ export const matrixRouter = async (
           // const limited = await limitHelp(message);
           // if (limited) return;
           await queue.add(async () => {
-            // const task = await discordHelp(message, io);
             const task = await matrixBalance(
               matrixClient,
               message,
@@ -356,7 +354,6 @@ export const matrixRouter = async (
           // const limited = await limitHelp(message);
           // if (limited) return;
           await queue.add(async () => {
-            // const task = await discordHelp(message, io);
             const task = await setIgnoreMe(
               matrixClient,
               message,
@@ -369,7 +366,6 @@ export const matrixRouter = async (
           // const limited = await limitHelp(message);
           // if (limited) return;
           await queue.add(async () => {
-            // const task = await discordHelp(message, io);
             const task = await matrixWalletDepositAddress(
               matrixClient,
               message,
@@ -512,12 +508,12 @@ export const matrixRouter = async (
           let AmountPositionEnded = false;
           while (!AmountPositionEnded) {
             AmountPosition += 1;
-            if (!filteredMessageWithTags[AmountPosition].startsWith('<a')) {
+            if (!filteredMessageWithTags[parseInt(AmountPosition, 10)].startsWith('<a')) {
               AmountPositionEnded = true;
             }
           }
 
-          const preSplitAfterTags = filteredMessageWithTags[AmountPosition].split(' ');
+          const preSplitAfterTags = filteredMessageWithTags[parseInt(AmountPosition, 10)].split(' ');
           const splitAfterTags = preSplitAfterTags.filter((el) => el !== '');
           const filteredMessageWithTagsClean = filteredMessageWithTags.splice(0, AmountPosition);
           const finalFilteredTipsWithTags = filteredMessageWithTagsClean.concat(splitAfterTags);
@@ -527,7 +523,7 @@ export const matrixRouter = async (
           await executeTipFunction(
             tipRunesToMatrixUser,
             queue,
-            finalFilteredTipsWithTags[AmountPosition],
+            finalFilteredTipsWithTags[parseInt(AmountPosition, 10)],
             matrixClient,
             message,
             finalFilteredTipsWithTags,

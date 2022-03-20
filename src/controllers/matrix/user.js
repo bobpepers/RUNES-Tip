@@ -3,21 +3,23 @@ import db from '../../models';
 import logger from "../../helpers/logger";
 
 import { getInstance } from "../../services/rclient";
-import getCoinSettings from '../../config/settings';
+// import getCoinSettings from '../../config/settings';
 import { matrixWelcomeMessage } from '../../messages/matrix';
 
-const settings = getCoinSettings();
+// const settings = getCoinSettings();
 
 export const createUpdateMatrixUser = async (
   message,
   matrixClient,
   queue,
 ) => {
+  let user;
+  let newUserDetected;
   await queue.add(async () => {
     await db.sequelize.transaction({
       isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
     }, async (t) => {
-      let user = await db.user.findOne(
+      user = await db.user.findOne(
         {
           where: {
             user_id: `matrix-${message.sender.userId}`,
@@ -102,15 +104,22 @@ export const createUpdateMatrixUser = async (
             });
             console.log("added address");
           }
-          await matrixClient.sendEvent(
-            message.event.room_id,
-            "m.room.message",
-            matrixWelcomeMessage(user.username),
-          );
+          newUserDetected = true;
         }
       }
 
-      t.afterCommit(() => {
+      t.afterCommit(async () => {
+        if (newUserDetected) {
+          try {
+            await matrixClient.sendEvent(
+              message.event.room_id,
+              "m.room.message",
+              matrixWelcomeMessage(user.username),
+            );
+          } catch (e) {
+            console.log(e);
+          }
+        }
         console.log('done');
         // ctx.reply(`done`);
       });
@@ -136,9 +145,6 @@ export const updateMatrixLastSeen = async (
   let updatedUser;
   let currentRoom;
   let guildId;
-
-  console.log(message.sender);
-  console.log('senderrrrr');
 
   try {
     currentRoom = await matrixClient.getRoom(message.event.room_id);
@@ -219,7 +225,7 @@ export const updateMatrixLastSeen = async (
       }
 
       t.afterCommit(() => {
-        console.log('done');
+        console.log('done updated user');
       });
     }).catch(async (err) => {
       try {

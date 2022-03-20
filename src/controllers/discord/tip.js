@@ -28,7 +28,9 @@ export const tipRunesToDiscordUser = async (
   queue,
 ) => {
   if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] });
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] }).catch((e) => {
+      console.log(e);
+    });
     return;
   }
   const activity = [];
@@ -109,7 +111,9 @@ export const tipRunesToDiscordUser = async (
     }
 
     if (usersToTip.length < 1) {
-      await message.channel.send({ embeds: [notEnoughUsersToTip(message)] });
+      await message.channel.send({ embeds: [notEnoughUsersToTip(message)] }).catch((e) => {
+        console.log(e);
+      });
       return;
     }
 
@@ -309,7 +313,9 @@ export const tipRunesToDiscordUser = async (
     }
     console.log(err);
     logger.error(`tip error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Tip")] });
+    message.channel.send({ embeds: [discordErrorMessage("Tip")] }).catch((e) => {
+      console.log(e);
+    });
   });
   io.to('admin').emit('updateActivity', {
     activity,
@@ -328,7 +334,9 @@ export const tipCoinsToDiscordFaucet = async (
   queue,
 ) => {
   if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] });
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] }).catch((e) => {
+      console.log(e);
+    });
     return;
   }
   const activity = [];
@@ -523,7 +531,9 @@ export const tipCoinsToDiscordFaucet = async (
   }).catch((err) => {
     console.log(err);
     logger.error(`tip error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Tip")] });
+    message.channel.send({ embeds: [discordErrorMessage("Tip")] }).catch((e) => {
+      console.log(e);
+    });
   });
   io.to('admin').emit('updateActivity', {
     activity,

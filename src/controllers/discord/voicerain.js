@@ -25,7 +25,9 @@ export const discordVoiceRain = async (
   queue,
 ) => {
   if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Voicerain')] });
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Voicerain')] }).catch((e) => {
+      console.log(e);
+    });
     return;
   }
   if (!filteredMessage[3].startsWith('<#')) {

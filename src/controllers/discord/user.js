@@ -98,7 +98,9 @@ export const createUpdateDiscordUser = async (
             });
           }
           message.author.send(`Welcome ${message.author.username}, we created a wallet for you.
-Type "${settings.bot.command.discord} help" for usage info`);
+Type "${settings.bot.command.discord} help" for usage info`).catch((e) => {
+            console.log(e);
+          });
         }
       }
 

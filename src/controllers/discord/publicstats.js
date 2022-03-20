@@ -33,7 +33,9 @@ export const discordPublicStats = async (
         transaction: t,
       });
       activity.unshift(activityA);
-      await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Ignore me')] });
+      await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Ignore me')] }).catch((e) => {
+        console.log(e);
+      });
       return;
     }
 
@@ -44,7 +46,9 @@ export const discordPublicStats = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      await message.channel.send({ embeds: [disablePublicStatsMessage(message)] });
+      await message.channel.send({ embeds: [disablePublicStatsMessage(message)] }).catch((e) => {
+        console.log(e);
+      });
     } else if (!user.publicStats) {
       await user.update({
         publicStats: true,
@@ -52,7 +56,9 @@ export const discordPublicStats = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      await message.channel.send({ embeds: [enablePublicStatsMeMessage(message)] });
+      await message.channel.send({ embeds: [enablePublicStatsMeMessage(message)] }).catch((e) => {
+        console.log(e);
+      });
     }
 
     const preActivity = await db.activity.create({
@@ -93,7 +99,9 @@ export const discordPublicStats = async (
     }
     console.log(err);
     logger.error(`publicstats error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("PublicStats")] });
+    message.channel.send({ embeds: [discordErrorMessage("PublicStats")] }).catch((e) => {
+      console.log(e);
+    });
   });
   io.to('admin').emit('updateActivity', {
     activity,

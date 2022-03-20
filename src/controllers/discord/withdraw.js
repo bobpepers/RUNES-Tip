@@ -63,10 +63,14 @@ export const withdrawDiscordCreate = async (
         //
         console.log(e);
         if (e.response && e.response.status === 500) {
-          await message.author.send({ embeds: [invalidAddressMessage(message)] });
+          await message.author.send({ embeds: [invalidAddressMessage(message)] }).catch((e) => {
+            console.log(e);
+          });
           return;
         }
-        await message.author.send('Runebase node offline');
+        await message.author.send('Runebase node offline').catch((e) => {
+          console.log(e);
+        });
         return;
       }
     }
@@ -85,7 +89,9 @@ export const withdrawDiscordCreate = async (
     //
 
     if (!isValidAddress) {
-      await message.author.send({ embeds: [invalidAddressMessage(message)] });
+      await message.author.send({ embeds: [invalidAddressMessage(message)] }).catch((e) => {
+        console.log(e);
+      });
       return;
     }
 
@@ -165,12 +171,18 @@ export const withdrawDiscordCreate = async (
     const userId = user.user_id.replace('discord-', '');
 
     if (message.channel.type === 'DM') {
-      await message.author.send({ embeds: [reviewMessage(message, transaction)] });
+      await message.author.send({ embeds: [reviewMessage(message, transaction)] }).catch((e) => {
+        console.log(e);
+      });
     }
 
     if (message.channel.type === 'GUILD_TEXT') {
-      await message.channel.send({ embeds: [warnDirectMessage(userId, 'Balance')] });
-      await message.author.send({ embeds: [reviewMessage(message, transaction)] });
+      await message.channel.send({ embeds: [warnDirectMessage(userId, 'Balance')] }).catch((e) => {
+        console.log(e);
+      });
+      await message.author.send({ embeds: [reviewMessage(message, transaction)] }).catch((e) => {
+        console.log(e);
+      });
     }
 
     t.afterCommit(() => {
@@ -187,6 +199,8 @@ export const withdrawDiscordCreate = async (
     }
     console.log(err);
     logger.error(`withdraw error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Withdraw")] });
+    message.channel.send({ embeds: [discordErrorMessage("Withdraw")] }).catch((e) => {
+      console.log(e);
+    });
   });
 };

@@ -53,12 +53,16 @@ export const fetchDiscordListTransactions = async (
       });
 
       if (message.channel.type === 'DM') {
-        await message.author.send({ embeds: [listTransactionsMessage(userId, user, transactions)] });
+        await message.author.send({ embeds: [listTransactionsMessage(userId, user, transactions)] }).catch((e) => {
+          console.log(e);
+        });
       }
 
       if (message.channel.type === 'GUILD_TEXT') {
         await message.channel.send({ embeds: [warnDirectMessage(userId, 'Balance')] });
-        await message.author.send({ embeds: [listTransactionsMessage(userId, user, transactions)] });
+        await message.author.send({ embeds: [listTransactionsMessage(userId, user, transactions)] }).catch((e) => {
+          console.log(e);
+        });
       }
       const createActivity = await db.activity.create({
         type: 'listtransactions_s',

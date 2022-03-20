@@ -30,7 +30,9 @@ export const setIgnoreMe = async (message, io) => {
         transaction: t,
       });
       activity.unshift(activityA);
-      await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Ignore me')] });
+      await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Ignore me')] }).catch((e) => {
+        console.log(e);
+      });
       return;
     }
     if (user.ignoreMe) {
@@ -40,7 +42,9 @@ export const setIgnoreMe = async (message, io) => {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      message.channel.send({ embeds: [unIngoreMeMessage(message)] });
+      message.channel.send({ embeds: [unIngoreMeMessage(message)] }).catch((e) => {
+        console.log(e);
+      });
       return;
     }
     if (!user.ignoreMe) {
@@ -50,7 +54,9 @@ export const setIgnoreMe = async (message, io) => {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      message.channel.send({ embeds: [ignoreMeMessage(message)] });
+      message.channel.send({ embeds: [ignoreMeMessage(message)] }).catch((e) => {
+        console.log(e);
+      });
       return;
     }
     const preActivity = await db.activity.create({
@@ -84,7 +90,9 @@ export const setIgnoreMe = async (message, io) => {
     }
     console.log(err);
     logger.error(`ignoreme error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Ignore me")] });
+    message.channel.send({ embeds: [discordErrorMessage("Ignore me")] }).catch((e) => {
+      console.log(e);
+    });
   });
   io.to('admin').emit('updateActivity', {
     activity,

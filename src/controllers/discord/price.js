@@ -44,7 +44,9 @@ export const discordPrice = async (
 
     if (!user && !user.wallet) {
       // ctx.reply(`Wallet not found`);
-      await message.author.send("Wallet not found");
+      await message.author.send("Wallet not found").catch((e) => {
+        console.log(e);
+      });
     }
 
     if (user && user.wallet) {
@@ -55,7 +57,9 @@ export const discordPrice = async (
         let replyString = ``;
         replyString += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('\n');
         if (message.channel.type === 'DM') {
-          await message.author.send({ embeds: [priceMessage(replyString)] });
+          await message.author.send({ embeds: [priceMessage(replyString)] }).catch((e) => {
+            console.log(e);
+          });
         }
         if (message.channel.type === 'GUILD_TEXT') {
           await message.channel.send({ embeds: [priceMessage(replyString)] });

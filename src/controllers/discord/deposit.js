@@ -34,7 +34,9 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
     });
 
     if (!user && !user.wallet && !user.wallet.addresses) {
-      await message.author.send("Deposit Address not found");
+      await message.author.send("Deposit Address not found").catch((e) => {
+        console.log(e);
+      });
     }
 
     if (user && user.wallet && user.wallet.addresses) {
@@ -47,6 +49,8 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
         await message.author.send({
           embeds: [depositAddressMessage(userId, user)],
           files: [new MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')],
+        }).catch((e) => {
+          console.log(e);
         });
       }
       if (message.channel.type === 'GUILD_TEXT') {
@@ -54,6 +58,8 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
         await message.author.send({
           embeds: [depositAddressMessage(userId, user)],
           files: [new MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')],
+        }).catch((e) => {
+          console.log(e);
         });
       }
 

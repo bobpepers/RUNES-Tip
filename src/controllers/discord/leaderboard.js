@@ -29,11 +29,15 @@ export const discordLeaderboard = async (message, io) => {
   }
   // const reactdrop = await db.reactdrop.find
   if (message.channel.type === 'DM') {
-    message.author.send({ embeds: [statsMessage(message)] });
+    message.author.send({ embeds: [statsMessage(message)] }).catch((e) => {
+      console.log(e);
+    });
   }
   if (message.channel.type === 'GUILD_TEXT') {
     message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Help')] });
-    message.author.send({ embeds: [statsMessage(message)] });
+    message.author.send({ embeds: [statsMessage(message)] }).catch((e) => {
+      console.log(e);
+    });
   }
 
   let activity;

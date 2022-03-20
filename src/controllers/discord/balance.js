@@ -52,12 +52,16 @@ export const fetchDiscordWalletBalance = async (
       const userId = user.user_id.replace('discord-', '');
 
       if (message.channel.type === 'DM') {
-        await message.author.send({ embeds: [balanceMessage(userId, user, priceInfo)] });
+        await message.author.send({ embeds: [balanceMessage(userId, user, priceInfo)] }).catch((e) => {
+          console.log(e);
+        });
       }
 
       if (message.channel.type === 'GUILD_TEXT') {
         await message.channel.send({ embeds: [warnDirectMessage(userId, 'Balance')] });
-        await message.author.send({ embeds: [balanceMessage(userId, user, priceInfo)] });
+        await message.author.send({ embeds: [balanceMessage(userId, user, priceInfo)] }).catch((e) => {
+          console.log(e);
+        });
       }
       const createActivity = await db.activity.create({
         type: 'balance',

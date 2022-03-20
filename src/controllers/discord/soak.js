@@ -25,7 +25,9 @@ export const discordSoak = async (
   queue,
 ) => {
   if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] }).catch((e) => {
+      console.log(e);
+    });
     return;
   }
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
@@ -86,7 +88,9 @@ export const discordSoak = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await message.channel.send('Not enough online users');
+      await message.channel.send('Not enough online users').catch((e) => {
+        console.log(e);
+      });
       return;
     }
     const updatedBalance = await user.wallet.update({
@@ -251,7 +255,9 @@ export const discordSoak = async (
     }
     console.log(err);
     logger.error(`soak error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Soak")] });
+    message.channel.send({ embeds: [discordErrorMessage("Soak")] }).catch((e) => {
+      console.log(e);
+    });
   });
   io.to('admin').emit('updateActivity', {
     activity,

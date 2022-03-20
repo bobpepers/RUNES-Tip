@@ -417,7 +417,9 @@ export const discordTrivia = async (
   queue,
 ) => {
   if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Trivia')] });
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Trivia')] }).catch((e) => {
+      console.log(e);
+    });
     return;
   }
   let activity = [];
@@ -447,7 +449,9 @@ export const discordTrivia = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await message.channel.send({ embeds: [userNotFoundMessage(message, 'Trivia')] });
+      await message.channel.send({ embeds: [userNotFoundMessage(message, 'Trivia')] }).catch((e) => {
+        console.log(e);
+      });
       return;
     }
 
@@ -776,7 +780,9 @@ export const discordTrivia = async (
     }
     console.log(err);
     logger.error(`trivia error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Trivia")] });
+    message.channel.send({ embeds: [discordErrorMessage("Trivia")] }).catch((e) => {
+      console.log(e);
+    });
   });
   io.to('admin').emit('updateActivity', {
     activity,

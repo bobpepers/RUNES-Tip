@@ -25,7 +25,9 @@ export const discordFlood = async (
   queue,
 ) => {
   if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] }).catch((e) => {
+      console.log(e);
+    });
     return;
   }
 

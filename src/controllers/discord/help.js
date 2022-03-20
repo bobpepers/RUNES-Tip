@@ -17,13 +17,21 @@ export const discordHelp = async (message, io) => {
   );
 
   if (message.channel.type === 'DM') {
-    await message.author.send({ embeds: [helpMessageOne(withdraw)] });
-    await message.author.send({ embeds: [helpMessageTwo(withdraw)] });
+    await message.author.send({ embeds: [helpMessageOne(withdraw)] }).catch((e) => {
+      console.log(e);
+    });
+    await message.author.send({ embeds: [helpMessageTwo(withdraw)] }).catch((e) => {
+      console.log(e);
+    });
   }
   if (message.channel.type === 'GUILD_TEXT') {
-    message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Help')] });
-    await message.author.send({ embeds: [helpMessageOne(withdraw)] });
-    await message.author.send({ embeds: [helpMessageTwo(withdraw)] });
+    await message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Help')] });
+    await message.author.send({ embeds: [helpMessageOne(withdraw)] }).catch((e) => {
+      console.log(e);
+    });
+    await message.author.send({ embeds: [helpMessageTwo(withdraw)] }).catch((e) => {
+      console.log(e);
+    });
   }
 
   const activity = [];

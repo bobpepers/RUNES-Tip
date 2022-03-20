@@ -43,21 +43,29 @@ export const discordSettings = async (
     });
   }
   if (!setting) {
-    message.channel.send('settings not found');
+    message.channel.send('settings not found').catch((e) => {
+      console.log(e);
+    });
     return false;
   }
   const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1); // Upper case first letter
 
   if (!setting.enabled && setting.channelId) {
-    message.channel.send({ embeds: [featureDisabledChannelMessage(capitalize(name))] });
+    message.channel.send({ embeds: [featureDisabledChannelMessage(capitalize(name))] }).catch((e) => {
+      console.log(e);
+    });
     return false;
   }
   if (!setting.enabled && setting.groupId) {
-    message.channel.send({ embeds: [featureDisabledServerMessage(capitalize(name))] });
+    message.channel.send({ embeds: [featureDisabledServerMessage(capitalize(name))] }).catch((e) => {
+      console.log(e);
+    });
     return false;
   }
   if (!setting.enabled) {
-    message.channel.send({ embeds: [featureDisabledGlobalMessage(capitalize(name))] });
+    message.channel.send({ embeds: [featureDisabledGlobalMessage(capitalize(name))] }).catch((e) => {
+      console.log(e);
+    });
     return false;
   }
   console.log(setting);

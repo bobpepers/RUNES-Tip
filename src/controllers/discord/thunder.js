@@ -26,7 +26,9 @@ export const discordThunder = async (
   queue,
 ) => {
   if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] }).catch((e) => {
+      console.log(e);
+    });
     return;
   }
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
@@ -87,7 +89,9 @@ export const discordThunder = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await message.channel.send('Not enough online users');
+      await message.channel.send('Not enough online users').catch((e) => {
+        console.log(e);
+      });
       return;
     }
     if (withoutBots.length === 1) {
@@ -245,7 +249,9 @@ export const discordThunder = async (
     }
     console.log(err);
     logger.error(`thunder error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Thunder")] });
+    message.channel.send({ embeds: [discordErrorMessage("Thunder")] }).catch((e) => {
+      console.log(e);
+    });
   });
   io.to('admin').emit('updateActivity', {
     activity,

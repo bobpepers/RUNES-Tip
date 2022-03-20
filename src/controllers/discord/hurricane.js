@@ -29,19 +29,27 @@ export const discordHurricane = async (
   queue,
 ) => {
   if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Hurricane')] });
+    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Hurricane')] }).catch((e) => {
+      console.log(e);
+    });
     return;
   }
   if (Number(filteredMessage[2]) > 50) {
-    await message.channel.send({ embeds: [hurricaneMaxUserAmountMessage(message)] });
+    await message.channel.send({ embeds: [hurricaneMaxUserAmountMessage(message)] }).catch((e) => {
+      console.log(e);
+    });
     return;
   }
   if (Number(filteredMessage[2]) % 1 !== 0) {
-    await message.channel.send({ embeds: [hurricaneInvalidUserAmount(message)] });
+    await message.channel.send({ embeds: [hurricaneInvalidUserAmount(message)] }).catch((e) => {
+      console.log(e);
+    });
     return;
   }
   if (Number(filteredMessage[2]) <= 0) {
-    await message.channel.send({ embeds: [hurricaneUserZeroAmountMessage(message)] });
+    await message.channel.send({ embeds: [hurricaneUserZeroAmountMessage(message)] }).catch((e) => {
+      console.log(e);
+    });
     return;
   }
   const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
@@ -102,7 +110,9 @@ export const discordHurricane = async (
         transaction: t,
       });
       activity.unshift(activityA);
-      await message.channel.send('Not enough online users');
+      await message.channel.send('Not enough online users').catch((e) => {
+        console.log(e);
+      });
       return;
     }
 
@@ -266,7 +276,9 @@ export const discordHurricane = async (
     }
     console.log(err);
     logger.error(`hurricane error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Hurricane")] });
+    message.channel.send({ embeds: [discordErrorMessage("Hurricane")] }).catch((e) => {
+      console.log(e);
+    });
   });
   io.to('admin').emit('updateActivity', {
     activity,
