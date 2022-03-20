@@ -673,6 +673,24 @@ Type: <u>${capitalize(type)}</u>
   return result;
 };
 
+export const priceMessage = (
+  replyString,
+  replyStringHtml,
+) => {
+  const result = {
+    body: `Price
+
+${replyString}`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote>
+<h5>Price</h5>
+<p><strong>${replyStringHtml}</strong></p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
 /// /
 export const testMessage = () => {
   const result = {

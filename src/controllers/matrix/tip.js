@@ -74,10 +74,10 @@ export const tipRunesToMatrixUser = async (
     // make users to tip array
     while (!AmountPositionEnded) {
       let matrixId;
-      if (filteredMessage[AmountPosition].startsWith('<a')) {
+      if (filteredMessage[parseInt(AmountPosition, 10)].startsWith('<a')) {
         const linkRx = /<a[^>]*href=["']([^"']*)["']/g;
         // const link = filteredMessage[AmountPosition].match(linkRx);
-        const link = linkRx.exec(filteredMessage[AmountPosition]);
+        const link = linkRx.exec(filteredMessage[parseInt(AmountPosition, 10)]);
         matrixId = link[1].split("/").pop();
       }
 
@@ -114,7 +114,7 @@ export const tipRunesToMatrixUser = async (
       }
       // usersToTip.push(filteredMessage[AmountPosition]);
       AmountPosition += 1;
-      if (!filteredMessage[AmountPosition].startsWith('<a')) {
+      if (!filteredMessage[parseInt(AmountPosition, 10)].startsWith('<a')) {
         AmountPositionEnded = true;
       }
     }
@@ -140,7 +140,7 @@ export const tipRunesToMatrixUser = async (
       type = 'each';
     }
     // verify amount
-    console.log(filteredMessage[AmountPosition]);
+    console.log(filteredMessage[parseInt(AmountPosition, 10)]);
     const [
       activityValiateAmount,
       amount,
@@ -148,7 +148,7 @@ export const tipRunesToMatrixUser = async (
       matrixClient,
       message,
       t,
-      filteredMessage[AmountPosition],
+      filteredMessage[parseInt(AmountPosition, 10)],
       user,
       setting,
       'tip',

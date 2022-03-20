@@ -294,7 +294,7 @@ export const matrixSleet = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      
+
       activity.push(finalActivity);
       const listOfUsersRained = [];
       // eslint-disable-next-line no-restricted-syntax

@@ -14,6 +14,7 @@ import { matrixFlood } from '../controllers/matrix/flood';
 import { matrixSleet } from '../controllers/matrix/sleet';
 import { setIgnoreMe } from '../controllers/matrix/ignore';
 import { tipRunesToMatrixUser } from '../controllers/matrix/tip';
+import { matrixPrice } from '../controllers/matrix/price';
 
 import {
   findUserDirectMessageRoom,
@@ -386,6 +387,18 @@ export const matrixRouter = async (
               matrixClient,
               message,
               userDirectMessageRoomId,
+              io,
+            );
+          });
+        }
+
+        if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'price') {
+          // const limited = await limitPrice(message);
+          // if (limited) return;
+          await queue.add(async () => {
+            const task = await matrixPrice(
+              matrixClient,
+              message,
               io,
             );
           });
