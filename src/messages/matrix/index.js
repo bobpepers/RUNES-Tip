@@ -691,6 +691,29 @@ ${replyString}`,
   return result;
 };
 
+export const feeMessage = (message, fee) => {
+  let feeString = '';
+  let feeStringHtml = '';
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key in fee) {
+    if (Object.prototype.hasOwnProperty.call(fee, key)) {
+      feeString += `${key}: ${fee[key].fee / 1e2}% (${fee[key].type})\n`;
+      feeStringHtml += `${key}: ${fee[key].fee / 1e2}% (${fee[key].type})<br>`;
+    }
+  }
+  const result = {
+    body: `Fee schedule
+${feeString}`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote>
+<h5>Fee schedule</h5>
+<p><strong>${feeStringHtml}</strong></p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
 /// /
 export const testMessage = () => {
   const result = {

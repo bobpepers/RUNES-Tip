@@ -15,6 +15,7 @@ import { matrixSleet } from '../controllers/matrix/sleet';
 import { setIgnoreMe } from '../controllers/matrix/ignore';
 import { tipRunesToMatrixUser } from '../controllers/matrix/tip';
 import { matrixPrice } from '../controllers/matrix/price';
+import { fetchFeeSchedule } from '../controllers/matrix/fees';
 
 import {
   findUserDirectMessageRoom,
@@ -39,8 +40,6 @@ import {
 } from '../messages/matrix';
 
 import { discordRain } from '../controllers/discord/rain';
-
-import { fetchFeeSchedule } from '../controllers/discord/fees';
 
 import { discordCoinInfo } from '../controllers/discord/info';
 
@@ -176,18 +175,6 @@ export const matrixRouter = async (
     console.log(event);
     console.log(user);
     console.log(newPresence);
-    console.log('presence update matrix');
-    console.log('presence update matrix');
-    console.log('presence update matrix');
-    console.log('presence update matrix');
-    console.log('presence update matrix');
-    console.log('presence update matrix');
-    console.log('presence update matrix');
-    console.log('presence update matrix');
-    console.log('presence update matrix');
-    console.log('presence update matrix');
-    console.log('presence update matrix');
-    console.log('presence update matrix');
     console.log('presence update matrix');
   });
 
@@ -400,6 +387,20 @@ export const matrixRouter = async (
               matrixClient,
               message,
               io,
+            );
+          });
+        }
+
+        if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'fees') {
+          // const limited = await limitHelp(message);
+          // if (limited) return;
+          await queue.add(async () => {
+            const task = await fetchFeeSchedule(
+              matrixClient,
+              message,
+              filteredMessage,
+              io,
+              groupTaskId,
             );
           });
         }
