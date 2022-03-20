@@ -145,7 +145,9 @@ var fetchFeeSchedule = /*#__PURE__*/function () {
             finalActivityFail = _context2.sent;
             activity.unshift(finalActivityFail);
             _context2.next = 17;
-            return message.author.send("User not found!");
+            return message.author.send("User not found!")["catch"](function (e) {
+              console.log(e);
+            });
 
           case 17:
             _context2.next = 19;

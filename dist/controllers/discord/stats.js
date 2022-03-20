@@ -117,6 +117,8 @@ var discordStats = /*#__PURE__*/function () {
             _context.next = 14;
             return message.channel.send({
               embeds: [(0, _discord.walletNotFoundMessage)(message, 'Ignore me')]
+            })["catch"](function (e) {
+              console.log(e);
             });
 
           case 14:
@@ -150,6 +152,8 @@ var discordStats = /*#__PURE__*/function () {
             _context.next = 24;
             return message.channel.send({
               embeds: [(0, _discord.invalidTimeMessage)(message, 'Stats')]
+            })["catch"](function (e) {
+              console.log(e);
             });
 
           case 24:
@@ -202,6 +206,8 @@ var discordStats = /*#__PURE__*/function () {
               childWhereOptionsTriviaTips.groupId = groupTask.id;
               message.channel.send({
                 embeds: [(0, _discord.warnDirectMessage)(message.author.id, 'Statistics')]
+              })["catch"](function (e) {
+                console.log(e);
               });
             }
 
@@ -489,6 +495,8 @@ var discordStats = /*#__PURE__*/function () {
             _context.next = 53;
             return message.author.send({
               embeds: [(0, _discord.statsMessage)(message, "No data found!")]
+            })["catch"](function (e) {
+              console.log(e);
             });
 
           case 53:
@@ -596,6 +604,8 @@ var discordStats = /*#__PURE__*/function () {
             _context.next = 79;
             return message.author.send({
               embeds: [(0, _discord.statsMessage)(message, serverString)]
+            })["catch"](function (e) {
+              console.log(e);
             });
 
           case 79:

@@ -50,6 +50,8 @@ var discordFlood = /*#__PURE__*/function () {
             _context3.next = 3;
             return message.channel.send({
               embeds: [(0, _discord.NotInDirectMessage)(message, 'Flood')]
+            })["catch"](function (e) {
+              console.log(e);
             });
 
           case 3:

@@ -70,6 +70,8 @@ var setIgnoreMe = /*#__PURE__*/function () {
                         _context.next = 10;
                         return message.channel.send({
                           embeds: [(0, _discord.walletNotFoundMessage)(message, 'Ignore me')]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 10:
@@ -92,6 +94,8 @@ var setIgnoreMe = /*#__PURE__*/function () {
                       case 14:
                         message.channel.send({
                           embeds: [(0, _discord.unIngoreMeMessage)(message)]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
                         return _context.abrupt("return");
 
@@ -112,6 +116,8 @@ var setIgnoreMe = /*#__PURE__*/function () {
                       case 19:
                         message.channel.send({
                           embeds: [(0, _discord.ignoreMeMessage)(message)]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
                         return _context.abrupt("return");
 
@@ -183,6 +189,8 @@ var setIgnoreMe = /*#__PURE__*/function () {
 
                         message.channel.send({
                           embeds: [(0, _discord.discordErrorMessage)("Ignore me")]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 11:

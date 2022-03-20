@@ -67,7 +67,9 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                         }
 
                         _context.next = 6;
-                        return message.author.send("Deposit Address not found");
+                        return message.author.send("Deposit Address not found")["catch"](function (e) {
+                          console.log(e);
+                        });
 
                       case 6:
                         if (!(user && user.wallet && user.wallet.addresses)) {
@@ -92,6 +94,8 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                         return message.author.send({
                           embeds: [(0, _discord2.depositAddressMessage)(userId, user)],
                           files: [new _discord.MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 15:
@@ -110,6 +114,8 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                         return message.author.send({
                           embeds: [(0, _discord2.depositAddressMessage)(userId, user)],
                           files: [new _discord.MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 20:

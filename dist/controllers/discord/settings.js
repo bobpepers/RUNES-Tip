@@ -86,7 +86,9 @@ var discordSettings = /*#__PURE__*/function () {
               break;
             }
 
-            message.channel.send('settings not found');
+            message.channel.send('settings not found')["catch"](function (e) {
+              console.log(e);
+            });
             return _context.abrupt("return", false);
 
           case 19:
@@ -102,6 +104,8 @@ var discordSettings = /*#__PURE__*/function () {
 
             message.channel.send({
               embeds: [(0, _discord.featureDisabledChannelMessage)(capitalize(name))]
+            })["catch"](function (e) {
+              console.log(e);
             });
             return _context.abrupt("return", false);
 
@@ -113,6 +117,8 @@ var discordSettings = /*#__PURE__*/function () {
 
             message.channel.send({
               embeds: [(0, _discord.featureDisabledServerMessage)(capitalize(name))]
+            })["catch"](function (e) {
+              console.log(e);
             });
             return _context.abrupt("return", false);
 
@@ -124,6 +130,8 @@ var discordSettings = /*#__PURE__*/function () {
 
             message.channel.send({
               embeds: [(0, _discord.featureDisabledGlobalMessage)(capitalize(name))]
+            })["catch"](function (e) {
+              console.log(e);
             });
             return _context.abrupt("return", false);
 

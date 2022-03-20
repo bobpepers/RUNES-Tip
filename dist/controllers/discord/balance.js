@@ -92,6 +92,8 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
                         _context.next = 14;
                         return message.author.send({
                           embeds: [(0, _discord.balanceMessage)(userId, user, priceInfo)]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 14:
@@ -109,6 +111,8 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
                         _context.next = 19;
                         return message.author.send({
                           embeds: [(0, _discord.balanceMessage)(userId, user, priceInfo)]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 19:

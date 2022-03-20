@@ -74,7 +74,9 @@ var discordPrice = /*#__PURE__*/function () {
                         }
 
                         _context.next = 9;
-                        return message.author.send("Wallet not found");
+                        return message.author.send("Wallet not found")["catch"](function (e) {
+                          console.log(e);
+                        });
 
                       case 9:
                         if (!(user && user.wallet)) {
@@ -102,6 +104,8 @@ var discordPrice = /*#__PURE__*/function () {
                         _context.next = 20;
                         return message.author.send({
                           embeds: [(0, _discord.priceMessage)(replyString)]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 20:

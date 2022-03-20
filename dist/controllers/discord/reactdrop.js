@@ -240,7 +240,9 @@ var listenReactDrop = /*#__PURE__*/function () {
                         }
 
                         _context7.next = 39;
-                        return collector.send('Failed, pressed wrong emoji');
+                        return collector.send('Failed, pressed wrong emoji')["catch"](function (e) {
+                          console.log(e);
+                        });
 
                       case 39:
                         _context7.next = 41;
@@ -258,6 +260,8 @@ var listenReactDrop = /*#__PURE__*/function () {
                         return collector.send({
                           embeds: [(0, _discord2.ReactdropCaptchaMessage)(collector.id)],
                           files: [new _discord.MessageAttachment(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 46:
@@ -330,6 +334,8 @@ var listenReactDrop = /*#__PURE__*/function () {
                                                 return collector.send({
                                                   content: "\u200B",
                                                   components: [row]
+                                                })["catch"](function (e) {
+                                                  console.log(e);
                                                 });
 
                                               case 11:
@@ -378,6 +384,8 @@ var listenReactDrop = /*#__PURE__*/function () {
                                                 return collector.send({
                                                   content: "Failed\nSolution: **".concat(_findReactTip.solution, "**"),
                                                   components: [_row]
+                                                })["catch"](function (e) {
+                                                  console.log(e);
                                                 });
 
                                               case 24:
@@ -510,7 +518,9 @@ var listenReactDrop = /*#__PURE__*/function () {
                                                 });
 
                                               case 9:
-                                                collector.send('Out of time');
+                                                collector.send('Out of time')["catch"](function (e) {
+                                                  console.log(e);
+                                                });
 
                                               case 10:
                                                 t.afterCommit(function () {
@@ -554,7 +564,9 @@ var listenReactDrop = /*#__PURE__*/function () {
                                               case 8:
                                                 console.log(err);
                                                 _context5.next = 11;
-                                                return collector.send('Something went wrong');
+                                                return collector.send('Something went wrong')["catch"](function (e) {
+                                                  console.log(e);
+                                                });
 
                                               case 11:
                                               case "end":
@@ -1036,6 +1048,8 @@ var discordReactDrop = /*#__PURE__*/function () {
             _context16.next = 3;
             return message.channel.send({
               embeds: [(0, _discord2.NotInDirectMessage)(message, 'Reactdrop')]
+            })["catch"](function (e) {
+              console.log(e);
             });
 
           case 3:
@@ -1090,6 +1104,8 @@ var discordReactDrop = /*#__PURE__*/function () {
                         _context14.next = 10;
                         return message.channel.send({
                           embeds: [(0, _discord2.userNotFoundMessage)(message, 'ReactDrop')]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 10:
@@ -1543,6 +1559,8 @@ var discordReactDrop = /*#__PURE__*/function () {
                         _context15.next = 13;
                         return message.channel.send({
                           embeds: [(0, _discord2.discordErrorMessage)("ReactDrop")]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 13:

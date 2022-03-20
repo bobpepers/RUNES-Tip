@@ -748,6 +748,8 @@ var discordTrivia = /*#__PURE__*/function () {
             _context13.next = 3;
             return message.channel.send({
               embeds: [(0, _discord2.NotInDirectMessage)(message, 'Trivia')]
+            })["catch"](function (e) {
+              console.log(e);
             });
 
           case 3:
@@ -802,6 +804,8 @@ var discordTrivia = /*#__PURE__*/function () {
                         _context11.next = 10;
                         return message.channel.send({
                           embeds: [(0, _discord2.userNotFoundMessage)(message, 'Trivia')]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 10:
@@ -1279,6 +1283,8 @@ var discordTrivia = /*#__PURE__*/function () {
 
                         message.channel.send({
                           embeds: [(0, _discord2.discordErrorMessage)("Trivia")]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 11:

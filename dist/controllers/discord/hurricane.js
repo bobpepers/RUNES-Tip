@@ -52,6 +52,8 @@ var discordHurricane = /*#__PURE__*/function () {
             _context3.next = 3;
             return message.channel.send({
               embeds: [(0, _discord.NotInDirectMessage)(message, 'Hurricane')]
+            })["catch"](function (e) {
+              console.log(e);
             });
 
           case 3:
@@ -66,6 +68,8 @@ var discordHurricane = /*#__PURE__*/function () {
             _context3.next = 7;
             return message.channel.send({
               embeds: [(0, _discord.hurricaneMaxUserAmountMessage)(message)]
+            })["catch"](function (e) {
+              console.log(e);
             });
 
           case 7:
@@ -80,6 +84,8 @@ var discordHurricane = /*#__PURE__*/function () {
             _context3.next = 11;
             return message.channel.send({
               embeds: [(0, _discord.hurricaneInvalidUserAmount)(message)]
+            })["catch"](function (e) {
+              console.log(e);
             });
 
           case 11:
@@ -94,6 +100,8 @@ var discordHurricane = /*#__PURE__*/function () {
             _context3.next = 15;
             return message.channel.send({
               embeds: [(0, _discord.hurricaneUserZeroAmountMessage)(message)]
+            })["catch"](function (e) {
+              console.log(e);
             });
 
           case 15:
@@ -185,7 +193,9 @@ var discordHurricane = /*#__PURE__*/function () {
                         activityA = _context.sent;
                         activity.unshift(activityA);
                         _context.next = 29;
-                        return message.channel.send('Not enough online users');
+                        return message.channel.send('Not enough online users')["catch"](function (e) {
+                          console.log(e);
+                        });
 
                       case 29:
                         return _context.abrupt("return");
@@ -462,6 +472,8 @@ var discordHurricane = /*#__PURE__*/function () {
 
                         message.channel.send({
                           embeds: [(0, _discord.discordErrorMessage)("Hurricane")]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 11:

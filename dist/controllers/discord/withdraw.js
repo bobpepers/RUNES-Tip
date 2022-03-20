@@ -116,6 +116,8 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                         _context.next = 31;
                         return message.author.send({
                           embeds: [(0, _discord.invalidAddressMessage)(message)]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 31:
@@ -123,7 +125,9 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
 
                       case 32:
                         _context.next = 34;
-                        return message.author.send('Runebase node offline');
+                        return message.author.send('Runebase node offline')["catch"](function (e) {
+                          console.log(e);
+                        });
 
                       case 34:
                         return _context.abrupt("return");
@@ -189,6 +193,8 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                         _context.next = 60;
                         return message.author.send({
                           embeds: [(0, _discord.invalidAddressMessage)(message)]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 60:
@@ -307,6 +313,8 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                         _context.next = 89;
                         return message.author.send({
                           embeds: [(0, _discord.reviewMessage)(message, transaction)]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 89:
@@ -318,12 +326,16 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                         _context.next = 92;
                         return message.channel.send({
                           embeds: [(0, _discord.warnDirectMessage)(userId, 'Balance')]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 92:
                         _context.next = 94;
                         return message.author.send({
                           embeds: [(0, _discord.reviewMessage)(message, transaction)]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 94:
@@ -372,6 +384,8 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
 
                         message.channel.send({
                           embeds: [(0, _discord.discordErrorMessage)("Withdraw")]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 11:

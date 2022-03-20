@@ -70,6 +70,8 @@ var discordPublicStats = /*#__PURE__*/function () {
                         _context.next = 10;
                         return message.channel.send({
                           embeds: [(0, _discord.walletNotFoundMessage)(message, 'Ignore me')]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 10:
@@ -93,6 +95,8 @@ var discordPublicStats = /*#__PURE__*/function () {
                         _context.next = 16;
                         return message.channel.send({
                           embeds: [(0, _discord.disablePublicStatsMessage)(message)]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 16:
@@ -117,6 +121,8 @@ var discordPublicStats = /*#__PURE__*/function () {
                         _context.next = 23;
                         return message.channel.send({
                           embeds: [(0, _discord.enablePublicStatsMeMessage)(message)]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 23:
@@ -192,6 +198,8 @@ var discordPublicStats = /*#__PURE__*/function () {
 
                         message.channel.send({
                           embeds: [(0, _discord.discordErrorMessage)("PublicStats")]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 11:

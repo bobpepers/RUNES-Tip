@@ -50,6 +50,8 @@ var discordSoak = /*#__PURE__*/function () {
             _context3.next = 3;
             return message.channel.send({
               embeds: [(0, _discord.NotInDirectMessage)(message, 'Flood')]
+            })["catch"](function (e) {
+              console.log(e);
             });
 
           case 3:
@@ -140,7 +142,9 @@ var discordSoak = /*#__PURE__*/function () {
                         failActivity = _context.sent;
                         activity.unshift(failActivity);
                         _context.next = 28;
-                        return message.channel.send('Not enough online users');
+                        return message.channel.send('Not enough online users')["catch"](function (e) {
+                          console.log(e);
+                        });
 
                       case 28:
                         return _context.abrupt("return");
@@ -418,6 +422,8 @@ var discordSoak = /*#__PURE__*/function () {
 
                         message.channel.send({
                           embeds: [(0, _discord.discordErrorMessage)("Soak")]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 11:

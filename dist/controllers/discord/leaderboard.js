@@ -55,6 +55,8 @@ var discordLeaderboard = /*#__PURE__*/function () {
             if (message.channel.type === 'DM') {
               message.author.send({
                 embeds: [(0, _discord.statsMessage)(message)]
+              })["catch"](function (e) {
+                console.log(e);
               });
             }
 
@@ -64,6 +66,8 @@ var discordLeaderboard = /*#__PURE__*/function () {
               });
               message.author.send({
                 embeds: [(0, _discord.statsMessage)(message)]
+              })["catch"](function (e) {
+                console.log(e);
               });
             }
 

@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.fetchDiscordListTransactions = void 0;
+exports.matrixPrice = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -13,14 +13,14 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _sequelize = require("sequelize");
 
-var _discord = require("../../messages/discord");
+var _matrix = require("../../messages/matrix");
 
 var _models = _interopRequireDefault(require("../../models"));
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
-var fetchDiscordListTransactions = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(message, io) {
+var matrixPrice = /*#__PURE__*/function () {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(matrixClient, message, io) {
     var activity;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
@@ -32,7 +32,7 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var user, createFailActivity, userId, transactions, createActivity, findActivity;
+                var user, priceRecord, replyString, replyStringHtml, createActivity, findActivity;
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
@@ -40,8 +40,16 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
                         _context.next = 2;
                         return _models["default"].user.findOne({
                           where: {
-                            user_id: "discord-".concat(message.author.id)
+                            user_id: "matrix-".concat(message.sender.userId)
                           },
+                          include: [{
+                            model: _models["default"].wallet,
+                            as: 'wallet',
+                            include: [{
+                              model: _models["default"].address,
+                              as: 'addresses'
+                            }]
+                          }],
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
@@ -49,91 +57,59 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
                       case 2:
                         user = _context.sent;
 
-                        if (user) {
-                          _context.next = 10;
+                        if (!(!user && !user.wallet)) {
+                          _context.next = 6;
                           break;
                         }
 
                         _context.next = 6;
-                        return _models["default"].activity.create({
-                          type: 'listtransactions_f',
-                          earnerId: user.id
-                        }, {
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
+                        return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.walletNotFoundMessage)(message, 'Tip'));
 
                       case 6:
-                        createFailActivity = _context.sent;
-                        activity.unshift(createFailActivity);
+                        if (!(user && user.wallet)) {
+                          _context.next = 29;
+                          break;
+                        }
+
+                        _context.prev = 7;
                         _context.next = 10;
-                        return message.author.send("User not found");
+                        return _models["default"].priceInfo.findAll({});
 
                       case 10:
-                        if (!user) {
-                          _context.next = 30;
-                          break;
-                        }
+                        priceRecord = _context.sent;
+                        replyString = "";
+                        replyString += priceRecord.map(function (a) {
+                          return "".concat(a.currency, ": ").concat(a.price);
+                        }).join('\n');
+                        replyStringHtml = "";
+                        replyStringHtml += priceRecord.map(function (a) {
+                          return "".concat(a.currency, ": ").concat(a.price);
+                        }).join('<br>');
+                        _context.next = 17;
+                        return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.priceMessage)(replyString, replyStringHtml));
 
-                        userId = user.user_id.replace('discord-', '');
-                        _context.next = 14;
-                        return _models["default"].transaction.findAll({
-                          where: {
-                            userId: user.id
-                          },
-                          order: [['id', 'DESC']],
-                          limit: 10,
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
+                      case 17:
+                        _context.next = 22;
+                        break;
 
-                      case 14:
-                        transactions = _context.sent;
+                      case 19:
+                        _context.prev = 19;
+                        _context.t0 = _context["catch"](7);
+                        console.log(_context.t0);
 
-                        if (!(message.channel.type === 'DM')) {
-                          _context.next = 18;
-                          break;
-                        }
-
-                        _context.next = 18;
-                        return message.author.send({
-                          embeds: [(0, _discord.listTransactionsMessage)(userId, user, transactions)]
-                        })["catch"](function (e) {
-                          console.log(e);
-                        });
-
-                      case 18:
-                        if (!(message.channel.type === 'GUILD_TEXT')) {
-                          _context.next = 23;
-                          break;
-                        }
-
-                        _context.next = 21;
-                        return message.channel.send({
-                          embeds: [(0, _discord.warnDirectMessage)(userId, 'Balance')]
-                        });
-
-                      case 21:
-                        _context.next = 23;
-                        return message.author.send({
-                          embeds: [(0, _discord.listTransactionsMessage)(userId, user, transactions)]
-                        })["catch"](function (e) {
-                          console.log(e);
-                        });
-
-                      case 23:
-                        _context.next = 25;
+                      case 22:
+                        _context.next = 24;
                         return _models["default"].activity.create({
-                          type: 'listtransactions_s',
+                          type: 'price',
                           earnerId: user.id
                         }, {
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 25:
+                      case 24:
                         createActivity = _context.sent;
-                        _context.next = 28;
+                        _context.next = 27;
                         return _models["default"].activity.findOne({
                           where: {
                             id: createActivity.id
@@ -146,25 +122,24 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 28:
+                      case 27:
                         findActivity = _context.sent;
                         activity.unshift(findActivity);
 
-                      case 30:
+                      case 29:
                         t.afterCommit(function () {
-                          // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
-                          console.log('done list transactions request');
+                          console.log('done price request'); // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
                         });
 
-                      case 31:
+                      case 30:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee);
+                }, _callee, null, [[7, 19]]);
               }));
 
-              return function (_x3) {
+              return function (_x4) {
                 return _ref2.apply(this, arguments);
               };
             }())["catch"]( /*#__PURE__*/function () {
@@ -176,7 +151,7 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
                         _context2.prev = 0;
                         _context2.next = 3;
                         return _models["default"].error.create({
-                          type: 'listTransactions',
+                          type: 'price',
                           error: "".concat(err)
                         });
 
@@ -188,24 +163,33 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
                         _context2.prev = 5;
                         _context2.t0 = _context2["catch"](0);
 
-                        _logger["default"].error("Error Discord: ".concat(_context2.t0));
+                        _logger["default"].error("Error Matrix: ".concat(_context2.t0));
 
                       case 8:
-                        _logger["default"].error("Error Discord List Transactions Requested by: ".concat(message.author.id, "-").concat(message.author.username, "#").concat(message.author.discriminator, " - ").concat(err));
+                        _logger["default"].error("Error Matrix Balance Requested by: ".concat(message.author.id, "-").concat(message.author.username, "#").concat(message.author.discriminator, " - ").concat(err));
 
-                        message.channel.send({
-                          embeds: [(0, _discord.discordErrorMessage)("List transactions")]
-                        });
+                        _context2.prev = 9;
+                        _context2.next = 12;
+                        return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.errorMessage)('Price'));
 
-                      case 10:
+                      case 12:
+                        _context2.next = 17;
+                        break;
+
+                      case 14:
+                        _context2.prev = 14;
+                        _context2.t1 = _context2["catch"](9);
+                        console.log(_context2.t1);
+
+                      case 17:
                       case "end":
                         return _context2.stop();
                     }
                   }
-                }, _callee2, null, [[0, 5]]);
+                }, _callee2, null, [[0, 5], [9, 14]]);
               }));
 
-              return function (_x4) {
+              return function (_x5) {
                 return _ref3.apply(this, arguments);
               };
             }());
@@ -223,9 +207,9 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
     }, _callee3);
   }));
 
-  return function fetchDiscordListTransactions(_x, _x2) {
+  return function matrixPrice(_x, _x2, _x3) {
     return _ref.apply(this, arguments);
   };
 }();
 
-exports.fetchDiscordListTransactions = fetchDiscordListTransactions;
+exports.matrixPrice = matrixPrice;

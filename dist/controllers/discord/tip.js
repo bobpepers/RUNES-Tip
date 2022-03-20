@@ -50,6 +50,8 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
             _context4.next = 3;
             return message.channel.send({
               embeds: [(0, _discord.NotInDirectMessage)(message, 'Tip')]
+            })["catch"](function (e) {
+              console.log(e);
             });
 
           case 3:
@@ -184,6 +186,8 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                         _context2.next = 20;
                         return message.channel.send({
                           embeds: [(0, _discord.notEnoughUsersToTip)(message)]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 20:
@@ -504,6 +508,8 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
 
                         message.channel.send({
                           embeds: [(0, _discord.discordErrorMessage)("Tip")]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 11:
@@ -554,6 +560,8 @@ var tipCoinsToDiscordFaucet = /*#__PURE__*/function () {
             _context6.next = 3;
             return message.channel.send({
               embeds: [(0, _discord.NotInDirectMessage)(message, 'Tip')]
+            })["catch"](function (e) {
+              console.log(e);
             });
 
           case 3:
@@ -851,6 +859,8 @@ var tipCoinsToDiscordFaucet = /*#__PURE__*/function () {
 
               message.channel.send({
                 embeds: [(0, _discord.discordErrorMessage)("Tip")]
+              })["catch"](function (e) {
+                console.log(e);
               });
             });
 

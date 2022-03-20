@@ -41,6 +41,8 @@ var discordCoinInfo = /*#__PURE__*/function () {
             if (message.channel.type === 'DM') {
               message.author.send({
                 embeds: [(0, _discord.coinInfoMessage)(blockHeight.id, priceInfo)]
+              })["catch"](function (e) {
+                console.log(e);
               });
             }
 
@@ -50,6 +52,8 @@ var discordCoinInfo = /*#__PURE__*/function () {
               });
               message.author.send({
                 embeds: [(0, _discord.coinInfoMessage)(blockHeight.id, priceInfo)]
+              })["catch"](function (e) {
+                console.log(e);
               });
             }
 

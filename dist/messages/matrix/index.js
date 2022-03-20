@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.warnDirectMessage = exports.walletNotFoundMessage = exports.userListMessage = exports.unIngoreMeMessage = exports.tipSingleSuccessMessage = exports.tipMultipleSuccessMessage = exports.timeOutAllAmoutMessage = exports.testMessage = exports.settingsNotFoundMessage = exports.reviewMessage = exports.notInDirectMessage = exports.notEnoughUsers = exports.nodeOfflineMessage = exports.minimumMessage = exports.matrixWithdrawalConfirmedMessage = exports.matrixWithdrawalAcceptedMessage = exports.matrixWelcomeMessage = exports.matrixUserBannedMessage = exports.matrixRoomBannedMessage = exports.matrixIncomingDepositMessage = exports.matrixDepositConfirmedMessage = exports.matrixBotMaintenanceMessage = exports.matrixBotDisabledMessage = exports.inviteMatrixDirectMessageRoom = exports.invalidTimeMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.ignoreMeMessage = exports.helpMessage = exports.groupNotFoundMessage = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.featureDisabledChannelMessage = exports.errorMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessage = exports.canceledAllAmoutMessage = exports.balanceMessage = exports.afterSuccessMessage = void 0;
+exports.warnDirectMessage = exports.walletNotFoundMessage = exports.userListMessage = exports.unIngoreMeMessage = exports.tipSingleSuccessMessage = exports.tipMultipleSuccessMessage = exports.timeOutAllAmoutMessage = exports.testMessage = exports.settingsNotFoundMessage = exports.reviewMessage = exports.priceMessage = exports.notInDirectMessage = exports.notEnoughUsers = exports.nodeOfflineMessage = exports.minimumMessage = exports.matrixWithdrawalConfirmedMessage = exports.matrixWithdrawalAcceptedMessage = exports.matrixWelcomeMessage = exports.matrixUserBannedMessage = exports.matrixRoomBannedMessage = exports.matrixIncomingDepositMessage = exports.matrixDepositConfirmedMessage = exports.matrixBotMaintenanceMessage = exports.matrixBotDisabledMessage = exports.inviteMatrixDirectMessageRoom = exports.invalidTimeMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.ignoreMeMessage = exports.helpMessage = exports.groupNotFoundMessage = exports.feeMessage = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.featureDisabledChannelMessage = exports.errorMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessage = exports.canceledAllAmoutMessage = exports.balanceMessage = exports.afterSuccessMessage = void 0;
 
 var _package = _interopRequireDefault(require("../../../package.json"));
 
@@ -494,10 +494,44 @@ var tipMultipleSuccessMessage = function tipMultipleSuccessMessage(message, id, 
     formatted_body: "<blockquote>\n<h5>Tip #".concat(id, "</h5>\n<p><strong>").concat(message.sender.name, " tipped <u>").concat(amount * listOfUsersRained.length / 1e8, " ").concat(settings.coin.ticker, "</u> to ").concat(listOfUsersRained.length, " users\n<br><br>\nType: <u>").concat(capitalize(type), "</u>\n<br><br>   \n\uD83D\uDCB8 <u>").concat(amount / 1e8, " ").concat(settings.coin.ticker, "</u> each \uD83D\uDCB8</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
   };
   return result;
+};
+
+exports.tipMultipleSuccessMessage = tipMultipleSuccessMessage;
+
+var priceMessage = function priceMessage(replyString, replyStringHtml) {
+  var result = {
+    body: "Price\n\n".concat(replyString),
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: "<blockquote>\n<h5>Price</h5>\n<p><strong>".concat(replyStringHtml, "</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
+  };
+  return result;
+};
+
+exports.priceMessage = priceMessage;
+
+var feeMessage = function feeMessage(message, fee) {
+  var feeString = '';
+  var feeStringHtml = ''; // eslint-disable-next-line no-restricted-syntax
+
+  for (var key in fee) {
+    if (Object.prototype.hasOwnProperty.call(fee, key)) {
+      feeString += "".concat(key, ": ").concat(fee[key].fee / 1e2, "% (").concat(fee[key].type, ")\n");
+      feeStringHtml += "".concat(key, ": ").concat(fee[key].fee / 1e2, "% (").concat(fee[key].type, ")<br>");
+    }
+  }
+
+  var result = {
+    body: "Fee schedule\n".concat(feeString),
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: "<blockquote>\n<h5>Fee schedule</h5>\n<p><strong>".concat(feeStringHtml, "</strong></p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p></blockquote>")
+  };
+  return result;
 }; /// /
 
 
-exports.tipMultipleSuccessMessage = tipMultipleSuccessMessage;
+exports.feeMessage = feeMessage;
 
 var testMessage = function testMessage() {
   var result = {

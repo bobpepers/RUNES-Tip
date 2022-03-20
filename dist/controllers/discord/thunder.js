@@ -52,6 +52,8 @@ var discordThunder = /*#__PURE__*/function () {
             _context3.next = 3;
             return message.channel.send({
               embeds: [(0, _discord.NotInDirectMessage)(message, 'Flood')]
+            })["catch"](function (e) {
+              console.log(e);
             });
 
           case 3:
@@ -143,7 +145,9 @@ var discordThunder = /*#__PURE__*/function () {
                         failActivity = _context.sent;
                         activity.unshift(failActivity);
                         _context.next = 29;
-                        return message.channel.send('Not enough online users');
+                        return message.channel.send('Not enough online users')["catch"](function (e) {
+                          console.log(e);
+                        });
 
                       case 29:
                         return _context.abrupt("return");
@@ -398,6 +402,8 @@ var discordThunder = /*#__PURE__*/function () {
 
                         message.channel.send({
                           embeds: [(0, _discord.discordErrorMessage)("Thunder")]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 11:

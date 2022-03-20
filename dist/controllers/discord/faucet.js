@@ -94,7 +94,9 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                       case 15:
                         activity = _context.sent;
                         _context.next = 18;
-                        return message.channel.send('faucet not found');
+                        return message.channel.send('faucet not found')["catch"](function (e) {
+                          console.log(e);
+                        });
 
                       case 18:
                         return _context.abrupt("return");
@@ -119,6 +121,8 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                         _context.next = 26;
                         return message.channel.send({
                           embeds: [(0, _discord.dryFaucetMessage)()]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 26:
@@ -163,6 +167,8 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                         _context.next = 42;
                         return message.channel.send({
                           embeds: [(0, _discord.claimTooFactFaucetMessage)(username, distance)]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 42:
@@ -281,6 +287,8 @@ var discordFaucetClaim = /*#__PURE__*/function () {
 
                         message.channel.send({
                           embeds: [(0, _discord.discordErrorMessage)("Faucet")]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 11:

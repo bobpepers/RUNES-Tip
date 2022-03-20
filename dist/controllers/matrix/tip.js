@@ -113,11 +113,11 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                                 case 0:
                                   matrixId = void 0;
 
-                                  if (filteredMessage[AmountPosition].startsWith('<a')) {
+                                  if (filteredMessage[parseInt(AmountPosition, 10)].startsWith('<a')) {
                                     linkRx = /<a[^>]*href=["']([^"']*)["']/g; // const link = filteredMessage[AmountPosition].match(linkRx);
 
                                     // const link = filteredMessage[AmountPosition].match(linkRx);
-                                    link = linkRx.exec(filteredMessage[AmountPosition]);
+                                    link = linkRx.exec(filteredMessage[parseInt(AmountPosition, 10)]);
                                     matrixId = link[1].split("/").pop();
                                   }
 
@@ -161,7 +161,7 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                                   // usersToTip.push(filteredMessage[AmountPosition]);
                                   AmountPosition += 1;
 
-                                  if (!filteredMessage[AmountPosition].startsWith('<a')) {
+                                  if (!filteredMessage[parseInt(AmountPosition, 10)].startsWith('<a')) {
                                     AmountPositionEnded = true;
                                   }
 
@@ -214,9 +214,9 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
 
 
                         // verify amount
-                        console.log(filteredMessage[AmountPosition]);
+                        console.log(filteredMessage[parseInt(AmountPosition, 10)]);
                         _context2.next = 31;
-                        return (0, _validateAmount.validateAmount)(matrixClient, message, t, filteredMessage[AmountPosition], user, setting, 'tip', type, usersToTip);
+                        return (0, _validateAmount.validateAmount)(matrixClient, message, t, filteredMessage[parseInt(AmountPosition, 10)], user, setting, 'tip', type, usersToTip);
 
                       case 31:
                         _yield$validateAmount = _context2.sent;

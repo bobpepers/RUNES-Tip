@@ -50,6 +50,8 @@ var discordSleet = /*#__PURE__*/function () {
             _context3.next = 3;
             return message.channel.send({
               embeds: [(0, _discord.NotInDirectMessage)(message, 'Flood')]
+            })["catch"](function (e) {
+              console.log(e);
             });
 
           case 3:
@@ -137,7 +139,9 @@ var discordSleet = /*#__PURE__*/function () {
                         groupFailActivity = _context.sent;
                         activity.unshift(groupFailActivity);
                         _context.next = 28;
-                        return message.channel.send("Group not found");
+                        return message.channel.send("Group not found")["catch"](function (e) {
+                          console.log(e);
+                        });
 
                       case 28:
                         return _context.abrupt("return");
@@ -177,6 +181,8 @@ var discordSleet = /*#__PURE__*/function () {
                         _context.next = 40;
                         return message.channel.send({
                           embeds: [(0, _discord.invalidTimeMessage)(message, 'Sleet')]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 40:
@@ -548,6 +554,8 @@ var discordSleet = /*#__PURE__*/function () {
 
                         message.channel.send({
                           embeds: [(0, _discord.discordErrorMessage)("Sleet")]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 11:
