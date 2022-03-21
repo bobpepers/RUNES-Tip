@@ -5,6 +5,8 @@ import db from '../../models';
 import {
   warnDirectMessage,
   depositAddressMessage,
+  discordErrorMessage,
+  cannotSendMessageUser,
 } from '../../messages/discord';
 import logger from "../../helpers/logger";
 
@@ -34,9 +36,7 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
     });
 
     if (!user && !user.wallet && !user.wallet.addresses) {
-      await message.author.send("Deposit Address not found").catch((e) => {
-        console.log(e);
-      });
+      await message.author.send("Deposit Address not found");
     }
 
     if (user && user.wallet && user.wallet.addresses) {
@@ -49,18 +49,14 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
         await message.author.send({
           embeds: [depositAddressMessage(userId, user)],
           files: [new MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')],
-        }).catch((e) => {
-          console.log(e);
         });
       }
       if (message.channel.type === 'GUILD_TEXT') {
-        await message.channel.send({ embeds: [warnDirectMessage(userId, 'Balance')] });
         await message.author.send({
           embeds: [depositAddressMessage(userId, user)],
           files: [new MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')],
-        }).catch((e) => {
-          console.log(e);
         });
+        await message.channel.send({ embeds: [warnDirectMessage(userId, 'Deposit')] });
       }
 
       const preActivity = await db.activity.create({
@@ -100,6 +96,16 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
     }
     console.log(err);
     logger.error(`Error Deposit Address Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
+    console.log(err.code);
+    if (err.code && err.code === 50007) {
+      await message.channel.send({ embeds: [cannotSendMessageUser("Deposit", message)] }).catch((e) => {
+        console.log(e);
+      });
+    } else {
+      await message.channel.send({ embeds: [discordErrorMessage("Deposit")] }).catch((e) => {
+        console.log(e);
+      });
+    }
   });
   io.to('admin').emit('updateActivity', {
     activity,

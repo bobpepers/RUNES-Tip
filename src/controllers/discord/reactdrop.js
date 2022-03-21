@@ -175,17 +175,13 @@ export const listenReactDrop = async (
         }
 
         if (reactDrop.emoji !== constructEmoji) {
-          await collector.send('Failed, pressed wrong emoji').catch((e) => {
-            console.log(e);
-          });
+          await collector.send('Failed, pressed wrong emoji');
           await findReactTip.update({ status: 'failed' });
         } else {
           const captchaPngFixed = captchaPng.replace('data:image/png;base64,', '');
           const awaitCaptchaMessage = await collector.send({
             embeds: [ReactdropCaptchaMessage(collector.id)],
             files: [new MessageAttachment(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')],
-          }).catch((e) => {
-            console.log(e);
           });
           const Ccollector = await awaitCaptchaMessage.channel.createMessageCollector({ filter, time: 60000, max: 1 });
           await Ccollector.on('collect', async (m) => {
@@ -228,9 +224,7 @@ export const listenReactDrop = async (
                 );
 
                 await m.react('✅');
-                await collector.send({ content: '\u200b', components: [row] }).catch((e) => {
-                  console.log(e);
-                });
+                await collector.send({ content: '\u200b', components: [row] });
               } else if (m.content !== findReactTip.solution) {
                 // console.log('content');
                 // console.log(m.content);
@@ -269,8 +263,6 @@ export const listenReactDrop = async (
                   content: `Failed
 Solution: **${findReactTip.solution}**`,
                   components: [row],
-                }).catch((e) => {
-                  console.log(e);
                 });
               }
               t.afterCommit(() => {
@@ -317,9 +309,7 @@ Solution: **${findReactTip.solution}**`,
                   lock: t.LOCK.UPDATE,
                   transaction: t,
                 });
-                collector.send('Out of time').catch((e) => {
-                  console.log(e);
-                });
+                collector.send('Out of time');
               }
               t.afterCommit(() => {
                 console.log('done');
@@ -571,18 +561,17 @@ export const discordReactDrop = async (
   faucetSetting,
   queue,
 ) => {
-  if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Reactdrop')] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
   let activity = [];
   const useEmojis = [];
   let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    if (!groupTask || !channelTask) {
+      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Reactdrop')] });
+      return;
+    }
+
     user = await db.user.findOne({
       where: {
         user_id: `discord-${message.author.id}`,
@@ -604,9 +593,7 @@ export const discordReactDrop = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await message.channel.send({ embeds: [userNotFoundMessage(message, 'ReactDrop')] }).catch((e) => {
-        console.log(e);
-      });
+      await message.channel.send({ embeds: [userNotFoundMessage(message, 'ReactDrop')] });
       return;
     }
 

@@ -1,10 +1,14 @@
+import { Transaction } from "sequelize";
 import {
   DiscordFeeMessage,
+  discordErrorMessage,
 } from '../../messages/discord';
 import db from '../../models';
+import logger from "../../helpers/logger";
 
 export const findFee = async (
   name,
+  t,
   groupId,
   channelId,
 ) => {
@@ -17,6 +21,8 @@ export const findFee = async (
       groupId,
       channelId,
     },
+    lock: t.LOCK.UPDATE,
+    transaction: t,
   });
   if (!fee) {
     fee = await db.features.findOne({
@@ -25,6 +31,8 @@ export const findFee = async (
         name,
         groupId,
       },
+      lock: t.LOCK.UPDATE,
+      transaction: t,
     });
   }
   if (!fee) {
@@ -33,6 +41,8 @@ export const findFee = async (
         type: 'global',
         name,
       },
+      lock: t.LOCK.UPDATE,
+      transaction: t,
     });
   }
   return fee;
@@ -46,20 +56,135 @@ export const fetchFeeSchedule = async (
 ) => {
   const fee = {};
   const activity = [];
-  const user = await db.user.findOne({
-    where: {
-      user_id: `discord-${message.author.id}`,
-    },
-  });
-
-  if (!user) {
-    const preActivityFail = await db.activity.create({
-      type: 'fees_f',
-      earnerId: user.id,
-    });
-    const finalActivityFail = await db.activity.findOne({
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    const user = await db.user.findOne({
       where: {
-        id: preActivityFail.id,
+        user_id: `discord-${message.author.id}`,
+      },
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    if (!user) {
+      const preActivityFail = await db.activity.create({
+        type: 'fees_f',
+        earnerId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      const finalActivityFail = await db.activity.findOne({
+        where: {
+          id: preActivityFail.id,
+        },
+        include: [
+          {
+            model: db.user,
+            as: 'earner',
+          },
+        ],
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      activity.unshift(finalActivityFail);
+      await message.author.send("User not found!");
+    }
+
+    fee.tip = await findFee(
+      'tip',
+      t,
+      guildId,
+      channelId,
+    );
+
+    fee.reactdrop = await findFee(
+      'reactdrop',
+      t,
+      guildId,
+      channelId,
+    );
+
+    fee.trivia = await findFee(
+      'trivia',
+      t,
+      guildId,
+      channelId,
+    );
+
+    fee.soak = await findFee(
+      'soak',
+      t,
+      guildId,
+      channelId,
+    );
+
+    fee.rain = await findFee(
+      'rain',
+      t,
+      guildId,
+      channelId,
+    );
+
+    fee.voicerain = await findFee(
+      'voicerain',
+      t,
+      guildId,
+      channelId,
+    );
+
+    fee.thunder = await findFee(
+      'thunder',
+      t,
+      guildId,
+      channelId,
+    );
+
+    fee.thunderstorm = await findFee(
+      'thunderstorm',
+      t,
+      guildId,
+      channelId,
+    );
+
+    fee.hurricane = await findFee(
+      'hurricane',
+      t,
+      guildId,
+      channelId,
+    );
+
+    fee.flood = await findFee(
+      'flood',
+      t,
+      guildId,
+      channelId,
+    );
+    fee.sleet = await findFee(
+      'sleet',
+      t,
+      guildId,
+      channelId,
+    );
+
+    fee.withdraw = await findFee(
+      'withdraw',
+      t,
+      guildId,
+      channelId,
+    );
+
+    const preActivity = await db.activity.create({
+      type: 'fees_s',
+      earnerId: user.id,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    const finalActivity = await db.activity.findOne({
+      where: {
+        id: preActivity.id,
       },
       include: [
         {
@@ -67,108 +192,33 @@ export const fetchFeeSchedule = async (
           as: 'earner',
         },
       ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
     });
-    activity.unshift(finalActivityFail);
-    await message.author.send("User not found!").catch((e) => {
+    activity.unshift(finalActivity);
+
+    await message.reply({
+      embeds: [
+        DiscordFeeMessage(
+          message,
+          fee,
+        ),
+      ],
+    });
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'fees',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Discord: ${e}`);
+    }
+    console.log(err);
+    logger.error(`fees error: ${err}`);
+    await message.channel.send({ embeds: [discordErrorMessage("Fees")] }).catch((e) => {
       console.log(e);
     });
-  }
-
-  fee.tip = await findFee(
-    'tip',
-    guildId,
-    channelId,
-  );
-
-  fee.reactdrop = await findFee(
-    'reactdrop',
-    guildId,
-    channelId,
-  );
-
-  fee.trivia = await findFee(
-    'trivia',
-    guildId,
-    channelId,
-  );
-
-  fee.soak = await findFee(
-    'soak',
-    guildId,
-    channelId,
-  );
-
-  fee.rain = await findFee(
-    'rain',
-    guildId,
-    channelId,
-  );
-
-  fee.voicerain = await findFee(
-    'voicerain',
-    guildId,
-    channelId,
-  );
-
-  fee.thunder = await findFee(
-    'thunder',
-    guildId,
-    channelId,
-  );
-
-  fee.thunderstorm = await findFee(
-    'thunderstorm',
-    guildId,
-    channelId,
-  );
-
-  fee.hurricane = await findFee(
-    'hurricane',
-    guildId,
-    channelId,
-  );
-
-  fee.flood = await findFee(
-    'flood',
-    guildId,
-    channelId,
-  );
-  fee.sleet = await findFee(
-    'sleet',
-    guildId,
-    channelId,
-  );
-
-  fee.withdraw = await findFee(
-    'withdraw',
-    guildId,
-    channelId,
-  );
-
-  const preActivity = await db.activity.create({
-    type: 'fees_s',
-    earnerId: user.id,
-  });
-  const finalActivity = await db.activity.findOne({
-    where: {
-      id: preActivity.id,
-    },
-    include: [
-      {
-        model: db.user,
-        as: 'earner',
-      },
-    ],
-  });
-  activity.unshift(finalActivity);
-
-  await message.reply({
-    embeds: [
-      DiscordFeeMessage(
-        message,
-        fee,
-      ),
-    ],
   });
 
   io.to('admin').emit('updateActivity', {

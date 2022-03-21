@@ -12,9 +12,6 @@ export const discordSettings = async (
   groupId = null,
   channelId = null,
 ) => {
-  console.log(name);
-  console.log(groupId);
-  console.log(channelId);
   let setting;
   setting = await db.features.findOne({
     where: {
@@ -43,7 +40,7 @@ export const discordSettings = async (
     });
   }
   if (!setting) {
-    message.channel.send('settings not found').catch((e) => {
+    await message.channel.send('settings not found').catch((e) => {
       console.log(e);
     });
     return false;
@@ -51,19 +48,19 @@ export const discordSettings = async (
   const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1); // Upper case first letter
 
   if (!setting.enabled && setting.channelId) {
-    message.channel.send({ embeds: [featureDisabledChannelMessage(capitalize(name))] }).catch((e) => {
+    await message.channel.send({ embeds: [featureDisabledChannelMessage(capitalize(name))] }).catch((e) => {
       console.log(e);
     });
     return false;
   }
   if (!setting.enabled && setting.groupId) {
-    message.channel.send({ embeds: [featureDisabledServerMessage(capitalize(name))] }).catch((e) => {
+    await message.channel.send({ embeds: [featureDisabledServerMessage(capitalize(name))] }).catch((e) => {
       console.log(e);
     });
     return false;
   }
   if (!setting.enabled) {
-    message.channel.send({ embeds: [featureDisabledGlobalMessage(capitalize(name))] }).catch((e) => {
+    await message.channel.send({ embeds: [featureDisabledGlobalMessage(capitalize(name))] }).catch((e) => {
       console.log(e);
     });
     return false;

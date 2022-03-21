@@ -24,26 +24,24 @@ export const discordFlood = async (
   faucetSetting,
   queue,
 ) => {
-  if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
-
-  const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-
-  const onlineMembers = members.filter((member) => {
-    console.log(member.presence);
-    return member;
-  });
-
   let user;
   let userActivity;
   const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    if (!groupTask || !channelTask) {
+      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+      return;
+    }
+
+    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
+
+    const onlineMembers = members.filter((member) => {
+      console.log(member.presence);
+      return member;
+    });
+
     [
       user,
       userActivity,
@@ -144,7 +142,6 @@ export const discordFlood = async (
       ],
       lock: t.LOCK.UPDATE,
       transaction: t,
-
     });
     activity.unshift(activityCreate);
     const listOfUsersRained = [];
@@ -254,7 +251,9 @@ export const discordFlood = async (
     }
     console.log(err);
     logger.error(`flood error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Flood")] });
+    await message.channel.send({ embeds: [discordErrorMessage("Flood")] }).catch((e) => {
+      console.log(e);
+    });
   });
   io.to('admin').emit('updateActivity', {
     activity,

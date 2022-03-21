@@ -461,4 +461,11 @@ const scheduleWithdrawal = schedule.scheduleJob('*/5 * * * *', async () => { // 
   }
 });
 
+// Handle olm library process rejections
+process.on('unhandledRejection', (reason, promise) => {
+  console.log('Unhandled Rejection at:', reason.stack || reason);
+  // Recommended: send the information to sentry.io
+  // or whatever crash reporting service you use
+});
+
 console.log('server listening on:', port);

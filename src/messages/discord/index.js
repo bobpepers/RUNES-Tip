@@ -291,6 +291,20 @@ If you do not wish to be @mentioned, please issue this command again.`)
   return result;
 };
 
+export const cannotSendMessageUser = (title, message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(title)
+    .setDescription(`<@${message.author.id}>, ${settings.bot.name} was unable to send you a direct message.\nPlease check your discord privacy settings.`)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
 export const discordErrorMessage = (title) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)

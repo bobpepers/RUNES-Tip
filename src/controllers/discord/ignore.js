@@ -5,6 +5,7 @@ import {
   unIngoreMeMessage,
   walletNotFoundMessage,
   discordErrorMessage,
+  cannotSendMessageUser,
 } from '../../messages/discord';
 import db from '../../models';
 import logger from "../../helpers/logger";
@@ -30,9 +31,7 @@ export const setIgnoreMe = async (message, io) => {
         transaction: t,
       });
       activity.unshift(activityA);
-      await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Ignore me')] }).catch((e) => {
-        console.log(e);
-      });
+      await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Ignore me')] });
       return;
     }
     if (user.ignoreMe) {
@@ -42,9 +41,7 @@ export const setIgnoreMe = async (message, io) => {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      message.channel.send({ embeds: [unIngoreMeMessage(message)] }).catch((e) => {
-        console.log(e);
-      });
+      await message.channel.send({ embeds: [unIngoreMeMessage(message)] });
       return;
     }
     if (!user.ignoreMe) {
@@ -54,9 +51,7 @@ export const setIgnoreMe = async (message, io) => {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      message.channel.send({ embeds: [ignoreMeMessage(message)] }).catch((e) => {
-        console.log(e);
-      });
+      await message.channel.send({ embeds: [ignoreMeMessage(message)] });
       return;
     }
     const preActivity = await db.activity.create({
@@ -90,9 +85,15 @@ export const setIgnoreMe = async (message, io) => {
     }
     console.log(err);
     logger.error(`ignoreme error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Ignore me")] }).catch((e) => {
-      console.log(e);
-    });
+    if (err.code && err.code === 50007) {
+      await message.channel.send({ embeds: [cannotSendMessageUser("Ignore me", message)] }).catch((e) => {
+        console.log(e);
+      });
+    } else {
+      await message.channel.send({ embeds: [discordErrorMessage("Ignore me")] }).catch((e) => {
+        console.log(e);
+      });
+    }
   });
   io.to('admin').emit('updateActivity', {
     activity,

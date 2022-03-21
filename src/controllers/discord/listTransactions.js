@@ -3,6 +3,7 @@ import {
   warnDirectMessage,
   listTransactionsMessage,
   discordErrorMessage,
+  cannotSendMessageUser,
 } from '../../messages/discord';
 import db from '../../models';
 import logger from "../../helpers/logger";
@@ -53,16 +54,12 @@ export const fetchDiscordListTransactions = async (
       });
 
       if (message.channel.type === 'DM') {
-        await message.author.send({ embeds: [listTransactionsMessage(userId, user, transactions)] }).catch((e) => {
-          console.log(e);
-        });
+        await message.author.send({ embeds: [listTransactionsMessage(userId, user, transactions)] });
       }
 
       if (message.channel.type === 'GUILD_TEXT') {
+        await message.author.send({ embeds: [listTransactionsMessage(userId, user, transactions)] });
         await message.channel.send({ embeds: [warnDirectMessage(userId, 'Balance')] });
-        await message.author.send({ embeds: [listTransactionsMessage(userId, user, transactions)] }).catch((e) => {
-          console.log(e);
-        });
       }
       const createActivity = await db.activity.create({
         type: 'listtransactions_s',
@@ -102,7 +99,15 @@ export const fetchDiscordListTransactions = async (
       logger.error(`Error Discord: ${e}`);
     }
     logger.error(`Error Discord List Transactions Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("List transactions")] });
+    if (err.code && err.code === 50007) {
+      await message.channel.send({ embeds: [cannotSendMessageUser("List transactions", message)] }).catch((e) => {
+        console.log(e);
+      });
+    } else {
+      await message.channel.send({ embeds: [discordErrorMessage("List transactions")] }).catch((e) => {
+        console.log(e);
+      });
+    }
   });
   io.to('admin').emit('updateActivity', {
     activity,

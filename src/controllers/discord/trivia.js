@@ -416,18 +416,17 @@ export const discordTrivia = async (
   faucetSetting,
   queue,
 ) => {
-  if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Trivia')] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
   let activity = [];
   const useEmojis = [];
   let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    if (!groupTask || !channelTask) {
+      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Trivia')] });
+      return;
+    }
+
     user = await db.user.findOne({
       where: {
         user_id: `discord-${message.author.id}`,
@@ -449,9 +448,7 @@ export const discordTrivia = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await message.channel.send({ embeds: [userNotFoundMessage(message, 'Trivia')] }).catch((e) => {
-        console.log(e);
-      });
+      await message.channel.send({ embeds: [userNotFoundMessage(message, 'Trivia')] });
       return;
     }
 
@@ -780,7 +777,7 @@ export const discordTrivia = async (
     }
     console.log(err);
     logger.error(`trivia error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Trivia")] }).catch((e) => {
+    await message.channel.send({ embeds: [discordErrorMessage("Trivia")] }).catch((e) => {
       console.log(e);
     });
   });

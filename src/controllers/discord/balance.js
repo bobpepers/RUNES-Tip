@@ -3,6 +3,7 @@ import {
   warnDirectMessage,
   balanceMessage,
   discordErrorMessage,
+  cannotSendMessageUser,
 } from '../../messages/discord';
 import db from '../../models';
 import logger from "../../helpers/logger";
@@ -52,16 +53,12 @@ export const fetchDiscordWalletBalance = async (
       const userId = user.user_id.replace('discord-', '');
 
       if (message.channel.type === 'DM') {
-        await message.author.send({ embeds: [balanceMessage(userId, user, priceInfo)] }).catch((e) => {
-          console.log(e);
-        });
+        await message.author.send({ embeds: [balanceMessage(userId, user, priceInfo)] });
       }
 
       if (message.channel.type === 'GUILD_TEXT') {
         await message.channel.send({ embeds: [warnDirectMessage(userId, 'Balance')] });
-        await message.author.send({ embeds: [balanceMessage(userId, user, priceInfo)] }).catch((e) => {
-          console.log(e);
-        });
+        await message.author.send({ embeds: [balanceMessage(userId, user, priceInfo)] });
       }
       const createActivity = await db.activity.create({
         type: 'balance',
@@ -101,7 +98,15 @@ export const fetchDiscordWalletBalance = async (
       logger.error(`Error Discord: ${e}`);
     }
     logger.error(`Error Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Balance")] });
+    if (err.code && err.code === 50007) {
+      await message.channel.send({ embeds: [cannotSendMessageUser("Balance", message)] }).catch((e) => {
+        console.log(e);
+      });
+    } else {
+      await message.channel.send({ embeds: [discordErrorMessage("Balance")] }).catch((e) => {
+        console.log(e);
+      });
+    }
   });
   io.to('admin').emit('updateActivity', {
     activity,

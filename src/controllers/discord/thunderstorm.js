@@ -28,39 +28,31 @@ export const discordThunderStorm = async (
   faucetSetting,
   queue,
 ) => {
-  if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Thunderstorm')] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
-  if (Number(filteredMessage[2]) > 50) {
-    await message.channel.send({ embeds: [thunderstormMaxUserAmountMessage(message)] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
-  if (Number(filteredMessage[2]) % 1 !== 0) {
-    await message.channel.send({ embeds: [thunderstormInvalidUserAmount(message)] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
-  if (Number(filteredMessage[2]) <= 0) {
-    await message.channel.send({ embeds: [thunderstormUserZeroAmountMessage(message)] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
-  const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  const onlineMembers = members.filter((member) => member && member.presence && member.presence.status && member.presence.status === "online");
-
   const activity = [];
   let userActivity;
   let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    if (!groupTask || !channelTask) {
+      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Thunderstorm')] });
+      return;
+    }
+    if (Number(filteredMessage[2]) > 50) {
+      await message.channel.send({ embeds: [thunderstormMaxUserAmountMessage(message)] });
+      return;
+    }
+    if (Number(filteredMessage[2]) % 1 !== 0) {
+      await message.channel.send({ embeds: [thunderstormInvalidUserAmount(message)] });
+      return;
+    }
+    if (Number(filteredMessage[2]) <= 0) {
+      await message.channel.send({ embeds: [thunderstormUserZeroAmountMessage(message)] });
+      return;
+    }
+    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
+    const onlineMembers = members.filter((member) => member && member.presence && member.presence.status && member.presence.status === "online");
+
     [
       user,
       userActivity,
@@ -108,9 +100,7 @@ export const discordThunderStorm = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await message.channel.send('Not enough online users').catch((e) => {
-        console.log(e);
-      });
+      await message.channel.send('Not enough online users');
       return;
     }
 
@@ -260,8 +250,6 @@ export const discordThunderStorm = async (
         ),
       ],
     });
-
-    // logger.info(`Success ThunderStorm Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 
     t.afterCommit(() => {
       console.log('done');

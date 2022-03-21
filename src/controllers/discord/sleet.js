@@ -3,7 +3,7 @@ import { Transaction, Op } from "sequelize";
 import db from '../../models';
 import {
   notEnoughActiveUsersMessage,
-  walletNotFoundMessage,
+  // walletNotFoundMessage,
   AfterSuccessMessage,
   NotInDirectMessage,
   discordErrorMessage,
@@ -26,18 +26,19 @@ export const discordSleet = async (
   faucetSetting,
   queue,
 ) => {
-  if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
   const activity = [];
   let userActivity;
   let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    if (!groupTask || !channelTask) {
+      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Sleet')] }).catch((e) => {
+        console.log(e);
+      });
+      return;
+    }
+
     [
       user,
       userActivity,
@@ -83,9 +84,7 @@ export const discordSleet = async (
         transaction: t,
       });
       activity.unshift(groupFailActivity);
-      await message.channel.send("Group not found").catch((e) => {
-        console.log(e);
-      });
+      await message.channel.send("Group not found");
       return;
     }
     let textTime;
@@ -121,9 +120,7 @@ export const discordSleet = async (
         transaction: t,
       });
       activity.unshift(activityA);
-      await message.channel.send({ embeds: [invalidTimeMessage(message, 'Sleet')] }).catch((e) => {
-        console.log(e);
-      });
+      await message.channel.send({ embeds: [invalidTimeMessage(message, 'Sleet')] });
       return;
     }
 
@@ -364,7 +361,7 @@ export const discordSleet = async (
     }
     console.log(err);
     logger.error(`sleet error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Sleet")] }).catch((e) => {
+    await message.channel.send({ embeds: [discordErrorMessage("Sleet")] }).catch((e) => {
       console.log(e);
     });
   });

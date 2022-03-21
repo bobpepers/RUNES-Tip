@@ -85,7 +85,7 @@ export const discordStats = async (
       spenderId: user.id,
     });
     activity.unshift(activityA);
-    await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Ignore me')] }).catch((e) => {
+    await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Stats')] }).catch((e) => {
       console.log(e);
     });
     return;

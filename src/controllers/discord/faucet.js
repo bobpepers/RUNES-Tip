@@ -51,9 +51,7 @@ export const discordFaucetClaim = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      await message.channel.send('faucet not found').catch((e) => {
-        console.log(e);
-      });
+      await message.channel.send('faucet not found');
       return;
     }
 
@@ -65,9 +63,7 @@ export const discordFaucetClaim = async (
         transaction: t,
       });
       activity.push(fActivity);
-      await message.channel.send({ embeds: [dryFaucetMessage()] }).catch((e) => {
-        console.log(e);
-      });
+      await message.channel.send({ embeds: [dryFaucetMessage()] });
       return;
     }
     const lastFaucetTip = await db.faucettip.findOne({
@@ -98,9 +94,7 @@ export const discordFaucetClaim = async (
         transaction: t,
       });
       activity.push(activityT);
-      await message.channel.send({ embeds: [claimTooFactFaucetMessage(username, distance)] }).catch((e) => {
-        console.log(e);
-      });
+      await message.channel.send({ embeds: [claimTooFactFaucetMessage(username, distance)] });
       return;
     }
     const amountToTip = Number(((faucet.amount / 100) * (settings.faucet / 1e2)).toFixed(0));
@@ -173,7 +167,7 @@ export const discordFaucetClaim = async (
     }
     console.log(err);
     logger.error(`faucet error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Faucet")] }).catch((e) => {
+    await message.channel.send({ embeds: [discordErrorMessage("Faucet")] }).catch((e) => {
       console.log(e);
     });
   });

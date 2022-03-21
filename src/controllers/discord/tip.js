@@ -27,12 +27,6 @@ export const tipRunesToDiscordUser = async (
   faucetSetting,
   queue,
 ) => {
-  if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
   const activity = [];
   let user;
   let AmountPosition = 1;
@@ -44,6 +38,11 @@ export const tipRunesToDiscordUser = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    if (!groupTask || !channelTask) {
+      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] });
+      return;
+    }
+
     [
       user,
       userActivity,
@@ -111,9 +110,7 @@ export const tipRunesToDiscordUser = async (
     }
 
     if (usersToTip.length < 1) {
-      await message.channel.send({ embeds: [notEnoughUsersToTip(message)] }).catch((e) => {
-        console.log(e);
-      });
+      await message.channel.send({ embeds: [notEnoughUsersToTip(message)] });
       return;
     }
 
@@ -313,7 +310,7 @@ export const tipRunesToDiscordUser = async (
     }
     console.log(err);
     logger.error(`tip error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Tip")] }).catch((e) => {
+    await message.channel.send({ embeds: [discordErrorMessage("Tip")] }).catch((e) => {
       console.log(e);
     });
   });
@@ -333,12 +330,6 @@ export const tipCoinsToDiscordFaucet = async (
   faucetSetting,
   queue,
 ) => {
-  if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
   const activity = [];
   let user;
   const usersToTip = [];
@@ -347,6 +338,11 @@ export const tipCoinsToDiscordFaucet = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    if (!groupTask || !channelTask) {
+      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] });
+      return;
+    }
+
     [
       user,
       userActivity,
@@ -528,10 +524,18 @@ export const tipCoinsToDiscordFaucet = async (
     t.afterCommit(() => {
       console.log('done');
     });
-  }).catch((err) => {
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'tipFaucet',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`tipFaucet Discord: ${e}`);
+    }
     console.log(err);
-    logger.error(`tip error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Tip")] }).catch((e) => {
+    logger.error(`tipFaucet error: ${err}`);
+    await message.channel.send({ embeds: [discordErrorMessage("Tip")] }).catch((e) => {
       console.log(e);
     });
   });

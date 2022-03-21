@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-await-in-loop */
 import _ from 'lodash';
 import db from '../../models';
@@ -43,7 +44,7 @@ export const mapMembers = async (
             {
               model: db.address,
               as: 'addresses',
-              required: true,
+              required: false,
             },
           ],
         },
@@ -61,7 +62,6 @@ export const mapMembers = async (
     }
     if (!userExist) {
       let user;
-      console.log(discordUser);
       user = await db.user.create({
         user_id: `discord-${discordUser.id}`,
         username: `${discordUser.username}#${discordUser.discriminator}`,

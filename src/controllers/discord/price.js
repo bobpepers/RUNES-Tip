@@ -44,9 +44,7 @@ export const discordPrice = async (
 
     if (!user && !user.wallet) {
       // ctx.reply(`Wallet not found`);
-      await message.author.send("Wallet not found").catch((e) => {
-        console.log(e);
-      });
+      await message.author.send("Wallet not found");
     }
 
     if (user && user.wallet) {
@@ -57,9 +55,7 @@ export const discordPrice = async (
         let replyString = ``;
         replyString += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('\n');
         if (message.channel.type === 'DM') {
-          await message.author.send({ embeds: [priceMessage(replyString)] }).catch((e) => {
-            console.log(e);
-          });
+          await message.author.send({ embeds: [priceMessage(replyString)] });
         }
         if (message.channel.type === 'GUILD_TEXT') {
           await message.channel.send({ embeds: [priceMessage(replyString)] });
@@ -106,7 +102,9 @@ export const discordPrice = async (
       logger.error(`Error Discord: ${e}`);
     }
     logger.error(`Error Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Price")] });
+    message.channel.send({ embeds: [discordErrorMessage("Price")] }).catch((e) => {
+      console.log(e);
+    });
   });
   io.to('admin').emit('updateActivity', {
     activity,

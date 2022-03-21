@@ -28,41 +28,33 @@ export const discordHurricane = async (
   faucetSetting,
   queue,
 ) => {
-  if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Hurricane')] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
-  if (Number(filteredMessage[2]) > 50) {
-    await message.channel.send({ embeds: [hurricaneMaxUserAmountMessage(message)] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
-  if (Number(filteredMessage[2]) % 1 !== 0) {
-    await message.channel.send({ embeds: [hurricaneInvalidUserAmount(message)] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
-  if (Number(filteredMessage[2]) <= 0) {
-    await message.channel.send({ embeds: [hurricaneUserZeroAmountMessage(message)] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
-  const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  const onlineMembers = members.filter((member) => (member.presence && member.presence.status === "online")
-    || (member.presence && member.presence.status === "idle")
-    || (member.presence && member.presence.status === "dnd"));
-
   const activity = [];
   let userActivity;
   let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    if (!groupTask || !channelTask) {
+      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Hurricane')] });
+      return;
+    }
+    if (Number(filteredMessage[2]) > 50) {
+      await message.channel.send({ embeds: [hurricaneMaxUserAmountMessage(message)] });
+      return;
+    }
+    if (Number(filteredMessage[2]) % 1 !== 0) {
+      await message.channel.send({ embeds: [hurricaneInvalidUserAmount(message)] });
+      return;
+    }
+    if (Number(filteredMessage[2]) <= 0) {
+      await message.channel.send({ embeds: [hurricaneUserZeroAmountMessage(message)] });
+      return;
+    }
+    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
+    const onlineMembers = members.filter((member) => (member.presence && member.presence.status === "online")
+      || (member.presence && member.presence.status === "idle")
+      || (member.presence && member.presence.status === "dnd"));
+
     [
       user,
       userActivity,
@@ -110,9 +102,7 @@ export const discordHurricane = async (
         transaction: t,
       });
       activity.unshift(activityA);
-      await message.channel.send('Not enough online users').catch((e) => {
-        console.log(e);
-      });
+      await message.channel.send('Not enough online users');
       return;
     }
 
@@ -276,7 +266,7 @@ export const discordHurricane = async (
     }
     console.log(err);
     logger.error(`hurricane error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Hurricane")] }).catch((e) => {
+    await message.channel.send({ embeds: [discordErrorMessage("Hurricane")] }).catch((e) => {
       console.log(e);
     });
   });

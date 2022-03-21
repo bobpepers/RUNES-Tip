@@ -24,30 +24,27 @@ export const discordRain = async (
   faucetSetting,
   queue,
 ) => {
-  if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
-
-  const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  const onlineMembers = await members.filter((member) => {
-    const memberStatus = member
-      && member.presence
-      && member.presence.status;
-    return (
-      memberStatus === "online"
-    );
-  });
-
   const activity = [];
   let userActivity;
   let user;
-
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    if (!groupTask || !channelTask) {
+      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+      return;
+    }
+
+    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
+    const onlineMembers = await members.filter((member) => {
+      const memberStatus = member
+        && member.presence
+        && member.presence.status;
+      return (
+        memberStatus === "online"
+      );
+    });
+
     [
       user,
       userActivity,
@@ -95,9 +92,7 @@ export const discordRain = async (
         transaction: t,
       });
       activity.unshift(fActivity);
-      await message.channel.send('Not enough online users').catch((e) => {
-        console.log(e);
-      });
+      await message.channel.send('Not enough online users');
       return;
     }
 

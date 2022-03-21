@@ -5,7 +5,10 @@ import {
 } from '../../messages/discord';
 import db from '../../models';
 
-export const discordLeaderboard = async (message, io) => {
+export const discordLeaderboard = async (
+  message,
+  io,
+) => {
   const user = await db.user.findOne({
     where: {
       user_id: `discord-${message.author.id}`,

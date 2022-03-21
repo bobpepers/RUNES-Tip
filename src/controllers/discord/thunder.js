@@ -25,23 +25,21 @@ export const discordThunder = async (
   faucetSetting,
   queue,
 ) => {
-  if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
-  const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-  const onlineMembers = members.filter((member) => member.presence
-    && member.presence.status
-    && member.presence.status === "online");
-
   const activity = [];
   let userActivity;
   let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    if (!groupTask || !channelTask) {
+      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Thunder')] });
+      return;
+    }
+    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
+    const onlineMembers = members.filter((member) => member.presence
+      && member.presence.status
+      && member.presence.status === "online");
+
     [
       user,
       userActivity,
@@ -89,9 +87,7 @@ export const discordThunder = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await message.channel.send('Not enough online users').catch((e) => {
-        console.log(e);
-      });
+      await message.channel.send('Not enough online users');
       return;
     }
     if (withoutBots.length === 1) {

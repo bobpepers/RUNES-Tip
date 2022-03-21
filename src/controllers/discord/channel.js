@@ -11,7 +11,6 @@ export const updateDiscordChannel = async (
   let channelRecord;
 
   if (message.type && message.type === "GUILD_VOICE") {
-    console.log('GUILD_VOICE');
     channelId = message.id;
   } else if (message.guild && message.guild.id && message.channelId) {
     channelId = message.channelId;
