@@ -37,75 +37,54 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 var matrixFlood = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, queue, userDirectMessageRoomId, isCurrentRoomDirectMessage) {
-    var currentRoom, members, onlineMembers, user, userActivity, activity;
+    var user, userActivity, currentRoom, members, activity;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            if (!isCurrentRoomDirectMessage) {
-              _context3.next = 10;
-              break;
-            }
-
-            _context3.prev = 1;
-            _context3.next = 4;
-            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.notInDirectMessage)(message, 'Flood'));
-
-          case 4:
-            _context3.next = 9;
-            break;
-
-          case 6:
-            _context3.prev = 6;
-            _context3.t0 = _context3["catch"](1);
-            console.log(_context3.t0);
-
-          case 9:
-            return _context3.abrupt("return");
-
-          case 10:
-            _context3.prev = 10;
-            _context3.next = 13;
-            return matrixClient.getRoom(message.sender.roomId);
-
-          case 13:
-            currentRoom = _context3.sent;
-            _context3.next = 16;
-            return currentRoom.getMembers();
-
-          case 16:
-            members = _context3.sent;
-            _context3.next = 22;
-            break;
-
-          case 19:
-            _context3.prev = 19;
-            _context3.t1 = _context3["catch"](10);
-            console.log(_context3.t1);
-
-          case 22:
-            // const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-            onlineMembers = members.filter(function (member) {
-              console.log(member);
-              console.log(member.presence);
-              return member;
-            });
             activity = [];
-            _context3.next = 26;
+            _context3.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, factivity, updatedBalance, fee, amountPerUser, faucetWatered, floodRecord, cactivity, activityCreate, listOfUsersRained, _iterator, _step, floodee, floodeeWallet, floodtipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var onlineMembers, _yield$userWalletExis, _yield$userWalletExis2, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, factivity, updatedBalance, fee, amountPerUser, faucetWatered, floodRecord, cactivity, activityCreate, listOfUsersRained, _iterator, _step, floodee, floodeeWallet, floodtipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
-                        _context.next = 2;
+                        if (!isCurrentRoomDirectMessage) {
+                          _context.next = 4;
+                          break;
+                        }
+
+                        _context.next = 3;
+                        return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.notInDirectMessage)(message, 'Flood'));
+
+                      case 3:
+                        return _context.abrupt("return");
+
+                      case 4:
+                        _context.next = 6;
+                        return matrixClient.getRoom(message.sender.roomId);
+
+                      case 6:
+                        currentRoom = _context.sent;
+                        _context.next = 9;
+                        return currentRoom.getMembers();
+
+                      case 9:
+                        members = _context.sent;
+                        onlineMembers = members.filter(function (member) {
+                          console.log(member);
+                          console.log(member.presence);
+                          return member;
+                        });
+                        _context.next = 13;
                         return (0, _userWalletExist.userWalletExist)(matrixClient, message, t, filteredMessage[1].toLowerCase());
 
-                      case 2:
+                      case 13:
                         _yield$userWalletExis = _context.sent;
                         _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
                         user = _yield$userWalletExis2[0];
@@ -116,42 +95,42 @@ var matrixFlood = /*#__PURE__*/function () {
                         }
 
                         if (user) {
-                          _context.next = 9;
+                          _context.next = 20;
                           break;
                         }
 
                         return _context.abrupt("return");
 
-                      case 9:
-                        _context.next = 11;
+                      case 20:
+                        _context.next = 22;
                         return (0, _mapMembers.mapMembers)(matrixClient, message, t, onlineMembers, setting);
 
-                      case 11:
+                      case 22:
                         withoutBots = _context.sent;
-                        _context.next = 14;
+                        _context.next = 25;
                         return (0, _validateAmount.validateAmount)(matrixClient, message, t, filteredMessage[2], user, setting, filteredMessage[1].toLowerCase());
 
-                      case 14:
+                      case 25:
                         _yield$validateAmount = _context.sent;
                         _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
                         activityValiateAmount = _yield$validateAmount2[0];
                         amount = _yield$validateAmount2[1];
 
                         if (!activityValiateAmount) {
-                          _context.next = 21;
+                          _context.next = 32;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 21:
+                      case 32:
                         if (!(withoutBots.length < 2)) {
-                          _context.next = 35;
+                          _context.next = 40;
                           break;
                         }
 
-                        _context.next = 24;
+                        _context.next = 35;
                         return _models["default"].activity.create({
                           type: 'flood_f',
                           spenderId: user.id
@@ -160,27 +139,17 @@ var matrixFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 24:
+                      case 35:
                         factivity = _context.sent;
                         activity.unshift(factivity);
-                        _context.prev = 26;
-                        _context.next = 29;
+                        _context.next = 39;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.notEnoughUsers)());
 
-                      case 29:
-                        _context.next = 34;
-                        break;
-
-                      case 31:
-                        _context.prev = 31;
-                        _context.t0 = _context["catch"](26);
-                        console.log(_context.t0);
-
-                      case 34:
+                      case 39:
                         return _context.abrupt("return");
 
-                      case 35:
-                        _context.next = 37;
+                      case 40:
+                        _context.next = 42;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -188,16 +157,16 @@ var matrixFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 37:
+                      case 42:
                         updatedBalance = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
-                        _context.next = 42;
+                        _context.next = 47;
                         return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
 
-                      case 42:
+                      case 47:
                         faucetWatered = _context.sent;
-                        _context.next = 45;
+                        _context.next = 50;
                         return _models["default"].flood.create({
                           feeAmount: fee,
                           amount: amount,
@@ -209,9 +178,9 @@ var matrixFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 45:
+                      case 50:
                         floodRecord = _context.sent;
-                        _context.next = 48;
+                        _context.next = 53;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'flood_s',
@@ -223,9 +192,9 @@ var matrixFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 48:
+                      case 53:
                         cactivity = _context.sent;
-                        _context.next = 51;
+                        _context.next = 56;
                         return _models["default"].activity.findOne({
                           where: {
                             id: cactivity.id
@@ -241,25 +210,25 @@ var matrixFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 51:
+                      case 56:
                         activityCreate = _context.sent;
                         activity.unshift(activityCreate);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(withoutBots);
-                        _context.prev = 55;
+                        _context.prev = 60;
 
                         _iterator.s();
 
-                      case 57:
+                      case 62:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 76;
+                          _context.next = 81;
                           break;
                         }
 
                         floodee = _step.value;
-                        _context.next = 61;
+                        _context.next = 66;
                         return floodee.wallet.update({
                           available: floodee.wallet.available + Number(amountPerUser)
                         }, {
@@ -267,9 +236,9 @@ var matrixFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 61:
+                      case 66:
                         floodeeWallet = _context.sent;
-                        _context.next = 64;
+                        _context.next = 69;
                         return _models["default"].floodtip.create({
                           amount: amountPerUser,
                           userId: floodee.id,
@@ -280,7 +249,7 @@ var matrixFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 64:
+                      case 69:
                         floodtipRecord = _context.sent;
 
                         if (floodee.ignoreMe) {
@@ -292,7 +261,7 @@ var matrixFlood = /*#__PURE__*/function () {
 
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context.next = 69;
+                        _context.next = 74;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
                           type: 'floodtip_s',
@@ -307,9 +276,9 @@ var matrixFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 69:
+                      case 74:
                         tipActivity = _context.sent;
-                        _context.next = 72;
+                        _context.next = 77;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -331,107 +300,87 @@ var matrixFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 72:
+                      case 77:
                         tipActivity = _context.sent;
                         activity.unshift(tipActivity);
 
-                      case 74:
-                        _context.next = 57;
+                      case 79:
+                        _context.next = 62;
                         break;
-
-                      case 76:
-                        _context.next = 81;
-                        break;
-
-                      case 78:
-                        _context.prev = 78;
-                        _context.t1 = _context["catch"](55);
-
-                        _iterator.e(_context.t1);
 
                       case 81:
-                        _context.prev = 81;
+                        _context.next = 86;
+                        break;
+
+                      case 83:
+                        _context.prev = 83;
+                        _context.t0 = _context["catch"](60);
+
+                        _iterator.e(_context.t0);
+
+                      case 86:
+                        _context.prev = 86;
 
                         _iterator.f();
 
-                        return _context.finish(81);
+                        return _context.finish(86);
 
-                      case 84:
+                      case 89:
                         newStringListUsers = listOfUsersRained.join(", ");
                         cutStringListUsers = newStringListUsers.match(/.{1,6999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                        _context.prev = 87;
+                        _context.prev = 92;
 
                         _iterator2.s();
 
-                      case 89:
+                      case 94:
                         if ((_step2 = _iterator2.n()).done) {
-                          _context.next = 101;
+                          _context.next = 100;
                           break;
                         }
 
                         element = _step2.value;
-                        _context.prev = 91;
-                        _context.next = 94;
+                        _context.next = 98;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.userListMessage)(element));
 
-                      case 94:
-                        _context.next = 99;
+                      case 98:
+                        _context.next = 94;
                         break;
 
-                      case 96:
-                        _context.prev = 96;
-                        _context.t2 = _context["catch"](91);
-                        console.log(_context.t2);
-
-                      case 99:
-                        _context.next = 89;
+                      case 100:
+                        _context.next = 105;
                         break;
 
-                      case 101:
-                        _context.next = 106;
-                        break;
+                      case 102:
+                        _context.prev = 102;
+                        _context.t1 = _context["catch"](92);
 
-                      case 103:
-                        _context.prev = 103;
-                        _context.t3 = _context["catch"](87);
+                        _iterator2.e(_context.t1);
 
-                        _iterator2.e(_context.t3);
-
-                      case 106:
-                        _context.prev = 106;
+                      case 105:
+                        _context.prev = 105;
 
                         _iterator2.f();
 
-                        return _context.finish(106);
+                        return _context.finish(105);
 
-                      case 109:
-                        _context.prev = 109;
-                        _context.next = 112;
+                      case 108:
+                        _context.next = 110;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.afterSuccessMessage)(message, floodRecord.id, amount, withoutBots, amountPerUser, 'Flood', 'flooded'));
 
-                      case 112:
-                        _context.next = 117;
-                        break;
-
-                      case 114:
-                        _context.prev = 114;
-                        _context.t4 = _context["catch"](109);
-                        console.log(_context.t4);
-
-                      case 117:
+                      case 110:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 118:
+                      case 111:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[26, 31], [55, 78, 81, 84], [87, 103, 106, 109], [91, 96], [109, 114]]);
+                }, _callee, null, [[60, 83, 86, 89], [92, 102, 105, 108]]);
               }));
 
               return function (_x11) {
@@ -491,17 +440,19 @@ var matrixFlood = /*#__PURE__*/function () {
               };
             }());
 
-          case 26:
-            io.to('admin').emit('updateActivity', {
-              activity: activity
-            });
+          case 3:
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
 
-          case 27:
+          case 4:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[1, 6], [10, 19]]);
+    }, _callee3);
   }));
 
   return function matrixFlood(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9, _x10) {

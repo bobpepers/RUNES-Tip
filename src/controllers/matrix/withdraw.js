@@ -200,18 +200,17 @@ export const withdrawMatrixCreate = async (
       );
     } else {
       await matrixClient.sendEvent(
-        message.sender.roomId,
-        "m.room.message",
-        warnDirectMessage(message.sender.name, 'Withdraw'),
-      );
-
-      await matrixClient.sendEvent(
         userDirectMessageRoomId,
         "m.room.message",
         reviewMessage(
           message,
           transaction,
         ),
+      );
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        warnDirectMessage(message.sender.name, 'Withdraw'),
       );
     }
     t.afterCommit(() => {

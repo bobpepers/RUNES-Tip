@@ -79,7 +79,7 @@ var mapMembers = /*#__PURE__*/function () {
                 include: [{
                   model: _models["default"].address,
                   as: 'addresses',
-                  required: true
+                  required: false
                 }]
               }],
               lock: t.LOCK.UPDATE,

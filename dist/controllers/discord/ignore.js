@@ -77,7 +77,7 @@ var setIgnoreMe = /*#__PURE__*/function () {
 
                       case 11:
                         if (!user.ignoreMe) {
-                          _context.next = 17;
+                          _context.next = 18;
                           break;
                         }
 
@@ -96,15 +96,16 @@ var setIgnoreMe = /*#__PURE__*/function () {
                         });
 
                       case 16:
-                        return _context.abrupt("return");
+                        _context.next = 23;
+                        break;
 
-                      case 17:
+                      case 18:
                         if (user.ignoreMe) {
                           _context.next = 23;
                           break;
                         }
 
-                        _context.next = 20;
+                        _context.next = 21;
                         return user.update({
                           ignoreMe: true
                         }, {
@@ -112,20 +113,20 @@ var setIgnoreMe = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 20:
-                        _context.next = 22;
+                      case 21:
+                        _context.next = 23;
                         return message.channel.send({
                           embeds: [(0, _discord.ignoreMeMessage)(message)]
                         });
-
-                      case 22:
-                        return _context.abrupt("return");
 
                       case 23:
                         _context.next = 25;
                         return _models["default"].activity.create({
                           type: 'ignoreme_s',
                           earnerId: user.id
+                        }, {
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
                         });
 
                       case 25:
@@ -138,7 +139,9 @@ var setIgnoreMe = /*#__PURE__*/function () {
                           include: [{
                             model: _models["default"].user,
                             as: 'earner'
-                          }]
+                          }],
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
                         });
 
                       case 28:

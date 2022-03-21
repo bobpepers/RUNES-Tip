@@ -60,44 +60,41 @@ var matrixWalletDepositAddress = /*#__PURE__*/function () {
                         user = _context.sent;
 
                         if (!(!user && !user.wallet && !user.wallet.addresses)) {
-                          _context.next = 6;
+                          _context.next = 5;
                           break;
                         }
 
-                        _context.next = 6;
-                        return message.author.send("Deposit Address not found");
+                        return _context.abrupt("return");
 
-                      case 6:
+                      case 5:
                         if (!(user && user.wallet && user.wallet.addresses)) {
-                          _context.next = 38;
+                          _context.next = 35;
                           break;
                         }
 
-                        _context.next = 9;
+                        _context.next = 8;
                         return _qrcode["default"].toDataURL(user.wallet.addresses[0].address);
 
-                      case 9:
+                      case 8:
                         depositQr = _context.sent;
                         depositQrFixed = depositQr.replace('data:image/png;base64,', '');
                         userId = user.user_id.replace('matrix-', '');
-                        _context.next = 14;
+                        _context.next = 13;
                         return matrixClient.uploadContent(Buffer.from(depositQrFixed, 'base64'), {
                           rawResponse: false,
                           type: 'image/png'
                         });
 
-                      case 14:
+                      case 13:
                         uploadResponse = _context.sent;
-                        console.log(uploadResponse);
-                        console.log('uploadResponse');
                         matrixUrl = uploadResponse.content_uri;
 
                         if (!(message.sender.roomId === userDirectMessageRoomId)) {
-                          _context.next = 25;
+                          _context.next = 22;
                           break;
                         }
 
-                        _context.next = 21;
+                        _context.next = 18;
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", {
                           msgtype: "m.image",
                           url: matrixUrl,
@@ -105,20 +102,16 @@ var matrixWalletDepositAddress = /*#__PURE__*/function () {
                           body: "".concat(user.wallet.addresses[0].address)
                         });
 
-                      case 21:
-                        _context.next = 23;
+                      case 18:
+                        _context.next = 20;
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.depositAddressMessage)(user));
 
-                      case 23:
-                        _context.next = 31;
+                      case 20:
+                        _context.next = 28;
                         break;
 
-                      case 25:
-                        _context.next = 27;
-                        return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.warnDirectMessage)(message.sender.name, 'Deposit'));
-
-                      case 27:
-                        _context.next = 29;
+                      case 22:
+                        _context.next = 24;
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", {
                           msgtype: "m.image",
                           url: matrixUrl,
@@ -126,12 +119,16 @@ var matrixWalletDepositAddress = /*#__PURE__*/function () {
                           body: "".concat(user.wallet.addresses[0].address)
                         });
 
-                      case 29:
-                        _context.next = 31;
+                      case 24:
+                        _context.next = 26;
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.depositAddressMessage)(user));
 
-                      case 31:
-                        _context.next = 33;
+                      case 26:
+                        _context.next = 28;
+                        return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.warnDirectMessage)(message.sender.name, 'Deposit'));
+
+                      case 28:
+                        _context.next = 30;
                         return _models["default"].activity.create({
                           type: 'deposit',
                           earnerId: user.id
@@ -140,9 +137,9 @@ var matrixWalletDepositAddress = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 33:
+                      case 30:
                         preActivity = _context.sent;
-                        _context.next = 36;
+                        _context.next = 33;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -155,16 +152,16 @@ var matrixWalletDepositAddress = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 36:
+                      case 33:
                         finalActivity = _context.sent;
                         activity.unshift(finalActivity);
 
-                      case 38:
+                      case 35:
                         t.afterCommit(function () {
                           console.log("Success Deposit Address Request");
                         });
 
-                      case 39:
+                      case 36:
                       case "end":
                         return _context.stop();
                     }
@@ -217,9 +214,11 @@ var matrixWalletDepositAddress = /*#__PURE__*/function () {
             }());
 
           case 3:
-            io.to('admin').emit('updateActivity', {
-              activity: activity
-            });
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
 
           case 4:
           case "end":

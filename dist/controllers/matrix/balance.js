@@ -69,73 +69,42 @@ var matrixBalance = /*#__PURE__*/function () {
                         priceInfo = _context.sent;
 
                         if (!(!user && !user.wallet)) {
-                          _context.next = 9;
+                          _context.next = 8;
                           break;
                         }
 
-                        _context.next = 9;
-                        return message.author.send("Wallet not found");
+                        return _context.abrupt("return");
 
-                      case 9:
+                      case 8:
                         if (!(user && user.wallet)) {
-                          _context.next = 45;
+                          _context.next = 26;
                           break;
                         }
 
                         userId = user.user_id.replace('matrix-', '');
 
                         if (!(message.sender.roomId === userDirectMessageRoomId)) {
-                          _context.next = 22;
+                          _context.next = 15;
                           break;
                         }
 
-                        _context.prev = 12;
-                        _context.next = 15;
+                        _context.next = 13;
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.balanceMessage)(userId, user, priceInfo));
+
+                      case 13:
+                        _context.next = 19;
+                        break;
 
                       case 15:
-                        _context.next = 20;
-                        break;
-
-                      case 17:
-                        _context.prev = 17;
-                        _context.t0 = _context["catch"](12);
-                        console.log(_context.t0);
-
-                      case 20:
-                        _context.next = 38;
-                        break;
-
-                      case 22:
-                        _context.prev = 22;
-                        _context.next = 25;
-                        return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.warnDirectMessage)(message.sender.name, 'Help'));
-
-                      case 25:
-                        _context.next = 30;
-                        break;
-
-                      case 27:
-                        _context.prev = 27;
-                        _context.t1 = _context["catch"](22);
-                        console.log(_context.t1);
-
-                      case 30:
-                        _context.prev = 30;
-                        _context.next = 33;
+                        _context.next = 17;
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.balanceMessage)(userId, user, priceInfo));
 
-                      case 33:
-                        _context.next = 38;
-                        break;
+                      case 17:
+                        _context.next = 19;
+                        return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.warnDirectMessage)(message.sender.name, 'Help'));
 
-                      case 35:
-                        _context.prev = 35;
-                        _context.t2 = _context["catch"](30);
-                        console.log(_context.t2);
-
-                      case 38:
-                        _context.next = 40;
+                      case 19:
+                        _context.next = 21;
                         return _models["default"].activity.create({
                           type: 'balance',
                           earnerId: user.id,
@@ -145,9 +114,9 @@ var matrixBalance = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 40:
+                      case 21:
                         createActivity = _context.sent;
-                        _context.next = 43;
+                        _context.next = 24;
                         return _models["default"].activity.findOne({
                           where: {
                             id: createActivity.id
@@ -160,22 +129,21 @@ var matrixBalance = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 43:
+                      case 24:
                         findActivity = _context.sent;
                         activity.unshift(findActivity);
 
-                      case 45:
+                      case 26:
                         t.afterCommit(function () {
-                          // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
                           console.log('done balance request');
                         });
 
-                      case 46:
+                      case 27:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[12, 17], [22, 27], [30, 35]]);
+                }, _callee);
               }));
 
               return function (_x5) {
@@ -221,9 +189,11 @@ var matrixBalance = /*#__PURE__*/function () {
             }());
 
           case 3:
-            io.to('admin').emit('updateActivity', {
-              activity: activity
-            });
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
 
           case 4:
           case "end":

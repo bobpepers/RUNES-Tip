@@ -34,17 +34,18 @@ var settings = (0, _settings["default"])();
 
 var withdrawMatrixCreate = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, queue, userDirectMessageRoomId, isCurrentRoomDirectMessage) {
-    var user, activity;
+    var user, activity, userActivity;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            _context3.next = 2;
+            activity = [];
+            _context3.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, isValidAddressInfo, isValidAddress, addressExternal, UserExternalAddressMnMAssociation, wallet, fee, transaction;
+                var _yield$userWalletExis, _yield$userWalletExis2, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, isValidAddressInfo, isValidAddress, addressExternal, UserExternalAddressMnMAssociation, wallet, fee, transaction, activityCreate;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -57,176 +58,143 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                         _yield$userWalletExis = _context.sent;
                         _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
                         user = _yield$userWalletExis2[0];
-                        activity = _yield$userWalletExis2[1];
+                        userActivity = _yield$userWalletExis2[1];
+
+                        if (userActivity) {
+                          activity.unshift(userActivity);
+                        }
 
                         if (user) {
-                          _context.next = 8;
+                          _context.next = 9;
                           break;
                         }
 
                         return _context.abrupt("return");
 
-                      case 8:
-                        _context.next = 10;
+                      case 9:
+                        _context.next = 11;
                         return (0, _validateAmount.validateAmount)(matrixClient, message, t, filteredMessage[3], user, setting, filteredMessage[1].toLowerCase());
 
-                      case 10:
+                      case 11:
                         _yield$validateAmount = _context.sent;
                         _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
                         activityValiateAmount = _yield$validateAmount2[0];
                         amount = _yield$validateAmount2[1];
 
                         if (!activityValiateAmount) {
-                          _context.next = 17;
+                          _context.next = 18;
                           break;
                         }
 
-                        activity = activityValiateAmount;
+                        activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 17:
+                      case 18:
                         // Add new currencies here (default fallback Runebase)
                         isValidAddressInfo = false;
 
                         if (!(settings.coin.setting === 'Runebase')) {
-                          _context.next = 48;
+                          _context.next = 35;
                           break;
                         }
 
-                        _context.prev = 19;
-                        _context.next = 22;
+                        _context.prev = 20;
+                        _context.next = 23;
                         return (0, _rclient.getInstance)().getAddressInfo(filteredMessage[2]);
 
-                      case 22:
+                      case 23:
                         isValidAddressInfo = _context.sent;
-                        _context.next = 48;
+                        _context.next = 35;
                         break;
 
-                      case 25:
-                        _context.prev = 25;
-                        _context.t0 = _context["catch"](19);
-                        //
-                        console.log(message);
-                        console.log(_context.t0);
+                      case 26:
+                        _context.prev = 26;
+                        _context.t0 = _context["catch"](20);
 
                         if (!(_context.t0.response && _context.t0.response.status === 500)) {
-                          _context.next = 39;
+                          _context.next = 32;
                           break;
                         }
 
-                        _context.prev = 30;
-                        _context.next = 33;
+                        _context.next = 31;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidAddressMessage)(message));
 
-                      case 33:
-                        _context.next = 38;
-                        break;
-
-                      case 35:
-                        _context.prev = 35;
-                        _context.t1 = _context["catch"](30);
-                        console.log(_context.t1);
-
-                      case 38:
+                      case 31:
                         return _context.abrupt("return");
 
-                      case 39:
-                        _context.prev = 39;
-                        _context.next = 42;
+                      case 32:
+                        _context.next = 34;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.nodeOfflineMessage)());
 
-                      case 42:
-                        _context.next = 47;
-                        break;
-
-                      case 44:
-                        _context.prev = 44;
-                        _context.t2 = _context["catch"](39);
-                        console.log(_context.t2);
-
-                      case 47:
+                      case 34:
                         return _context.abrupt("return");
 
-                      case 48:
+                      case 35:
                         // Add new currencies here (default fallback Runebase)
                         isValidAddress = false;
 
                         if (!(settings.coin.setting === 'Runebase')) {
-                          _context.next = 55;
+                          _context.next = 42;
                           break;
                         }
 
-                        _context.next = 52;
+                        _context.next = 39;
                         return (0, _rclient.getInstance)().utils.isRunebaseAddress(filteredMessage[2]);
 
-                      case 52:
+                      case 39:
                         isValidAddress = _context.sent;
-                        _context.next = 70;
+                        _context.next = 57;
                         break;
 
-                      case 55:
+                      case 42:
                         if (!(settings.coin.setting === 'Pirate')) {
+                          _context.next = 48;
+                          break;
+                        }
+
+                        _context.next = 45;
+                        return (0, _rclient.getInstance)().utils.isPirateAddress(filteredMessage[2]);
+
+                      case 45:
+                        isValidAddress = _context.sent;
+                        _context.next = 57;
+                        break;
+
+                      case 48:
+                        if (!(settings.coin.setting === 'Komodo')) {
+                          _context.next = 54;
+                          break;
+                        }
+
+                        _context.next = 51;
+                        return (0, _rclient.getInstance)().utils.isKomodoAddress(filteredMessage[2]);
+
+                      case 51:
+                        isValidAddress = _context.sent;
+                        _context.next = 57;
+                        break;
+
+                      case 54:
+                        _context.next = 56;
+                        return (0, _rclient.getInstance)().utils.isRunebaseAddress(filteredMessage[2]);
+
+                      case 56:
+                        isValidAddress = _context.sent;
+
+                      case 57:
+                        if (isValidAddress) {
                           _context.next = 61;
                           break;
                         }
 
-                        _context.next = 58;
-                        return (0, _rclient.getInstance)().utils.isPirateAddress(filteredMessage[2]);
-
-                      case 58:
-                        isValidAddress = _context.sent;
-                        _context.next = 70;
-                        break;
-
-                      case 61:
-                        if (!(settings.coin.setting === 'Komodo')) {
-                          _context.next = 67;
-                          break;
-                        }
-
-                        _context.next = 64;
-                        return (0, _rclient.getInstance)().utils.isKomodoAddress(filteredMessage[2]);
-
-                      case 64:
-                        isValidAddress = _context.sent;
-                        _context.next = 70;
-                        break;
-
-                      case 67:
-                        _context.next = 69;
-                        return (0, _rclient.getInstance)().utils.isRunebaseAddress(filteredMessage[2]);
-
-                      case 69:
-                        isValidAddress = _context.sent;
-
-                      case 70:
-                        //
-                        console.log(userDirectMessageRoomId);
-                        console.log(message.sender);
-
-                        if (isValidAddress) {
-                          _context.next = 82;
-                          break;
-                        }
-
-                        _context.prev = 73;
-                        _context.next = 76;
+                        _context.next = 60;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidAddressMessage)(message));
 
-                      case 76:
-                        _context.next = 81;
-                        break;
-
-                      case 78:
-                        _context.prev = 78;
-                        _context.t3 = _context["catch"](73);
-                        console.log(_context.t3);
-
-                      case 81:
+                      case 60:
                         return _context.abrupt("return");
 
-                      case 82:
-                        _context.next = 84;
+                      case 61:
+                        _context.next = 63;
                         return _models["default"].addressExternal.findOne({
                           where: {
                             address: filteredMessage[2]
@@ -235,15 +203,15 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 84:
+                      case 63:
                         addressExternal = _context.sent;
 
                         if (addressExternal) {
-                          _context.next = 89;
+                          _context.next = 68;
                           break;
                         }
 
-                        _context.next = 88;
+                        _context.next = 67;
                         return _models["default"].addressExternal.create({
                           address: filteredMessage[2]
                         }, {
@@ -251,11 +219,11 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 88:
+                      case 67:
                         addressExternal = _context.sent;
 
-                      case 89:
-                        _context.next = 91;
+                      case 68:
+                        _context.next = 70;
                         return _models["default"].UserAddressExternal.findOne({
                           where: {
                             addressExternalId: addressExternal.id,
@@ -265,15 +233,15 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 91:
+                      case 70:
                         UserExternalAddressMnMAssociation = _context.sent;
 
                         if (UserExternalAddressMnMAssociation) {
-                          _context.next = 96;
+                          _context.next = 75;
                           break;
                         }
 
-                        _context.next = 95;
+                        _context.next = 74;
                         return _models["default"].UserAddressExternal.create({
                           addressExternalId: addressExternal.id,
                           userId: user.id
@@ -282,11 +250,11 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 95:
+                      case 74:
                         UserExternalAddressMnMAssociation = _context.sent;
 
-                      case 96:
-                        _context.next = 98;
+                      case 75:
+                        _context.next = 77;
                         return user.wallet.update({
                           available: user.wallet.available - amount,
                           locked: user.wallet.locked + amount
@@ -295,10 +263,10 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 98:
+                      case 77:
                         wallet = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
-                        _context.next = 102;
+                        _context.next = 81;
                         return _models["default"].transaction.create({
                           addressId: wallet.addresses[0].id,
                           addressExternalId: addressExternal.id,
@@ -313,9 +281,9 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 102:
+                      case 81:
                         transaction = _context.sent;
-                        _context.next = 105;
+                        _context.next = 84;
                         return _models["default"].activity.create({
                           spenderId: user.id,
                           type: 'withdrawRequested',
@@ -326,60 +294,41 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 105:
-                        activity = _context.sent;
+                      case 84:
+                        activityCreate = _context.sent;
+                        activity.unshift(activityCreate); // const userId = user.user_id.replace('matrix-', '');
 
                         if (!(message.sender.roomId === userDirectMessageRoomId)) {
-                          _context.next = 111;
+                          _context.next = 91;
                           break;
                         }
 
-                        _context.next = 109;
+                        _context.next = 89;
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.reviewMessage)(message, transaction));
 
-                      case 109:
-                        _context.next = 127;
+                      case 89:
+                        _context.next = 95;
                         break;
 
-                      case 111:
-                        _context.prev = 111;
-                        _context.next = 114;
+                      case 91:
+                        _context.next = 93;
+                        return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.reviewMessage)(message, transaction));
+
+                      case 93:
+                        _context.next = 95;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.warnDirectMessage)(message.sender.name, 'Withdraw'));
 
-                      case 114:
-                        _context.next = 119;
-                        break;
-
-                      case 116:
-                        _context.prev = 116;
-                        _context.t4 = _context["catch"](111);
-                        console.log(_context.t4);
-
-                      case 119:
-                        _context.prev = 119;
-                        _context.next = 122;
-                        return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.reviewMessage)(message, transaction));
-
-                      case 122:
-                        _context.next = 127;
-                        break;
-
-                      case 124:
-                        _context.prev = 124;
-                        _context.t5 = _context["catch"](119);
-                        console.log(_context.t5);
-
-                      case 127:
+                      case 95:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 128:
+                      case 96:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[19, 25], [30, 35], [39, 44], [73, 78], [111, 116], [119, 124]]);
+                }, _callee, null, [[20, 26]]);
               }));
 
               return function (_x11) {
@@ -439,7 +388,14 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
               };
             }());
 
-          case 2:
+          case 3:
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
+
+          case 4:
           case "end":
             return _context3.stop();
         }

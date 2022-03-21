@@ -67,15 +67,14 @@ var matrixPrice = /*#__PURE__*/function () {
 
                       case 6:
                         if (!(user && user.wallet)) {
-                          _context.next = 29;
+                          _context.next = 23;
                           break;
                         }
 
-                        _context.prev = 7;
-                        _context.next = 10;
+                        _context.next = 9;
                         return _models["default"].priceInfo.findAll({});
 
-                      case 10:
+                      case 9:
                         priceRecord = _context.sent;
                         replyString = "";
                         replyString += priceRecord.map(function (a) {
@@ -85,20 +84,11 @@ var matrixPrice = /*#__PURE__*/function () {
                         replyStringHtml += priceRecord.map(function (a) {
                           return "".concat(a.currency, ": ").concat(a.price);
                         }).join('<br>');
-                        _context.next = 17;
+                        _context.next = 16;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.priceMessage)(replyString, replyStringHtml));
 
-                      case 17:
-                        _context.next = 22;
-                        break;
-
-                      case 19:
-                        _context.prev = 19;
-                        _context.t0 = _context["catch"](7);
-                        console.log(_context.t0);
-
-                      case 22:
-                        _context.next = 24;
+                      case 16:
+                        _context.next = 18;
                         return _models["default"].activity.create({
                           type: 'price',
                           earnerId: user.id
@@ -107,9 +97,9 @@ var matrixPrice = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 24:
+                      case 18:
                         createActivity = _context.sent;
-                        _context.next = 27;
+                        _context.next = 21;
                         return _models["default"].activity.findOne({
                           where: {
                             id: createActivity.id
@@ -122,21 +112,21 @@ var matrixPrice = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 27:
+                      case 21:
                         findActivity = _context.sent;
                         activity.unshift(findActivity);
 
-                      case 29:
+                      case 23:
                         t.afterCommit(function () {
-                          console.log('done price request'); // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
+                          console.log('done price request');
                         });
 
-                      case 30:
+                      case 24:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[7, 19]]);
+                }, _callee);
               }));
 
               return function (_x4) {
@@ -195,9 +185,11 @@ var matrixPrice = /*#__PURE__*/function () {
             }());
 
           case 3:
-            io.to('admin').emit('updateActivity', {
-              activity: activity
-            });
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
 
           case 4:
           case "end":

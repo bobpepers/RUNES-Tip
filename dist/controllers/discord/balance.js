@@ -101,14 +101,14 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
                         }
 
                         _context.next = 17;
-                        return message.channel.send({
-                          embeds: [(0, _discord.warnDirectMessage)(userId, 'Balance')]
+                        return message.author.send({
+                          embeds: [(0, _discord.balanceMessage)(userId, user, priceInfo)]
                         });
 
                       case 17:
                         _context.next = 19;
-                        return message.author.send({
-                          embeds: [(0, _discord.balanceMessage)(userId, user, priceInfo)]
+                        return message.channel.send({
+                          embeds: [(0, _discord.warnDirectMessage)(userId, 'Balance')]
                         });
 
                       case 19:

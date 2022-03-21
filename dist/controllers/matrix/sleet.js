@@ -42,30 +42,8 @@ var matrixSleet = /*#__PURE__*/function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            if (!isCurrentRoomDirectMessage) {
-              _context3.next = 10;
-              break;
-            }
-
-            _context3.prev = 1;
-            _context3.next = 4;
-            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.notInDirectMessage)(message, 'Flood'));
-
-          case 4:
-            _context3.next = 9;
-            break;
-
-          case 6:
-            _context3.prev = 6;
-            _context3.t0 = _context3["catch"](1);
-            console.log(_context3.t0);
-
-          case 9:
-            return _context3.abrupt("return");
-
-          case 10:
             activity = [];
-            _context3.next = 13;
+            _context3.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -76,10 +54,22 @@ var matrixSleet = /*#__PURE__*/function () {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
-                        _context.next = 2;
+                        if (!isCurrentRoomDirectMessage) {
+                          _context.next = 4;
+                          break;
+                        }
+
+                        _context.next = 3;
+                        return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.notInDirectMessage)(message, 'Flood'));
+
+                      case 3:
+                        return _context.abrupt("return");
+
+                      case 4:
+                        _context.next = 6;
                         return (0, _userWalletExist.userWalletExist)(matrixClient, message, t, filteredMessage[1].toLowerCase());
 
-                      case 2:
+                      case 6:
                         _yield$userWalletExis = _context.sent;
                         _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
                         user = _yield$userWalletExis2[0];
@@ -90,32 +80,32 @@ var matrixSleet = /*#__PURE__*/function () {
                         }
 
                         if (user) {
-                          _context.next = 9;
+                          _context.next = 13;
                           break;
                         }
 
                         return _context.abrupt("return");
 
-                      case 9:
-                        _context.next = 11;
+                      case 13:
+                        _context.next = 15;
                         return (0, _validateAmount.validateAmount)(matrixClient, message, t, filteredMessage[2], user, setting, filteredMessage[1].toLowerCase());
 
-                      case 11:
+                      case 15:
                         _yield$validateAmount = _context.sent;
                         _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
                         activityValiateAmount = _yield$validateAmount2[0];
                         amount = _yield$validateAmount2[1];
 
                         if (!activityValiateAmount) {
-                          _context.next = 18;
+                          _context.next = 22;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 18:
-                        _context.next = 20;
+                      case 22:
+                        _context.next = 24;
                         return _models["default"].group.findOne({
                           where: {
                             id: groupTask.id
@@ -124,15 +114,15 @@ var matrixSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 20:
+                      case 24:
                         group = _context.sent;
 
                         if (group) {
-                          _context.next = 35;
+                          _context.next = 33;
                           break;
                         }
 
-                        _context.next = 24;
+                        _context.next = 28;
                         return _models["default"].activity.create({
                           type: 'sleet_f',
                           spenderId: user.id
@@ -141,26 +131,16 @@ var matrixSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 24:
+                      case 28:
                         groupFailActivity = _context.sent;
                         activity.unshift(groupFailActivity);
-                        _context.prev = 26;
-                        _context.next = 29;
+                        _context.next = 32;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.groupNotFoundMessage)());
 
-                      case 29:
-                        _context.next = 34;
-                        break;
-
-                      case 31:
-                        _context.prev = 31;
-                        _context.t0 = _context["catch"](26);
-                        console.log(_context.t0);
-
-                      case 34:
+                      case 32:
                         return _context.abrupt("return");
 
-                      case 35:
+                      case 33:
                         lastSeenOptions = (0, _defineProperty2["default"])({}, _sequelize.Op.gte, new Date(Date.now() - 15 * 60 * 1000)); // Optional Timer
 
                         // Optional Timer
@@ -174,13 +154,13 @@ var matrixSleet = /*#__PURE__*/function () {
 
                         if (!(filteredMessage[3] && !isnum // && Number(cutNumberTime) < 0
                         && (cutLastTimeLetter !== 'd' || cutLastTimeLetter !== 'h' || cutLastTimeLetter !== 'm' || cutLastTimeLetter !== 's'))) {
-                          _context.next = 53;
+                          _context.next = 45;
                           break;
                         }
 
                         console.log('not pass');
                         console.log(user.id);
-                        _context.next = 42;
+                        _context.next = 40;
                         return _models["default"].activity.create({
                           type: 'sleet_i',
                           spenderId: user.id
@@ -189,36 +169,26 @@ var matrixSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 42:
+                      case 40:
                         activityA = _context.sent;
                         activity.unshift(activityA);
-                        _context.prev = 44;
-                        _context.next = 47;
+                        _context.next = 44;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidTimeMessage)(message, 'Sleet'));
 
-                      case 47:
-                        _context.next = 52;
-                        break;
-
-                      case 49:
-                        _context.prev = 49;
-                        _context.t1 = _context["catch"](44);
-                        console.log(_context.t1);
-
-                      case 52:
+                      case 44:
                         return _context.abrupt("return");
 
-                      case 53:
+                      case 45:
                         if (!(filteredMessage[2] && isnum // && Number(cutNumberTime) < 0
                         && (cutLastTimeLetter === 'd' || cutLastTimeLetter === 'h' || cutLastTimeLetter === 'm' || cutLastTimeLetter === 's'))) {
-                          _context.next = 65;
+                          _context.next = 57;
                           break;
                         }
 
-                        _context.next = 56;
+                        _context.next = 48;
                         return new Date().getTime();
 
-                      case 56:
+                      case 48:
                         dateObj = _context.sent;
 
                         if (cutLastTimeLetter === 'd') {
@@ -237,15 +207,15 @@ var matrixSleet = /*#__PURE__*/function () {
                           dateObj -= Number(cutNumberTime) * 1000;
                         }
 
-                        _context.next = 63;
+                        _context.next = 55;
                         return new Date(dateObj);
 
-                      case 63:
+                      case 55:
                         dateObj = _context.sent;
                         lastSeenOptions = (0, _defineProperty2["default"])({}, _sequelize.Op.gte, dateObj);
 
-                      case 65:
-                        _context.next = 67;
+                      case 57:
+                        _context.next = 59;
                         return _models["default"].user.findAll({
                           where: (0, _defineProperty2["default"])({}, _sequelize.Op.and, [{
                             user_id: (0, _defineProperty2["default"])({}, _sequelize.Op.not, "matrix-".concat(message.sender.userId))
@@ -269,15 +239,15 @@ var matrixSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 67:
+                      case 59:
                         usersToRain = _context.sent;
 
                         if (!(usersToRain.length < 2)) {
-                          _context.next = 82;
+                          _context.next = 68;
                           break;
                         }
 
-                        _context.next = 71;
+                        _context.next = 63;
                         return _models["default"].activity.create({
                           type: 'sleet_f',
                           spenderId: user.id
@@ -286,32 +256,22 @@ var matrixSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 71:
+                      case 63:
                         failActivity = _context.sent;
                         activity.unshift(failActivity);
-                        _context.prev = 73;
-                        _context.next = 76;
+                        _context.next = 67;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.notEnoughUsers)(message, 'Sleet'));
 
-                      case 76:
-                        _context.next = 81;
-                        break;
-
-                      case 78:
-                        _context.prev = 78;
-                        _context.t2 = _context["catch"](73);
-                        console.log(_context.t2);
-
-                      case 81:
+                      case 67:
                         return _context.abrupt("return");
 
-                      case 82:
+                      case 68:
                         if (!(usersToRain.length >= 2)) {
-                          _context.next = 165;
+                          _context.next = 139;
                           break;
                         }
 
-                        _context.next = 85;
+                        _context.next = 71;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -319,16 +279,16 @@ var matrixSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 85:
+                      case 71:
                         updatedBalance = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         amountPerUser = ((amount - Number(fee)) / usersToRain.length).toFixed(0);
-                        _context.next = 90;
+                        _context.next = 76;
                         return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
 
-                      case 90:
+                      case 76:
                         faucetWatered = _context.sent;
-                        _context.next = 93;
+                        _context.next = 79;
                         return _models["default"].sleet.create({
                           feeAmount: fee,
                           amount: amount,
@@ -340,9 +300,9 @@ var matrixSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 93:
+                      case 79:
                         sleetRecord = _context.sent;
-                        _context.next = 96;
+                        _context.next = 82;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'sleet_s',
@@ -354,9 +314,9 @@ var matrixSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 96:
+                      case 82:
                         preActivity = _context.sent;
-                        _context.next = 99;
+                        _context.next = 85;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -372,25 +332,25 @@ var matrixSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 99:
+                      case 85:
                         finalActivity = _context.sent;
                         activity.push(finalActivity);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(usersToRain);
-                        _context.prev = 103;
+                        _context.prev = 89;
 
                         _iterator.s();
 
-                      case 105:
+                      case 91:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 124;
+                          _context.next = 110;
                           break;
                         }
 
                         sleetee = _step.value;
-                        _context.next = 109;
+                        _context.next = 95;
                         return sleetee.wallet.update({
                           available: sleetee.wallet.available + Number(amountPerUser)
                         }, {
@@ -398,9 +358,9 @@ var matrixSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 109:
+                      case 95:
                         sleeteeWallet = _context.sent;
-                        _context.next = 112;
+                        _context.next = 98;
                         return _models["default"].sleettip.create({
                           amount: Number(amountPerUser),
                           userId: sleetee.id,
@@ -411,7 +371,7 @@ var matrixSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 112:
+                      case 98:
                         sleettipRecord = _context.sent;
 
                         if (sleetee.ignoreMe) {
@@ -423,7 +383,7 @@ var matrixSleet = /*#__PURE__*/function () {
 
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context.next = 117;
+                        _context.next = 103;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
                           type: 'sleettip_s',
@@ -438,9 +398,9 @@ var matrixSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 117:
+                      case 103:
                         tipActivity = _context.sent;
-                        _context.next = 120;
+                        _context.next = 106;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -462,107 +422,87 @@ var matrixSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 120:
+                      case 106:
                         tipActivity = _context.sent;
                         activity.unshift(tipActivity);
 
-                      case 122:
-                        _context.next = 105;
+                      case 108:
+                        _context.next = 91;
                         break;
 
-                      case 124:
-                        _context.next = 129;
+                      case 110:
+                        _context.next = 115;
                         break;
 
-                      case 126:
-                        _context.prev = 126;
-                        _context.t3 = _context["catch"](103);
+                      case 112:
+                        _context.prev = 112;
+                        _context.t0 = _context["catch"](89);
 
-                        _iterator.e(_context.t3);
+                        _iterator.e(_context.t0);
 
-                      case 129:
-                        _context.prev = 129;
+                      case 115:
+                        _context.prev = 115;
 
                         _iterator.f();
 
-                        return _context.finish(129);
+                        return _context.finish(115);
 
-                      case 132:
+                      case 118:
                         newStringListUsers = listOfUsersRained.join(", ");
                         cutStringListUsers = newStringListUsers.match(/.{1,6999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                        _context.prev = 135;
+                        _context.prev = 121;
 
                         _iterator2.s();
 
-                      case 137:
+                      case 123:
                         if ((_step2 = _iterator2.n()).done) {
-                          _context.next = 149;
+                          _context.next = 129;
                           break;
                         }
 
                         element = _step2.value;
-                        _context.prev = 139;
-                        _context.next = 142;
+                        _context.next = 127;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.userListMessage)(element));
 
-                      case 142:
-                        _context.next = 147;
+                      case 127:
+                        _context.next = 123;
                         break;
 
-                      case 144:
-                        _context.prev = 144;
-                        _context.t4 = _context["catch"](139);
-                        console.log(_context.t4);
-
-                      case 147:
-                        _context.next = 137;
+                      case 129:
+                        _context.next = 134;
                         break;
 
-                      case 149:
-                        _context.next = 154;
-                        break;
+                      case 131:
+                        _context.prev = 131;
+                        _context.t1 = _context["catch"](121);
 
-                      case 151:
-                        _context.prev = 151;
-                        _context.t5 = _context["catch"](135);
+                        _iterator2.e(_context.t1);
 
-                        _iterator2.e(_context.t5);
-
-                      case 154:
-                        _context.prev = 154;
+                      case 134:
+                        _context.prev = 134;
 
                         _iterator2.f();
 
-                        return _context.finish(154);
+                        return _context.finish(134);
 
-                      case 157:
-                        _context.prev = 157;
-                        _context.next = 160;
+                      case 137:
+                        _context.next = 139;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.afterSuccessMessage)(message, sleetRecord.id, amount, usersToRain, amountPerUser, 'Sleet', 'sleeted'));
 
-                      case 160:
-                        _context.next = 165;
-                        break;
-
-                      case 162:
-                        _context.prev = 162;
-                        _context.t6 = _context["catch"](157);
-                        console.log(_context.t6);
-
-                      case 165:
+                      case 139:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 166:
+                      case 140:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[26, 31], [44, 49], [73, 78], [103, 126, 129, 132], [135, 151, 154, 157], [139, 144], [157, 162]]);
+                }, _callee, null, [[89, 112, 115, 118], [121, 131, 134, 137]]);
               }));
 
               return function (_x11) {
@@ -622,17 +562,19 @@ var matrixSleet = /*#__PURE__*/function () {
               };
             }());
 
-          case 13:
-            io.to('admin').emit('updateActivity', {
-              activity: activity
-            });
+          case 3:
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
 
-          case 14:
+          case 4:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[1, 6]]);
+    }, _callee3);
   }));
 
   return function matrixSleet(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9, _x10) {

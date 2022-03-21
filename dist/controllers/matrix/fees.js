@@ -174,30 +174,20 @@ var fetchFeeSchedule = /*#__PURE__*/function () {
                       case 26:
                         finalActivity = _context2.sent;
                         activity.unshift(finalActivity);
-                        _context2.prev = 28;
-                        _context2.next = 31;
+                        _context2.next = 30;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.feeMessage)(message, fee));
 
-                      case 31:
-                        _context2.next = 36;
-                        break;
-
-                      case 33:
-                        _context2.prev = 33;
-                        _context2.t0 = _context2["catch"](28);
-                        console.log(_context2.t0);
-
-                      case 36:
+                      case 30:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 37:
+                      case 31:
                       case "end":
                         return _context2.stop();
                     }
                   }
-                }, _callee2, null, [[28, 33]]);
+                }, _callee2);
               }));
 
               return function (_x8) {
@@ -258,9 +248,11 @@ var fetchFeeSchedule = /*#__PURE__*/function () {
             }());
 
           case 5:
-            io.to('admin').emit('updateActivity', {
-              activity: activity
-            });
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
 
           case 6:
           case "end":

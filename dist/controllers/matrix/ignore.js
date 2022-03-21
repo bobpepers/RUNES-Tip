@@ -72,7 +72,7 @@ var setIgnoreMe = /*#__PURE__*/function () {
 
                       case 9:
                         if (!user.ignoreMe) {
-                          _context.next = 21;
+                          _context.next = 16;
                           break;
                         }
 
@@ -85,29 +85,20 @@ var setIgnoreMe = /*#__PURE__*/function () {
                         });
 
                       case 12:
-                        _context.prev = 12;
-                        _context.next = 15;
+                        _context.next = 14;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.unIngoreMeMessage)(message));
 
-                      case 15:
-                        _context.next = 20;
+                      case 14:
+                        _context.next = 21;
                         break;
 
-                      case 17:
-                        _context.prev = 17;
-                        _context.t0 = _context["catch"](12);
-                        console.log(_context.t0);
-
-                      case 20:
-                        return _context.abrupt("return");
-
-                      case 21:
+                      case 16:
                         if (user.ignoreMe) {
-                          _context.next = 33;
+                          _context.next = 21;
                           break;
                         }
 
-                        _context.next = 24;
+                        _context.next = 19;
                         return user.update({
                           ignoreMe: true
                         }, {
@@ -115,33 +106,23 @@ var setIgnoreMe = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 24:
-                        _context.prev = 24;
-                        _context.next = 27;
+                      case 19:
+                        _context.next = 21;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.ignoreMeMessage)(message));
 
-                      case 27:
-                        _context.next = 32;
-                        break;
-
-                      case 29:
-                        _context.prev = 29;
-                        _context.t1 = _context["catch"](24);
-                        console.log(_context.t1);
-
-                      case 32:
-                        return _context.abrupt("return");
-
-                      case 33:
-                        _context.next = 35;
+                      case 21:
+                        _context.next = 23;
                         return _models["default"].activity.create({
                           type: 'ignoreme_s',
                           earnerId: user.id
+                        }, {
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
                         });
 
-                      case 35:
+                      case 23:
                         preActivity = _context.sent;
-                        _context.next = 38;
+                        _context.next = 26;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -149,22 +130,24 @@ var setIgnoreMe = /*#__PURE__*/function () {
                           include: [{
                             model: _models["default"].user,
                             as: 'earner'
-                          }]
+                          }],
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
                         });
 
-                      case 38:
+                      case 26:
                         finalActivity = _context.sent;
                         activity.unshift(finalActivity);
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 41:
+                      case 29:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[12, 17], [24, 29]]);
+                }, _callee);
               }));
 
               return function (_x4) {
@@ -225,9 +208,11 @@ var setIgnoreMe = /*#__PURE__*/function () {
             }());
 
           case 3:
-            io.to('admin').emit('updateActivity', {
-              activity: activity
-            });
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
 
           case 4:
           case "end":
