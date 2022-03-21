@@ -149,7 +149,6 @@ export const listenTrivia = async (
   });
 
   collector.on('end', async () => {
-    console.log('end trivia drop');
     const activity = [];
     await queue.add(async () => {
       clearInterval(updateMessage);
@@ -398,9 +397,11 @@ export const listenTrivia = async (
         console.log(err);
         logger.error(`trivia error: ${err}`);
       });
-      io.to('admin').emit('updateActivity', {
-        activity,
-      });
+      if (activity.length > 0) {
+        io.to('admin').emit('updateActivity', {
+          activity,
+        });
+      }
     });
   });
 };
@@ -781,7 +782,9 @@ export const discordTrivia = async (
       console.log(e);
     });
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

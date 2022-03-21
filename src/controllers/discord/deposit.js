@@ -107,7 +107,9 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
       });
     }
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

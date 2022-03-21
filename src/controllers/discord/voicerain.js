@@ -2,6 +2,9 @@
 import { Transaction } from "sequelize";
 import db from '../../models';
 import {
+  notEnoughActiveUsersMessage,
+  notAVoiceChannel,
+  voiceChannelNotFound,
   AfterSuccessMessage,
   NotInDirectMessage,
   discordErrorMessage,
@@ -24,36 +27,6 @@ export const discordVoiceRain = async (
   faucetSetting,
   queue,
 ) => {
-  if (!groupTask || !channelTask) {
-    await message.channel.send({ embeds: [NotInDirectMessage(message, 'Voicerain')] }).catch((e) => {
-      console.log(e);
-    });
-    return;
-  }
-  if (!filteredMessage[3].startsWith('<#')) {
-    console.log('not a channel');
-    return;
-  }
-  if (!filteredMessage[3].endsWith('>')) {
-    console.log('not a channel');
-    return;
-  }
-
-  const voiceChannelId = filteredMessage[3].substr(2).slice(0, -1);
-
-  const voiceChannel = await db.channel.findOne({
-    where: {
-      channelId: `discord-${voiceChannelId}`,
-      groupId: groupTask.id,
-    },
-  });
-  if (!voiceChannel) {
-    console.log('channel not found');
-    return;
-  }
-
-  const onlineMembers = await discordClient.channels.cache.get(voiceChannelId).members;
-
   const activity = [];
   let userActivity;
   let user;
@@ -61,6 +34,37 @@ export const discordVoiceRain = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    if (!groupTask || !channelTask) {
+      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Voicerain')] });
+      return;
+    }
+    if (!filteredMessage[3].startsWith('<#')) {
+      await message.channel.send({ embeds: [notAVoiceChannel(message)] });
+      return;
+    }
+    if (!filteredMessage[3].endsWith('>')) {
+      await message.channel.send({ embeds: [notAVoiceChannel(message)] });
+      return;
+    }
+
+    const voiceChannelId = filteredMessage[3].substr(2).slice(0, -1);
+
+    const voiceChannel = await db.channel.findOne({
+      where: {
+        channelId: `discord-${voiceChannelId}`,
+        groupId: groupTask.id,
+      },
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    if (!voiceChannel) {
+      await message.channel.send({ embeds: [voiceChannelNotFound(message)] });
+      return;
+    }
+
+    const onlineMembers = await discordClient.channels.cache.get(voiceChannelId).members;
+
     [
       user,
       userActivity,
@@ -107,7 +111,7 @@ export const discordVoiceRain = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await message.channel.send('Not enough users');
+      await message.channel.send({ embeds: [notEnoughActiveUsersMessage(message, 'Voice Rain')] });
       return;
     }
 
@@ -276,7 +280,9 @@ export const discordVoiceRain = async (
     logger.error(`voicerain error: ${err}`);
     message.channel.send({ embeds: [discordErrorMessage("VoiceRain")] });
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

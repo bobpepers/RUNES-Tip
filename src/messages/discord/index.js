@@ -66,7 +66,10 @@ ${channel.banMessage}`)
   return result;
 };
 
-export const coinInfoMessage = (blockHeight, priceInfo) => {
+export const coinInfoMessage = (
+  blockHeight,
+  priceInfo,
+) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Tipbot')
@@ -282,6 +285,34 @@ export const unIngoreMeMessage = (message) => {
     .setTitle('Ignore me')
     .setDescription(`<@${message.author.id}>, you will again be @mentioned while receiving rains, soaks and other mass operations.
 If you do not wish to be @mentioned, please issue this command again.`)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
+export const notAVoiceChannel = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Voice Rain')
+    .setDescription(`<@${message.author.id}>, Incorrect voice channel defined`)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
+export const voiceChannelNotFound = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Voice Rain')
+    .setDescription(`<@${message.author.id}>, Voice channel not found`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
@@ -1025,7 +1056,7 @@ export const invalidAddressMessage = (
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle('Withdraw')
-    .setDescription(`<@${message.author.id}>, Invalid Runebase Address`)
+    .setDescription(`<@${message.author.id}>, Invalid ${settings.coin.name} Address`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
@@ -1111,7 +1142,7 @@ export const enablePublicStatsMeMessage = (message) => {
 export const notEnoughUsersToTip = (message) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle(`Statistics`)
+    .setTitle(`Tip`)
     .setDescription(`<@${message.author.id}>, Not enough users to tip`)
     .setThumbnail(settings.coin.logo)
     .setTimestamp()

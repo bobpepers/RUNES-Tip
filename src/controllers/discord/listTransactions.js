@@ -109,7 +109,9 @@ export const fetchDiscordListTransactions = async (
       });
     }
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

@@ -3,6 +3,7 @@ import _ from "lodash";
 import { Transaction } from "sequelize";
 import db from '../../models';
 import {
+  notEnoughActiveUsersMessage,
   thunderstormMaxUserAmountMessage,
   thunderstormInvalidUserAmount,
   thunderstormUserZeroAmountMessage,
@@ -100,7 +101,8 @@ export const discordThunderStorm = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await message.channel.send('Not enough online users');
+      await message.channel.send({ embeds: [notEnoughActiveUsersMessage(message, 'ThunderStorm')] });
+      // await message.channel.send('Not enough online users');
       return;
     }
 
@@ -269,7 +271,9 @@ export const discordThunderStorm = async (
       console.log(e);
     });
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

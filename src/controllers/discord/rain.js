@@ -2,6 +2,7 @@
 import { Transaction } from "sequelize";
 import db from '../../models';
 import {
+  notEnoughActiveUsersMessage,
   AfterSuccessMessage,
   NotInDirectMessage,
   discordErrorMessage,
@@ -92,7 +93,7 @@ export const discordRain = async (
         transaction: t,
       });
       activity.unshift(fActivity);
-      await message.channel.send('Not enough online users');
+      await message.channel.send({ embeds: [notEnoughActiveUsersMessage(message, 'Rain')] });
       return;
     }
 
@@ -265,7 +266,9 @@ export const discordRain = async (
       console.log(e);
     });
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

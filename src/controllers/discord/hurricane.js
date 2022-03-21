@@ -3,6 +3,7 @@ import _ from "lodash";
 import { Transaction } from "sequelize";
 import db from '../../models';
 import {
+  notEnoughActiveUsersMessage,
   hurricaneMaxUserAmountMessage,
   hurricaneInvalidUserAmount,
   hurricaneUserZeroAmountMessage,
@@ -102,7 +103,7 @@ export const discordHurricane = async (
         transaction: t,
       });
       activity.unshift(activityA);
-      await message.channel.send('Not enough online users');
+      await message.channel.send({ embeds: [notEnoughActiveUsersMessage(message, 'Hurricane')] });
       return;
     }
 
@@ -270,7 +271,9 @@ export const discordHurricane = async (
       console.log(e);
     });
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

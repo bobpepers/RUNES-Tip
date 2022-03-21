@@ -7,6 +7,7 @@ import {
   reviewMessage,
   warnDirectMessage,
   discordErrorMessage,
+  cannotSendMessageUser,
 } from '../../messages/discord';
 import getCoinSettings from '../../config/settings';
 import logger from "../../helpers/logger";
@@ -25,19 +26,25 @@ export const withdrawDiscordCreate = async (
   setting,
 ) => {
   let user;
-  let activity;
+  let userActivity;
+  const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     [
       user,
-      activity,
+      userActivity,
     ] = await userWalletExist(
       message,
       t,
       filteredMessage[1].toLowerCase(),
     );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
     if (!user) return;
+    const userId = user.user_id.replace('discord-', '');
+
     const [
       activityValiateAmount,
       amount,
@@ -50,7 +57,7 @@ export const withdrawDiscordCreate = async (
       filteredMessage[1].toLowerCase(),
     );
     if (activityValiateAmount) {
-      activity = activityValiateAmount;
+      activity.unshift(activityValiateAmount);
       return;
     }
 
@@ -63,7 +70,13 @@ export const withdrawDiscordCreate = async (
         //
         console.log(e);
         if (e.response && e.response.status === 500) {
-          await message.author.send({ embeds: [invalidAddressMessage(message)] });
+          if (message.channel.type === 'DM') {
+            await message.author.send({ embeds: [invalidAddressMessage(message)] });
+          }
+          if (message.channel.type === 'GUILD_TEXT') {
+            await message.author.send({ embeds: [invalidAddressMessage(message)] });
+            await message.channel.send({ embeds: [warnDirectMessage(userId, 'Withdraw')] });
+          }
           return;
         }
         await message.author.send('Runebase node offline');
@@ -85,7 +98,13 @@ export const withdrawDiscordCreate = async (
     //
 
     if (!isValidAddress) {
-      await message.author.send({ embeds: [invalidAddressMessage(message)] });
+      if (message.channel.type === 'DM') {
+        await message.author.send({ embeds: [invalidAddressMessage(message)] });
+      }
+      if (message.channel.type === 'GUILD_TEXT') {
+        await message.author.send({ embeds: [invalidAddressMessage(message)] });
+        await message.channel.send({ embeds: [warnDirectMessage(userId, 'Withdraw')] });
+      }
       return;
     }
 
@@ -150,7 +169,7 @@ export const withdrawDiscordCreate = async (
       transaction: t,
       lock: t.LOCK.UPDATE,
     });
-    activity = await db.activity.create(
+    const activityCreate = await db.activity.create(
       {
         spenderId: user.id,
         type: 'withdrawRequested',
@@ -162,7 +181,7 @@ export const withdrawDiscordCreate = async (
         lock: t.LOCK.UPDATE,
       },
     );
-    const userId = user.user_id.replace('discord-', '');
+    activity.unshift(activityCreate);
 
     if (message.channel.type === 'DM') {
       await message.author.send({ embeds: [reviewMessage(message, transaction)] });
@@ -170,7 +189,7 @@ export const withdrawDiscordCreate = async (
 
     if (message.channel.type === 'GUILD_TEXT') {
       await message.author.send({ embeds: [reviewMessage(message, transaction)] });
-      await message.channel.send({ embeds: [warnDirectMessage(userId, 'Balance')] });
+      await message.channel.send({ embeds: [warnDirectMessage(userId, 'Withdraw')] });
     }
 
     t.afterCommit(() => {
@@ -187,8 +206,19 @@ export const withdrawDiscordCreate = async (
     }
     console.log(err);
     logger.error(`withdraw error: ${err}`);
-    await message.channel.send({ embeds: [discordErrorMessage("Withdraw")] }).catch((e) => {
-      console.log(e);
-    });
+    if (err.code && err.code === 50007) {
+      await message.channel.send({ embeds: [cannotSendMessageUser("Withdraw", message)] }).catch((e) => {
+        console.log(e);
+      });
+    } else {
+      await message.channel.send({ embeds: [discordErrorMessage("Withdraw")] }).catch((e) => {
+        console.log(e);
+      });
+    }
   });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

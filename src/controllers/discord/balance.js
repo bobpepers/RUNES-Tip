@@ -85,7 +85,6 @@ export const fetchDiscordWalletBalance = async (
       activity.unshift(findActivity);
     }
     t.afterCommit(() => {
-      // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
       console.log('done balance request');
     });
   }).catch(async (err) => {
@@ -108,7 +107,9 @@ export const fetchDiscordWalletBalance = async (
       });
     }
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

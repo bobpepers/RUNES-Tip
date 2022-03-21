@@ -314,9 +314,11 @@ export const tipRunesToDiscordUser = async (
       console.log(e);
     });
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };
 
 export const tipCoinsToDiscordFaucet = async (
@@ -539,7 +541,9 @@ export const tipCoinsToDiscordFaucet = async (
       console.log(e);
     });
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

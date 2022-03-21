@@ -2,6 +2,7 @@
 import { Transaction } from "sequelize";
 import db from '../../models';
 import {
+  notEnoughActiveUsersMessage,
   AfterSuccessMessage,
   NotInDirectMessage,
   discordErrorMessage,
@@ -85,7 +86,7 @@ export const discordSoak = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await message.channel.send('Not enough online users');
+      await message.channel.send({ embeds: [notEnoughActiveUsersMessage(message, 'Soak')] });
       return;
     }
     const updatedBalance = await user.wallet.update({
@@ -254,7 +255,9 @@ export const discordSoak = async (
       console.log(e);
     });
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

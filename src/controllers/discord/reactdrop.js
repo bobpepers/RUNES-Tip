@@ -543,9 +543,11 @@ Solution: **${findReactTip.solution}**`,
         console.log(err);
         console.log('error');
       });
-      io.to('admin').emit('updateActivity', {
-        activity,
-      });
+      if (activity.length > 0) {
+        io.to('admin').emit('updateActivity', {
+          activity,
+        });
+      }
     });
   });
 };
@@ -881,7 +883,9 @@ Emojis used: ${useEmojis}`);
       console.log(e);
     });
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

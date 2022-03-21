@@ -3,6 +3,7 @@ import _ from "lodash";
 import { Transaction } from "sequelize";
 import db from '../../models';
 import {
+  notEnoughActiveUsersMessage,
   AfterThunderSuccess,
   NotInDirectMessage,
   discordErrorMessage,
@@ -87,7 +88,7 @@ export const discordThunder = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await message.channel.send('Not enough online users');
+      await message.channel.send({ embeds: [notEnoughActiveUsersMessage(message, 'Thunder')] });
       return;
     }
     if (withoutBots.length === 1) {
@@ -249,7 +250,9 @@ export const discordThunder = async (
       console.log(e);
     });
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };
