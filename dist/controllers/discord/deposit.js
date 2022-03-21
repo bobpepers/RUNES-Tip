@@ -67,9 +67,7 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                         }
 
                         _context.next = 6;
-                        return message.author.send("Deposit Address not found")["catch"](function (e) {
-                          console.log(e);
-                        });
+                        return message.author.send("Deposit Address not found");
 
                       case 6:
                         if (!(user && user.wallet && user.wallet.addresses)) {
@@ -94,8 +92,6 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                         return message.author.send({
                           embeds: [(0, _discord2.depositAddressMessage)(userId, user)],
                           files: [new _discord.MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')]
-                        })["catch"](function (e) {
-                          console.log(e);
                         });
 
                       case 15:
@@ -105,17 +101,15 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                         }
 
                         _context.next = 18;
-                        return message.channel.send({
-                          embeds: [(0, _discord2.warnDirectMessage)(userId, 'Balance')]
+                        return message.author.send({
+                          embeds: [(0, _discord2.depositAddressMessage)(userId, user)],
+                          files: [new _discord.MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')]
                         });
 
                       case 18:
                         _context.next = 20;
-                        return message.author.send({
-                          embeds: [(0, _discord2.depositAddressMessage)(userId, user)],
-                          files: [new _discord.MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')]
-                        })["catch"](function (e) {
-                          console.log(e);
+                        return message.channel.send({
+                          embeds: [(0, _discord2.warnDirectMessage)(userId, 'Deposit')]
                         });
 
                       case 20:
@@ -191,7 +185,33 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
 
                         _logger["default"].error("Error Deposit Address Requested by: ".concat(message.author.id, "-").concat(message.author.username, "#").concat(message.author.discriminator, " - ").concat(err));
 
-                      case 10:
+                        console.log(err.code);
+
+                        if (!(err.code && err.code === 50007)) {
+                          _context2.next = 16;
+                          break;
+                        }
+
+                        _context2.next = 14;
+                        return message.channel.send({
+                          embeds: [(0, _discord2.cannotSendMessageUser)("Deposit", message)]
+                        })["catch"](function (e) {
+                          console.log(e);
+                        });
+
+                      case 14:
+                        _context2.next = 18;
+                        break;
+
+                      case 16:
+                        _context2.next = 18;
+                        return message.channel.send({
+                          embeds: [(0, _discord2.discordErrorMessage)("Deposit")]
+                        })["catch"](function (e) {
+                          console.log(e);
+                        });
+
+                      case 18:
                       case "end":
                         return _context2.stop();
                     }
@@ -205,9 +225,11 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
             }());
 
           case 3:
-            io.to('admin').emit('updateActivity', {
-              activity: activity
-            });
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
 
           case 4:
           case "end":

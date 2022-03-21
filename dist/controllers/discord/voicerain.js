@@ -37,87 +37,102 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 var discordVoiceRain = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(discordClient, message, filteredMessage, io, groupTask, channelTask, setting, faucetSetting, queue) {
-    var voiceChannelId, voiceChannel, onlineMembers, activity, userActivity, user;
+    var activity, userActivity, user;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            if (!(!groupTask || !channelTask)) {
-              _context3.next = 4;
-              break;
-            }
-
-            _context3.next = 3;
-            return message.channel.send({
-              embeds: [(0, _discord.NotInDirectMessage)(message, 'Voicerain')]
-            })["catch"](function (e) {
-              console.log(e);
-            });
-
-          case 3:
-            return _context3.abrupt("return");
-
-          case 4:
-            if (filteredMessage[3].startsWith('<#')) {
-              _context3.next = 7;
-              break;
-            }
-
-            console.log('not a channel');
-            return _context3.abrupt("return");
-
-          case 7:
-            if (filteredMessage[3].endsWith('>')) {
-              _context3.next = 10;
-              break;
-            }
-
-            console.log('not a channel');
-            return _context3.abrupt("return");
-
-          case 10:
-            voiceChannelId = filteredMessage[3].substr(2).slice(0, -1);
-            _context3.next = 13;
-            return _models["default"].channel.findOne({
-              where: {
-                channelId: "discord-".concat(voiceChannelId),
-                groupId: groupTask.id
-              }
-            });
-
-          case 13:
-            voiceChannel = _context3.sent;
-
-            if (voiceChannel) {
-              _context3.next = 17;
-              break;
-            }
-
-            console.log('channel not found');
-            return _context3.abrupt("return");
-
-          case 17:
-            _context3.next = 19;
-            return discordClient.channels.cache.get(voiceChannelId).members;
-
-          case 19:
-            onlineMembers = _context3.sent;
             activity = [];
-            _context3.next = 23;
+            _context3.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, rainRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, rainee, raineeWallet, raintipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var voiceChannelId, voiceChannel, onlineMembers, _yield$userWalletExis, _yield$userWalletExis2, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, rainRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, rainee, raineeWallet, raintipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
-                        _context.next = 2;
+                        if (!(!groupTask || !channelTask)) {
+                          _context.next = 4;
+                          break;
+                        }
+
+                        _context.next = 3;
+                        return message.channel.send({
+                          embeds: [(0, _discord.NotInDirectMessage)(message, 'Voicerain')]
+                        });
+
+                      case 3:
+                        return _context.abrupt("return");
+
+                      case 4:
+                        if (filteredMessage[3].startsWith('<#')) {
+                          _context.next = 8;
+                          break;
+                        }
+
+                        _context.next = 7;
+                        return message.channel.send({
+                          embeds: [(0, _discord.notAVoiceChannel)(message)]
+                        });
+
+                      case 7:
+                        return _context.abrupt("return");
+
+                      case 8:
+                        if (filteredMessage[3].endsWith('>')) {
+                          _context.next = 12;
+                          break;
+                        }
+
+                        _context.next = 11;
+                        return message.channel.send({
+                          embeds: [(0, _discord.notAVoiceChannel)(message)]
+                        });
+
+                      case 11:
+                        return _context.abrupt("return");
+
+                      case 12:
+                        voiceChannelId = filteredMessage[3].substr(2).slice(0, -1);
+                        _context.next = 15;
+                        return _models["default"].channel.findOne({
+                          where: {
+                            channelId: "discord-".concat(voiceChannelId),
+                            groupId: groupTask.id
+                          },
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 15:
+                        voiceChannel = _context.sent;
+
+                        if (voiceChannel) {
+                          _context.next = 20;
+                          break;
+                        }
+
+                        _context.next = 19;
+                        return message.channel.send({
+                          embeds: [(0, _discord.voiceChannelNotFound)(message)]
+                        });
+
+                      case 19:
+                        return _context.abrupt("return");
+
+                      case 20:
+                        _context.next = 22;
+                        return discordClient.channels.cache.get(voiceChannelId).members;
+
+                      case 22:
+                        onlineMembers = _context.sent;
+                        _context.next = 25;
                         return (0, _userWalletExist.userWalletExist)(message, t, filteredMessage[1].toLowerCase());
 
-                      case 2:
+                      case 25:
                         _yield$userWalletExis = _context.sent;
                         _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
                         user = _yield$userWalletExis2[0];
@@ -128,42 +143,42 @@ var discordVoiceRain = /*#__PURE__*/function () {
                         }
 
                         if (user) {
-                          _context.next = 9;
+                          _context.next = 32;
                           break;
                         }
 
                         return _context.abrupt("return");
 
-                      case 9:
-                        _context.next = 11;
+                      case 32:
+                        _context.next = 34;
                         return (0, _mapMembers.mapMembers)(message, t, filteredMessage[4], onlineMembers, setting);
 
-                      case 11:
+                      case 34:
                         withoutBots = _context.sent;
-                        _context.next = 14;
+                        _context.next = 37;
                         return (0, _validateAmount.validateAmount)(message, t, filteredMessage[2], user, setting, filteredMessage[1].toLowerCase());
 
-                      case 14:
+                      case 37:
                         _yield$validateAmount = _context.sent;
                         _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
                         activityValiateAmount = _yield$validateAmount2[0];
                         amount = _yield$validateAmount2[1];
 
                         if (!activityValiateAmount) {
-                          _context.next = 21;
+                          _context.next = 44;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 21:
+                      case 44:
                         if (!(withoutBots.length < 2)) {
-                          _context.next = 29;
+                          _context.next = 52;
                           break;
                         }
 
-                        _context.next = 24;
+                        _context.next = 47;
                         return _models["default"].activity.create({
                           type: 'voicerain_f',
                           spenderId: user.id
@@ -172,17 +187,19 @@ var discordVoiceRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 24:
+                      case 47:
                         failActivity = _context.sent;
                         activity.unshift(failActivity);
-                        _context.next = 28;
-                        return message.channel.send('Not enough users');
+                        _context.next = 51;
+                        return message.channel.send({
+                          embeds: [(0, _discord.notEnoughActiveUsersMessage)(message, 'Voice Rain')]
+                        });
 
-                      case 28:
+                      case 51:
                         return _context.abrupt("return");
 
-                      case 29:
-                        _context.next = 31;
+                      case 52:
+                        _context.next = 54;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -190,16 +207,16 @@ var discordVoiceRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 31:
+                      case 54:
                         updatedBalance = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
-                        _context.next = 36;
+                        _context.next = 59;
                         return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
 
-                      case 36:
+                      case 59:
                         faucetWatered = _context.sent;
-                        _context.next = 39;
+                        _context.next = 62;
                         return _models["default"].voicerain.create({
                           amount: Number(amount),
                           feeAmount: Number(fee),
@@ -212,9 +229,9 @@ var discordVoiceRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 39:
+                      case 62:
                         rainRecord = _context.sent;
-                        _context.next = 42;
+                        _context.next = 65;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'voicerain_s',
@@ -226,9 +243,9 @@ var discordVoiceRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 42:
+                      case 65:
                         preActivity = _context.sent;
-                        _context.next = 45;
+                        _context.next = 68;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -244,25 +261,25 @@ var discordVoiceRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 45:
+                      case 68:
                         finalActivity = _context.sent;
                         activity.unshift(finalActivity);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(withoutBots);
-                        _context.prev = 49;
+                        _context.prev = 72;
 
                         _iterator.s();
 
-                      case 51:
+                      case 74:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 70;
+                          _context.next = 93;
                           break;
                         }
 
                         rainee = _step.value;
-                        _context.next = 55;
+                        _context.next = 78;
                         return rainee.wallet.update({
                           available: rainee.wallet.available + Number(amountPerUser)
                         }, {
@@ -270,9 +287,9 @@ var discordVoiceRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 55:
+                      case 78:
                         raineeWallet = _context.sent;
-                        _context.next = 58;
+                        _context.next = 81;
                         return _models["default"].voiceraintip.create({
                           amount: Number(amountPerUser),
                           userId: rainee.id,
@@ -284,7 +301,7 @@ var discordVoiceRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 58:
+                      case 81:
                         raintipRecord = _context.sent;
 
                         if (rainee.ignoreMe) {
@@ -296,7 +313,7 @@ var discordVoiceRain = /*#__PURE__*/function () {
 
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context.next = 63;
+                        _context.next = 86;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
                           type: 'voiceraintip_s',
@@ -311,9 +328,9 @@ var discordVoiceRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 63:
+                      case 86:
                         tipActivity = _context.sent;
-                        _context.next = 66;
+                        _context.next = 89;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -335,89 +352,89 @@ var discordVoiceRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 66:
+                      case 89:
                         tipActivity = _context.sent;
                         activity.unshift(finalActivity);
 
-                      case 68:
-                        _context.next = 51;
+                      case 91:
+                        _context.next = 74;
                         break;
 
-                      case 70:
-                        _context.next = 75;
+                      case 93:
+                        _context.next = 98;
                         break;
 
-                      case 72:
-                        _context.prev = 72;
-                        _context.t0 = _context["catch"](49);
+                      case 95:
+                        _context.prev = 95;
+                        _context.t0 = _context["catch"](72);
 
                         _iterator.e(_context.t0);
 
-                      case 75:
-                        _context.prev = 75;
+                      case 98:
+                        _context.prev = 98;
 
                         _iterator.f();
 
-                        return _context.finish(75);
+                        return _context.finish(98);
 
-                      case 78:
+                      case 101:
                         newStringListUsers = listOfUsersRained.join(", ");
                         cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                        _context.prev = 81;
+                        _context.prev = 104;
 
                         _iterator2.s();
 
-                      case 83:
+                      case 106:
                         if ((_step2 = _iterator2.n()).done) {
-                          _context.next = 89;
+                          _context.next = 112;
                           break;
                         }
 
                         element = _step2.value;
-                        _context.next = 87;
+                        _context.next = 110;
                         return message.channel.send(element);
 
-                      case 87:
-                        _context.next = 83;
+                      case 110:
+                        _context.next = 106;
                         break;
 
-                      case 89:
-                        _context.next = 94;
+                      case 112:
+                        _context.next = 117;
                         break;
 
-                      case 91:
-                        _context.prev = 91;
-                        _context.t1 = _context["catch"](81);
+                      case 114:
+                        _context.prev = 114;
+                        _context.t1 = _context["catch"](104);
 
                         _iterator2.e(_context.t1);
 
-                      case 94:
-                        _context.prev = 94;
+                      case 117:
+                        _context.prev = 117;
 
                         _iterator2.f();
 
-                        return _context.finish(94);
+                        return _context.finish(117);
 
-                      case 97:
-                        _context.next = 99;
+                      case 120:
+                        _context.next = 122;
                         return message.channel.send({
                           embeds: [(0, _discord.AfterSuccessMessage)(message, rainRecord.id, amount, withoutBots, amountPerUser, 'VoiceRain', 'rained')]
                         });
 
-                      case 99:
+                      case 122:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 100:
+                      case 123:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[49, 72, 75, 78], [81, 91, 94, 97]]);
+                }, _callee, null, [[72, 95, 98, 101], [104, 114, 117, 120]]);
               }));
 
               return function (_x10) {
@@ -466,12 +483,14 @@ var discordVoiceRain = /*#__PURE__*/function () {
               };
             }());
 
-          case 23:
-            io.to('admin').emit('updateActivity', {
-              activity: activity
-            });
+          case 3:
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
 
-          case 24:
+          case 4:
           case "end":
             return _context3.stop();
         }

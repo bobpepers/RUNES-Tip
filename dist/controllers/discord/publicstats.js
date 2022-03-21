@@ -70,8 +70,6 @@ var discordPublicStats = /*#__PURE__*/function () {
                         _context.next = 10;
                         return message.channel.send({
                           embeds: [(0, _discord.walletNotFoundMessage)(message, 'Ignore me')]
-                        })["catch"](function (e) {
-                          console.log(e);
                         });
 
                       case 10:
@@ -95,8 +93,6 @@ var discordPublicStats = /*#__PURE__*/function () {
                         _context.next = 16;
                         return message.channel.send({
                           embeds: [(0, _discord.disablePublicStatsMessage)(message)]
-                        })["catch"](function (e) {
-                          console.log(e);
                         });
 
                       case 16:
@@ -121,8 +117,6 @@ var discordPublicStats = /*#__PURE__*/function () {
                         _context.next = 23;
                         return message.channel.send({
                           embeds: [(0, _discord.enablePublicStatsMeMessage)(message)]
-                        })["catch"](function (e) {
-                          console.log(e);
                         });
 
                       case 23:
@@ -196,13 +190,14 @@ var discordPublicStats = /*#__PURE__*/function () {
 
                         _logger["default"].error("publicstats error: ".concat(err));
 
-                        message.channel.send({
+                        _context2.next = 12;
+                        return message.channel.send({
                           embeds: [(0, _discord.discordErrorMessage)("PublicStats")]
                         })["catch"](function (e) {
                           console.log(e);
                         });
 
-                      case 11:
+                      case 12:
                       case "end":
                         return _context2.stop();
                     }
@@ -216,9 +211,11 @@ var discordPublicStats = /*#__PURE__*/function () {
             }());
 
           case 3:
-            io.to('admin').emit('updateActivity', {
-              activity: activity
-            });
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
 
           case 4:
           case "end":

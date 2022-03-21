@@ -37,54 +37,52 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 var discordFlood = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(discordClient, message, filteredMessage, io, groupTask, channelTask, setting, faucetSetting, queue) {
-    var members, onlineMembers, user, userActivity, activity;
+    var user, userActivity, activity;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            if (!(!groupTask || !channelTask)) {
-              _context3.next = 4;
-              break;
-            }
-
-            _context3.next = 3;
-            return message.channel.send({
-              embeds: [(0, _discord.NotInDirectMessage)(message, 'Flood')]
-            })["catch"](function (e) {
-              console.log(e);
-            });
-
-          case 3:
-            return _context3.abrupt("return");
-
-          case 4:
-            _context3.next = 6;
-            return discordClient.guilds.cache.get(message.guildId).members.fetch({
-              withPresences: true
-            });
-
-          case 6:
-            members = _context3.sent;
-            onlineMembers = members.filter(function (member) {
-              console.log(member.presence);
-              return member;
-            });
             activity = [];
-            _context3.next = 11;
+            _context3.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, factivity, updatedBalance, fee, amountPerUser, faucetWatered, floodRecord, cactivity, activityCreate, listOfUsersRained, _iterator, _step, floodee, floodeeWallet, floodtipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var members, onlineMembers, _yield$userWalletExis, _yield$userWalletExis2, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, factivity, updatedBalance, fee, amountPerUser, faucetWatered, floodRecord, cactivity, activityCreate, listOfUsersRained, _iterator, _step, floodee, floodeeWallet, floodtipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
-                        _context.next = 2;
+                        if (!(!groupTask || !channelTask)) {
+                          _context.next = 4;
+                          break;
+                        }
+
+                        _context.next = 3;
+                        return message.channel.send({
+                          embeds: [(0, _discord.NotInDirectMessage)(message, 'Flood')]
+                        });
+
+                      case 3:
+                        return _context.abrupt("return");
+
+                      case 4:
+                        _context.next = 6;
+                        return discordClient.guilds.cache.get(message.guildId).members.fetch({
+                          withPresences: true
+                        });
+
+                      case 6:
+                        members = _context.sent;
+                        onlineMembers = members.filter(function (member) {
+                          console.log(member.presence);
+                          return member;
+                        });
+                        _context.next = 10;
                         return (0, _userWalletExist.userWalletExist)(message, t, filteredMessage[1].toLowerCase());
 
-                      case 2:
+                      case 10:
                         _yield$userWalletExis = _context.sent;
                         _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
                         user = _yield$userWalletExis2[0];
@@ -95,42 +93,42 @@ var discordFlood = /*#__PURE__*/function () {
                         }
 
                         if (user) {
-                          _context.next = 9;
+                          _context.next = 17;
                           break;
                         }
 
                         return _context.abrupt("return");
 
-                      case 9:
-                        _context.next = 11;
+                      case 17:
+                        _context.next = 19;
                         return (0, _mapMembers.mapMembers)(message, t, filteredMessage[3], onlineMembers, setting);
 
-                      case 11:
+                      case 19:
                         withoutBots = _context.sent;
-                        _context.next = 14;
+                        _context.next = 22;
                         return (0, _validateAmount.validateAmount)(message, t, filteredMessage[2], user, setting, filteredMessage[1].toLowerCase());
 
-                      case 14:
+                      case 22:
                         _yield$validateAmount = _context.sent;
                         _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
                         activityValiateAmount = _yield$validateAmount2[0];
                         amount = _yield$validateAmount2[1];
 
                         if (!activityValiateAmount) {
-                          _context.next = 21;
+                          _context.next = 29;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 21:
+                      case 29:
                         if (!(withoutBots.length < 2)) {
-                          _context.next = 29;
+                          _context.next = 37;
                           break;
                         }
 
-                        _context.next = 24;
+                        _context.next = 32;
                         return _models["default"].activity.create({
                           type: 'flood_f',
                           spenderId: user.id
@@ -139,17 +137,19 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 24:
+                      case 32:
                         factivity = _context.sent;
                         activity.unshift(factivity);
-                        _context.next = 28;
-                        return message.channel.send('Not enough online users');
+                        _context.next = 36;
+                        return message.channel.send({
+                          embeds: [(0, _discord.notEnoughActiveUsersMessage)(message, 'Flood')]
+                        });
 
-                      case 28:
+                      case 36:
                         return _context.abrupt("return");
 
-                      case 29:
-                        _context.next = 31;
+                      case 37:
+                        _context.next = 39;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -157,16 +157,16 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 31:
+                      case 39:
                         updatedBalance = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
-                        _context.next = 36;
+                        _context.next = 44;
                         return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
 
-                      case 36:
+                      case 44:
                         faucetWatered = _context.sent;
-                        _context.next = 39;
+                        _context.next = 47;
                         return _models["default"].flood.create({
                           feeAmount: fee,
                           amount: amount,
@@ -179,9 +179,9 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 39:
+                      case 47:
                         floodRecord = _context.sent;
-                        _context.next = 42;
+                        _context.next = 50;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'flood_s',
@@ -193,9 +193,9 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 42:
+                      case 50:
                         cactivity = _context.sent;
-                        _context.next = 45;
+                        _context.next = 53;
                         return _models["default"].activity.findOne({
                           where: {
                             id: cactivity.id
@@ -211,25 +211,25 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 45:
+                      case 53:
                         activityCreate = _context.sent;
                         activity.unshift(activityCreate);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(withoutBots);
-                        _context.prev = 49;
+                        _context.prev = 57;
 
                         _iterator.s();
 
-                      case 51:
+                      case 59:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 70;
+                          _context.next = 78;
                           break;
                         }
 
                         floodee = _step.value;
-                        _context.next = 55;
+                        _context.next = 63;
                         return floodee.wallet.update({
                           available: floodee.wallet.available + Number(amountPerUser)
                         }, {
@@ -237,9 +237,9 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 55:
+                      case 63:
                         floodeeWallet = _context.sent;
-                        _context.next = 58;
+                        _context.next = 66;
                         return _models["default"].floodtip.create({
                           amount: amountPerUser,
                           userId: floodee.id,
@@ -251,7 +251,7 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 58:
+                      case 66:
                         floodtipRecord = _context.sent;
 
                         if (floodee.ignoreMe) {
@@ -263,7 +263,7 @@ var discordFlood = /*#__PURE__*/function () {
 
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context.next = 63;
+                        _context.next = 71;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
                           type: 'floodtip_s',
@@ -278,9 +278,9 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 63:
+                      case 71:
                         tipActivity = _context.sent;
-                        _context.next = 66;
+                        _context.next = 74;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -302,89 +302,89 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 66:
+                      case 74:
                         tipActivity = _context.sent;
                         activity.unshift(tipActivity);
 
-                      case 68:
-                        _context.next = 51;
+                      case 76:
+                        _context.next = 59;
                         break;
 
-                      case 70:
-                        _context.next = 75;
+                      case 78:
+                        _context.next = 83;
                         break;
 
-                      case 72:
-                        _context.prev = 72;
-                        _context.t0 = _context["catch"](49);
+                      case 80:
+                        _context.prev = 80;
+                        _context.t0 = _context["catch"](57);
 
                         _iterator.e(_context.t0);
 
-                      case 75:
-                        _context.prev = 75;
+                      case 83:
+                        _context.prev = 83;
 
                         _iterator.f();
 
-                        return _context.finish(75);
+                        return _context.finish(83);
 
-                      case 78:
+                      case 86:
                         newStringListUsers = listOfUsersRained.join(", ");
                         cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                        _context.prev = 81;
+                        _context.prev = 89;
 
                         _iterator2.s();
 
-                      case 83:
+                      case 91:
                         if ((_step2 = _iterator2.n()).done) {
-                          _context.next = 89;
+                          _context.next = 97;
                           break;
                         }
 
                         element = _step2.value;
-                        _context.next = 87;
+                        _context.next = 95;
                         return message.channel.send(element);
 
-                      case 87:
-                        _context.next = 83;
+                      case 95:
+                        _context.next = 91;
                         break;
 
-                      case 89:
-                        _context.next = 94;
+                      case 97:
+                        _context.next = 102;
                         break;
 
-                      case 91:
-                        _context.prev = 91;
-                        _context.t1 = _context["catch"](81);
+                      case 99:
+                        _context.prev = 99;
+                        _context.t1 = _context["catch"](89);
 
                         _iterator2.e(_context.t1);
 
-                      case 94:
-                        _context.prev = 94;
+                      case 102:
+                        _context.prev = 102;
 
                         _iterator2.f();
 
-                        return _context.finish(94);
+                        return _context.finish(102);
 
-                      case 97:
-                        _context.next = 99;
+                      case 105:
+                        _context.next = 107;
                         return message.channel.send({
                           embeds: [(0, _discord.AfterSuccessMessage)(message, floodRecord.id, amount, withoutBots, amountPerUser, 'Flood', 'flooded')]
                         });
 
-                      case 99:
+                      case 107:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 100:
+                      case 108:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[49, 72, 75, 78], [81, 91, 94, 97]]);
+                }, _callee, null, [[57, 80, 83, 86], [89, 99, 102, 105]]);
               }));
 
               return function (_x10) {
@@ -418,11 +418,14 @@ var discordFlood = /*#__PURE__*/function () {
 
                         _logger["default"].error("flood error: ".concat(err));
 
-                        message.channel.send({
+                        _context2.next = 12;
+                        return message.channel.send({
                           embeds: [(0, _discord.discordErrorMessage)("Flood")]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
-                      case 11:
+                      case 12:
                       case "end":
                         return _context2.stop();
                     }
@@ -435,12 +438,14 @@ var discordFlood = /*#__PURE__*/function () {
               };
             }());
 
-          case 11:
-            io.to('admin').emit('updateActivity', {
-              activity: activity
-            });
+          case 3:
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
 
-          case 12:
+          case 4:
           case "end":
             return _context3.stop();
         }

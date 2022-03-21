@@ -184,9 +184,7 @@ var createUpdateDiscordUser = /*#__PURE__*/function () {
                                   address = _context.sent;
 
                                 case 33:
-                                  message.author.send("Welcome ".concat(message.author.username, ", we created a wallet for you.\nType \"").concat(settings.bot.command.discord, " help\" for usage info"))["catch"](function (e) {
-                                    console.log(e);
-                                  });
+                                  message.author.send("Welcome ".concat(message.author.username, ", we created a wallet for you.\nType \"").concat(settings.bot.command.discord, " help\" for usage info"));
 
                                 case 34:
                                   t.afterCommit(function () {

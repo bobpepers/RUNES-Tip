@@ -92,8 +92,6 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
                         _context.next = 14;
                         return message.author.send({
                           embeds: [(0, _discord.balanceMessage)(userId, user, priceInfo)]
-                        })["catch"](function (e) {
-                          console.log(e);
                         });
 
                       case 14:
@@ -111,8 +109,6 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
                         _context.next = 19;
                         return message.author.send({
                           embeds: [(0, _discord.balanceMessage)(userId, user, priceInfo)]
-                        })["catch"](function (e) {
-                          console.log(e);
                         });
 
                       case 19:
@@ -147,7 +143,6 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
 
                       case 26:
                         t.afterCommit(function () {
-                          // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
                           console.log('done balance request');
                         });
 
@@ -188,11 +183,31 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
                       case 8:
                         _logger["default"].error("Error Discord Balance Requested by: ".concat(message.author.id, "-").concat(message.author.username, "#").concat(message.author.discriminator, " - ").concat(err));
 
-                        message.channel.send({
-                          embeds: [(0, _discord.discordErrorMessage)("Balance")]
+                        if (!(err.code && err.code === 50007)) {
+                          _context2.next = 14;
+                          break;
+                        }
+
+                        _context2.next = 12;
+                        return message.channel.send({
+                          embeds: [(0, _discord.cannotSendMessageUser)("Balance", message)]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
-                      case 10:
+                      case 12:
+                        _context2.next = 16;
+                        break;
+
+                      case 14:
+                        _context2.next = 16;
+                        return message.channel.send({
+                          embeds: [(0, _discord.discordErrorMessage)("Balance")]
+                        })["catch"](function (e) {
+                          console.log(e);
+                        });
+
+                      case 16:
                       case "end":
                         return _context2.stop();
                     }
@@ -206,9 +221,11 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
             }());
 
           case 3:
-            io.to('admin').emit('updateActivity', {
-              activity: activity
-            });
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
 
           case 4:
           case "end":

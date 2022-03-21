@@ -116,7 +116,7 @@ var discordStats = /*#__PURE__*/function () {
             activity.unshift(activityA);
             _context.next = 14;
             return message.channel.send({
-              embeds: [(0, _discord.walletNotFoundMessage)(message, 'Ignore me')]
+              embeds: [(0, _discord.walletNotFoundMessage)(message, 'Stats')]
             })["catch"](function (e) {
               console.log(e);
             });
@@ -635,9 +635,13 @@ var discordStats = /*#__PURE__*/function () {
           case 86:
             finalActivity = _context.sent;
             activity.unshift(finalActivity);
-            io.to('admin').emit('updateActivity', {
-              activity: activity
-            });
+
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
+
             return _context.abrupt("return", true);
 
           case 90:

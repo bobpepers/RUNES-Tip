@@ -29,10 +29,7 @@ var discordSettings = /*#__PURE__*/function () {
           case 0:
             groupId = _args.length > 2 && _args[2] !== undefined ? _args[2] : null;
             channelId = _args.length > 3 && _args[3] !== undefined ? _args[3] : null;
-            console.log(name);
-            console.log(groupId);
-            console.log(channelId);
-            _context.next = 7;
+            _context.next = 4;
             return _models["default"].features.findOne({
               where: {
                 type: 'local',
@@ -42,15 +39,15 @@ var discordSettings = /*#__PURE__*/function () {
               }
             });
 
-          case 7:
+          case 4:
             setting = _context.sent;
 
             if (setting) {
-              _context.next = 12;
+              _context.next = 9;
               break;
             }
 
-            _context.next = 11;
+            _context.next = 8;
             return _models["default"].features.findOne({
               where: {
                 type: 'local',
@@ -60,16 +57,16 @@ var discordSettings = /*#__PURE__*/function () {
               }
             });
 
-          case 11:
+          case 8:
             setting = _context.sent;
 
-          case 12:
+          case 9:
             if (setting) {
-              _context.next = 16;
+              _context.next = 13;
               break;
             }
 
-            _context.next = 15;
+            _context.next = 12;
             return _models["default"].features.findOne({
               where: {
                 type: 'global',
@@ -77,69 +74,81 @@ var discordSettings = /*#__PURE__*/function () {
               }
             });
 
-          case 15:
+          case 12:
             setting = _context.sent;
 
-          case 16:
+          case 13:
             if (setting) {
-              _context.next = 19;
+              _context.next = 17;
               break;
             }
 
-            message.channel.send('settings not found')["catch"](function (e) {
+            _context.next = 16;
+            return message.channel.send('settings not found')["catch"](function (e) {
               console.log(e);
             });
+
+          case 16:
             return _context.abrupt("return", false);
 
-          case 19:
+          case 17:
             capitalize = function capitalize(s) {
               return s && s[0].toUpperCase() + s.slice(1);
             }; // Upper case first letter
 
 
             if (!(!setting.enabled && setting.channelId)) {
-              _context.next = 23;
+              _context.next = 22;
               break;
             }
 
-            message.channel.send({
+            _context.next = 21;
+            return message.channel.send({
               embeds: [(0, _discord.featureDisabledChannelMessage)(capitalize(name))]
             })["catch"](function (e) {
               console.log(e);
             });
+
+          case 21:
             return _context.abrupt("return", false);
 
-          case 23:
+          case 22:
             if (!(!setting.enabled && setting.groupId)) {
               _context.next = 26;
               break;
             }
 
-            message.channel.send({
+            _context.next = 25;
+            return message.channel.send({
               embeds: [(0, _discord.featureDisabledServerMessage)(capitalize(name))]
             })["catch"](function (e) {
               console.log(e);
             });
+
+          case 25:
             return _context.abrupt("return", false);
 
           case 26:
             if (setting.enabled) {
-              _context.next = 29;
+              _context.next = 30;
               break;
             }
 
-            message.channel.send({
+            _context.next = 29;
+            return message.channel.send({
               embeds: [(0, _discord.featureDisabledGlobalMessage)(capitalize(name))]
             })["catch"](function (e) {
               console.log(e);
             });
-            return _context.abrupt("return", false);
 
           case 29:
+            return _context.abrupt("return", false);
+
+          case 30:
             console.log(setting);
             return _context.abrupt("return", setting);
 
-          case 31:
+          case 32:
           case "end":
             return _context.stop();
         }

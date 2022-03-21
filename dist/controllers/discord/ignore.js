@@ -70,8 +70,6 @@ var setIgnoreMe = /*#__PURE__*/function () {
                         _context.next = 10;
                         return message.channel.send({
                           embeds: [(0, _discord.walletNotFoundMessage)(message, 'Ignore me')]
-                        })["catch"](function (e) {
-                          console.log(e);
                         });
 
                       case 10:
@@ -79,7 +77,7 @@ var setIgnoreMe = /*#__PURE__*/function () {
 
                       case 11:
                         if (!user.ignoreMe) {
-                          _context.next = 16;
+                          _context.next = 17;
                           break;
                         }
 
@@ -92,20 +90,21 @@ var setIgnoreMe = /*#__PURE__*/function () {
                         });
 
                       case 14:
-                        message.channel.send({
+                        _context.next = 16;
+                        return message.channel.send({
                           embeds: [(0, _discord.unIngoreMeMessage)(message)]
-                        })["catch"](function (e) {
-                          console.log(e);
                         });
-                        return _context.abrupt("return");
 
                       case 16:
+                        return _context.abrupt("return");
+
+                      case 17:
                         if (user.ignoreMe) {
-                          _context.next = 21;
+                          _context.next = 23;
                           break;
                         }
 
-                        _context.next = 19;
+                        _context.next = 20;
                         return user.update({
                           ignoreMe: true
                         }, {
@@ -113,24 +112,25 @@ var setIgnoreMe = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 19:
-                        message.channel.send({
+                      case 20:
+                        _context.next = 22;
+                        return message.channel.send({
                           embeds: [(0, _discord.ignoreMeMessage)(message)]
-                        })["catch"](function (e) {
-                          console.log(e);
                         });
+
+                      case 22:
                         return _context.abrupt("return");
 
-                      case 21:
-                        _context.next = 23;
+                      case 23:
+                        _context.next = 25;
                         return _models["default"].activity.create({
                           type: 'ignoreme_s',
                           earnerId: user.id
                         });
 
-                      case 23:
+                      case 25:
                         preActivity = _context.sent;
-                        _context.next = 26;
+                        _context.next = 28;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -141,14 +141,14 @@ var setIgnoreMe = /*#__PURE__*/function () {
                           }]
                         });
 
-                      case 26:
+                      case 28:
                         finalActivity = _context.sent;
                         activity.unshift(finalActivity);
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 29:
+                      case 31:
                       case "end":
                         return _context.stop();
                     }
@@ -187,13 +187,31 @@ var setIgnoreMe = /*#__PURE__*/function () {
 
                         _logger["default"].error("ignoreme error: ".concat(err));
 
-                        message.channel.send({
+                        if (!(err.code && err.code === 50007)) {
+                          _context2.next = 15;
+                          break;
+                        }
+
+                        _context2.next = 13;
+                        return message.channel.send({
+                          embeds: [(0, _discord.cannotSendMessageUser)("Ignore me", message)]
+                        })["catch"](function (e) {
+                          console.log(e);
+                        });
+
+                      case 13:
+                        _context2.next = 17;
+                        break;
+
+                      case 15:
+                        _context2.next = 17;
+                        return message.channel.send({
                           embeds: [(0, _discord.discordErrorMessage)("Ignore me")]
                         })["catch"](function (e) {
                           console.log(e);
                         });
 
-                      case 11:
+                      case 17:
                       case "end":
                         return _context2.stop();
                     }
@@ -207,9 +225,11 @@ var setIgnoreMe = /*#__PURE__*/function () {
             }());
 
           case 3:
-            io.to('admin').emit('updateActivity', {
-              activity: activity
-            });
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
 
           case 4:
           case "end":

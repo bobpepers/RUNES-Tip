@@ -638,6 +638,11 @@ var scheduleWithdrawal = _nodeSchedule["default"].scheduleJob('*/5 * * * *', /*#
       }
     }
   }, _callee5);
-})));
+}))); // Handle olm library process unhandeled rejections
 
+
+process.on('unhandledRejection', function (reason, promise) {
+  // log error to database
+  console.log('Unhandled Rejection at:', reason.stack || reason);
+});
 console.log('server listening on:', port);

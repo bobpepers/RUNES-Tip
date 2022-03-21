@@ -74,9 +74,7 @@ var discordPrice = /*#__PURE__*/function () {
                         }
 
                         _context.next = 9;
-                        return message.author.send("Wallet not found")["catch"](function (e) {
-                          console.log(e);
-                        });
+                        return message.author.send("Wallet not found");
 
                       case 9:
                         if (!(user && user.wallet)) {
@@ -104,8 +102,6 @@ var discordPrice = /*#__PURE__*/function () {
                         _context.next = 20;
                         return message.author.send({
                           embeds: [(0, _discord.priceMessage)(replyString)]
-                        })["catch"](function (e) {
-                          console.log(e);
                         });
 
                       case 20:
@@ -201,6 +197,8 @@ var discordPrice = /*#__PURE__*/function () {
 
                         message.channel.send({
                           embeds: [(0, _discord.discordErrorMessage)("Price")]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
                       case 10:
@@ -217,9 +215,11 @@ var discordPrice = /*#__PURE__*/function () {
             }());
 
           case 3:
-            io.to('admin').emit('updateActivity', {
-              activity: activity
-            });
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
 
           case 4:
           case "end":

@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.warnDirectMessage = exports.walletNotFoundMessage = exports.userNotFoundMessage = exports.unableToFindUserTipMessage = exports.unIngoreMeMessage = exports.triviaReturnInitiatorMessage = exports.triviaMessageDiscord = exports.transactionNotFoundMessage = exports.tipSingleSuccessMessage = exports.tipMultipleSuccessMessage = exports.tipFaucetSuccessMessage = exports.timeOutAllAmoutMessageDiscord = exports.thunderstormUserZeroAmountMessage = exports.thunderstormMaxUserAmountMessage = exports.thunderstormInvalidUserAmount = exports.statsMessage = exports.reviewMessage = exports.reactDropMessage = exports.priceMessage = exports.notEnoughUsersToTip = exports.notEnoughActiveUsersMessage = exports.noTriviaQuestionFoundMessage = exports.minimumWithdrawalMessage = exports.minimumTimeReactDropMessage = exports.minimumMessage = exports.maxTimeTriviaMessage = exports.maxTimeReactdropMessage = exports.listTransactionsMessage = exports.invalidTimeMessage = exports.invalidPeopleAmountMessage = exports.invalidEmojiMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.ignoreMeMessage = exports.hurricaneUserZeroAmountMessage = exports.hurricaneMaxUserAmountMessage = exports.hurricaneInvalidUserAmount = exports.helpMessageTwo = exports.helpMessageOne = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.featureDisabledChannelMessage = exports.faucetClaimedMessage = exports.enablePublicStatsMeMessage = exports.dryFaucetMessage = exports.discordWithdrawalRejectedMessage = exports.discordWithdrawalConfirmedMessage = exports.discordWithdrawalAcceptedMessage = exports.discordUserWithdrawalRejectMessage = exports.discordUserBannedMessage = exports.discordServerBannedMessage = exports.discordLimitSpamMessage = exports.discordIncomingDepositMessage = exports.discordErrorMessage = exports.discordDepositConfirmedMessage = exports.discordChannelBannedMessage = exports.disablePublicStatsMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessageDiscord = exports.coinInfoMessage = exports.claimTooFactFaucetMessage = exports.canceledAllAmoutMessageDiscord = exports.balanceMessage = exports.ReactdropCaptchaMessage = exports.ReactDropReturnInitiatorMessage = exports.NotInDirectMessage = exports.DiscordFeeMessage = exports.AfterTriviaSuccessMessage = exports.AfterThunderSuccess = exports.AfterSuccessMessage = exports.AfterReactDropSuccessMessage = void 0;
+exports.warnDirectMessage = exports.walletNotFoundMessage = exports.voiceChannelNotFound = exports.userNotFoundMessage = exports.unableToFindUserTipMessage = exports.unIngoreMeMessage = exports.triviaReturnInitiatorMessage = exports.triviaMessageDiscord = exports.transactionNotFoundMessage = exports.tipSingleSuccessMessage = exports.tipMultipleSuccessMessage = exports.tipFaucetSuccessMessage = exports.timeOutAllAmoutMessageDiscord = exports.thunderstormUserZeroAmountMessage = exports.thunderstormMaxUserAmountMessage = exports.thunderstormInvalidUserAmount = exports.statsMessage = exports.reviewMessage = exports.reactDropMessage = exports.priceMessage = exports.notEnoughUsersToTip = exports.notEnoughActiveUsersMessage = exports.notAVoiceChannel = exports.noTriviaQuestionFoundMessage = exports.minimumWithdrawalMessage = exports.minimumTimeReactDropMessage = exports.minimumMessage = exports.maxTimeTriviaMessage = exports.maxTimeReactdropMessage = exports.listTransactionsMessage = exports.invalidTimeMessage = exports.invalidPeopleAmountMessage = exports.invalidEmojiMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.ignoreMeMessage = exports.hurricaneUserZeroAmountMessage = exports.hurricaneMaxUserAmountMessage = exports.hurricaneInvalidUserAmount = exports.helpMessageTwo = exports.helpMessageOne = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.featureDisabledChannelMessage = exports.faucetClaimedMessage = exports.enablePublicStatsMeMessage = exports.dryFaucetMessage = exports.discordWithdrawalRejectedMessage = exports.discordWithdrawalConfirmedMessage = exports.discordWithdrawalAcceptedMessage = exports.discordUserWithdrawalRejectMessage = exports.discordUserBannedMessage = exports.discordServerBannedMessage = exports.discordLimitSpamMessage = exports.discordIncomingDepositMessage = exports.discordErrorMessage = exports.discordDepositConfirmedMessage = exports.discordChannelBannedMessage = exports.disablePublicStatsMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessageDiscord = exports.coinInfoMessage = exports.claimTooFactFaucetMessage = exports.cannotSendMessageUser = exports.canceledAllAmoutMessageDiscord = exports.balanceMessage = exports.ReactdropCaptchaMessage = exports.ReactDropReturnInitiatorMessage = exports.NotInDirectMessage = exports.DiscordFeeMessage = exports.AfterTriviaSuccessMessage = exports.AfterThunderSuccess = exports.AfterSuccessMessage = exports.AfterReactDropSuccessMessage = void 0;
 
 var _discord = require("discord.js");
 
@@ -202,6 +202,36 @@ var unIngoreMeMessage = function unIngoreMeMessage(message) {
 };
 
 exports.unIngoreMeMessage = unIngoreMeMessage;
+
+var notAVoiceChannel = function notAVoiceChannel(message) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Voice Rain').setDescription("<@".concat(message.author.id, ">, Incorrect voice channel defined")).setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.notAVoiceChannel = notAVoiceChannel;
+
+var voiceChannelNotFound = function voiceChannelNotFound(message) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Voice Rain').setDescription("<@".concat(message.author.id, ">, Voice channel not found")).setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.voiceChannelNotFound = voiceChannelNotFound;
+
+var cannotSendMessageUser = function cannotSendMessageUser(title, message) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(title).setDescription("<@".concat(message.author.id, ">, ").concat(settings.bot.name, " was unable to send you a direct message.\nPlease check your discord privacy settings.")).setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.cannotSendMessageUser = cannotSendMessageUser;
 
 var discordErrorMessage = function discordErrorMessage(title) {
   var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(title).setDescription("Something went wrong.").setTimestamp().setFooter({
@@ -681,7 +711,7 @@ var userNotFoundMessage = function userNotFoundMessage(message, title) {
 exports.userNotFoundMessage = userNotFoundMessage;
 
 var invalidAddressMessage = function invalidAddressMessage(message) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Withdraw').setDescription("<@".concat(message.author.id, ">, Invalid Runebase Address")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Withdraw').setDescription("<@".concat(message.author.id, ">, Invalid ").concat(settings.coin.name, " Address")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -741,7 +771,7 @@ var enablePublicStatsMeMessage = function enablePublicStatsMeMessage(message) {
 exports.enablePublicStatsMeMessage = enablePublicStatsMeMessage;
 
 var notEnoughUsersToTip = function notEnoughUsersToTip(message) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Statistics").setDescription("<@".concat(message.author.id, ">, Not enough users to tip")).setThumbnail(settings.coin.logo).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Tip").setDescription("<@".concat(message.author.id, ">, Not enough users to tip")).setThumbnail(settings.coin.logo).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
