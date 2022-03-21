@@ -1,24 +1,26 @@
-import db from '../../models';
+import db from '../../../models';
 import {
-  userNotFoundMessage,
-} from '../../messages/telegram';
+  walletNotFoundMessage,
+} from '../../../messages/matrix';
 
-// const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
+const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
 
 export const userWalletExist = async (
-  ctx,
+  matrixClient,
+  message,
   t,
   functionName,
 ) => {
   let activity;
   const user = await db.user.findOne({
     where: {
-      user_id: `telegram-${ctx.update.message.from.id}`,
+      user_id: `matrix-${message.sender.userId}`,
     },
     include: [
       {
         model: db.wallet,
         as: 'wallet',
+        required: true,
         include: [
           {
             model: db.address,
@@ -38,7 +40,14 @@ export const userWalletExist = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    ctx.reply(userNotFoundMessage());
+    await matrixClient.sendEvent(
+      message.sender.roomId,
+      "m.room.message",
+      walletNotFoundMessage(
+        message,
+        capitalize(functionName),
+      ),
+    );
   }
   return [
     user,

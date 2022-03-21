@@ -6,7 +6,7 @@ import {
 } from '../../messages/telegram';
 import db from '../../models';
 import getCoinSettings from '../../config/settings';
-import { userWalletExist } from "../../helpers/telegram/userWalletExist";
+import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
 
 const settings = getCoinSettings();
 

@@ -4,7 +4,7 @@ import {
   confirmAllAmoutMessageDiscord,
   timeOutAllAmoutMessageDiscord,
   canceledAllAmoutMessageDiscord,
-} from '../../messages/discord';
+} from '../../../messages/discord';
 
 export const executeTipFunction = async (
   tipFunction,

@@ -1,8 +1,8 @@
 // import { parseDomain } from "parse-domain";
 import db from '../../models';
-import { patchPirateDeposits } from "../../helpers/pirate/patcher";
-import { patchRunebaseDeposits } from "../../helpers/runebase/patcher";
-import { patchKomodoDeposits } from "../../helpers/komodo/patcher";
+import { patchPirateDeposits } from "../../helpers/blockchain/pirate/patcher";
+import { patchRunebaseDeposits } from "../../helpers/blockchain/runebase/patcher";
+import { patchKomodoDeposits } from "../../helpers/blockchain/komodo/patcher";
 import getCoinSettings from '../../config/settings';
 
 const settings = getCoinSettings();

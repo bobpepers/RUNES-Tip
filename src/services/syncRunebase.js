@@ -17,7 +17,7 @@ import {
 import getCoinSettings from '../config/settings';
 import { getInstance } from "./rclient";
 import { waterFaucet } from "../helpers/waterFaucet";
-import { findUserDirectMessageRoom } from '../helpers/matrix/directMessageRoom';
+import { findUserDirectMessageRoom } from '../helpers/client/matrix/directMessageRoom';
 
 const settings = getCoinSettings();
 

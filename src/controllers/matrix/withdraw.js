@@ -11,8 +11,8 @@ import {
 } from '../../messages/matrix';
 import getCoinSettings from '../../config/settings';
 import logger from "../../helpers/logger";
-import { validateAmount } from "../../helpers/matrix/validateAmount";
-import { userWalletExist } from "../../helpers/matrix/userWalletExist";
+import { validateAmount } from "../../helpers/client/matrix/validateAmount";
+import { userWalletExist } from "../../helpers/client/matrix/userWalletExist";
 
 const settings = getCoinSettings();
 

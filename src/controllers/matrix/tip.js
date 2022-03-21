@@ -10,9 +10,9 @@ import {
   errorMessage,
   userListMessage,
 } from '../../messages/matrix';
-import { validateAmount } from "../../helpers/matrix/validateAmount";
+import { validateAmount } from "../../helpers/client/matrix/validateAmount";
 import { waterFaucet } from "../../helpers/waterFaucet";
-import { userWalletExist } from "../../helpers/matrix/userWalletExist";
+import { userWalletExist } from "../../helpers/client/matrix/userWalletExist";
 
 import logger from "../../helpers/logger";
 

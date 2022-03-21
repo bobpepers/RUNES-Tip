@@ -22,3 +22,4 @@ logs/app.log
 .env.development.dust
 .env.production.dust
 /scratch
+/telegram_session

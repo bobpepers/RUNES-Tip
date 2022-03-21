@@ -1,9 +1,9 @@
 import { Transaction } from "sequelize";
 import { config } from "dotenv";
-import { getInstance } from '../../services/rclient';
-import db from '../../models';
+import { getInstance } from '../../../services/rclient';
+import db from '../../../models';
 
-import logger from "../logger";
+import logger from "../../logger";
 
 config();
 

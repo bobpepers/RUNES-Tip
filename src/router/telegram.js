@@ -35,21 +35,44 @@ import {
 import getCoinSettings from '../config/settings';
 import { telegramSettings } from '../controllers/telegram/settings';
 import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
+import { getMemberCount } from '../helpers/client/telegram/apiFunctions';
 
 const settings = getCoinSettings();
 
 // import logger from "../helpers/logger";
 
 config();
+const { Api, TelegramClient } = require('telegram');
+const { StoreSession } = require('telegram/sessions');
+
+const storeSession = new StoreSession("telegram_session");
+
+const telegramApiClient = new TelegramClient(
+  storeSession,
+  Number(process.env.TELEGRAM_API_ID),
+  process.env.TELEGRAM_API_HASH,
+  {
+    connectionRetries: 5,
+  },
+);
 
 const runesGroup = process.env.TELEGRAM_RUNES_GROUP;
 
-export const telegramRouter = (
+export const telegramRouter = async (
   telegramClient,
   queue,
   io,
   settings,
 ) => {
+  //
+  await telegramApiClient.start({
+    botAuthToken: process.env.TELEGRAM_BOT_TOKEN,
+    onError: (err) => console.log(err),
+  });
+  await telegramApiClient.session.save();
+  await telegramApiClient.connect();
+  // await telegramApiClient.sendMessage('me', { message: 'Hello!' });
+
   telegramClient.command('help', (ctx) => {
     (async () => {
       const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
@@ -363,6 +386,12 @@ export const telegramRouter = (
         const task = await fetchHelp(ctx, io);
         await queue.add(() => task);
       }
+      //
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'count') {
+        const task = await getMemberCount(telegramApiClient, Api, ctx);
+        await queue.add(() => task);
+      }
+      //
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'price') {
         const task = await fetchPriceInfo(ctx, io);
         await queue.add(() => task);

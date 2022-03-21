@@ -1,12 +1,11 @@
-import db from '../../models';
+import db from '../../../models';
 import {
   walletNotFoundMessage,
-} from '../../messages/matrix';
+} from '../../../messages/discord';
 
 const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
 
 export const userWalletExist = async (
-  matrixClient,
   message,
   t,
   functionName,
@@ -14,7 +13,7 @@ export const userWalletExist = async (
   let activity;
   const user = await db.user.findOne({
     where: {
-      user_id: `matrix-${message.sender.userId}`,
+      user_id: `discord-${message.author.id}`,
     },
     include: [
       {
@@ -40,14 +39,7 @@ export const userWalletExist = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    await matrixClient.sendEvent(
-      message.sender.roomId,
-      "m.room.message",
-      walletNotFoundMessage(
-        message,
-        capitalize(functionName),
-      ),
-    );
+    await message.channel.send({ embeds: [walletNotFoundMessage(message, capitalize(functionName))] });
   }
   return [
     user,

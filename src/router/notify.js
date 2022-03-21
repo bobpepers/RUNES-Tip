@@ -1,6 +1,6 @@
-import walletNotifyRunebase from '../helpers/runebase/walletNotify';
-import walletNotifyPirate from '../helpers/pirate/walletNotify';
-import walletNotifyKomodo from '../helpers/komodo/walletNotify';
+import walletNotifyRunebase from '../helpers/blockchain/runebase/walletNotify';
+import walletNotifyPirate from '../helpers/blockchain/pirate/walletNotify';
+import walletNotifyKomodo from '../helpers/blockchain/komodo/walletNotify';
 
 import { telegramIncomingDepositMessage } from '../messages/telegram';
 import { discordIncomingDepositMessage } from '../messages/discord';
@@ -10,7 +10,7 @@ import { startRunebaseSync } from "../services/syncRunebase";
 import { startPirateSync } from "../services/syncPirate";
 import { startKomodoSync } from "../services/syncKomodo";
 
-import { findUserDirectMessageRoom } from '../helpers/matrix/directMessageRoom';
+import { findUserDirectMessageRoom } from '../helpers/client/matrix/directMessageRoom';
 
 const localhostOnly = (req, res, next) => {
   const hostmachine = req.headers.host.split(':')[0];

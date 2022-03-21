@@ -23,9 +23,9 @@ import { router } from "./router";
 import { dashboardRouter } from "./dashboard/router";
 import { updatePrice } from "./helpers/updatePrice";
 import { initDatabaseRecords } from "./helpers/initDatabaseRecords";
-import { patchRunebaseDeposits } from "./helpers/runebase/patcher";
-import { patchPirateDeposits } from "./helpers/pirate/patcher";
-import { patchKomodoDeposits } from "./helpers/komodo/patcher";
+import { patchRunebaseDeposits } from "./helpers/blockchain/runebase/patcher";
+import { patchPirateDeposits } from "./helpers/blockchain/pirate/patcher";
+import { patchKomodoDeposits } from "./helpers/blockchain/komodo/patcher";
 import {
   reactDropMessage,
   triviaMessageDiscord,

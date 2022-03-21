@@ -1,14 +1,14 @@
 import { Transaction } from "sequelize";
-import { getInstance } from '../../services/rclient';
+import { getInstance } from '../../../services/rclient';
 
-import db from '../../models';
+import db from '../../../models';
 
-import logger from "../logger";
+import logger from "../../logger";
 
 /**
- * Notify New Transaction From Komodo Node
+ * Notify New Transaction From Runebase Node
  */
-const walletNotifyKomodo = async (req, res, next) => {
+const walletNotifyRunebase = async (req, res, next) => {
   const txId = req.body.payload;
   const transaction = await getInstance().getTransaction(txId);
 
@@ -49,8 +49,7 @@ const walletNotifyKomodo = async (req, res, next) => {
             res.locals.platform = 'matrix';
             res.locals.userId = address.wallet.user.user_id.replace('matrix-', '');
           }
-
-          console.log(transaction);
+          // console.log(transaction);
           res.locals.transaction = await db.transaction.findOrCreate({
             where: {
               txid: transaction.txid,
@@ -97,4 +96,4 @@ const walletNotifyKomodo = async (req, res, next) => {
   });
 };
 
-export default walletNotifyKomodo;
+export default walletNotifyRunebase;

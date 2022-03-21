@@ -21,7 +21,7 @@ import {
 } from '../../messages/discord';
 import db from '../../models';
 import logger from "../../helpers/logger";
-import { validateAmount } from "../../helpers/discord/validateAmount";
+import { validateAmount } from "../../helpers/client/discord/validateAmount";
 import { waterFaucet } from "../../helpers/waterFaucet";
 
 export const listenTrivia = async (

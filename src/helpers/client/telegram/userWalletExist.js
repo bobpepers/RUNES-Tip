@@ -1,25 +1,24 @@
-import db from '../../models';
+import db from '../../../models';
 import {
-  walletNotFoundMessage,
-} from '../../messages/discord';
+  userNotFoundMessage,
+} from '../../../messages/telegram';
 
-const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
+// const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
 
 export const userWalletExist = async (
-  message,
+  ctx,
   t,
   functionName,
 ) => {
   let activity;
   const user = await db.user.findOne({
     where: {
-      user_id: `discord-${message.author.id}`,
+      user_id: `telegram-${ctx.update.message.from.id}`,
     },
     include: [
       {
         model: db.wallet,
         as: 'wallet',
-        required: true,
         include: [
           {
             model: db.address,
@@ -39,7 +38,7 @@ export const userWalletExist = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    await message.channel.send({ embeds: [walletNotFoundMessage(message, capitalize(functionName))] });
+    ctx.reply(userNotFoundMessage());
   }
   return [
     user,

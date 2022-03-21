@@ -8,7 +8,7 @@ import {
 } from '../../messages/discord';
 import db from '../../models';
 import getCoinSettings from '../../config/settings';
-import { userWalletExist } from "../../helpers/discord/userWalletExist";
+import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 import logger from "../../helpers/logger";
 
 const settings = getCoinSettings();

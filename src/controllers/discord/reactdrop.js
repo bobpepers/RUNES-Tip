@@ -28,7 +28,7 @@ import {
 import db from '../../models';
 import emojiCompact from "../../config/emoji";
 import logger from "../../helpers/logger";
-import { validateAmount } from "../../helpers/discord/validateAmount";
+import { validateAmount } from "../../helpers/client/discord/validateAmount";
 import { waterFaucet } from "../../helpers/waterFaucet";
 
 const settings = getCoinSettings();

@@ -85,7 +85,7 @@ import {
   discordSettings,
   discordwaterFaucetSettings,
 } from '../controllers/discord/settings';
-import { executeTipFunction } from '../helpers/discord/executeTips';
+import { executeTipFunction } from '../helpers/client/discord/executeTips';
 import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
 
 config();

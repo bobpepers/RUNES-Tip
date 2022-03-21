@@ -7,8 +7,8 @@ import {
   withdrawalReviewMessage,
 } from '../../messages/telegram';
 import getCoinSettings from '../../config/settings';
-import { validateAmount } from "../../helpers/telegram/validateAmount";
-import { userWalletExist } from "../../helpers/telegram/userWalletExist";
+import { validateAmount } from "../../helpers/client/telegram/validateAmount";
+import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
 
 import logger from "../../helpers/logger";
 

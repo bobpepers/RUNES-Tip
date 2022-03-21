@@ -7,8 +7,8 @@ import {
   groupNotFoundMessage,
 } from '../../messages/telegram';
 import logger from "../../helpers/logger";
-import { validateAmount } from "../../helpers/telegram/validateAmount";
-import { userWalletExist } from "../../helpers/telegram/userWalletExist";
+import { validateAmount } from "../../helpers/client/telegram/validateAmount";
+import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
 
 export const rainRunesToUsers = async (
   ctx,

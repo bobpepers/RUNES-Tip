@@ -11,7 +11,7 @@ import {
 } from "../messages/telegram";
 import { matrixWithdrawalAcceptedMessage } from "../messages/matrix";
 import { processWithdrawal } from "./processWithdrawal";
-import { findUserDirectMessageRoom } from '../helpers/matrix/directMessageRoom';
+import { findUserDirectMessageRoom } from '../helpers/client/matrix/directMessageRoom';
 
 config();
 

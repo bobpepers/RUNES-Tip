@@ -9,8 +9,8 @@ import {
   discordErrorMessage,
   invalidTimeMessage,
 } from '../../messages/discord';
-import { validateAmount } from "../../helpers/discord/validateAmount";
-import { userWalletExist } from "../../helpers/discord/userWalletExist";
+import { validateAmount } from "../../helpers/client/discord/validateAmount";
+import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 import { waterFaucet } from "../../helpers/waterFaucet";
 
 import logger from "../../helpers/logger";

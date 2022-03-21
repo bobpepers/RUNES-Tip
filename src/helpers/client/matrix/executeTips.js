@@ -2,7 +2,7 @@ import {
   confirmAllAmoutMessage,
   canceledAllAmoutMessage,
   timeOutAllAmoutMessage,
-} from '../../messages/matrix';
+} from '../../../messages/matrix';
 
 export const executeTipFunction = async (
   tipFunction,

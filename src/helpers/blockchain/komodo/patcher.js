@@ -1,7 +1,7 @@
 import { Transaction, Op } from "sequelize";
-import db from '../../models';
+import db from '../../../models';
 
-import { getInstance } from "../../services/rclient";
+import { getInstance } from "../../../services/rclient";
 
 export async function patchKomodoDeposits() {
   console.log('start patch deposits');

@@ -1,4 +1,4 @@
-import { inviteMatrixDirectMessageRoom } from '../../messages/matrix';
+import { inviteMatrixDirectMessageRoom } from '../../../messages/matrix';
 
 const asyncFilter = async (arr, predicate) => {
   const results = await Promise.all(arr.map(predicate));

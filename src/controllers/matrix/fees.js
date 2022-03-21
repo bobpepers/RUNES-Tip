@@ -5,7 +5,7 @@ import {
 } from '../../messages/matrix';
 import db from '../../models';
 import logger from "../../helpers/logger";
-import { userWalletExist } from "../../helpers/matrix/userWalletExist";
+import { userWalletExist } from "../../helpers/client/matrix/userWalletExist";
 
 export const findFee = async (
   name,

@@ -1,32 +1,39 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-await-in-loop */
 import _ from 'lodash';
-import db from '../../models';
-import { getInstance } from "../../services/rclient";
+import db from '../../../models';
+import { getInstance } from "../../../services/rclient";
 
 export const mapMembers = async (
-  matrixClient,
   message,
   t,
+  optionalRoleMessage,
   onlineMembers,
   setting,
 ) => {
+  let roleId;
   let mappedMembersArray = [];
   const withoutBots = [];
 
-  console.log(onlineMembers);
-
-  mappedMembersArray = await onlineMembers.filter((a) => a.userId !== message.sender.userId && a.userId !== matrixClient.credentials.userId);
-  // mappedMembersArray = await filterWithoutRoles.map((a) => a.user);
-
+  if (optionalRoleMessage && optionalRoleMessage.startsWith('<@&')) {
+    roleId = optionalRoleMessage.substr(3).slice(0, -1);
+  }
+  if (roleId) {
+    const filterWithRoles = await onlineMembers.filter((member) => member._roles.includes(roleId) && !member.user.bot && member.user.id !== message.author.id);
+    mappedMembersArray = await filterWithRoles.map((a) => a.user);
+  } else {
+    const filterWithoutRoles = await onlineMembers.filter((a) => !a.user.bot && a.user.id !== message.author.id);
+    mappedMembersArray = await filterWithoutRoles.map((a) => a.user);
+  }
   if (mappedMembersArray.length > setting.maxSampleSize) {
     mappedMembersArray = await _.sampleSize(mappedMembersArray, setting.maxSampleSize);
   }
 
   // eslint-disable-next-line no-restricted-syntax
-  for (const matrixUser of mappedMembersArray) {
+  for (const discordUser of mappedMembersArray) {
     const userExist = await db.user.findOne({
       where: {
-        user_id: `matrix-${matrixUser.userId}`,
+        user_id: `discord-${discordUser.id}`,
       },
       include: [
         {
@@ -46,8 +53,8 @@ export const mapMembers = async (
       transaction: t,
     });
     if (userExist) {
-      const userIdTest = await userExist.user_id.replace('matrix-', '');
-      if (userIdTest !== message.sender.userId) {
+      const userIdTest = await userExist.user_id.replace('discord-', '');
+      if (userIdTest !== message.author.id) {
         if (!userExist.banned) {
           await withoutBots.push(userExist);
         }
@@ -55,10 +62,9 @@ export const mapMembers = async (
     }
     if (!userExist) {
       let user;
-      console.log(matrixUser);
       user = await db.user.create({
-        user_id: `matrix-${matrixUser.userId}`,
-        username: `${matrixUser.name}`,
+        user_id: `discord-${discordUser.id}`,
+        username: `${discordUser.username}#${discordUser.discriminator}`,
         firstname: '',
         lastname: '',
       }, {
@@ -66,10 +72,10 @@ export const mapMembers = async (
         lock: t.LOCK.UPDATE,
       });
       if (user) {
-        if (user.username !== `${matrixUser.name}`) {
+        if (user.username !== `${discordUser.username}#${discordUser.discriminator}`) {
           user = await user.update(
             {
-              username: `${matrixUser.name}`,
+              username: `${discordUser.username}#${discordUser.discriminator}`,
             },
             {
               transaction: t,
@@ -131,7 +137,7 @@ export const mapMembers = async (
       }
       const userExistNew = await db.user.findOne({
         where: {
-          user_id: `matrix-${matrixUser.userId}`,
+          user_id: `discord-${discordUser.id}`,
         },
         include: [
           {
@@ -151,8 +157,8 @@ export const mapMembers = async (
         transaction: t,
       });
       if (userExistNew) {
-        const userIdTest = await userExistNew.user_id.replace('matrix-', '');
-        if (userIdTest !== message.sender.userId) {
+        const userIdTest = await userExistNew.user_id.replace('discord-', '');
+        if (userIdTest !== message.author.id) {
           await withoutBots.push(userExistNew);
         }
       }

@@ -1,7 +1,7 @@
 import { Transaction } from "sequelize";
 import { config } from "dotenv";
-import db from '../../models';
-import { getInstance } from "../../services/rclient";
+import db from '../../../models';
+import { getInstance } from "../../../services/rclient";
 
 config();
 

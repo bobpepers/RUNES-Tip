@@ -1,16 +1,15 @@
 import BigNumber from "bignumber.js";
-import db from '../../models';
+import db from '../../../models';
 import {
   invalidAmountMessage,
   insufficientBalanceMessage,
   minimumMessage,
-} from '../../messages/matrix';
+} from '../../../messages/telegram';
 
 const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
 
 export const validateAmount = async (
-  matrixClient,
-  message,
+  ctx,
   t,
   preAmount,
   user,
@@ -20,8 +19,8 @@ export const validateAmount = async (
   usersToTip = null,
 ) => {
   let activity;
-  const capType = capitalize(type);
   let amount = 0;
+  const capType = capitalize(type);
 
   if (!preAmount) {
     activity = await db.activity.create({
@@ -31,15 +30,7 @@ export const validateAmount = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    await matrixClient.sendEvent(
-      message.sender.roomId,
-      "m.room.message",
-      invalidAmountMessage(
-        message,
-        capType,
-      ),
-    );
-    // await message.channel.send({ embeds: [invalidAmountMessage(message, capType)] });
+    ctx.reply(invalidAmountMessage());
     return [
       activity,
       amount,
@@ -52,7 +43,7 @@ export const validateAmount = async (
     amount = new BigNumber(preAmount).times(1e8).toNumber();
   }
 
-  if (amount < setting.min) {
+  if (amount < Number(setting.min)) {
     activity = await db.activity.create({
       type: `${type}_f`,
       spenderId: user.id,
@@ -60,26 +51,12 @@ export const validateAmount = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    await matrixClient.sendEvent(
-      message.sender.roomId,
-      "m.room.message",
-      minimumMessage(
-        message,
-        setting,
-        capType,
-      ),
-    );
-    // await message.channel.send({ embeds: [minimumMessage(message, setting, capType)] });
+    ctx.reply(minimumMessage(setting, capitalize(type)));
     return [
       activity,
       amount,
     ];
   }
-
-  if (tipType === 'each' && preAmount.toLowerCase() !== 'all') {
-    amount *= usersToTip.length;
-  }
-
   if (amount % 1 !== 0) {
     activity = await db.activity.create({
       type: `${type}_f`,
@@ -88,15 +65,7 @@ export const validateAmount = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    await matrixClient.sendEvent(
-      message.sender.roomId,
-      "m.room.message",
-      invalidAmountMessage(
-        message,
-        capType,
-      ),
-    );
-    // await message.channel.send({ embeds: [invalidAmountMessage(message, capType)] });
+    ctx.reply(invalidAmountMessage());
     return [
       activity,
       amount,
@@ -111,15 +80,7 @@ export const validateAmount = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    await matrixClient.sendEvent(
-      message.sender.roomId,
-      "m.room.message",
-      invalidAmountMessage(
-        message,
-        capType,
-      ),
-    );
-    // await message.channel.send({ embeds: [invalidAmountMessage(message, capType)] });
+    ctx.reply(invalidAmountMessage());
     return [
       activity,
       amount,
@@ -135,15 +96,7 @@ export const validateAmount = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    await matrixClient.sendEvent(
-      message.sender.roomId,
-      "m.room.message",
-      insufficientBalanceMessage(
-        message,
-        capType,
-      ),
-    );
-    // await message.channel.send({ embeds: [insufficientBalanceMessage(message, capType)] });
+    ctx.reply(insufficientBalanceMessage());
     return [
       activity,
       amount,

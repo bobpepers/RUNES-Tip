@@ -10,9 +10,9 @@ import {
 } from '../../messages/matrix';
 
 import logger from "../../helpers/logger";
-import { validateAmount } from "../../helpers/matrix/validateAmount";
-import { mapMembers } from "../../helpers/matrix/mapMembers";
-import { userWalletExist } from "../../helpers/matrix/userWalletExist";
+import { validateAmount } from "../../helpers/client/matrix/validateAmount";
+import { mapMembers } from "../../helpers/client/matrix/mapMembers";
+import { userWalletExist } from "../../helpers/client/matrix/userWalletExist";
 import { waterFaucet } from "../../helpers/waterFaucet";
 
 export const matrixFlood = async (

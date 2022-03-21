@@ -4,7 +4,7 @@
 /* eslint-disable no-underscore-dangle */
 import { config } from "dotenv";
 
-import { executeTipFunction } from '../helpers/matrix/executeTips';
+import { executeTipFunction } from '../helpers/client/matrix/executeTips';
 import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
 import { matrixHelp } from '../controllers/matrix/help';
 import { matrixBalance } from '../controllers/matrix/balance';
@@ -20,7 +20,7 @@ import { fetchFeeSchedule } from '../controllers/matrix/fees';
 import {
   findUserDirectMessageRoom,
   inviteUserToDirectMessageRoom,
-} from '../helpers/matrix/directMessageRoom';
+} from '../helpers/client/matrix/directMessageRoom';
 
 import {
   createUpdateMatrixUser,

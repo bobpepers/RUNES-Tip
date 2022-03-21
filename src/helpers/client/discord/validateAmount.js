@@ -1,10 +1,10 @@
 import BigNumber from "bignumber.js";
-import db from '../../models';
+import db from '../../../models';
 import {
   invalidAmountMessage,
   insufficientBalanceMessage,
   minimumMessage,
-} from '../../messages/discord';
+} from '../../../messages/discord';
 
 const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
 

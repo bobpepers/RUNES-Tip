@@ -11,8 +11,8 @@ import {
 } from '../../messages/discord';
 import getCoinSettings from '../../config/settings';
 import logger from "../../helpers/logger";
-import { validateAmount } from "../../helpers/discord/validateAmount";
-import { userWalletExist } from "../../helpers/discord/userWalletExist";
+import { validateAmount } from "../../helpers/client/discord/validateAmount";
+import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 
 const settings = getCoinSettings();
 

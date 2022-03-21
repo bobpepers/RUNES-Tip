@@ -10,9 +10,9 @@ import {
   tipFaucetSuccessMessage,
   discordErrorMessage,
 } from '../../messages/discord';
-import { validateAmount } from "../../helpers/discord/validateAmount";
+import { validateAmount } from "../../helpers/client/discord/validateAmount";
 import { waterFaucet } from "../../helpers/waterFaucet";
-import { userWalletExist } from "../../helpers/discord/userWalletExist";
+import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 
 import logger from "../../helpers/logger";
 
