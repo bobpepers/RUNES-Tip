@@ -46,42 +46,31 @@ export const matrixBalance = async (
 
     if (!user && !user.wallet) {
       // ctx.reply(`Wallet not found`);
-      await message.author.send("Wallet not found");
+      // await message.author.send("Wallet not found");
+      // add message for matrix
+      return;
     }
 
     if (user && user.wallet) {
       const userId = user.user_id.replace('matrix-', '');
 
       if (message.sender.roomId === userDirectMessageRoomId) {
-        try {
-          await matrixClient.sendEvent(
-            userDirectMessageRoomId,
-            "m.room.message",
-            balanceMessage(userId, user, priceInfo),
-          );
-        } catch (e) {
-          console.log(e);
-        }
+        await matrixClient.sendEvent(
+          userDirectMessageRoomId,
+          "m.room.message",
+          balanceMessage(userId, user, priceInfo),
+        );
       } else {
-        try {
-          await matrixClient.sendEvent(
-            message.sender.roomId,
-            "m.room.message",
-            warnDirectMessage(message.sender.name, 'Help'),
-          );
-        } catch (e) {
-          console.log(e);
-        }
-
-        try {
-          await matrixClient.sendEvent(
-            userDirectMessageRoomId,
-            "m.room.message",
-            balanceMessage(userId, user, priceInfo),
-          );
-        } catch (e) {
-          console.log(e);
-        }
+        await matrixClient.sendEvent(
+          userDirectMessageRoomId,
+          "m.room.message",
+          balanceMessage(userId, user, priceInfo),
+        );
+        await matrixClient.sendEvent(
+          message.sender.roomId,
+          "m.room.message",
+          warnDirectMessage(message.sender.name, 'Help'),
+        );
       }
 
       const createActivity = await db.activity.create({
@@ -109,7 +98,6 @@ export const matrixBalance = async (
       activity.unshift(findActivity);
     }
     t.afterCommit(() => {
-      // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
       console.log('done balance request');
     });
   }).catch(async (err) => {
@@ -123,7 +111,9 @@ export const matrixBalance = async (
     }
     logger.error(`Error Matrix Balance Requested by: ${err}`);
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

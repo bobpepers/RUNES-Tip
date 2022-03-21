@@ -27,8 +27,15 @@ export const matrixFlood = async (
   userDirectMessageRoomId,
   isCurrentRoomDirectMessage,
 ) => {
-  if (isCurrentRoomDirectMessage) {
-    try {
+  let user;
+  let userActivity;
+  let currentRoom;
+  let members;
+  const activity = [];
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    if (isCurrentRoomDirectMessage) {
       await matrixClient.sendEvent(
         message.sender.roomId,
         "m.room.message",
@@ -37,35 +44,18 @@ export const matrixFlood = async (
           'Flood',
         ),
       );
-    } catch (err) {
-      console.log(err);
+      return;
     }
-    // await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
-    return;
-  }
-  let currentRoom;
-  let members;
-  try {
+
     currentRoom = await matrixClient.getRoom(message.sender.roomId);
     members = await currentRoom.getMembers();
-  } catch (e) {
-    console.log(e);
-  }
 
-  // const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
+    const onlineMembers = members.filter((member) => {
+      console.log(member);
+      console.log(member.presence);
+      return member;
+    });
 
-  const onlineMembers = members.filter((member) => {
-    console.log(member);
-    console.log(member.presence);
-    return member;
-  });
-
-  let user;
-  let userActivity;
-  const activity = [];
-  await db.sequelize.transaction({
-    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-  }, async (t) => {
     [
       user,
       userActivity,
@@ -115,16 +105,12 @@ export const matrixFlood = async (
         transaction: t,
       });
       activity.unshift(factivity);
-      try {
-        await matrixClient.sendEvent(
-          message.sender.roomId,
-          "m.room.message",
-          notEnoughUsers(),
-        );
-      } catch (err) {
-        console.log(err);
-      }
-      // await message.channel.send('Not enough online users');
+
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        notEnoughUsers(),
+      );
       return;
     }
     const updatedBalance = await user.wallet.update({
@@ -259,38 +245,28 @@ export const matrixFlood = async (
     // eslint-disable-next-line no-restricted-syntax
     for (const element of cutStringListUsers) {
       // eslint-disable-next-line no-await-in-loop
-      // await message.channel.send(element);
-      try {
-        // eslint-disable-next-line no-await-in-loop
-        await matrixClient.sendEvent(
-          message.sender.roomId,
-          "m.room.message",
-          userListMessage(
-            element,
-          ),
-        );
-      } catch (err) {
-        console.log(err);
-      }
-    }
-
-    try {
       await matrixClient.sendEvent(
         message.sender.roomId,
         "m.room.message",
-        afterSuccessMessage(
-          message,
-          floodRecord.id,
-          amount,
-          withoutBots,
-          amountPerUser,
-          'Flood',
-          'flooded',
+        userListMessage(
+          element,
         ),
       );
-    } catch (err) {
-      console.log(err);
     }
+
+    await matrixClient.sendEvent(
+      message.sender.roomId,
+      "m.room.message",
+      afterSuccessMessage(
+        message,
+        floodRecord.id,
+        amount,
+        withoutBots,
+        amountPerUser,
+        'Flood',
+        'flooded',
+      ),
+    );
 
     t.afterCommit(() => {
       console.log('done');
@@ -318,7 +294,9 @@ export const matrixFlood = async (
       console.log(err);
     }
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

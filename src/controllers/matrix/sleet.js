@@ -29,8 +29,13 @@ export const matrixSleet = async (
   userDirectMessageRoomId,
   isCurrentRoomDirectMessage,
 ) => {
-  if (isCurrentRoomDirectMessage) {
-    try {
+  const activity = [];
+  let userActivity;
+  let user;
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    if (isCurrentRoomDirectMessage) {
       await matrixClient.sendEvent(
         message.sender.roomId,
         "m.room.message",
@@ -39,18 +44,8 @@ export const matrixSleet = async (
           'Flood',
         ),
       );
-    } catch (err) {
-      console.log(err);
+      return;
     }
-    // await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
-    return;
-  }
-  const activity = [];
-  let userActivity;
-  let user;
-  await db.sequelize.transaction({
-    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-  }, async (t) => {
     [
       user,
       userActivity,
@@ -98,15 +93,11 @@ export const matrixSleet = async (
         transaction: t,
       });
       activity.unshift(groupFailActivity);
-      try {
-        await matrixClient.sendEvent(
-          message.sender.roomId,
-          "m.room.message",
-          groupNotFoundMessage(),
-        );
-      } catch (err) {
-        console.log(err);
-      }
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        groupNotFoundMessage(),
+      );
       return;
     }
     let textTime;
@@ -142,15 +133,11 @@ export const matrixSleet = async (
         transaction: t,
       });
       activity.unshift(activityA);
-      try {
-        await matrixClient.sendEvent(
-          message.sender.roomId,
-          "m.room.message",
-          invalidTimeMessage(message, 'Sleet'),
-        );
-      } catch (err) {
-        console.log(err);
-      }
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        invalidTimeMessage(message, 'Sleet'),
+      );
       return;
     }
 
@@ -226,18 +213,14 @@ export const matrixSleet = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      try {
-        await matrixClient.sendEvent(
-          message.sender.roomId,
-          "m.room.message",
-          notEnoughUsers(
-            message,
-            'Sleet',
-          ),
-        );
-      } catch (err) {
-        console.log(err);
-      }
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        notEnoughUsers(
+          message,
+          'Sleet',
+        ),
+      );
       return;
     }
     if (usersToRain.length >= 2) {
@@ -371,37 +354,28 @@ export const matrixSleet = async (
       // eslint-disable-next-line no-restricted-syntax
       for (const element of cutStringListUsers) {
         // eslint-disable-next-line no-await-in-loop
-        try {
-          // eslint-disable-next-line no-await-in-loop
-          await matrixClient.sendEvent(
-            message.sender.roomId,
-            "m.room.message",
-            userListMessage(
-              element,
-            ),
-          );
-        } catch (err) {
-          console.log(err);
-        }
-      }
-
-      try {
         await matrixClient.sendEvent(
           message.sender.roomId,
           "m.room.message",
-          afterSuccessMessage(
-            message,
-            sleetRecord.id,
-            amount,
-            usersToRain,
-            amountPerUser,
-            'Sleet',
-            'sleeted',
+          userListMessage(
+            element,
           ),
         );
-      } catch (err) {
-        console.log(err);
       }
+
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        afterSuccessMessage(
+          message,
+          sleetRecord.id,
+          amount,
+          usersToRain,
+          amountPerUser,
+          'Sleet',
+          'sleeted',
+        ),
+      );
     }
 
     t.afterCommit(() => {
@@ -430,7 +404,9 @@ export const matrixSleet = async (
       console.log(err);
     }
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

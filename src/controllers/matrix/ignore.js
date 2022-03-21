@@ -43,44 +43,36 @@ export const setIgnoreMe = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      try {
-        await matrixClient.sendEvent(
-          message.sender.roomId,
-          "m.room.message",
-          unIngoreMeMessage(
-            message,
-          ),
-        );
-      } catch (err) {
-        console.log(err);
-      }
-      // message.channel.send({ embeds: [unIngoreMeMessage(message)] });
-      return;
-    }
-    if (!user.ignoreMe) {
+
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        unIngoreMeMessage(
+          message,
+        ),
+      );
+    } else if (!user.ignoreMe) {
       await user.update({
         ignoreMe: true,
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      try {
-        await matrixClient.sendEvent(
-          message.sender.roomId,
-          "m.room.message",
-          ignoreMeMessage(
-            message,
-          ),
-        );
-      } catch (err) {
-        console.log(err);
-      }
-      // message.channel.send({ embeds: [ignoreMeMessage(message)] });
-      return;
+
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        ignoreMeMessage(
+          message,
+        ),
+      );
     }
     const preActivity = await db.activity.create({
       type: 'ignoreme_s',
       earnerId: user.id,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
     });
     const finalActivity = await db.activity.findOne({
       where: {
@@ -92,6 +84,8 @@ export const setIgnoreMe = async (
           as: 'earner',
         },
       ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
     });
     activity.unshift(finalActivity);
 
@@ -121,7 +115,9 @@ export const setIgnoreMe = async (
       console.log(err);
     }
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

@@ -48,24 +48,20 @@ export const matrixPrice = async (
     }
 
     if (user && user.wallet) {
-      try {
-        const priceRecord = await db.priceInfo.findAll({});
-        let replyString = ``;
-        replyString += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('\n');
-        let replyStringHtml = ``;
-        replyStringHtml += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('<br>');
+      const priceRecord = await db.priceInfo.findAll({});
+      let replyString = ``;
+      replyString += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('\n');
+      let replyStringHtml = ``;
+      replyStringHtml += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('<br>');
 
-        await matrixClient.sendEvent(
-          message.sender.roomId,
-          "m.room.message",
-          priceMessage(
-            replyString,
-            replyStringHtml,
-          ),
-        );
-      } catch (error) {
-        console.log(error);
-      }
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        priceMessage(
+          replyString,
+          replyStringHtml,
+        ),
+      );
 
       const createActivity = await db.activity.create({
         type: 'price',
@@ -93,7 +89,6 @@ export const matrixPrice = async (
 
     t.afterCommit(() => {
       console.log('done price request');
-      // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
     });
   }).catch(async (err) => {
     try {
@@ -117,7 +112,9 @@ export const matrixPrice = async (
       console.log(err);
     }
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

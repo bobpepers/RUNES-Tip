@@ -37,7 +37,7 @@ export const mapMembers = async (
             {
               model: db.address,
               as: 'addresses',
-              required: true,
+              required: false,
             },
           ],
         },

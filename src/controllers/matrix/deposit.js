@@ -38,7 +38,8 @@ export const matrixWalletDepositAddress = async (
     });
 
     if (!user && !user.wallet && !user.wallet.addresses) {
-      await message.author.send("Deposit Address not found");
+      // await message.author.send("Deposit Address not found");
+      return;
     }
 
     if (user && user.wallet && user.wallet.addresses) {
@@ -47,8 +48,6 @@ export const matrixWalletDepositAddress = async (
       const userId = user.user_id.replace('matrix-', '');
 
       const uploadResponse = await matrixClient.uploadContent(Buffer.from(depositQrFixed, 'base64'), { rawResponse: false, type: 'image/png' });
-      console.log(uploadResponse);
-      console.log('uploadResponse');
       const matrixUrl = uploadResponse.content_uri;
 
       if (message.sender.roomId === userDirectMessageRoomId) {
@@ -69,11 +68,6 @@ export const matrixWalletDepositAddress = async (
         );
       } else {
         await matrixClient.sendEvent(
-          message.sender.roomId,
-          "m.room.message",
-          warnDirectMessage(message.sender.name, 'Deposit'),
-        );
-        await matrixClient.sendEvent(
           userDirectMessageRoomId,
           "m.room.message",
           {
@@ -87,6 +81,11 @@ export const matrixWalletDepositAddress = async (
           userDirectMessageRoomId,
           "m.room.message",
           depositAddressMessage(user),
+        );
+        await matrixClient.sendEvent(
+          message.sender.roomId,
+          "m.room.message",
+          warnDirectMessage(message.sender.name, 'Deposit'),
         );
       }
 
@@ -128,7 +127,9 @@ export const matrixWalletDepositAddress = async (
     console.log(err);
     logger.error(`Error Deposit Address Request: ${err}`);
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

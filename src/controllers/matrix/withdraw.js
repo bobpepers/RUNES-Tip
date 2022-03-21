@@ -29,19 +29,23 @@ export const withdrawMatrixCreate = async (
   isCurrentRoomDirectMessage,
 ) => {
   let user;
-  let activity;
+  const activity = [];
+  let userActivity;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     [
       user,
-      activity,
+      userActivity,
     ] = await userWalletExist(
       matrixClient,
       message,
       t,
       filteredMessage[1].toLowerCase(),
     );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
     if (!user) return;
     const [
       activityValiateAmount,
@@ -56,7 +60,7 @@ export const withdrawMatrixCreate = async (
       filteredMessage[1].toLowerCase(),
     );
     if (activityValiateAmount) {
-      activity = activityValiateAmount;
+      activity.unshift(activityValiateAmount);
       return;
     }
 
@@ -66,33 +70,21 @@ export const withdrawMatrixCreate = async (
       try {
         isValidAddressInfo = await getInstance().getAddressInfo(filteredMessage[2]);
       } catch (e) {
-        //
-        console.log(message);
-        console.log(e);
-
         if (e.response && e.response.status === 500) {
-          try {
-            await matrixClient.sendEvent(
-              message.sender.roomId,
-              "m.room.message",
-              invalidAddressMessage(
-                message,
-              ),
-            );
-          } catch (err) {
-            console.log(err);
-          }
-          return;
-        }
-        try {
           await matrixClient.sendEvent(
             message.sender.roomId,
             "m.room.message",
-            nodeOfflineMessage(),
+            invalidAddressMessage(
+              message,
+            ),
           );
-        } catch (err) {
-          console.log(err);
+          return;
         }
+        await matrixClient.sendEvent(
+          message.sender.roomId,
+          "m.room.message",
+          nodeOfflineMessage(),
+        );
         return;
       }
     }
@@ -109,21 +101,15 @@ export const withdrawMatrixCreate = async (
       isValidAddress = await getInstance().utils.isRunebaseAddress(filteredMessage[2]);
     }
     //
-    console.log(userDirectMessageRoomId);
-    console.log(message.sender);
 
     if (!isValidAddress) {
-      try {
-        await matrixClient.sendEvent(
-          message.sender.roomId,
-          "m.room.message",
-          invalidAddressMessage(
-            message,
-          ),
-        );
-      } catch (e) {
-        console.log(e);
-      }
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        invalidAddressMessage(
+          message,
+        ),
+      );
       return;
     }
 
@@ -188,7 +174,7 @@ export const withdrawMatrixCreate = async (
       transaction: t,
       lock: t.LOCK.UPDATE,
     });
-    activity = await db.activity.create(
+    const activityCreate = await db.activity.create(
       {
         spenderId: user.id,
         type: 'withdrawRequested',
@@ -200,6 +186,7 @@ export const withdrawMatrixCreate = async (
         lock: t.LOCK.UPDATE,
       },
     );
+    activity.unshift(activityCreate);
     // const userId = user.user_id.replace('matrix-', '');
 
     if (message.sender.roomId === userDirectMessageRoomId) {
@@ -212,28 +199,20 @@ export const withdrawMatrixCreate = async (
         ),
       );
     } else {
-      try {
-        await matrixClient.sendEvent(
-          message.sender.roomId,
-          "m.room.message",
-          warnDirectMessage(message.sender.name, 'Withdraw'),
-        );
-      } catch (e) {
-        console.log(e);
-      }
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        warnDirectMessage(message.sender.name, 'Withdraw'),
+      );
 
-      try {
-        await matrixClient.sendEvent(
-          userDirectMessageRoomId,
-          "m.room.message",
-          reviewMessage(
-            message,
-            transaction,
-          ),
-        );
-      } catch (e) {
-        console.log(e);
-      }
+      await matrixClient.sendEvent(
+        userDirectMessageRoomId,
+        "m.room.message",
+        reviewMessage(
+          message,
+          transaction,
+        ),
+      );
     }
     t.afterCommit(() => {
       console.log('done');
@@ -261,4 +240,9 @@ export const withdrawMatrixCreate = async (
       console.log(e);
     }
   });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

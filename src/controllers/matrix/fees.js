@@ -157,18 +157,14 @@ export const fetchFeeSchedule = async (
     });
     activity.unshift(finalActivity);
 
-    try {
-      await matrixClient.sendEvent(
-        message.sender.roomId,
-        "m.room.message",
-        feeMessage(
-          message,
-          fee,
-        ),
-      );
-    } catch (err) {
-      console.log(err);
-    }
+    await matrixClient.sendEvent(
+      message.sender.roomId,
+      "m.room.message",
+      feeMessage(
+        message,
+        fee,
+      ),
+    );
 
     t.afterCommit(() => {
       console.log('done');
@@ -197,7 +193,9 @@ export const fetchFeeSchedule = async (
     }
   });
 
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

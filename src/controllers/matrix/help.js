@@ -1,9 +1,12 @@
 /* eslint-disable import/prefer-default-export */
+import { Transaction } from "sequelize";
 import {
+  errorMessage,
   warnDirectMessage,
   helpMessage,
 } from '../../messages/matrix';
 import db from '../../models';
+import logger from "../../helpers/logger";
 
 export const matrixHelp = async (
   matrixClient,
@@ -11,77 +14,104 @@ export const matrixHelp = async (
   userDirectMessageRoomId,
   io,
 ) => {
-  const withdraw = await db.features.findOne(
-    {
-      where: {
-        type: 'global',
-        name: 'withdraw',
+  const activity = [];
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    const withdraw = await db.features.findOne(
+      {
+        where: {
+          type: 'global',
+          name: 'withdraw',
+        },
+        lock: t.LOCK.UPDATE,
+        transaction: t,
       },
-    },
-  );
+    );
 
-  if (message.sender.roomId === userDirectMessageRoomId) {
-    try {
+    if (message.sender.roomId === userDirectMessageRoomId) {
       await matrixClient.sendEvent(
         userDirectMessageRoomId,
         "m.room.message",
         helpMessage(),
       );
-    } catch (e) {
-      console.log(e);
-    }
-  } else {
-    try {
+    } else {
+      await matrixClient.sendEvent(
+        userDirectMessageRoomId,
+        "m.room.message",
+        helpMessage(),
+      );
       await matrixClient.sendEvent(
         message.sender.roomId,
         "m.room.message",
         warnDirectMessage(message.sender.name, 'Help'),
       );
-    } catch (e) {
-      console.log(e);
     }
+
+    const user = await db.user.findOne({
+      where: {
+        user_id: `matrix-${message.sender.userId}`,
+      },
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    if (!user) {
+      return;
+    }
+
+    const preActivity = await db.activity.create({
+      type: 'help',
+      earnerId: user.id,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    const finalActivity = await db.activity.findOne({
+      where: {
+        id: preActivity.id,
+      },
+      include: [
+        {
+          model: db.user,
+          as: 'earner',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    activity.unshift(finalActivity);
+    t.afterCommit(() => {
+      console.log('done');
+    });
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'help',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Matrix: ${e}`);
+    }
+    console.log(err);
+    logger.error(`ignoreme error: ${err}`);
     try {
       await matrixClient.sendEvent(
-        userDirectMessageRoomId,
+        message.sender.roomId,
         "m.room.message",
-        helpMessage(),
+        errorMessage(
+          'Help',
+        ),
       );
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      console.log(err);
     }
+  });
+
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
   }
-
-  const activity = [];
-  const user = await db.user.findOne({
-    where: {
-      user_id: `matrix-${message.sender.userId}`,
-    },
-  });
-
-  if (!user) {
-    return;
-  }
-
-  const preActivity = await db.activity.create({
-    type: 'help',
-    earnerId: user.id,
-  });
-
-  const finalActivity = await db.activity.findOne({
-    where: {
-      id: preActivity.id,
-    },
-    include: [
-      {
-        model: db.user,
-        as: 'earner',
-      },
-    ],
-  });
-  activity.unshift(finalActivity);
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
-
-  return true;
 };

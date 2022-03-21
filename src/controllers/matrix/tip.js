@@ -28,21 +28,6 @@ export const tipRunesToMatrixUser = async (
   userDirectMessageRoomId,
   isCurrentRoomDirectMessage,
 ) => {
-  if (isCurrentRoomDirectMessage) {
-    try {
-      await matrixClient.sendEvent(
-        message.sender.roomId,
-        "m.room.message",
-        notInDirectMessage(
-          message,
-          'Tip',
-        ),
-      );
-    } catch (err) {
-      console.log(err);
-    }
-    return;
-  }
   const activity = [];
   let user;
   let AmountPosition = 1;
@@ -54,6 +39,18 @@ export const tipRunesToMatrixUser = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    if (isCurrentRoomDirectMessage) {
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        notInDirectMessage(
+          message,
+          'Tip',
+        ),
+      );
+      return;
+    }
+
     [
       user,
       userActivity,
@@ -67,9 +64,6 @@ export const tipRunesToMatrixUser = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
-    console.log(usersToTip);
-    console.log(AmountPosition);
-    console.log(type);
 
     // make users to tip array
     while (!AmountPositionEnded) {
@@ -112,7 +106,6 @@ export const tipRunesToMatrixUser = async (
           }
         }
       }
-      // usersToTip.push(filteredMessage[AmountPosition]);
       AmountPosition += 1;
       if (!filteredMessage[parseInt(AmountPosition, 10)].startsWith('<a')) {
         AmountPositionEnded = true;
@@ -120,19 +113,14 @@ export const tipRunesToMatrixUser = async (
     }
 
     if (usersToTip.length < 1) {
-      // await message.channel.send({ embeds: [notEnoughUsersToTip(message)] });
-      try {
-        await matrixClient.sendEvent(
-          message.sender.roomId,
-          "m.room.message",
-          notEnoughUsers(
-            message,
-            'Tip',
-          ),
-        );
-      } catch (err) {
-        console.log(err);
-      }
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        notEnoughUsers(
+          message,
+          'Tip',
+        ),
+      );
       return;
     }
 
@@ -286,55 +274,42 @@ export const tipRunesToMatrixUser = async (
     }
 
     if (listOfUsersRained.length === 1) {
-      try {
-        await matrixClient.sendEvent(
-          message.sender.roomId,
-          "m.room.message",
-          tipSingleSuccessMessage(
-            message,
-            tipRecord.id,
-            listOfUsersRained,
-            userTipAmount,
-          ),
-        );
-      } catch (err) {
-        console.log(err);
-      }
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        tipSingleSuccessMessage(
+          message,
+          tipRecord.id,
+          listOfUsersRained,
+          userTipAmount,
+        ),
+      );
     } else if (listOfUsersRained.length > 1) {
       const newStringListUsers = listOfUsersRained.join(", ");
       const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
       // eslint-disable-next-line no-restricted-syntax
       for (const element of cutStringListUsers) {
       // eslint-disable-next-line no-await-in-loop
-        try {
-        // eslint-disable-next-line no-await-in-loop
-          await matrixClient.sendEvent(
-            message.sender.roomId,
-            "m.room.message",
-            userListMessage(
-              element,
-            ),
-          );
-        } catch (err) {
-          console.log(err);
-        }
-      }
-
-      try {
         await matrixClient.sendEvent(
           message.sender.roomId,
           "m.room.message",
-          tipMultipleSuccessMessage(
-            message,
-            tipRecord.id,
-            listOfUsersRained,
-            userTipAmount,
-            type,
+          userListMessage(
+            element,
           ),
         );
-      } catch (err) {
-        console.log(err);
       }
+
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        tipMultipleSuccessMessage(
+          message,
+          tipRecord.id,
+          listOfUsersRained,
+          userTipAmount,
+          type,
+        ),
+      );
     }
 
     t.afterCommit(() => {
@@ -349,7 +324,6 @@ export const tipRunesToMatrixUser = async (
     } catch (e) {
       logger.error(`Error Discord: ${e}`);
     }
-    console.log(err);
     logger.error(`tip error: ${err}`);
     try {
       await matrixClient.sendEvent(
@@ -363,7 +337,9 @@ export const tipRunesToMatrixUser = async (
       console.log(err);
     }
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };
