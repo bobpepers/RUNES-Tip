@@ -5,6 +5,8 @@ import { welcomeMessage } from '../../messages/telegram';
 import { getInstance } from "../../services/rclient";
 
 export const createUpdateUser = async (ctx) => {
+  console.log(ctx.update.message.from);
+  console.log('createUpdateUser');
   if (!ctx.update.message.from.is_bot) {
     await db.sequelize.transaction({
       isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -31,31 +33,15 @@ export const createUpdateUser = async (ctx) => {
         });
       }
       if (user) {
-        if (user.firstname !== ctx.update.message.from.first_name) {
+        if (
+          user.firstname !== ctx.update.message.from.first_name
+          || user.lastname !== ctx.update.message.from.last_name
+          || user.username !== ctx.update.message.from.username
+        ) {
           user = await user.update(
             {
               firstname: ctx.update.message.from.first_name,
-            },
-            {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            },
-          );
-        }
-        if (user.lastname !== ctx.update.message.from.last_name) {
-          user = await user.update(
-            {
               lastname: ctx.update.message.from.last_name,
-            },
-            {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            },
-          );
-        }
-        if (user.username !== ctx.update.message.from.username) {
-          user = await user.update(
-            {
               username: ctx.update.message.from.username,
             },
             {
@@ -113,7 +99,12 @@ export const createUpdateUser = async (ctx) => {
               transaction: t,
               lock: t.LOCK.UPDATE,
             });
-            ctx.reply(welcomeMessage(ctx));
+            await ctx.replyWithHTML(
+              await welcomeMessage(
+                user,
+              ),
+            );
+            // ctx.replyWithHTML(welcomeMessage(user));
           }
         }
       }

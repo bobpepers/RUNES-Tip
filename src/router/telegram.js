@@ -4,7 +4,8 @@ import { fetchWalletDepositAddress } from '../controllers/telegram/deposit';
 import { withdrawTelegramCreate } from '../controllers/telegram/withdraw';
 import { tipRunesToUser } from '../controllers/telegram/tip';
 import { rainRunesToUsers } from '../controllers/telegram/rain';
-
+import { telegramFlood } from '../controllers/telegram/flood';
+import { executeTipFunction } from '../helpers/client/telegram/executeTips';
 import {
   updateLastSeen,
   createUpdateUser,
@@ -33,9 +34,11 @@ import {
   fetchInfo,
 } from '../controllers/telegram/info';
 import getCoinSettings from '../config/settings';
-import { telegramSettings } from '../controllers/telegram/settings';
+import {
+  telegramSettings,
+  telegramWaterFaucetSettings,
+} from '../controllers/telegram/settings';
 import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
-import { getMemberCount } from '../helpers/client/telegram/apiFunctions';
 
 const settings = getCoinSettings();
 
@@ -71,7 +74,6 @@ export const telegramRouter = async (
   });
   await telegramApiClient.session.save();
   await telegramApiClient.connect();
-  // await telegramApiClient.sendMessage('me', { message: 'Hello!' });
 
   telegramClient.command('help', (ctx) => {
     (async () => {
@@ -358,8 +360,13 @@ export const telegramRouter = async (
       await queue.add(() => task);
       if (settings.coin.setting === 'Runebase') {
         if (ctx.update.message.chat.id === Number(runesGroup)) {
-          const taskReferred = await createReferral(ctx, telegramClient, runesGroup);
-          await queue.add(() => taskReferred);
+          await queue.add(async () => {
+            const task = await createReferral(
+              ctx,
+              telegramClient,
+              runesGroup,
+            );
+          });
         }
       }
     })();
@@ -368,6 +375,7 @@ export const telegramRouter = async (
   telegramClient.on('text', async (ctx) => {
     const groupTask = await updateGroup(ctx);
     await queue.add(() => groupTask);
+    const groupTaskId = groupTask && groupTask.id;
     const task = await createUpdateUser(ctx);
     await queue.add(() => task);
     const lastSeenTask = await updateLastSeen(ctx);
@@ -379,57 +387,94 @@ export const telegramRouter = async (
     const telegramUserName = ctx.update.message.from.username;
     // console.log(filteredMessageTelegram);
     if (filteredMessageTelegram[0].toLowerCase() === settings.bot.command.telegram) {
+      let faucetSetting;
       const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
       await queue.add(() => maintenance);
       if (maintenance.maintenance || !maintenance.enabled) return;
       if (!filteredMessageTelegram[1]) {
-        const task = await fetchHelp(ctx, io);
-        await queue.add(() => task);
+        await queue.add(async () => {
+          const task = await fetchHelp(ctx, io);
+        });
       }
+      faucetSetting = await telegramWaterFaucetSettings(
+        groupTaskId,
+      );
+      if (!faucetSetting) return;
       //
-      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'count') {
-        const task = await getMemberCount(telegramApiClient, Api, ctx);
-        await queue.add(() => task);
+
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'flood') {
+        const setting = await telegramSettings(
+          ctx,
+          'flood',
+          groupTaskId,
+        );
+        if (!setting) return;
+        console.log(settings);
+        // const limited = await limitWithdraw(message);
+        // if (limited) return;
+
+        await executeTipFunction(
+          telegramFlood,
+          queue,
+          filteredMessageTelegram[2],
+          telegramClient,
+          telegramApiClient,
+          ctx,
+          filteredMessageTelegram,
+          io,
+          groupTask,
+          setting,
+          faucetSetting,
+        );
       }
+
       //
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'price') {
-        const task = await fetchPriceInfo(ctx, io);
-        await queue.add(() => task);
+        await queue.add(async () => {
+          const task = await fetchPriceInfo(ctx, io);
+        });
       }
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'info') {
-        const task = await fetchInfo(ctx);
-        await queue.add(() => task);
+        await queue.add(async () => {
+          const task = await fetchInfo(ctx);
+        });
       }
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'help') {
-        const task = await fetchHelp(ctx, io);
-        await queue.add(() => task);
+        await queue.add(async () => {
+          const task = await fetchHelp(ctx, io);
+        });
       }
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'faucet') {
-        const task = await telegramFaucetClaim(ctx, io);
-        await queue.add(() => task);
+        await queue.add(async () => {
+          const task = await telegramFaucetClaim(ctx, io);
+        });
       }
       if (settings.coin.setting === 'Runebase') {
         if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'referral' && !filteredMessageTelegram[2]) {
-          const task = await fetchReferralCount(
-            ctx,
-            telegramUserId,
-            telegramUserName,
-          );
-          await queue.add(() => task);
+          await queue.add(async () => {
+            const task = await fetchReferralCount(
+              ctx,
+              telegramUserId,
+              telegramUserName,
+            );
+          });
         }
         if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'referral' && filteredMessageTelegram[2] === 'top') {
-          const task = await fetchReferralTopTen(ctx);
-          await queue.add(() => task);
+          await queue.add(async () => {
+            const task = await fetchReferralTopTen(ctx);
+          });
         }
       }
 
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'balance') {
-        const task = await fetchWalletBalance(ctx, telegramUserId, telegramUserName, io);
-        await queue.add(() => task);
+        await queue.add(async () => {
+          const task = await fetchWalletBalance(ctx, telegramUserId, telegramUserName, io);
+        });
       }
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'deposit') {
-        const task = await fetchWalletDepositAddress(ctx, telegramUserId, telegramUserName, io);
-        await queue.add(() => task);
+        await queue.add(async () => {
+          const task = await fetchWalletDepositAddress(ctx, telegramUserId, telegramUserName, io);
+        });
       }
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'withdraw') {
         if (!filteredMessageTelegram[2]) {

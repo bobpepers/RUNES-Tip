@@ -4,7 +4,10 @@ import getCoinSettings from '../../config/settings';
 
 const settings = getCoinSettings();
 
-const fetchPriceInfo = async (ctx, io) => {
+const fetchPriceInfo = async (
+  ctx,
+  io,
+) => {
   try {
     const priceRecord = await db.priceInfo.findAll({});
     let replyString = `<b><u>${settings.coin.ticker} PRICE</u></b>\n`;

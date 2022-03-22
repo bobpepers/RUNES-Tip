@@ -11,6 +11,7 @@ export const userWalletExist = async (
   functionName,
 ) => {
   let activity;
+  console.log(ctx.update.message);
   const user = await db.user.findOne({
     where: {
       user_id: `telegram-${ctx.update.message.from.id}`,

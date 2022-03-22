@@ -1,15 +1,15 @@
 /* eslint-disable import/prefer-default-export */
 import { Markup } from "telegraf";
-import { helpMessage } from '../../messages/telegram';
+import {
+  helpMessage,
+  warnDirectMessage,
+} from '../../messages/telegram';
 import getCoinSettings from '../../config/settings';
 import db from '../../models';
 
 const settings = getCoinSettings();
 
 export const fetchHelp = async (ctx, io) => {
-  if (ctx.update.message.chat.type !== 'private') {
-    await ctx.reply("i have sent you a direct message");
-  }
   const withdraw = await db.features.findOne(
     {
       where: {
@@ -18,6 +18,17 @@ export const fetchHelp = async (ctx, io) => {
       },
     },
   );
+
+  let activity;
+  const user = await db.user.findOne({
+    where: {
+      user_id: `telegram-${ctx.update.message.from.id}`,
+    },
+  });
+
+  if (!user) {
+    return;
+  }
 
   ctx.telegram.sendMessage(
     ctx.update.message.from.id,
@@ -43,15 +54,14 @@ export const fetchHelp = async (ctx, io) => {
       ),
     },
   );
-  let activity;
-  const user = await db.user.findOne({
-    where: {
-      user_id: `telegram-${ctx.update.message.from.id}`,
-    },
-  });
 
-  if (!user) {
-    return;
+  if (ctx.update.message.chat.type !== 'private') {
+    await ctx.reply("i have sent you a direct message");
+    await ctx.replyWithHTML(
+      await warnDirectMessage(
+        user,
+      ),
+    );
   }
 
   activity = await db.activity.create({

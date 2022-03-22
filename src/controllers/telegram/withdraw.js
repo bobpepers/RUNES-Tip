@@ -21,8 +21,6 @@ export const withdrawTelegramCreate = async (
   io,
   setting,
 ) => {
-  logger.info(`Start Withdrawal Request: ${ctx.update.message.from.id}-${ctx.update.message.from.username}`);
-
   let user;
   let activity;
   let isValidAddress = false;

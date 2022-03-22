@@ -9,5 +9,10 @@ export const fetchInfo = async (ctx) => {
   const priceInfo = await db.priceInfo.findOne({
     order: [['id', 'ASC']],
   });
-  ctx.replyWithHTML(InfoMessage(blockHeight.id, priceInfo));
+  ctx.replyWithHTML(
+    InfoMessage(
+      blockHeight.id,
+      priceInfo,
+    ),
+  );
 };

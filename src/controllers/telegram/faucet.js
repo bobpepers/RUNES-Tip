@@ -3,10 +3,12 @@ import { Transaction } from "sequelize";
 import {
   claimTooFastFaucetMessage,
   faucetClaimedMessage,
+  errorMessage,
 } from '../../messages/telegram';
 import db from '../../models';
 import getCoinSettings from '../../config/settings';
 import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
+import logger from "../../helpers/logger";
 
 const settings = getCoinSettings();
 
@@ -16,7 +18,7 @@ export const telegramFaucetClaim = async (
 ) => {
   let user;
   let userActivity;
-  let activity = [];
+  const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -41,12 +43,13 @@ export const telegramFaucetClaim = async (
       transaction: t,
     });
     if (!faucet) {
-      activity = await db.activity.create({
+      const activityNotFound = await db.activity.create({
         type: 'faucettip_f',
       }, {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      activity.unshift(activityNotFound);
       await ctx.reply('Faucet not found');
       return;
     }
@@ -72,11 +75,11 @@ export const telegramFaucetClaim = async (
         ['id', 'DESC'],
       ],
     });
-    const username = `${user.username}`;
+    // const username = `${user.username}`;
     const dateFuture = lastFaucetTip && lastFaucetTip.createdAt.getTime() + (4 * 60 * 60 * 1000);
     const dateNow = new Date().getTime();
     const distance = dateFuture && dateFuture - dateNow;
-    console.log(distance);
+    // console.log(distance);
 
     if (distance
       && distance > 0
@@ -88,7 +91,12 @@ export const telegramFaucetClaim = async (
         transaction: t,
       });
       activity.push(activityT);
-      await ctx.reply(claimTooFastFaucetMessage(username, distance));
+      await ctx.replyWithHTML(
+        await claimTooFastFaucetMessage(
+          user,
+          distance,
+        ),
+      );
       return;
     }
     const amountToTip = Number(((faucet.amount / 100) * (settings.faucet / 1e2)).toFixed(0));
@@ -137,16 +145,35 @@ export const telegramFaucetClaim = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    console.log(finalActivity);
+    // console.log(finalActivity);
     activity.unshift(finalActivity);
-    await ctx.reply(faucetClaimedMessage(username, amountToTip));
-  }).catch((err) => {
+    await ctx.replyWithHTML(
+      await faucetClaimedMessage(
+        lastFaucetTip.id,
+        user,
+        amountToTip,
+      ),
+    );
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'faucet',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Telegram: ${e}`);
+    }
     console.log(err);
-    ctx.reply('something went wrong');
+    logger.error(`Faucet error: ${err}`);
+    try {
+      await ctx.replyWithHTML(errorMessage(
+        'Faucet',
+      ));
+    } catch (err) {
+      console.log(err);
+    }
   });
   io.to('admin').emit('updateActivity', {
     activity,
   });
-
-  return true;
 };

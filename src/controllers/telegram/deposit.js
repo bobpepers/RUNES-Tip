@@ -4,11 +4,18 @@ import db from '../../models';
 import {
   depositAddressMessage,
   depositAddressNotFoundMessage,
+  errorMessage,
 } from '../../messages/telegram';
 
 import logger from "../../helpers/logger";
 
-export const fetchWalletDepositAddress = async (ctx, telegramUserId, telegramUserName, io) => {
+export const fetchWalletDepositAddress = async (
+  ctx,
+  telegramUserId,
+  telegramUserName,
+  io,
+) => {
+  const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -33,7 +40,7 @@ export const fetchWalletDepositAddress = async (ctx, telegramUserId, telegramUse
     });
 
     if (!user && !user.wallet && !user.wallet.addresses) {
-      ctx.reply(depositAddressNotFoundMessage());
+      await ctx.reply(depositAddressNotFoundMessage());
     }
 
     if (user && user.wallet && user.wallet.addresses) {
@@ -42,20 +49,69 @@ export const fetchWalletDepositAddress = async (ctx, telegramUserId, telegramUse
       await ctx.replyWithPhoto({
         source: Buffer.from(depositQrFixed, 'base64'),
       }, {
-        caption: depositAddressMessage(telegramUserName, user),
-        parse_mode: 'MarkdownV2',
+        caption: await depositAddressMessage(
+          user,
+        ),
+        parse_mode: 'HTML',
       });
 
       await ctx.reply(
-        depositAddressMessage(telegramUserName, user),
-        { parse_mode: 'MarkdownV2' },
+        await depositAddressMessage(
+          user,
+        ),
+        {
+          parse_mode: 'HTML',
+        },
       );
+
+      const preActivity = await db.activity.create({
+        type: 'deposit',
+        earnerId: user.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      const finalActivity = await db.activity.findOne({
+        where: {
+          id: preActivity.id,
+        },
+        include: [
+          {
+            model: db.user,
+            as: 'earner',
+          },
+        ],
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      activity.unshift(finalActivity);
     }
 
     t.afterCommit(() => {
-      logger.info(`Success Deposit Address Requested by: ${telegramUserId}-${telegramUserName}`);
+      console.log('telegram deposit address request done');
     });
-  }).catch((err) => {
-    logger.error(`Error Deposit Address Requested by: ${telegramUserId}-${telegramUserName} - ${err}`);
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'deposit',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Telegram: ${e}`);
+    }
+    console.log(err);
+    logger.error(`deposit error: ${err}`);
+    try {
+      await ctx.replyWithHTML(
+        errorMessage(
+          'Deposit',
+        ),
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  });
+  io.to('admin').emit('updateActivity', {
+    activity,
   });
 };

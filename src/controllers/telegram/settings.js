@@ -45,3 +45,38 @@ export const telegramSettings = async (
   // console.log(setting);
   return setting;
 };
+
+export const telegramWaterFaucetSettings = async (
+  groupId = null,
+  channelId = null,
+) => {
+  let setting;
+  setting = await db.features.findOne({
+    where: {
+      type: 'local',
+      name: 'faucet',
+      groupId,
+      channelId,
+    },
+  });
+  if (!setting) {
+    setting = await db.features.findOne({
+      where: {
+        type: 'local',
+        name: 'faucet',
+        groupId,
+        channelId: null,
+      },
+    });
+  }
+  if (!setting) {
+    setting = await db.features.findOne({
+      where: {
+        type: 'global',
+        name: 'faucet',
+      },
+    });
+  }
+
+  return setting;
+};

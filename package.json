@@ -66,7 +66,6 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "express-session": "^1.17.2",
-    "input": "^1.0.1",
     "komodoweb3": "github:The-ARRRmy/KomodoWeb3.js#0.0.6",
     "lodash": "^4.17.21",
     "matrix-js-sdk": "^16.0.0",
@@ -74,7 +73,7 @@
     "mysql2": "^2.3.3",
     "node-localstorage": "^2.2.1",
     "node-schedule": "^2.1.0",
-    "nodemailer": "^6.7.2",
+    "nodemailer": "^6.7.3",
     "p-queue": "^6.6.2",
     "passport": "^0.5.2",
     "passport-local": "^1.0.0",
@@ -88,7 +87,7 @@
     "speakeasy": "^2.0.0",
     "svg-captcha": "^1.4.0",
     "svg-png-converter": "^0.0.9",
-    "telegraf": "^4.6.0",
+    "telegraf": "^4.7.0",
     "telegram": "^2.5.22",
     "winston": "^3.6.0"
   }
