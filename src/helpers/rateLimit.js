@@ -113,424 +113,163 @@ const rateLimiterTrivia = new RateLimiterFlexible.default.RateLimiterMemory({
 });
 
 const rateLimiterListTransactions = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 4,
+  points: 2,
+  duration: 30,
+});
+
+const rateLimiterFees = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 2,
+  duration: 30,
+});
+
+const rateLimiterVoiceRain = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 180,
   duration: 120,
 });
 
-export const limitListTransactions = async (
+export const myRateLimiter = async (
+  client,
   message,
+  platform,
+  title,
 ) => {
   try {
-    const limited = await rateLimiterListTransactions.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'List Transactions')] });
-      }
-      return true;
-    } catch (e) {
-      return true;
+    let userId;
+    if (platform === 'discord') {
+      userId = message.author.id;
     }
-  }
-};
-
-export const limitTrivia = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterTrivia.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Trivia')] });
-      }
-      return true;
-    } catch (e) {
-      return true;
+    if (platform === 'telegram') {
+      userId = message.author.id;
     }
-  }
-};
-
-export const limitThunder = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterThunder.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Thunder')] });
-      }
-      return true;
-    } catch (e) {
-      return true;
+    if (platform === 'matrix') {
+      userId = message.author.id;
     }
-  }
-};
-
-export const limitThunderStorm = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterThunderstorm.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
     try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Thunderstorm')] });
+      if (title.toLowerCase() === 'listtransactions') {
+        await rateLimiterListTransactions.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitStats = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterStats.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Tip')] });
+      if (title.toLowerCase() === 'trivia') {
+        await rateLimiterTrivia.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitLeaderboard = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterLeaderboard.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Tip')] });
+      if (title.toLowerCase() === 'thunder') {
+        await rateLimiterThunder.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitPublicStats = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterPublicStats.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Tip')] });
+      if (title.toLowerCase() === 'thunderstorm') {
+        await rateLimiterThunderstorm.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitFaucet = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterFaucet.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Tip')] });
+      if (title.toLowerCase() === 'stats') {
+        await rateLimiterStats.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitDeposit = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterDeposit.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Tip')] });
+      if (title.toLowerCase() === 'leaderboard') {
+        await rateLimiterLeaderboard.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitBalance = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterBalance.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Tip')] });
+      if (title.toLowerCase() === 'publicstats') {
+        await rateLimiterPublicStats.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitPrice = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterPrice.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Price')] });
+      if (title.toLowerCase() === 'faucet') {
+        await rateLimiterFaucet.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitTip = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterTip.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Tip')] });
+      if (title.toLowerCase() === 'deposit') {
+        await rateLimiterDeposit.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitWithdraw = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterWithdraw.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Withdraw')] });
+      if (title.toLowerCase() === 'balance') {
+        await rateLimiterBalance.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitHelp = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterHelp.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Help')] });
+      if (title.toLowerCase() === 'price') {
+        await rateLimiterPrice.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitInfo = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterInfo.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Info')] });
+      if (title.toLowerCase() === 'tip') {
+        await rateLimiterTip.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitRain = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterRain.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Rain')] });
+      if (title.toLowerCase() === 'withdraw') {
+        await rateLimiterWithdraw.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitSoak = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterSoak.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Soak')] });
+      if (title.toLowerCase() === 'help') {
+        await rateLimiterHelp.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitFlood = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterFlood.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Flood')] });
+      if (title.toLowerCase() === 'info') {
+        await rateLimiterInfo.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitHurricane = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterHurricane.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Hurricane')] });
+      if (title.toLowerCase() === 'rain') {
+        await rateLimiterRain.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitIgnoreMe = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterIgnoreMe.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'IgnoreMe')] });
+      if (title.toLowerCase() === 'soak') {
+        await rateLimiterSoak.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitSleet = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterSleet.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'Sleet')] });
+      if (title.toLowerCase() === 'flood') {
+        await rateLimiterFlood.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
-    }
-  }
-};
-
-export const limitReactDrop = async (
-  message,
-) => {
-  try {
-    const limited = await rateLimiterReactdrop.consume(message.author.id, 1);
-    return false;
-  } catch (err) {
-    try {
-      const notError = await errorConsumer.consume(message.author.id, 1);
-      if (notError.remainingPoints > 0) {
-        await message.channel.send({ embeds: [discordLimitSpamMessage(message, 'ReactDrop')] });
+      if (title.toLowerCase() === 'hurricane') {
+        await rateLimiterHurricane.consume(userId, 1);
+        return false;
       }
-      return true;
-    } catch (e) {
-      return true;
+      if (title.toLowerCase() === 'ignoreme') {
+        await rateLimiterIgnoreMe.consume(userId, 1);
+        return false;
+      }
+      if (title.toLowerCase() === 'sleet') {
+        await rateLimiterSleet.consume(userId, 1);
+        return false;
+      }
+      if (title.toLowerCase() === 'reactdrop') {
+        await rateLimiterReactdrop.consume(userId, 1);
+        return false;
+      }
+      if (title.toLowerCase() === 'fees') {
+        await rateLimiterFees.consume(userId, 1);
+        return false;
+      }
+      if (title.toLowerCase() === 'voicerain') {
+        await rateLimiterVoiceRain.consume(userId, 1);
+        return false;
+      }
+      throw new Error("no Rate limiter could be reached");
+    } catch (err) {
+      try {
+        const notError = await errorConsumer.consume(userId, 1);
+        if (notError.remainingPoints > 0) {
+          if (platform === 'discord') {
+            await message.channel.send({
+              embeds: [
+                discordLimitSpamMessage(
+                  message,
+                  title,
+                ),
+              ],
+            });
+          }
+          if (platform === 'telegram') {
+            await message.channel.send({ embeds: [discordLimitSpamMessage(message, title)] });
+          }
+          if (platform === 'matrix') {
+            await message.channel.send({ embeds: [discordLimitSpamMessage(message, title)] });
+          }
+        }
+        return true;
+      } catch (e) {
+        return true;
+      }
     }
+  } catch (lastErrorCatch) {
+    console.log(lastErrorCatch);
+    return true;
   }
 };

@@ -53,34 +53,8 @@ import { discordHurricane } from '../controllers/discord/hurricane';
 
 import { discordFaucetClaim } from '../controllers/discord/faucet';
 
-import { discordPrice } from '../controllers/discord/price';
+import { myRateLimiter } from '../helpers/rateLimit';
 
-import {
-  limitReactDrop,
-  limitTip,
-  limitWithdraw,
-  limitHelp,
-  limitInfo,
-  limitRain,
-  limitSoak,
-  limitFlood,
-  limitHurricane,
-  limitIgnoreMe,
-  limitSleet,
-  limitBalance,
-  limitFaucet,
-  limitDeposit,
-  limitStats,
-  limitLeaderboard,
-  limitPublicStats,
-  limitThunder,
-  limitThunderStorm,
-  limitPrice,
-  limitTrivia,
-  limitListTransactions,
-} from '../helpers/rateLimit';
-
-import { discordTrivia } from '../controllers/discord/trivia';
 import { discordReactDrop } from '../controllers/discord/reactdrop';
 import db from '../models';
 

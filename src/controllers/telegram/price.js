@@ -43,9 +43,11 @@ const fetchPriceInfo = async (
       },
     ],
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };
 
 export default fetchPriceInfo;

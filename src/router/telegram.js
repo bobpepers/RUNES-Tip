@@ -1,4 +1,7 @@
 import { config } from "dotenv";
+import { fetchHelp } from '../controllers/telegram/help';
+import { fetchInfo } from '../controllers/telegram/info';
+import { telegramFaucetClaim } from '../controllers/telegram/faucet';
 import { fetchWalletBalance } from '../controllers/telegram/balance';
 import { fetchWalletDepositAddress } from '../controllers/telegram/deposit';
 import { withdrawTelegramCreate } from '../controllers/telegram/withdraw';
@@ -16,13 +19,6 @@ import {
 } from '../controllers/telegram/group';
 
 import {
-  fetchHelp,
-} from '../controllers/telegram/help';
-import {
-  telegramFaucetClaim,
-} from '../controllers/telegram/faucet';
-
-import {
   fetchReferralCount,
   createReferral,
   fetchReferralTopTen,
@@ -30,15 +26,14 @@ import {
 
 import fetchPriceInfo from '../controllers/telegram/price';
 
-import {
-  fetchInfo,
-} from '../controllers/telegram/info';
 import getCoinSettings from '../config/settings';
 import {
   telegramSettings,
   telegramWaterFaucetSettings,
 } from '../controllers/telegram/settings';
 import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
+
+import { myRateLimiter } from '../helpers/rateLimit';
 
 const settings = getCoinSettings();
 
@@ -473,7 +468,6 @@ export const telegramRouter = async (
         await queue.add(() => groupTask);
         const groupTaskId = groupTask && groupTask.id;
         const setting = await telegramSettings(ctx, 'withdraw', groupTaskId);
-        await queue.add(() => setting);
         if (!setting) return;
         const withdrawalAddress = filteredMessageTelegram[2];
         const withdrawalAmount = filteredMessageTelegram[3];
@@ -501,7 +495,6 @@ export const telegramRouter = async (
         await queue.add(() => groupTask);
         const groupTaskId = groupTask && groupTask.id;
         const setting = await telegramSettings(ctx, 'tip', groupTaskId);
-        await queue.add(() => setting);
         if (!setting) return;
         const tipAmount = filteredMessageTelegram[3];
         const tipTo = filteredMessageTelegram[2];
@@ -521,15 +514,21 @@ export const telegramRouter = async (
       }
 
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'rain') {
+        const limited = await myRateLimiter(
+          telegramClient,
+          ctx,
+          'telegram',
+          'Rain',
+        );
+        if (limited) return;
         if (!filteredMessageTelegram[2]) {
           ctx.reply('invalid amount of arguments');
           return;
         }
-        const groupTask = await updateGroup(ctx);
-        await queue.add(() => groupTask);
-        const groupTaskId = groupTask.id;
+        // const groupTask = await updateGroup(ctx);
+        // await queue.add(() => groupTask);
+        // const groupTaskId = groupTask.id;
         const setting = await telegramSettings(ctx, 'rain', groupTaskId);
-        await queue.add(() => setting);
         if (!setting) return;
         const rainAmount = filteredMessageTelegram[2];
         const task = await rainRunesToUsers(

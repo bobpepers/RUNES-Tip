@@ -15,7 +15,7 @@ export const fetchWalletBalance = async (
   io,
 ) => {
   let user;
-  let activity;
+  const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -47,6 +47,30 @@ export const fetchWalletBalance = async (
       ctx.reply(`Wallet not found`);
       return;
     }
+
+    const createActivity = await db.activity.create({
+      type: 'balance',
+      earnerId: user.id,
+      earner_balance: user.wallet.available + user.wallet.locked,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    const findActivity = await db.activity.findOne({
+      where: {
+        id: createActivity.id,
+      },
+      include: [
+        {
+          model: db.user,
+          as: 'earner',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    activity.unshift(findActivity);
 
     const priceInfo = await db.priceInfo.findOne({
       where: {
@@ -116,4 +140,9 @@ export const fetchWalletBalance = async (
       console.log(err);
     }
   });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

@@ -300,7 +300,6 @@ const scheduleWithdrawal = schedule.scheduleJob('*/5 * * * *', async () => { // 
 
 // Handle olm library process unhandeled rejections
 process.on('unhandledRejection', (reason, promise) => {
-  // log error to database
   console.log('Unhandled Rejection at:', reason.stack || reason);
 });
 

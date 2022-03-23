@@ -256,7 +256,9 @@ export const rainRunesToUsers = async (
   }).catch((err) => {
     ctx.reply(generalErrorMessage());
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };

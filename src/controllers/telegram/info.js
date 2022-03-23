@@ -25,6 +25,37 @@ export const fetchInfo = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+
+    const user = await db.user.findOne({
+      where: {
+        user_id: `discord-${ctx.update.message.from.id}`,
+      },
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    const preActivity = await db.activity.create({
+      type: 'info',
+      earnerId: user.id,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    const finalActivity = await db.activity.findOne({
+      where: {
+        id: preActivity.id,
+      },
+      include: [
+        {
+          model: db.user,
+          as: 'earner',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    activity.unshift(finalActivity);
     await ctx.replyWithHTML(
       await InfoMessage(
         blockHeight.id,

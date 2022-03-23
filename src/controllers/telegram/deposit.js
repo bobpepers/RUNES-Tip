@@ -110,7 +110,9 @@ export const fetchWalletDepositAddress = async (
       console.log(err);
     }
   });
-  io.to('admin').emit('updateActivity', {
-    activity,
-  });
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
+  }
 };
