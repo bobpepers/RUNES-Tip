@@ -18,7 +18,6 @@ export const createUpdateUser = async (ctx) => {
           lock: t.LOCK.UPDATE,
         },
       );
-      // console.log(user);
       if (!user) {
         user = await db.user.create({
           user_id: `telegram-${ctx.update.message.from.id}`,
@@ -117,6 +116,7 @@ export const createUpdateUser = async (ctx) => {
 };
 
 export const updateLastSeen = async (ctx) => {
+  let updatedUser;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -178,7 +178,7 @@ export const updateLastSeen = async (ctx) => {
     }
     // console.log(user);
     if (user) {
-      const updatedUser = await user.update(
+      updatedUser = await user.update(
         {
           lastSeen: new Date(Date.now()),
         },
@@ -195,4 +195,5 @@ export const updateLastSeen = async (ctx) => {
   }).catch((err) => {
     console.log(err);
   });
+  return updatedUser;
 };

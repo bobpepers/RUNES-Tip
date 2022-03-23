@@ -5,48 +5,32 @@ import {
   warnDirectMessage,
   errorMessage,
 } from '../../messages/telegram';
+import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
 
 import logger from "../../helpers/logger";
 
 export const fetchWalletBalance = async (
   ctx,
-  telegramUserId,
-  telegramUserName,
   io,
 ) => {
-  let user;
   const activity = [];
+  let user;
+  let userActivity;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    user = await db.user.findOne({
-      where: {
-        user_id: `telegram-${telegramUserId}`,
-      },
-      include: [
-        {
-          model: db.wallet,
-          as: 'wallet',
-          include: [
-            {
-              model: db.address,
-              as: 'addresses',
-            },
-          ],
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-
-    if (!user) {
-      ctx.reply(`User not found`);
-      return;
+    [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      ctx,
+      t,
+      'balance',
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
     }
-    if (!user.wallet) {
-      ctx.reply(`Wallet not found`);
-      return;
-    }
+    if (!user) return;
 
     const createActivity = await db.activity.create({
       type: 'balance',
@@ -119,7 +103,7 @@ export const fetchWalletBalance = async (
     }
 
     t.afterCommit(() => {
-      logger.info(`Success Balance Requested by: ${telegramUserId}-${telegramUserName}`);
+      logger.info(`Success Balance Requested by: `);
     });
   }).catch(async (err) => {
     try {

@@ -416,6 +416,20 @@ export const warnDirectMessage = async (
   return result;
 };
 
+export const disallowDirectMessageMessage = async (
+  user,
+) => {
+  const [
+    userToMention,
+    userId,
+  ] = await getUserToMentionFromDatabaseRecord(user);
+
+  const result = `<a href="tg://user?id=${userId}">${userToMention}</a>, this function is not allowed in direct message.
+
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
+  return result;
+};
+
 export const errorMessage = (
   title,
 ) => {

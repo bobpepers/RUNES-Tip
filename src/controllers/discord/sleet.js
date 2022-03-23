@@ -3,7 +3,6 @@ import { Transaction, Op } from "sequelize";
 import db from '../../models';
 import {
   notEnoughActiveUsersMessage,
-  // walletNotFoundMessage,
   AfterSuccessMessage,
   NotInDirectMessage,
   discordErrorMessage,

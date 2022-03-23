@@ -135,11 +135,29 @@ export const myRateLimiter = async (
 ) => {
   try {
     let userId;
+    console.log(message);
     if (platform === 'discord') {
       userId = message.author.id;
     }
     if (platform === 'telegram') {
-      userId = message.author.id;
+      if (
+        message
+        && message.update
+        && message.update.message
+        && message.update.message.from
+        && message.update.message.from.id
+      ) {
+        userId = message.update.message.from.id;
+      }
+      if (
+        message
+        && message.update
+        && message.update.callback_query
+        && message.update.callback_query.from
+        && message.update.callback_query.from.id
+      ) {
+        userId = message.update.callback_query.from.id;
+      }
     }
     if (platform === 'matrix') {
       userId = message.author.id;

@@ -431,7 +431,7 @@ export const discordRouter = (
         let AmountPositionEnded = false;
         while (!AmountPositionEnded) {
           AmountPosition += 1;
-          if (!filteredMessageDiscord[AmountPosition].startsWith('<@')) {
+          if (!filteredMessageDiscord[parseInt(AmountPosition, 10)].startsWith('<@')) {
             AmountPositionEnded = true;
           }
         }
@@ -439,7 +439,7 @@ export const discordRouter = (
         await executeTipFunction(
           tipRunesToDiscordUser,
           queue,
-          filteredMessageDiscord[AmountPosition],
+          filteredMessageDiscord[parseInt(AmountPosition, 10)],
           discordClient,
           message,
           filteredMessageDiscord,

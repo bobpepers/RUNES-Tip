@@ -6,30 +6,39 @@ import {
 } from '../../messages/telegram';
 import db from '../../models';
 import logger from "../../helpers/logger";
+import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
 
 export const fetchInfo = async (
   ctx,
   io,
 ) => {
   const activity = [];
+  let user;
+  let userActivity;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      ctx,
+      t,
+      'info',
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
+    if (!user) return;
+
     const blockHeight = await db.block.findOne({
       order: [['id', 'DESC']],
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+
     const priceInfo = await db.priceInfo.findOne({
       order: [['id', 'ASC']],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-
-    const user = await db.user.findOne({
-      where: {
-        user_id: `discord-${ctx.update.message.from.id}`,
-      },
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
@@ -56,6 +65,7 @@ export const fetchInfo = async (
       transaction: t,
     });
     activity.unshift(finalActivity);
+
     await ctx.replyWithHTML(
       await InfoMessage(
         blockHeight.id,

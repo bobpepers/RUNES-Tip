@@ -11,10 +11,29 @@ export const userWalletExist = async (
   functionName,
 ) => {
   let activity;
+  let userId;
+  if (
+    ctx
+    && ctx.update
+    && ctx.update.message
+    && ctx.update.message.from
+    && ctx.update.message.from.id
+  ) {
+    userId = ctx.update.message.from.id;
+  }
+  if (
+    ctx
+    && ctx.update
+    && ctx.update.callback_query
+    && ctx.update.callback_query.from
+    && ctx.update.callback_query.from.id
+  ) {
+    userId = ctx.update.callback_query.from.id;
+  }
   console.log(ctx.update.message);
   const user = await db.user.findOne({
     where: {
-      user_id: `telegram-${ctx.update.message.from.id}`,
+      user_id: `telegram-${userId}`,
     },
     include: [
       {
@@ -39,7 +58,7 @@ export const userWalletExist = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    ctx.reply(userNotFoundMessage());
+    await ctx.reply(userNotFoundMessage());
   }
   return [
     user,

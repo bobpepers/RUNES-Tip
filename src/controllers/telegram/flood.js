@@ -39,18 +39,6 @@ export const telegramFlood = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    if (ctx.update.message.chat.id === ctx.update.message.from.id) {
-      const notDirectActivity = await db.activity.create({
-        type: 'rain_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      activity.unshift(notDirectActivity);
-      return;
-    }
-
     const chatId = Math.abs(ctx.message.chat.id).toString();
 
     // const membersCount = await axios.get(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/getChatMembersCount?chat_id=${ctx.message.chat.id}`);
@@ -70,7 +58,7 @@ export const telegramFlood = async (
     });
 
     const onlineMembers = members.filter((member) => {
-      // console.log(member);
+      console.log(member);
       console.log('-');
       return !member.bot;
     });

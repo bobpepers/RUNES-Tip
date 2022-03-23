@@ -28,7 +28,7 @@ export const telegramFaucetClaim = async (
     ] = await userWalletExist(
       ctx,
       t,
-      'rain',
+      'faucet',
     );
     if (userActivity) {
       activity.unshift(userActivity);
