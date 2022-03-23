@@ -2,8 +2,6 @@
 import {
   Client,
   Intents,
-  MessageActionRow,
-  MessageButton,
 } from "discord.js";
 import _ from 'lodash';
 import { Telegraf } from "telegraf";
@@ -27,11 +25,9 @@ import { patchRunebaseDeposits } from "./helpers/blockchain/runebase/patcher";
 import { patchPirateDeposits } from "./helpers/blockchain/pirate/patcher";
 import { patchKomodoDeposits } from "./helpers/blockchain/komodo/patcher";
 import {
-  reactDropMessage,
-  triviaMessageDiscord,
-} from "./messages/discord";
-import { listenReactDrop } from "./controllers/discord/reactdrop";
-import { listenTrivia } from "./controllers/discord/trivia";
+  recoverDiscordReactdrops,
+  recoverDiscordTrivia,
+} from './helpers/recover';
 import db from "./models";
 import getCoinSettings from './config/settings';
 import { startKomodoSync } from "./services/syncKomodo";
@@ -194,183 +190,17 @@ let matrixClient = sdk.createClient({
     telegramClient,
   );
 
-  // recover reactdrops
-  const allRunningReactDrops = await db.reactdrop.findAll({
-    where: {
-      ended: false,
-    },
-    include: [
-      {
-        model: db.group,
-        as: 'group',
-      },
-      {
-        model: db.channel,
-        as: 'channel',
-      },
-      {
-        model: db.user,
-        as: 'user',
-      },
-    ],
-  });
-  // eslint-disable-next-line no-restricted-syntax
-  for (const runningReactDrop of allRunningReactDrops) {
-    const actualChannelId = runningReactDrop.channel.channelId.replace('discord-', '');
-    const actualGroupId = runningReactDrop.group.groupId.replace('discord-', '');
-    const actualUserId = runningReactDrop.user.user_id.replace('discord-', '');
+  await recoverDiscordReactdrops(
+    discordClient,
+    io,
+    queue,
+  );
 
-    // eslint-disable-next-line no-await-in-loop
-    const reactMessage = await discordClient.guilds.cache.get(actualGroupId)
-      .channels.cache.get(actualChannelId)
-      .messages.fetch(runningReactDrop.discordMessageId);
-    // eslint-disable-next-line no-await-in-loop
-    const countDownDate = await runningReactDrop.ends.getTime();
-    let now = new Date().getTime();
-    let distance = countDownDate - now;
-    console.log('recover listenReactDrop');
-    // eslint-disable-next-line no-await-in-loop
-    await listenReactDrop(
-      reactMessage,
-      distance,
-      runningReactDrop,
-      io,
-      queue,
-    );
-    // eslint-disable-next-line no-loop-func
-    const updateMessage = setInterval(async () => {
-      now = new Date().getTime();
-      distance = countDownDate - now;
-      await reactMessage.edit({
-        embeds: [
-          reactDropMessage(
-            runningReactDrop.id,
-            distance,
-            actualUserId,
-            runningReactDrop.emoji,
-            runningReactDrop.amount,
-          ),
-        ],
-      });
-      if (distance < 0) {
-        clearInterval(updateMessage);
-      }
-    }, 10000);
-  }
-
-  // Recover Trivia
-  const allRunningTrivia = await db.trivia.findAll({
-    where: {
-      ended: false,
-    },
-    include: [
-      {
-        model: db.group,
-        as: 'group',
-      },
-      {
-        model: db.channel,
-        as: 'channel',
-      },
-      {
-        model: db.user,
-        as: 'user',
-      },
-      {
-        model: db.triviaquestion,
-        as: 'triviaquestion',
-        include: [
-          {
-            model: db.triviaanswer,
-            as: 'triviaanswers',
-          },
-        ],
-      },
-    ],
-  });
-
-  // eslint-disable-next-line no-restricted-syntax
-  for (const runningTrivia of allRunningTrivia) {
-    const actualChannelId = runningTrivia.channel.channelId.replace('discord-', '');
-    const actualGroupId = runningTrivia.group.groupId.replace('discord-', '');
-    const actualUserId = runningTrivia.user.user_id.replace('discord-', '');
-
-    // eslint-disable-next-line no-await-in-loop
-    const triviaMessage = await discordClient.guilds.cache.get(actualGroupId)
-      .channels.cache.get(actualChannelId)
-      .messages.fetch(runningTrivia.discordMessageId);
-
-    // eslint-disable-next-line no-await-in-loop
-    const countDownDate = await runningTrivia.ends.getTime();
-    let now = new Date().getTime();
-    let distance = countDownDate - now;
-    const row = new MessageActionRow();
-    const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-    const answers = _.shuffle(runningTrivia.triviaquestion.triviaanswers);
-    let answerString = '';
-    let positionAlphabet = 0;
-    // console.log(answers);
-    // eslint-disable-next-line no-restricted-syntax
-    for (const answer of answers) {
-      row.addComponents(
-        new MessageButton()
-          .setCustomId(answer.answer)
-          .setLabel(alphabet[parseInt(positionAlphabet, 10)])
-          .setStyle('PRIMARY'),
-      );
-      answerString += `${alphabet[parseInt(positionAlphabet, 10)]}. ${answer.answer}\n`;
-      positionAlphabet += 1;
-    }
-    // eslint-disable-next-line no-await-in-loop
-    await triviaMessage.edit({
-      embeds: [
-        triviaMessageDiscord(
-          runningTrivia.id,
-          distance,
-          actualUserId,
-          runningTrivia.triviaquestion.question,
-          answerString,
-          runningTrivia.amount,
-          runningTrivia.userCount,
-        ),
-      ],
-      components: [row],
-    });
-    // eslint-disable-next-line no-loop-func
-    const updateMessage = setInterval(async () => {
-      now = new Date().getTime();
-      distance = countDownDate - now;
-      await triviaMessage.edit({
-        embeds: [
-          triviaMessageDiscord(
-            runningTrivia.id,
-            distance,
-            actualUserId,
-            runningTrivia.triviaquestion.question,
-            answerString,
-            runningTrivia.amount,
-            runningTrivia.userCount,
-          ),
-        ],
-      });
-      if (distance < 0) {
-        clearInterval(updateMessage);
-      }
-    }, 10000);
-    console.log('recover trivia');
-    // eslint-disable-next-line no-await-in-loop
-    listenTrivia(
-      triviaMessage,
-      distance,
-      runningTrivia,
-      io,
-      queue,
-      updateMessage,
-      answerString,
-    );
-  }
-
-  /// //////////////
+  await recoverDiscordTrivia(
+    discordClient,
+    io,
+    queue,
+  );
 
   // patch deposits and sync
   if (settings.coin.setting === 'Runebase') {
@@ -380,6 +210,7 @@ let matrixClient = sdk.createClient({
       matrixClient,
       queue,
     );
+
     await patchRunebaseDeposits();
 
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
@@ -394,6 +225,7 @@ let matrixClient = sdk.createClient({
     );
 
     await patchPirateDeposits();
+
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
       patchPirateDeposits();
     });
@@ -406,6 +238,7 @@ let matrixClient = sdk.createClient({
     );
 
     await patchKomodoDeposits();
+
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
       patchKomodoDeposits();
     });
@@ -416,12 +249,14 @@ let matrixClient = sdk.createClient({
       matrixClient,
       queue,
     );
+
     await patchRunebaseDeposits();
 
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
       patchRunebaseDeposits();
     });
   }
+
   router(
     app,
     discordClient,
@@ -430,8 +265,8 @@ let matrixClient = sdk.createClient({
     io,
     settings,
     queue,
-
   );
+
   dashboardRouter(
     app,
     io,
