@@ -5,6 +5,11 @@ import {
   matrixBotMaintenanceMessage,
 } from '../messages/matrix';
 
+import {
+  telegramBotDisabledMessage,
+  telegramBotMaintenanceMessage,
+} from '../messages/telegram';
+
 export const isMaintenanceOrDisabled = async (
   message,
   side,
@@ -26,9 +31,21 @@ export const isMaintenanceOrDisabled = async (
 
   if (side === 'telegram') {
     if (!botSetting.enabled) {
-      message.reply('Telegram tipbot disabled');
+      try {
+        await message.replyWithHTML(
+          await telegramBotDisabledMessage(),
+        );
+      } catch (e) {
+        console.log(e);
+      }
     } else if (botSetting.maintenance) {
-      message.reply('Telegram tipbot maintenance');
+      try {
+        await message.replyWithHTML(
+          await telegramBotMaintenanceMessage(),
+        );
+      } catch (e) {
+        console.log(e);
+      }
     }
   }
 

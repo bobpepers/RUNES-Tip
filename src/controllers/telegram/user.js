@@ -5,8 +5,6 @@ import { welcomeMessage } from '../../messages/telegram';
 import { getInstance } from "../../services/rclient";
 
 export const createUpdateUser = async (ctx) => {
-  console.log(ctx.update.message.from);
-  console.log('createUpdateUser');
   if (!ctx.update.message.from.is_bot) {
     await db.sequelize.transaction({
       isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,

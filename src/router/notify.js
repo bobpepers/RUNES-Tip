@@ -2,17 +2,17 @@ import walletNotifyRunebase from '../helpers/blockchain/runebase/walletNotify';
 import walletNotifyPirate from '../helpers/blockchain/pirate/walletNotify';
 import walletNotifyKomodo from '../helpers/blockchain/komodo/walletNotify';
 
-import { telegramIncomingDepositMessage } from '../messages/telegram';
-import { discordIncomingDepositMessage } from '../messages/discord';
-import { matrixIncomingDepositMessage } from '../messages/matrix';
-
 import { startRunebaseSync } from "../services/syncRunebase";
 import { startPirateSync } from "../services/syncPirate";
 import { startKomodoSync } from "../services/syncKomodo";
 
-import { findUserDirectMessageRoom } from '../helpers/client/matrix/directMessageRoom';
+import { incomingDepositMessageHandler } from '../helpers/messageHandlers';
 
-const localhostOnly = (req, res, next) => {
+const localhostOnly = (
+  req,
+  res,
+  next,
+) => {
   const hostmachine = req.headers.host.split(':')[0];
   if (
     hostmachine !== 'localhost'
@@ -46,12 +46,14 @@ export const notifyRouter = (
         startPirateSync(
           discordClient,
           telegramClient,
+          matrixClient,
           queue,
         );
       } else if (settings.coin.setting === 'Komodo') {
         startKomodoSync(
           discordClient,
           telegramClient,
+          matrixClient,
           queue,
         );
       } else {
@@ -73,14 +75,18 @@ export const notifyRouter = (
       async (req, res) => {
         if (res.locals.error) {
           console.log(res.locals.error);
-        } else if (!res.locals.error && res.locals.transaction && res.locals.userId && res.locals.platform && res.locals.amount) {
-          if (res.locals.platform === 'telegram') {
-            telegramClient.telegram.sendMessage(res.locals.userId, telegramIncomingDepositMessage(res));
-          }
-          if (res.locals.platform === 'discord') {
-            const myClient = await discordClient.users.fetch(res.locals.userId, false);
-            await myClient.send({ embeds: [discordIncomingDepositMessage(res)] });
-          }
+        } else if (!res.locals.error
+          && res.locals.transaction
+          && res.locals.userId
+          && res.locals.platform
+          && res.locals.amount
+        ) {
+          await incomingDepositMessageHandler(
+            discordClient,
+            telegramClient,
+            matrixClient,
+            res,
+          );
         }
         res.sendStatus(200);
       },
@@ -93,14 +99,18 @@ export const notifyRouter = (
       async (req, res) => {
         if (res.locals.error) {
           console.log(res.locals.error);
-        } else if (!res.locals.error && res.locals.transaction && res.locals.userId && res.locals.platform && res.locals.amount) {
-          if (res.locals.platform === 'telegram') {
-            telegramClient.telegram.sendMessage(res.locals.userId, telegramIncomingDepositMessage(res));
-          }
-          if (res.locals.platform === 'discord') {
-            const myClient = await discordClient.users.fetch(res.locals.userId, false);
-            await myClient.send({ embeds: [discordIncomingDepositMessage(res)] });
-          }
+        } else if (!res.locals.error
+          && res.locals.transaction
+          && res.locals.userId
+          && res.locals.platform
+          && res.locals.amount
+        ) {
+          await incomingDepositMessageHandler(
+            discordClient,
+            telegramClient,
+            matrixClient,
+            res,
+          );
         }
         res.sendStatus(200);
       },
@@ -113,31 +123,18 @@ export const notifyRouter = (
       async (req, res) => {
         if (res.locals.error) {
           console.log(res.locals.error);
-        } else if (!res.locals.error && res.locals.transaction && res.locals.userId && res.locals.platform && res.locals.amount) {
-          if (res.locals.platform === 'telegram') {
-            telegramClient.telegram.sendMessage(res.locals.userId, telegramIncomingDepositMessage(res));
-          }
-          if (res.locals.platform === 'discord') {
-            const myClient = await discordClient.users.fetch(res.locals.userId, false);
-            await myClient.send({ embeds: [discordIncomingDepositMessage(res)] });
-          }
-          if (res.locals.platform === 'matrix') {
-            const [
-              directUserMessageRoom,
-              isCurrentRoomDirectMessage,
-              userState,
-            ] = await findUserDirectMessageRoom(
-              matrixClient,
-              res.locals.userId,
-            );
-            if (directUserMessageRoom) {
-              await matrixClient.sendEvent(
-                directUserMessageRoom.roomId,
-                "m.room.message",
-                matrixIncomingDepositMessage(res),
-              );
-            }
-          }
+        } else if (!res.locals.error
+          && res.locals.transaction
+          && res.locals.userId
+          && res.locals.platform
+          && res.locals.amount
+        ) {
+          await incomingDepositMessageHandler(
+            discordClient,
+            telegramClient,
+            matrixClient,
+            res,
+          );
         }
         res.sendStatus(200);
       },
@@ -150,31 +147,18 @@ export const notifyRouter = (
       async (req, res) => {
         if (res.locals.error) {
           console.log(res.locals.error);
-        } else if (!res.locals.error && res.locals.transaction && res.locals.userId && res.locals.platform && res.locals.amount) {
-          if (res.locals.platform === 'telegram') {
-            telegramClient.telegram.sendMessage(res.locals.userId, telegramIncomingDepositMessage(res));
-          }
-          if (res.locals.platform === 'discord') {
-            const myClient = await discordClient.users.fetch(res.locals.userId, false);
-            await myClient.send({ embeds: [discordIncomingDepositMessage(res)] });
-          }
-          if (res.locals.platform === 'matrix') {
-            const [
-              directUserMessageRoom,
-              isCurrentRoomDirectMessage,
-              userState,
-            ] = await findUserDirectMessageRoom(
-              matrixClient,
-              res.locals.userId,
-            );
-            if (directUserMessageRoom) {
-              await matrixClient.sendEvent(
-                directUserMessageRoom.roomId,
-                "m.room.message",
-                matrixIncomingDepositMessage(res),
-              );
-            }
-          }
+        } else if (!res.locals.error
+          && res.locals.transaction
+          && res.locals.userId
+          && res.locals.platform
+          && res.locals.amount
+        ) {
+          await incomingDepositMessageHandler(
+            discordClient,
+            telegramClient,
+            matrixClient,
+            res,
+          );
         }
         res.sendStatus(200);
       },

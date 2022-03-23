@@ -2,22 +2,12 @@
 import _ from "lodash";
 import { Transaction } from "sequelize";
 import db from '../models';
-import {
-  telegramDepositConfirmedMessage,
-  telegramWithdrawalConfirmedMessage,
-} from '../messages/telegram';
-import {
-  discordDepositConfirmedMessage,
-  discordWithdrawalConfirmedMessage,
-} from '../messages/discord';
-import {
-  matrixDepositConfirmedMessage,
-  matrixWithdrawalConfirmedMessage,
-} from '../messages/matrix';
+
 import getCoinSettings from '../config/settings';
 import { getInstance } from "./rclient";
 import { waterFaucet } from "../helpers/waterFaucet";
-import { findUserDirectMessageRoom } from '../helpers/client/matrix/directMessageRoom';
+
+import { isDepositOrWithdrawalCompleteMessageHandler } from '../helpers/messageHandlers';
 
 const settings = getCoinSettings();
 
@@ -201,75 +191,16 @@ const syncTransactions = async (
         }
 
         t.afterCommit(async () => {
-          try {
-            let userClientId;
-            if (isDepositComplete) {
-              if (userToMessage.user_id.startsWith('discord')) {
-                userClientId = userToMessage.user_id.replace('discord-', '');
-                const myClient = await discordClient.users.fetch(userClientId, false);
-                await myClient.send({ embeds: [discordDepositConfirmedMessage(detail.amount)] });
-              }
-
-              if (userToMessage.user_id.startsWith('telegram')) {
-                userClientId = userToMessage.user_id.replace('telegram-', '');
-                telegramClient.telegram.sendMessage(userClientId, telegramDepositConfirmedMessage(detail.amount));
-              }
-
-              if (userToMessage.user_id.startsWith('matrix')) {
-                userClientId = userToMessage.user_id.replace('matrix-', '');
-                const [
-                  directUserMessageRoom,
-                  isCurrentRoomDirectMessage,
-                  userState,
-                ] = await findUserDirectMessageRoom(
-                  matrixClient,
-                  userClientId,
-                  // message.sender.roomId,
-                );
-                if (directUserMessageRoom) {
-                  await matrixClient.sendEvent(
-                    directUserMessageRoom.roomId,
-                    "m.room.message",
-                    matrixDepositConfirmedMessage(detail.amount),
-                  );
-                }
-              }
-            }
-
-            if (isWithdrawalComplete) {
-              if (userToMessage.user_id.startsWith('discord')) {
-                userClientId = userToMessage.user_id.replace('discord-', '');
-                const myClient = await discordClient.users.fetch(userClientId, false);
-                await myClient.send({ embeds: [discordWithdrawalConfirmedMessage(userClientId, trans)] });
-              }
-
-              if (userToMessage.user_id.startsWith('telegram')) {
-                userClientId = userToMessage.user_id.replace('telegram-', '');
-                telegramClient.telegram.sendMessage(userClientId, telegramWithdrawalConfirmedMessage(userToMessage));
-              }
-
-              if (userToMessage.user_id.startsWith('matrix')) {
-                userClientId = userToMessage.user_id.replace('matrix-', '');
-                const [
-                  directUserMessageRoom,
-                  isCurrentRoomDirectMessage,
-                  userState,
-                ] = await findUserDirectMessageRoom(
-                  matrixClient,
-                  userClientId,
-                );
-                if (directUserMessageRoom) {
-                  await matrixClient.sendEvent(
-                    directUserMessageRoom.roomId,
-                    "m.room.message",
-                    matrixWithdrawalConfirmedMessage(userClientId, trans),
-                  );
-                }
-              }
-            }
-          } catch (e) {
-            console.log(e);
-          }
+          await isDepositOrWithdrawalCompleteMessageHandler(
+            isDepositComplete,
+            isWithdrawalComplete,
+            discordClient,
+            telegramClient,
+            matrixClient,
+            userToMessage,
+            trans,
+            detail.amount,
+          );
           console.log('done');
         });
       });

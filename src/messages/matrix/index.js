@@ -181,12 +181,13 @@ ${settings.bot.name} v${pjson.version}`,
 
 export const matrixIncomingDepositMessage = (res) => {
   const result = {
-    body: `incoming deposit detected for ${res.locals.amount} ${settings.coin.ticker}
+    body: `Deposit #${res.locals.transaction[0].id}
+incoming deposit detected for ${res.locals.amount} ${settings.coin.ticker}
 Balance will be reflected in your wallet in ~${settings.min.confirmations}+ confirmations
 ${settings.coin.explorer}/tx/${res.locals.transaction[0].txid}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote>
+    formatted_body: `<blockquote><h5>Deposit #${res.locals.transaction[0].id}</h5>
 <p>incoming deposit detected for <strong>${res.locals.amount} ${settings.coin.ticker}</strong><br>
 Balance will be reflected in your wallet in <strong>~${settings.min.confirmations}+ confirmations</strong><br>
 ${settings.coin.explorer}/tx/${res.locals.transaction[0].txid}</p>
@@ -196,13 +197,17 @@ ${settings.coin.explorer}/tx/${res.locals.transaction[0].txid}</p>
   return result;
 };
 
-export const matrixDepositConfirmedMessage = (amount) => {
+export const matrixDepositConfirmedMessage = (
+  amount,
+  trans,
+) => {
   const result = {
-    body: `Deposit Confirmed 
+    body: `Deposit #${trans.id}
+Deposit Confirmed 
 ${amount} ${settings.coin.ticker} has been credited to your wallet`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote>
+    formatted_body: `<blockquote><h5>Deposit #${trans.id}</h5>
 <p>Deposit Confirmed<br> 
 ${amount} ${settings.coin.ticker} has been credited to your wallet</p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p>

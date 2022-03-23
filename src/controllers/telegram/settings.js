@@ -30,19 +30,34 @@ export const telegramSettings = async (
     });
   }
   if (!setting) {
-    ctx.reply('settings not found');
+    try {
+      await ctx.reply('settings not found');
+    } catch (e) {
+      console.log(e);
+    }
     return false;
   }
 
   if (!setting.enabled && setting.groupId) {
-    ctx.reply(featureDisabledServerMessage());
+    try {
+      await ctx.replyWithHTML(
+        await featureDisabledServerMessage(),
+      );
+    } catch (e) {
+      console.log(e);
+    }
     return false;
   }
   if (!setting.enabled) {
-    ctx.reply(featureDisabledGlobalMessage());
+    try {
+      await ctx.replyWithHTML(
+        await featureDisabledGlobalMessage(),
+      );
+    } catch (e) {
+      console.log(e);
+    }
     return false;
   }
-  // console.log(setting);
   return setting;
 };
 

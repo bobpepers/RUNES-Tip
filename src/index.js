@@ -389,6 +389,7 @@ let matrixClient = sdk.createClient({
     await startPirateSync(
       discordClient,
       telegramClient,
+      matrixClient,
       queue,
     );
 
@@ -400,6 +401,7 @@ let matrixClient = sdk.createClient({
     await startKomodoSync(
       discordClient,
       telegramClient,
+      matrixClient,
       queue,
     );
 

@@ -12,7 +12,6 @@ import logger from "../../helpers/logger";
 export const fetchWalletDepositAddress = async (
   ctx,
   telegramUserId,
-  telegramUserName,
   io,
 ) => {
   const activity = [];

@@ -3,8 +3,9 @@ import db from '../../models';
 import { getInstance } from '../../services/rclient';
 import {
   invalidAddressMessage,
-  generalErrorMessage,
+  errorMessage,
   withdrawalReviewMessage,
+  warnDirectMessage,
 } from '../../messages/telegram';
 import getCoinSettings from '../../config/settings';
 import { validateAmount } from "../../helpers/client/telegram/validateAmount";
@@ -22,20 +23,23 @@ export const withdrawTelegramCreate = async (
   setting,
 ) => {
   let user;
-  let activity;
+  let userActivity;
+  let activity = [];
   let isValidAddress = false;
-  let complete = false;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     [
       user,
-      activity,
+      userActivity,
     ] = await userWalletExist(
       ctx,
       t,
       'withdraw',
     );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
     if (!user) return;
 
     const [
@@ -50,7 +54,7 @@ export const withdrawTelegramCreate = async (
       'withdraw',
     );
     if (activityValiateAmount) {
-      activity = activityValiateAmount;
+      activity.unshift(activityValiateAmount);
       return;
     }
 
@@ -65,6 +69,10 @@ export const withdrawTelegramCreate = async (
     }
     //
     if (!isValidAddress) {
+      await ctx.telegram.sendMessage(
+        ctx.update.message.from.id,
+        await invalidAddressMessage(),
+      );
       return;
     }
 
@@ -101,19 +109,44 @@ export const withdrawTelegramCreate = async (
       },
     );
 
+    await ctx.telegram.sendMessage(
+      ctx.update.message.from.id,
+      await withdrawalReviewMessage(),
+    );
+
+    if (ctx.update.message.chat.type !== 'private') {
+      await ctx.replyWithHTML(
+        await warnDirectMessage(
+          user,
+        ),
+      );
+    }
+
     t.afterCommit(() => {
-      complete = true;
       console.log('done');
     });
-  }).catch((err) => {
-    ctx.reply(generalErrorMessage());
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'withdraw',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Telegram: ${e}`);
+    }
+    console.log(err);
+    logger.error(`withdraw error: ${err}`);
+    try {
+      await ctx.replyWithHTML(errorMessage(
+        'Withdraw',
+      ));
+    } catch (err) {
+      console.log(err);
+    }
   });
-  if (ctx.update.message.chat.type !== 'private' && complete) {
-    await ctx.reply("i have sent you a direct message");
+  if (activity.length > 0) {
+    io.to('admin').emit('updateActivity', {
+      activity,
+    });
   }
-  if (!isValidAddress) {
-    ctx.telegram.sendMessage(ctx.update.message.from.id, invalidAddressMessage());
-    return;
-  }
-  ctx.telegram.sendMessage(ctx.update.message.from.id, withdrawalReviewMessage());
 };

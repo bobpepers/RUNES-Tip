@@ -8,42 +8,61 @@ import {
 
 const settings = getCoinSettings();
 
-export const featureDisabledServerMessage = () => {
-  const result = `This feature has been disabled for this server`;
+export const featureDisabledServerMessage = async () => {
+  const result = `<u><b>This feature has been disabled for this group</b></u>
+  
+  <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
 
-export const featureDisabledGlobalMessage = () => {
-  const result = `This feature has been disabled`;
+export const featureDisabledGlobalMessage = async () => {
+  const result = `<u><b>This feature has been disabled</b></u>
+  
+  <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
 
-export const telegramDepositConfirmedMessage = (amount) => {
-  const result = `Deposit Confirmed 
-${amount} ${settings.coin.ticker} has been credited to your wallet`;
+export const telegramDepositConfirmedMessage = async (
+  amount,
+  trans,
+) => {
+  const result = `<b><u>Deposit #${trans.id}</u></b>
+
+Deposit Confirmed 
+<b>${amount} ${settings.coin.ticker}</b> has been credited to your wallet
+
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
 
-export const telegramIncomingDepositMessage = (res) => {
-  const result = `incoming deposit detected for ${res.locals.amount} ${settings.coin.ticker}
-Balance will be reflected in your wallet in ~${settings.min.confirmations}+ confirmations
-${settings.coin.explorer}/tx/${res.locals.transaction[0].txid}`;
+export const telegramIncomingDepositMessage = async (res) => {
+  console.log(res.locals);
+  const result = `<b><u>Deposit #${res.locals.transaction[0].id}</u></b>
+
+incoming deposit detected for <b>${res.locals.amount} ${settings.coin.ticker}</b>
+Balance will be reflected in your wallet in <b>~${settings.min.confirmations}+ confirmations</b>
+${settings.coin.explorer}/tx/${res.locals.transaction[0].txid}
+
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
 
-export const withdrawalAcceptedAdminMessage = (updatedTrans) => {
+export const withdrawalAcceptedAdminMessage = async (updatedTrans) => {
   const result = `Withdrawal Accepted
 ${settings.coin.explorer}/tx/${updatedTrans.txid}`;
   return result;
 };
 
-export const withdrawalAcceptedMessage = (transaction, updatedTrans) => {
+export const withdrawalAcceptedMessage = async (
+  transaction,
+  updatedTrans,
+) => {
   const result = `${transaction.address.wallet.user.username}'s withdrawal has been accepted
   ${settings.coin.explorer}/tx/${updatedTrans.txid}`;
   return result;
 };
 
-export const telegramWithdrawalConfirmedMessage = (user) => {
+export const telegramWithdrawalConfirmedMessage = async (user) => {
   const result = `${user.username}'s withdrawal has been complete`;
   return result;
 };
@@ -62,6 +81,20 @@ export const balanceMessage = async (
 current available balance: <b>${user.wallet.available / 1e8} ${settings.coin.ticker}</b>
 current locked balance: <b>${user.wallet.locked / 1e8} ${settings.coin.ticker}</b>
 Estimated value: <b>$${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(2)}</b>
+
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
+  return result;
+};
+
+export const telegramBotDisabledMessage = async () => {
+  const result = `<b><u>Telegram tipbot disabled</u></b>
+
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
+  return result;
+};
+
+export const telegramBotMaintenanceMessage = async () => {
+  const result = `<b><u>Telegram tipbot maintenance</u></b>
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
@@ -95,7 +128,7 @@ export const tipSuccessMessage = (
   return result;
 };
 
-export const minimumMessage = (
+export const minimumMessage = async (
   setting,
   title,
 ) => {
