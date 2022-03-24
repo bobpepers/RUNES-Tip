@@ -20,17 +20,6 @@ export const fetchHelp = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const withdraw = await db.features.findOne(
-      {
-        where: {
-          type: 'global',
-          name: 'withdraw',
-        },
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      },
-    );
-
     const user = await db.user.findOne({
       where: {
         user_id: `telegram-${ctx.update.message.from.id}`,
@@ -42,6 +31,17 @@ export const fetchHelp = async (
     if (!user) {
       return;
     }
+
+    const withdraw = await db.features.findOne(
+      {
+        where: {
+          type: 'global',
+          name: 'withdraw',
+        },
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      },
+    );
 
     await ctx.telegram.sendMessage(
       ctx.update.message.from.id,

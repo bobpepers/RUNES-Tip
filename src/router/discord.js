@@ -110,7 +110,6 @@ export const discordRouter = (
     let faucetSetting;
     if (!message.author.bot) {
       const maintenance = await isMaintenanceOrDisabled(message, 'discord');
-      // await queue.add(() => maintenance);
       if (maintenance.maintenance || !maintenance.enabled) return;
       const walletExists = await createUpdateDiscordUser(message, queue);
       // await queue.add(() => walletExists);

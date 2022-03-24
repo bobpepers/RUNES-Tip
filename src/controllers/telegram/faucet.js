@@ -1,5 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { Transaction } from "sequelize";
+import { Markup } from "telegraf";
 import {
   claimTooFastFaucetMessage,
   faucetClaimedMessage,
@@ -75,11 +76,10 @@ export const telegramFaucetClaim = async (
         ['id', 'DESC'],
       ],
     });
-    // const username = `${user.username}`;
+
     const dateFuture = lastFaucetTip && lastFaucetTip.createdAt.getTime() + (4 * 60 * 60 * 1000);
     const dateNow = new Date().getTime();
     const distance = dateFuture && dateFuture - dateNow;
-    // console.log(distance);
 
     if (distance
       && distance > 0
@@ -96,6 +96,13 @@ export const telegramFaucetClaim = async (
           user,
           distance,
         ),
+        {
+          ...Markup.inlineKeyboard(
+            [
+              [Markup.button.callback('Claim Faucet', 'faucet')],
+            ],
+          ),
+        },
       );
       return;
     }
@@ -153,6 +160,13 @@ export const telegramFaucetClaim = async (
         user,
         amountToTip,
       ),
+      {
+        ...Markup.inlineKeyboard(
+          [
+            [Markup.button.callback('Claim Faucet', 'faucet')],
+          ],
+        ),
+      },
     );
   }).catch(async (err) => {
     try {

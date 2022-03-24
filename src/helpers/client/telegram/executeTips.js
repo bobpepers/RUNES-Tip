@@ -38,58 +38,70 @@ export const executeTipFunction = async (
     operationName = filteredMessage[1];
   }
   if (amount && amount.toLowerCase() === 'all') {
-    await ctx.replyWithHTML(confirmAllAmoutMessage(
-      ctx,
-      operationName,
-      userBeingTipped,
-    )).then(async () => {
-      let isRunning = true;
-      const listenerFunction = async (event) => {
-        const tempBody = event.message.message;
-        if (ctx.update.message.from.id === Number(event.message.fromId.userId)) {
-          if (tempBody.toUpperCase() === 'YES'
+    try {
+      await ctx.replyWithHTML(confirmAllAmoutMessage(
+        ctx,
+        operationName,
+        userBeingTipped,
+      ));
+    } catch (e) {
+      console.log(e);
+    }
+
+    let isRunning = true;
+    const listenerFunction = async (event) => {
+      const tempBody = event.message.message;
+      if (ctx.update.message.from.id === Number(event.message.fromId.userId)) {
+        if (tempBody.toUpperCase() === 'YES'
             || tempBody.toUpperCase() === 'Y') {
-            isRunning = false;
-            await telegramApiClient.removeEventHandler(listenerFunction, new NewMessage({ chats: [chatId] }));
-            await queue.add(async () => {
-              const task = await tipFunction(
-                telegramClient,
-                telegramApiClient,
-                ctx,
-                filteredMessage,
-                io,
-                groupTask,
-                setting,
-                faucetSetting,
-                queue,
-              );
-            });
-          } else if (tempBody.toUpperCase() === 'NO'
+          isRunning = false;
+          await telegramApiClient.removeEventHandler(listenerFunction, new NewMessage({ chats: [chatId] }));
+          await queue.add(async () => {
+            const task = await tipFunction(
+              telegramClient,
+              telegramApiClient,
+              ctx,
+              filteredMessage,
+              io,
+              groupTask,
+              setting,
+              faucetSetting,
+              queue,
+            );
+          });
+        } else if (tempBody.toUpperCase() === 'NO'
             || tempBody.toUpperCase() === 'N') {
-            isRunning = false;
-            await telegramApiClient.removeEventHandler(listenerFunction, new NewMessage({ chats: [chatId] }));
+          isRunning = false;
+          await telegramApiClient.removeEventHandler(listenerFunction, new NewMessage({ chats: [chatId] }));
+          try {
             await ctx.replyWithHTML(canceledAllAmoutMessage(
               ctx,
               operationName,
               userBeingTipped,
             ));
+          } catch (e) {
+            console.log(e);
           }
         }
-      };
-      await telegramApiClient.addEventHandler(listenerFunction, new NewMessage({ chats: [chatId] }));
+      }
+    };
+    await telegramApiClient.addEventHandler(listenerFunction, new NewMessage({ chats: [chatId] }));
 
-      const myTimeout = setTimeout(async () => {
-        if (isRunning) {
-          await telegramApiClient.removeEventHandler(listenerFunction, new NewMessage({ chats: [chatId] }));
+    const myTimeout = setTimeout(async () => {
+      if (isRunning) {
+        await telegramApiClient.removeEventHandler(listenerFunction, new NewMessage({ chats: [chatId] }));
+        try {
           await ctx.replyWithHTML(timeOutAllAmoutMessage(
             ctx,
             operationName,
             userBeingTipped,
           ));
+        } catch (e) {
+          console.log(e);
         }
-        clearTimeout(myTimeout);
-      }, 30000);
-    });
+      }
+      clearTimeout(myTimeout);
+    }, 30000);
   } else {
     await queue.add(async () => {
       const task = await tipFunction(

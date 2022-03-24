@@ -6,8 +6,10 @@ import { fetchWalletBalance } from '../controllers/telegram/balance';
 import { fetchWalletDepositAddress } from '../controllers/telegram/deposit';
 import { withdrawTelegramCreate } from '../controllers/telegram/withdraw';
 import { tipRunesToUser } from '../controllers/telegram/tip';
-import { rainRunesToUsers } from '../controllers/telegram/rain';
+import { telegramRain } from '../controllers/telegram/rain';
 import { telegramFlood } from '../controllers/telegram/flood';
+import { telegramSleet } from '../controllers/telegram/sleet';
+
 import { executeTipFunction } from '../helpers/client/telegram/executeTips';
 import { disallowDirectMessage } from '../helpers/client/telegram/disallowDirectMessage';
 
@@ -160,69 +162,41 @@ export const telegramRouter = async (
   telegramClient.action('deposit', depositCallBack);
   telegramClient.command('deposit', depositCallBack);
 
-  // telegramClient.command('tip', async (ctx) => {
+  // telegramClient.command('rain', async (ctx) => {
   //   const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
   //   if (maintenance.maintenance || !maintenance.enabled) return;
+  //   const limited = await myRateLimiter(
+  //     telegramClient,
+  //     ctx,
+  //     'telegram',
+  //     'Rain',
+  //   );
+  //   if (limited) return;
   //   const filteredMessageTelegram = ctx.update.message.text.split(' ');
   //   if (!filteredMessageTelegram[1]) {
-  //     ctx.reply('insufficient Arguments');
+  //     ctx.reply('invalid amount of arguments');
   //   }
-  //   if (!filteredMessageTelegram[2]) {
-  //     ctx.reply('insufficient Arguments');
-  //   }
-  //   if (filteredMessageTelegram[1] && filteredMessageTelegram[2]) {
+  //   if (filteredMessageTelegram[1]) {
   //     (async () => {
   //       const groupTask = await updateGroup(ctx);
   //       await queue.add(() => groupTask);
   //       const groupTaskId = groupTask && groupTask.id;
-  //       const setting = await telegramSettings(ctx, 'tip', groupTaskId);
+  //       const setting = await telegramSettings(ctx, 'rain', groupTaskId);
   //       await queue.add(() => setting);
   //       if (!setting) return;
-  //       const tipAmount = filteredMessageTelegram[2];
-  //       const tipTo = filteredMessageTelegram[1];
-  //       if (groupTask) {
-  //         const task = await tipRunesToUser(ctx, tipTo, tipAmount, telegramClient, runesGroup, io, groupTask, setting);
-  //         await queue.add(() => task);
-  //       }
+  //       const rainAmount = filteredMessageTelegram[1];
+  //       const task = await rainRunesToUsers(
+  //         ctx,
+  //         rainAmount,
+  //         telegramClient,
+  //         runesGroup,
+  //         io,
+  //         setting,
+  //       );
+  //       await queue.add(() => task);
   //     })();
   //   }
   // });
-
-  telegramClient.command('rain', async (ctx) => {
-    const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
-    if (maintenance.maintenance || !maintenance.enabled) return;
-    const limited = await myRateLimiter(
-      telegramClient,
-      ctx,
-      'telegram',
-      'Rain',
-    );
-    if (limited) return;
-    const filteredMessageTelegram = ctx.update.message.text.split(' ');
-    if (!filteredMessageTelegram[1]) {
-      ctx.reply('invalid amount of arguments');
-    }
-    if (filteredMessageTelegram[1]) {
-      (async () => {
-        const groupTask = await updateGroup(ctx);
-        await queue.add(() => groupTask);
-        const groupTaskId = groupTask && groupTask.id;
-        const setting = await telegramSettings(ctx, 'rain', groupTaskId);
-        await queue.add(() => setting);
-        if (!setting) return;
-        const rainAmount = filteredMessageTelegram[1];
-        const task = await rainRunesToUsers(
-          ctx,
-          rainAmount,
-          telegramClient,
-          runesGroup,
-          io,
-          setting,
-        );
-        await queue.add(() => task);
-      })();
-    }
-  });
 
   telegramClient.command('withdraw', async (ctx) => {
     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
@@ -517,35 +491,114 @@ export const telegramRouter = async (
         );
       }
 
-      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'withdraw') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'sleet') {
         const limited = await myRateLimiter(
           telegramClient,
           ctx,
           'telegram',
-          'Withdraw',
+          'Sleet',
         );
         if (limited) return;
+        await queue.add(async () => {
+          disallow = await disallowDirectMessage(
+            ctx,
+            lastSeen,
+            'sleet',
+            io,
+          );
+        });
+        if (disallow) return;
 
-        if (!filteredMessageTelegram[2]) {
-          ctx.reply('insufficient Arguments');
-          return;
-        }
-        if (!filteredMessageTelegram[3]) {
-          ctx.reply('insufficient Arguments');
-          return;
-        }
-        const setting = await telegramSettings(ctx, 'withdraw', groupTaskId);
-        if (!setting) return;
-        const withdrawalAddress = filteredMessageTelegram[2];
-        const withdrawalAmount = filteredMessageTelegram[3];
-        const task = await withdrawTelegramCreate(
+        const setting = await telegramSettings(
           ctx,
-          withdrawalAddress,
-          withdrawalAmount,
-          io,
-          setting,
+          'sleet',
+          groupTaskId,
         );
-        await queue.add(() => task);
+        if (!setting) return;
+
+        await executeTipFunction(
+          telegramSleet,
+          queue,
+          filteredMessageTelegram[2],
+          telegramClient,
+          telegramApiClient,
+          ctx,
+          filteredMessageTelegram,
+          io,
+          groupTask,
+          setting,
+          faucetSetting,
+        );
+      }
+
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'rain') {
+        const limited = await myRateLimiter(
+          telegramClient,
+          ctx,
+          'telegram',
+          'Rain',
+        );
+        if (limited) return;
+        await queue.add(async () => {
+          disallow = await disallowDirectMessage(
+            ctx,
+            lastSeen,
+            'rain',
+            io,
+          );
+        });
+        if (disallow) return;
+
+        const setting = await telegramSettings(
+          ctx,
+          'rain',
+          groupTaskId,
+        );
+        if (!setting) return;
+
+        await executeTipFunction(
+          telegramRain,
+          queue,
+          filteredMessageTelegram[2],
+          telegramClient,
+          telegramApiClient,
+          ctx,
+          filteredMessageTelegram,
+          io,
+          groupTask,
+          setting,
+          faucetSetting,
+        );
+      }
+
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'withdraw') {
+        const limited = await myRateLimiter(
+          telegramClient,
+          ctx,
+          'telegram',
+          'Rain',
+        );
+        if (limited) return;
+        const setting = await telegramSettings(
+          ctx,
+          'rain',
+          groupTaskId,
+        );
+        if (!setting) return;
+
+        await executeTipFunction(
+          withdrawTelegramCreate,
+          queue,
+          filteredMessageTelegram[3],
+          telegramClient,
+          telegramApiClient,
+          ctx,
+          filteredMessageTelegram,
+          io,
+          groupTask,
+          setting,
+          faucetSetting,
+        );
       }
 
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'tip') {
@@ -593,48 +646,6 @@ export const telegramRouter = async (
           );
           await queue.add(() => task);
         }
-      }
-
-      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'rain') {
-        const limited = await myRateLimiter(
-          telegramClient,
-          ctx,
-          'telegram',
-          'Rain',
-        );
-        if (limited) return;
-
-        await queue.add(async () => {
-          disallow = await disallowDirectMessage(
-            ctx,
-            lastSeen,
-            'flood',
-            io,
-          );
-        });
-        if (disallow) return;
-
-        if (!filteredMessageTelegram[2]) {
-          await ctx.reply('invalid amount of arguments');
-          return;
-        }
-
-        const setting = await telegramSettings(
-          ctx,
-          'rain',
-          groupTaskId,
-        );
-        if (!setting) return;
-        const rainAmount = filteredMessageTelegram[2];
-        const task = await rainRunesToUsers(
-          ctx,
-          rainAmount,
-          telegramClient,
-          runesGroup,
-          io,
-          setting,
-        );
-        await queue.add(() => task);
       }
     }
   });

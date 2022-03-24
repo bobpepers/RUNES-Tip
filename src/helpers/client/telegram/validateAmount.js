@@ -30,7 +30,9 @@ export const validateAmount = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    ctx.reply(invalidAmountMessage());
+    await ctx.replyWithHTML(
+      await invalidAmountMessage(),
+    );
     return [
       activity,
       amount,
@@ -51,7 +53,9 @@ export const validateAmount = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    ctx.reply(minimumMessage(setting, capitalize(type)));
+    await ctx.replyWithHTML(
+      await minimumMessage(setting, capitalize(type)),
+    );
     return [
       activity,
       amount,
@@ -65,7 +69,9 @@ export const validateAmount = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    ctx.reply(invalidAmountMessage());
+    await ctx.replyWithHTML(
+      await invalidAmountMessage(),
+    );
     return [
       activity,
       amount,
@@ -80,7 +86,9 @@ export const validateAmount = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    ctx.reply(invalidAmountMessage());
+    await ctx.replyWithHTML(
+      await invalidAmountMessage(),
+    );
     return [
       activity,
       amount,
@@ -96,7 +104,9 @@ export const validateAmount = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    ctx.reply(insufficientBalanceMessage());
+    await ctx.replyWithHTML(
+      await insufficientBalanceMessage(capType),
+    );
     return [
       activity,
       amount,

@@ -119,7 +119,16 @@ export const processWithdrawals = async (
           }
           if (transaction.address.wallet.user.user_id.startsWith('telegram-')) {
             const userTelegramId = transaction.address.wallet.user.user_id.replace('telegram-', '');
-            telegramClient.telegram.sendMessage(userTelegramId, withdrawalAcceptedMessage(transaction, updatedTrans));
+            await telegramClient.telegram.sendMessage(
+              userTelegramId,
+              await withdrawalAcceptedMessage(
+                transaction,
+                updatedTrans,
+              ),
+              {
+                parse_mode: 'HTML',
+              },
+            );
           }
           if (transaction.address.wallet.user.user_id.startsWith('matrix-')) {
             const userMatrixId = transaction.address.wallet.user.user_id.replace('matrix-', '');
@@ -139,14 +148,30 @@ export const processWithdrawals = async (
               );
             }
           }
-          telegramClient.telegram.sendMessage(Number(process.env.TELEGRAM_ADMIN_ID), withdrawalAcceptedAdminMessage(updatedTrans));
+          await telegramClient.telegram.sendMessage(
+            Number(process.env.TELEGRAM_ADMIN_ID),
+            await withdrawalAcceptedAdminMessage(updatedTrans),
+            {
+              parse_mode: 'HTML',
+            },
+          );
         }
       } catch (e) {
         console.log(e);
       }
     });
-  }).catch((err) => {
+  }).catch(async (err) => {
     console.log(err);
-    telegramClient.telegram.sendMessage(Number(process.env.TELEGRAM_ADMIN_ID), `Something went wrong`);
+    try {
+      await telegramClient.telegram.sendMessage(
+        Number(process.env.TELEGRAM_ADMIN_ID),
+        `Something went wrong with withdrawals`,
+        {
+          parse_mode: 'HTML',
+        },
+      );
+    } catch (error) {
+      console.log(error);
+    }
   });
 };

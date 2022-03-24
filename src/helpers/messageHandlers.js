@@ -102,6 +102,9 @@ export const isDepositOrWithdrawalCompleteMessageHandler = async (
             userToMessage,
             trans,
           ),
+          {
+            parse_mode: 'HTML',
+          },
         );
       }
 

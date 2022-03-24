@@ -1,41 +1,41 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable import/prefer-default-export */
 import { Transaction } from "sequelize";
 import db from '../../models';
-import { getInstance } from '../../services/rclient';
 import {
+  nodeIsOfflineMessage,
   invalidAddressMessage,
-  errorMessage,
-  withdrawalReviewMessage,
   warnDirectMessage,
+  errorMessage,
+  reviewMessage,
 } from '../../messages/telegram';
-import getCoinSettings from '../../config/settings';
+import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/client/telegram/validateAmount";
 import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
-
-import logger from "../../helpers/logger";
-
-const settings = getCoinSettings();
+import { validateWithdrawalAddress } from '../../helpers/blockchain/validateWithdrawalAddress';
 
 export const withdrawTelegramCreate = async (
+  telegramClient,
+  telegramApiClient,
   ctx,
-  withdrawalAddress,
-  withdrawalAmount,
+  filteredMessage,
   io,
+  groupTask,
   setting,
+  faucetSetting,
+  queue,
 ) => {
-  let user;
-  let userActivity;
-  let activity = [];
-  let isValidAddress = false;
+  const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(
       ctx,
       t,
-      'withdraw',
+      filteredMessage[1].toLowerCase(),
     );
     if (userActivity) {
       activity.unshift(userActivity);
@@ -48,32 +48,99 @@ export const withdrawTelegramCreate = async (
     ] = await validateAmount(
       ctx,
       t,
-      withdrawalAmount,
+      filteredMessage[3],
       user,
       setting,
-      'withdraw',
+      filteredMessage[1].toLowerCase(),
     );
+
     if (activityValiateAmount) {
       activity.unshift(activityValiateAmount);
       return;
     }
 
-    // Add new currencies here (default fallback Runebase)
+    const [
+      isInvalidAddress,
+      isNodeOffline,
+      failWithdrawalActivity,
+    ] = await validateWithdrawalAddress(
+      filteredMessage[2],
+      user,
+      t,
+    );
 
-    if (settings.coin.setting === 'Runebase') {
-      isValidAddress = await getInstance().utils.isRunebaseAddress(withdrawalAddress);
-    } else if (settings.coin.setting === 'Pirate') {
-      isValidAddress = await getInstance().utils.isPirateAddress(withdrawalAddress);
-    } else {
-      isValidAddress = await getInstance().utils.isRunebaseAddress(withdrawalAddress);
+    if (isNodeOffline) {
+      await ctx.telegram.sendMessage(
+        ctx.update.message.from.id,
+        await nodeIsOfflineMessage(),
+        {
+          parse_mode: 'HTML',
+        },
+      );
     }
-    //
-    if (!isValidAddress) {
+
+    if (isInvalidAddress) {
       await ctx.telegram.sendMessage(
         ctx.update.message.from.id,
         await invalidAddressMessage(),
+        {
+          parse_mode: 'HTML',
+        },
       );
+    }
+
+    if (isInvalidAddress || isNodeOffline) {
+      if (ctx.update.message.chat.type !== 'private') {
+        await ctx.replyWithHTML(
+          await warnDirectMessage(
+            user,
+          ),
+        );
+      }
+    }
+
+    if (failWithdrawalActivity) {
+      activity.unshift(failWithdrawalActivity);
       return;
+    }
+
+    let addressExternal;
+    let UserExternalAddressMnMAssociation;
+
+    addressExternal = await db.addressExternal.findOne({
+      where: {
+        address: filteredMessage[2],
+      },
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    });
+
+    if (!addressExternal) {
+      addressExternal = await db.addressExternal.create({
+        address: filteredMessage[2],
+      }, {
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      });
+    }
+
+    UserExternalAddressMnMAssociation = await db.UserAddressExternal.findOne({
+      where: {
+        addressExternalId: addressExternal.id,
+        userId: user.id,
+      },
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    });
+
+    if (!UserExternalAddressMnMAssociation) {
+      UserExternalAddressMnMAssociation = await db.UserAddressExternal.create({
+        addressExternalId: addressExternal.id,
+        userId: user.id,
+      }, {
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      });
     }
 
     const wallet = await user.wallet.update({
@@ -83,12 +150,14 @@ export const withdrawTelegramCreate = async (
       transaction: t,
       lock: t.LOCK.UPDATE,
     });
+
     const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
     const transaction = await db.transaction.create({
       addressId: wallet.addresses[0].id,
+      addressExternalId: addressExternal.id,
       phase: 'review',
       type: 'send',
-      to_from: withdrawalAddress,
+      to_from: filteredMessage[2],
       amount,
       feeAmount: Number(fee),
       userId: user.id,
@@ -96,7 +165,7 @@ export const withdrawTelegramCreate = async (
       transaction: t,
       lock: t.LOCK.UPDATE,
     });
-    activity = await db.activity.create(
+    const activityCreate = await db.activity.create(
       {
         spenderId: user.id,
         type: 'withdrawRequested',
@@ -108,10 +177,17 @@ export const withdrawTelegramCreate = async (
         lock: t.LOCK.UPDATE,
       },
     );
+    activity.unshift(activityCreate);
 
     await ctx.telegram.sendMessage(
       ctx.update.message.from.id,
-      await withdrawalReviewMessage(),
+      await reviewMessage(
+        user,
+        transaction,
+      ),
+      {
+        parse_mode: 'HTML',
+      },
     );
 
     if (ctx.update.message.chat.type !== 'private') {
@@ -128,7 +204,7 @@ export const withdrawTelegramCreate = async (
   }).catch(async (err) => {
     try {
       await db.error.create({
-        type: 'withdraw',
+        type: 'Withdraw',
         error: `${err}`,
       });
     } catch (e) {

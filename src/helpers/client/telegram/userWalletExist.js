@@ -30,7 +30,8 @@ export const userWalletExist = async (
   ) {
     userId = ctx.update.callback_query.from.id;
   }
-  console.log(ctx.update.message);
+  console.log('ctx userwalletexists');
+  console.log(ctx);
   const user = await db.user.findOne({
     where: {
       user_id: `telegram-${userId}`,

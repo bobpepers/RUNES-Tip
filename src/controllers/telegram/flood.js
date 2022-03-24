@@ -39,30 +39,6 @@ export const telegramFlood = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const chatId = Math.abs(ctx.message.chat.id).toString();
-
-    // const membersCount = await axios.get(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/getChatMembersCount?chat_id=${ctx.message.chat.id}`);
-    // let i = 0;
-    // let members = [];
-    // while (i < membersCount.data.result) {
-    //  const membersTemp = await telegramApiClient.getParticipants(chatId, {
-    //    limit: 2,
-    //    offset: i,
-    //  });
-    //  members = members.concat(membersTemp);
-    //  i += 2;
-    // }
-
-    const members = await telegramApiClient.getParticipants(chatId, {
-      limit: 200000,
-    });
-
-    const onlineMembers = members.filter((member) => {
-      console.log(member);
-      console.log('-');
-      return !member.bot;
-    });
-
     [
       user,
       userActivity,
@@ -75,16 +51,6 @@ export const telegramFlood = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
-
-    // console.log(onlineMembers);
-    const withoutBots = await mapMembers(
-      ctx,
-      t,
-      onlineMembers,
-      setting,
-    );
-
-    console.log(withoutBots);
 
     const [
       activityValiateAmount,
@@ -102,6 +68,36 @@ export const telegramFlood = async (
       activity.unshift(activityValiateAmount);
       return;
     }
+
+    // const membersCount = await axios.get(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/getChatMembersCount?chat_id=${ctx.message.chat.id}`);
+    // let i = 0;
+    // let members = [];
+    // while (i < membersCount.data.result) {
+    //  const membersTemp = await telegramApiClient.getParticipants(chatId, {
+    //    limit: 2,
+    //    offset: i,
+    //  });
+    //  members = members.concat(membersTemp);
+    //  i += 2;
+    // }
+
+    const chatId = Math.abs(ctx.message.chat.id).toString();
+    const members = await telegramApiClient.getParticipants(chatId, {
+      limit: 200000,
+    });
+    const onlineMembers = members.filter((member) => {
+      console.log(member);
+      console.log('-');
+      return !member.bot;
+    });
+
+    // console.log(onlineMembers);
+    const withoutBots = await mapMembers(
+      ctx,
+      t,
+      onlineMembers,
+      setting,
+    );
 
     if (withoutBots.length < 2) {
       const factivity = await db.activity.create({
@@ -265,7 +261,7 @@ export const telegramFlood = async (
         ctx,
         floodRecord.id,
         amount,
-        withoutBots,
+        withoutBots.len,
         amountPerUser,
         'Flood',
         'flooded',
