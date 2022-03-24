@@ -127,19 +127,20 @@ export const updateDiscordLastSeen = async (client, message) => {
   if (message.guildId) {
     guildId = message.guildId;
   }
-  if (guildId) {
-    await db.sequelize.transaction({
-      isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-    }, async (t) => {
-      const user = await db.user.findOne(
-        {
-          where: {
-            user_id: `discord-${message.author.id}`,
-          },
-          transaction: t,
-          lock: t.LOCK.UPDATE,
+
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    const user = await db.user.findOne(
+      {
+        where: {
+          user_id: `discord-${message.author.id}`,
         },
-      );
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      },
+    );
+    if (guildId) {
       const group = await db.group.findOne(
         {
           where: {
@@ -187,33 +188,33 @@ export const updateDiscordLastSeen = async (client, message) => {
           }
         }
       }
-      if (user) {
-        updatedUser = await user.update(
-          {
-            lastSeen: new Date(Date.now()),
-          },
-          {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          },
-        );
-      }
+    }
+    if (user) {
+      updatedUser = await user.update(
+        {
+          lastSeen: new Date(Date.now()),
+        },
+        {
+          transaction: t,
+          lock: t.LOCK.UPDATE,
+        },
+      );
+    }
 
-      t.afterCommit(() => {
-        console.log('done');
-      });
-    }).catch(async (err) => {
-      try {
-        await db.error.create({
-          type: 'updateUser',
-          error: `${err}`,
-        });
-      } catch (e) {
-        logger.error(`Error Discord: ${e}`);
-      }
-      console.log(err.message);
+    t.afterCommit(() => {
+      console.log('done');
     });
-  }
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'updateUser',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Discord: ${e}`);
+    }
+    console.log(err.message);
+  });
 
   return updatedUser;
 };

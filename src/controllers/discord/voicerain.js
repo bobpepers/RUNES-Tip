@@ -6,7 +6,7 @@ import {
   notAVoiceChannel,
   voiceChannelNotFound,
   AfterSuccessMessage,
-  NotInDirectMessage,
+  // NotInDirectMessage,
   discordErrorMessage,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/client/discord/validateAmount";
@@ -34,10 +34,10 @@ export const discordVoiceRain = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    if (!groupTask || !channelTask) {
-      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Voicerain')] });
-      return;
-    }
+    // if (!groupTask || !channelTask) {
+    //  await message.channel.send({ embeds: [NotInDirectMessage(message, 'Voicerain')] });
+    //  return;
+    // }
     if (!filteredMessage[3].startsWith('<#')) {
       await message.channel.send({ embeds: [notAVoiceChannel(message)] });
       return;

@@ -4,7 +4,7 @@ import db from '../../models';
 import {
   notEnoughActiveUsersMessage,
   AfterSuccessMessage,
-  NotInDirectMessage,
+  // NotInDirectMessage,
   discordErrorMessage,
 } from '../../messages/discord';
 
@@ -31,10 +31,10 @@ export const discordRain = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    if (!groupTask || !channelTask) {
-      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
-      return;
-    }
+    // if (!groupTask || !channelTask) {
+    //  await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
+    //  return;
+    // }
 
     const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
     const onlineMembers = await members.filter((member) => {

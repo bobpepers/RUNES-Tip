@@ -7,7 +7,7 @@ import {
   hurricaneMaxUserAmountMessage,
   hurricaneInvalidUserAmount,
   hurricaneUserZeroAmountMessage,
-  NotInDirectMessage,
+  // NotInDirectMessage,
   AfterSuccessMessage,
   discordErrorMessage,
 } from '../../messages/discord';
@@ -35,10 +35,10 @@ export const discordHurricane = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    if (!groupTask || !channelTask) {
-      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Hurricane')] });
-      return;
-    }
+    // if (!groupTask || !channelTask) {
+    //  await message.channel.send({ embeds: [NotInDirectMessage(message, 'Hurricane')] });
+    //  return;
+    // }
     if (Number(filteredMessage[2]) > 50) {
       await message.channel.send({ embeds: [hurricaneMaxUserAmountMessage(message)] });
       return;

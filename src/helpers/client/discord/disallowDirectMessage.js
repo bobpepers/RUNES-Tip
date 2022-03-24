@@ -2,14 +2,14 @@ import { Transaction } from "sequelize";
 import db from '../../../models';
 import logger from "../../logger";
 import {
-  disallowDirectMessageMessage,
-  errorMessage,
+  NotInDirectMessage,
+  discordErrorMessage,
 } from '../../../messages/discord';
 
 const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
 
 export const disallowDirectMessage = async (
-  ctx,
+  message,
   user,
   functionType,
   io,
@@ -20,7 +20,7 @@ export const disallowDirectMessage = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    if (ctx.update.message.chat.id === ctx.update.message.from.id) {
+    if (message.channel.type === 'DM') {
       const notDirectActivity = await db.activity.create({
         type: `${functionType}_f`,
         spenderId: user.id,
@@ -29,11 +29,7 @@ export const disallowDirectMessage = async (
         transaction: t,
       });
       activity.unshift(notDirectActivity);
-      await ctx.replyWithHTML(
-        await disallowDirectMessageMessage(
-          user,
-        ),
-      );
+      await message.channel.send({ embeds: [NotInDirectMessage(message, capitalize(functionType))] });
       disallow = true;
     }
 
@@ -47,14 +43,14 @@ export const disallowDirectMessage = async (
         error: `${err}`,
       });
     } catch (e) {
-      logger.error(`Error Telegram: ${e}`);
+      logger.error(`Error Discord: ${e}`);
     }
     console.log(err);
     logger.error(`${functionType} error: ${err}`);
     try {
-      await ctx.replyWithHTML(errorMessage(
-        capitalize(functionType),
-      ));
+      await message.channel.send({ embeds: [discordErrorMessage(capitalize(functionType))] }).catch((e) => {
+        console.log(e);
+      });
     } catch (err) {
       console.log(err);
     }

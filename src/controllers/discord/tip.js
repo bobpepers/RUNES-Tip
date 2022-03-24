@@ -5,7 +5,7 @@ import db from '../../models';
 import {
   tipSingleSuccessMessage,
   tipMultipleSuccessMessage,
-  NotInDirectMessage,
+  // NotInDirectMessage,
   notEnoughUsersToTip,
   tipFaucetSuccessMessage,
   discordErrorMessage,
@@ -38,10 +38,10 @@ export const tipRunesToDiscordUser = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    if (!groupTask || !channelTask) {
-      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] });
-      return;
-    }
+    // if (!groupTask || !channelTask) {
+    //  await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] });
+    //  return;
+    // }
 
     [
       user,
@@ -340,10 +340,10 @@ export const tipCoinsToDiscordFaucet = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    if (!groupTask || !channelTask) {
-      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] });
-      return;
-    }
+    // if (!groupTask || !channelTask) {
+    //  await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] });
+    //  return;
+    // }
 
     [
       user,

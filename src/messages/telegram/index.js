@@ -13,14 +13,14 @@ const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
 export const featureDisabledServerMessage = async () => {
   const result = `<u><b>This feature has been disabled for this group</b></u>
   
-  <pre>${settings.bot.name} v${pjson.version}</pre>`;
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
 
 export const featureDisabledGlobalMessage = async () => {
   const result = `<u><b>This feature has been disabled</b></u>
   
-  <pre>${settings.bot.name} v${pjson.version}</pre>`;
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
 
@@ -167,11 +167,6 @@ export const telegramWithdrawalRejectedMessage = () => {
   return result;
 };
 
-export const generalErrorMessage = () => {
-  const result = `Something went wrong`;
-  return result;
-};
-
 export const tipSuccessMessage = (
   user,
   amount,
@@ -185,7 +180,11 @@ export const minimumMessage = async (
   setting,
   title,
 ) => {
-  const result = `Minimum ${title} is ${Number(setting.min) / 1e8} ${settings.coin.ticker}`;
+  const result = `<u><b>${title}</b></u>
+  
+Minimum ${title} is <b>${Number(setting.min) / 1e8} ${settings.coin.ticker}</b>
+  
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
 

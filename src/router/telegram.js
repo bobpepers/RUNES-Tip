@@ -250,6 +250,7 @@ export const telegramRouter = async (
         await queue.add(async () => {
           const task = await fetchHelp(ctx, io);
         });
+        return;
       }
 
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'help') {
@@ -264,6 +265,7 @@ export const telegramRouter = async (
         await queue.add(async () => {
           const task = await fetchHelp(ctx, io);
         });
+        return;
       }
 
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'price') {
@@ -278,6 +280,7 @@ export const telegramRouter = async (
         await queue.add(async () => {
           const task = await fetchPriceInfo(ctx, io);
         });
+        return;
       }
 
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'info') {
@@ -295,6 +298,7 @@ export const telegramRouter = async (
             io,
           );
         });
+        return;
       }
 
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'faucet') {
@@ -311,6 +315,7 @@ export const telegramRouter = async (
             io,
           );
         });
+        return;
       }
 
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'balance') {
@@ -328,6 +333,7 @@ export const telegramRouter = async (
             io,
           );
         });
+        return;
       }
 
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'deposit') {
@@ -345,6 +351,7 @@ export const telegramRouter = async (
             io,
           );
         });
+        return;
       }
 
       if (settings.coin.setting === 'Runebase') {
@@ -402,6 +409,7 @@ export const telegramRouter = async (
           setting,
           faucetSetting,
         );
+        return;
       }
 
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'sleet') {
@@ -442,6 +450,7 @@ export const telegramRouter = async (
           setting,
           faucetSetting,
         );
+        return;
       }
 
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'rain') {
@@ -482,6 +491,7 @@ export const telegramRouter = async (
           setting,
           faucetSetting,
         );
+        return;
       }
 
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'withdraw') {
@@ -512,6 +522,7 @@ export const telegramRouter = async (
           setting,
           faucetSetting,
         );
+        return;
       }
 
       console.log(ctx);

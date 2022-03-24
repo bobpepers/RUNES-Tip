@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-
+import db from '../models';
 import { fetchDiscordWalletBalance } from '../controllers/discord/balance';
 import { fetchDiscordWalletDepositAddress } from '../controllers/discord/deposit';
 import { withdrawDiscordCreate } from '../controllers/discord/withdraw';
@@ -25,32 +25,20 @@ import { discordReactDrop } from '../controllers/discord/reactdrop';
 import { discordStats } from '../controllers/discord/stats';
 import { discordPublicStats } from '../controllers/discord/publicstats';
 import { discordLeaderboard } from '../controllers/discord/leaderboard';
-
-import {
-  tipCoinsToDiscordFaucet,
-  tipRunesToDiscordUser,
-} from '../controllers/discord/tip';
-
-import {
-  createUpdateDiscordUser,
-  updateDiscordLastSeen,
-} from '../controllers/discord/user';
+import { tipCoinsToDiscordFaucet, tipRunesToDiscordUser } from '../controllers/discord/tip';
+import { createUpdateDiscordUser, updateDiscordLastSeen } from '../controllers/discord/user';
+import { discordSettings, discordwaterFaucetSettings } from '../controllers/discord/settings';
 
 import { myRateLimiter } from '../helpers/rateLimit';
+import { disallowDirectMessage } from '../helpers/client/discord/disallowDirectMessage';
+import { executeTipFunction } from '../helpers/client/discord/executeTips';
+import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
 
-import db from '../models';
 import {
   discordUserBannedMessage,
   discordServerBannedMessage,
   discordChannelBannedMessage,
 } from '../messages/discord';
-
-import {
-  discordSettings,
-  discordwaterFaucetSettings,
-} from '../controllers/discord/settings';
-import { executeTipFunction } from '../helpers/client/discord/executeTips';
-import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
 
 config();
 
@@ -60,7 +48,6 @@ export const discordRouter = (
   io,
   settings,
 ) => {
-  // discordClient.on('ready', async () => {
   let counter = 0;
   const interval = setInterval(async () => {
     if (counter % 2 === 0) {
@@ -85,8 +72,6 @@ export const discordRouter = (
     }
     counter += 1;
   }, 40000);
-  console.log(`Logged in as ${discordClient.user.tag}!`);
-  // });
 
   discordClient.on("presenceUpdate", (oldMember, newMember) => {
     // const { username } = newMember.user;
@@ -101,70 +86,71 @@ export const discordRouter = (
   });
 
   discordClient.on("messageCreate", async (message) => {
-    // await queue.add(async () => {
     let groupTask;
     let groupTaskId;
     let channelTask;
     let channelTaskId;
     let lastSeenDiscordTask;
-    let faucetSetting;
+    // let faucetSetting;
+    let disallow;
     if (!message.author.bot) {
       const maintenance = await isMaintenanceOrDisabled(message, 'discord');
       if (maintenance.maintenance || !maintenance.enabled) return;
       const walletExists = await createUpdateDiscordUser(message, queue);
-      // await queue.add(() => walletExists);
-      groupTask = await updateDiscordGroup(discordClient, message);
-      await queue.add(() => groupTask);
+      await queue.add(async () => {
+        groupTask = await updateDiscordGroup(discordClient, message);
+        channelTask = await updateDiscordChannel(discordClient, message, groupTask);
+        lastSeenDiscordTask = await updateDiscordLastSeen(
+          discordClient,
+          message,
+        );
+      });
       groupTaskId = groupTask && groupTask.id;
-      channelTask = await updateDiscordChannel(discordClient, message, groupTask);
-      await queue.add(() => channelTask);
       channelTaskId = channelTask && channelTask.id;
-      lastSeenDiscordTask = await updateDiscordLastSeen(
-        discordClient,
-        message,
-      );
-      await queue.add(() => lastSeenDiscordTask);
-      faucetSetting = await discordwaterFaucetSettings(
-        groupTaskId,
-        channelTaskId,
-      );
-      if (!faucetSetting) return;
     }
     if (!message.content.startsWith(settings.bot.command.discord) || message.author.bot) return;
-    if (message.content.startsWith(settings.bot.command.discord)) {
-      if (groupTask && groupTask.banned) {
-        await message.channel.send({
-          embeds: [
-            discordServerBannedMessage(
-              groupTask,
-            ),
-          ],
-        });
-        return;
-      }
-      if (channelTask && channelTask.banned) {
-        await message.channel.send({
-          embeds: [
-            discordChannelBannedMessage(
-              channelTask,
-            ),
-          ],
-        });
-        return;
-      }
-      if (lastSeenDiscordTask && lastSeenDiscordTask.banned) {
-        await message.channel.send({
-          embeds: [
-            discordUserBannedMessage(
-              lastSeenDiscordTask,
-            ),
-          ],
-        });
-        return;
-      }
+    if (groupTask && groupTask.banned) {
+      await message.channel.send({
+        embeds: [
+          discordServerBannedMessage(
+            groupTask,
+          ),
+        ],
+      });
+      return;
     }
+
+    if (channelTask && channelTask.banned) {
+      await message.channel.send({
+        embeds: [
+          discordChannelBannedMessage(
+            channelTask,
+          ),
+        ],
+      });
+      return;
+    }
+
+    if (lastSeenDiscordTask && lastSeenDiscordTask.banned) {
+      await message.channel.send({
+        embeds: [
+          discordUserBannedMessage(
+            lastSeenDiscordTask,
+          ),
+        ],
+      });
+      return;
+    }
+
+    const faucetSetting = await discordwaterFaucetSettings(
+      groupTaskId,
+      channelTaskId,
+    );
+    if (!faucetSetting) return;
+
     const preFilteredMessageDiscord = message.content.split(' ');
     const filteredMessageDiscord = preFilteredMessageDiscord.filter((el) => el !== '');
+
     if (filteredMessageDiscord[1] === undefined) {
       const limited = await myRateLimiter(
         discordClient,
@@ -401,6 +387,17 @@ export const discordRouter = (
         'Tip',
       );
       if (limited) return;
+
+      await queue.add(async () => {
+        disallow = await disallowDirectMessage(
+          message,
+          lastSeenDiscordTask,
+          'tip',
+          io,
+        );
+      });
+      if (disallow) return;
+
       const setting = await discordSettings(
         message,
         'tip',
@@ -459,6 +456,17 @@ export const discordRouter = (
         'VoiceRain',
       );
       if (limited) return;
+
+      await queue.add(async () => {
+        disallow = await disallowDirectMessage(
+          message,
+          lastSeenDiscordTask,
+          'voicerain',
+          io,
+        );
+      });
+      if (disallow) return;
+
       const setting = await discordSettings(
         message,
         'voicerain',
@@ -490,6 +498,17 @@ export const discordRouter = (
         'Fees',
       );
       if (limited) return;
+
+      await queue.add(async () => {
+        disallow = await disallowDirectMessage(
+          message,
+          lastSeenDiscordTask,
+          'rain',
+          io,
+        );
+      });
+      if (disallow) return;
+
       const setting = await discordSettings(
         message,
         'rain',
@@ -521,6 +540,17 @@ export const discordRouter = (
         'Flood',
       );
       if (limited) return;
+
+      await queue.add(async () => {
+        disallow = await disallowDirectMessage(
+          message,
+          lastSeenDiscordTask,
+          'flood',
+          io,
+        );
+      });
+      if (disallow) return;
+
       const setting = await discordSettings(
         message,
         'flood',
@@ -552,6 +582,17 @@ export const discordRouter = (
         'Thunder',
       );
       if (limited) return;
+
+      await queue.add(async () => {
+        disallow = await disallowDirectMessage(
+          message,
+          lastSeenDiscordTask,
+          'thunder',
+          io,
+        );
+      });
+      if (disallow) return;
+
       const setting = await discordSettings(
         message,
         'thunder',
@@ -583,6 +624,17 @@ export const discordRouter = (
         'ThunderStorm',
       );
       if (limited) return;
+
+      await queue.add(async () => {
+        disallow = await disallowDirectMessage(
+          message,
+          lastSeenDiscordTask,
+          'thunderstorm',
+          io,
+        );
+      });
+      if (disallow) return;
+
       const setting = await discordSettings(
         message,
         'thunderstorm',
@@ -614,6 +666,17 @@ export const discordRouter = (
         'Hurricane',
       );
       if (limited) return;
+
+      await queue.add(async () => {
+        disallow = await disallowDirectMessage(
+          message,
+          lastSeenDiscordTask,
+          'hurricane',
+          io,
+        );
+      });
+      if (disallow) return;
+
       const setting = await discordSettings(
         message,
         'hurricane',
@@ -645,6 +708,17 @@ export const discordRouter = (
         'Soak',
       );
       if (limited) return;
+
+      await queue.add(async () => {
+        disallow = await disallowDirectMessage(
+          message,
+          lastSeenDiscordTask,
+          'soak',
+          io,
+        );
+      });
+      if (disallow) return;
+
       const setting = await discordSettings(
         message,
         'soak',
@@ -676,6 +750,17 @@ export const discordRouter = (
         'Sleet',
       );
       if (limited) return;
+
+      await queue.add(async () => {
+        disallow = await disallowDirectMessage(
+          message,
+          lastSeenDiscordTask,
+          'sleet',
+          io,
+        );
+      });
+      if (disallow) return;
+
       const setting = await discordSettings(
         message,
         'sleet',
@@ -706,6 +791,17 @@ export const discordRouter = (
         'ReactDrop',
       );
       if (limited) return;
+
+      await queue.add(async () => {
+        disallow = await disallowDirectMessage(
+          message,
+          lastSeenDiscordTask,
+          'reactdrop',
+          io,
+        );
+      });
+      if (disallow) return;
+
       const setting = await discordSettings(
         message,
         'reactdrop',
@@ -737,6 +833,17 @@ export const discordRouter = (
         'Trivia',
       );
       if (limited) return;
+
+      await queue.add(async () => {
+        disallow = await disallowDirectMessage(
+          message,
+          lastSeenDiscordTask,
+          'trivia',
+          io,
+        );
+      });
+      if (disallow) return;
+
       const setting = await discordSettings(
         message,
         'trivia',
@@ -760,4 +867,5 @@ export const discordRouter = (
       );
     }
   });
+  console.log(`Logged in as ${discordClient.user.tag}!`);
 };

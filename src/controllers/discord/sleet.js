@@ -31,12 +31,12 @@ export const discordSleet = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    if (!groupTask || !channelTask) {
-      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Sleet')] }).catch((e) => {
-        console.log(e);
-      });
-      return;
-    }
+    // if (!groupTask || !channelTask) {
+    //  await message.channel.send({ embeds: [NotInDirectMessage(message, 'Sleet')] }).catch((e) => {
+    //    console.log(e);
+    //  });
+    //  return;
+    // }
 
     [
       user,

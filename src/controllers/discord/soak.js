@@ -4,7 +4,7 @@ import db from '../../models';
 import {
   notEnoughActiveUsersMessage,
   AfterSuccessMessage,
-  NotInDirectMessage,
+  // NotInDirectMessage,
   discordErrorMessage,
 } from '../../messages/discord';
 
@@ -31,10 +31,10 @@ export const discordSoak = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    if (!groupTask || !channelTask) {
-      await message.channel.send({ embeds: [NotInDirectMessage(message, 'Soak')] });
-      return;
-    }
+    // if (!groupTask || !channelTask) {
+    //  await message.channel.send({ embeds: [NotInDirectMessage(message, 'Soak')] });
+    //  return;
+    // }
     const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
     const onlineMembers = members.filter((member) => (member.presence && member.presence.status === "online")
       || (member.presence && member.presence.status === "idle")
