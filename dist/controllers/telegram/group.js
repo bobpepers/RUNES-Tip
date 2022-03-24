@@ -28,72 +28,96 @@ var updateGroup = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
+                var chatId, chatTitle;
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
-                        if (!(ctx.update.message.chat.id === ctx.update.message.from.id)) {
-                          _context.next = 2;
+                        chatTitle = '';
+
+                        if (!(ctx && ctx.update && ctx.update.callback_query && ctx.update.callback_query.from && ctx.update.callback_query.message && ctx.update.callback_query.message.chat && ctx.update.callback_query.from.id && ctx.update.callback_query.message.chat.id && ctx.update.callback_query.from.id === ctx.update.callback_query.message.chat.id)) {
+                          _context.next = 3;
                           break;
                         }
 
                         return _context.abrupt("return");
 
-                      case 2:
-                        _context.next = 4;
+                      case 3:
+                        if (!(ctx && ctx.update && ctx.update.message && ctx.update.message.from && ctx.update.message.chat && ctx.update.message.chat.id === ctx.update.message.from.id)) {
+                          _context.next = 5;
+                          break;
+                        }
+
+                        return _context.abrupt("return");
+
+                      case 5:
+                        if (ctx && ctx.update && ctx.update.message && ctx.update.message.chat && ctx.update.message.chat.id) {
+                          chatId = ctx.update.message.chat.id;
+                          chatTitle = ctx.update.message.chat.title;
+                        } else if (ctx && ctx.update && ctx.update.callback_query && ctx.update.callback_query.message && ctx.update.callback_query.message.chat && ctx.update.callback_query.message.chat.id) {
+                          chatId = ctx.update.callback_query.message.chat.id;
+                          chatTitle = ctx.update.callback_query.message.chat.title;
+                        }
+
+                        if (!chatId) {
+                          _context.next = 18;
+                          break;
+                        }
+
+                        _context.next = 9;
                         return _models["default"].group.findOne({
                           where: {
-                            groupId: "telegram-".concat(ctx.update.message.chat.id)
+                            groupId: "telegram-".concat(chatId)
                           },
                           transaction: t,
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 4:
+                      case 9:
                         group = _context.sent;
 
                         if (group) {
-                          _context.next = 9;
+                          _context.next = 14;
                           break;
                         }
 
-                        _context.next = 8;
+                        _context.next = 13;
                         return _models["default"].group.create({
-                          groupId: "telegram-".concat(ctx.update.message.chat.id),
-                          groupName: ctx.update.message.chat.title,
+                          groupId: "telegram-".concat(chatId),
+                          groupName: chatTitle,
                           lastActive: Date.now()
                         }, {
                           transaction: t,
                           lock: t.LOCK.UPDATE
                         });
-
-                      case 8:
-                        group = _context.sent;
-
-                      case 9:
-                        if (!group) {
-                          _context.next = 13;
-                          break;
-                        }
-
-                        _context.next = 12;
-                        return group.update({
-                          groupName: ctx.update.message.chat.title,
-                          lastActive: Date.now()
-                        }, {
-                          transaction: t,
-                          lock: t.LOCK.UPDATE
-                        });
-
-                      case 12:
-                        group = _context.sent;
 
                       case 13:
-                        t.afterCommit(function () {
-                          console.log('done'); // ctx.reply(`done`);
-                        });
+                        group = _context.sent;
 
                       case 14:
+                        if (!group) {
+                          _context.next = 18;
+                          break;
+                        }
+
+                        _context.next = 17;
+                        return group.update({
+                          groupName: chatTitle,
+                          lastActive: Date.now()
+                        }, {
+                          transaction: t,
+                          lock: t.LOCK.UPDATE
+                        });
+
+                      case 17:
+                        group = _context.sent;
+
+                      case 18:
+                        t.afterCommit(function () {
+                          console.log('done');
+                        });
+
+                      case 19:
                       case "end":
                         return _context.stop();
                     }

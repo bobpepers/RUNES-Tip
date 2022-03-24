@@ -23,11 +23,11 @@ var userWalletExist = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
+            userId = 0;
+
             if (ctx && ctx.update && ctx.update.message && ctx.update.message.from && ctx.update.message.from.id) {
               userId = ctx.update.message.from.id;
-            }
-
-            if (ctx && ctx.update && ctx.update.callback_query && ctx.update.callback_query.from && ctx.update.callback_query.from.id) {
+            } else if (ctx && ctx.update && ctx.update.callback_query && ctx.update.callback_query.from && ctx.update.callback_query.from.id) {
               userId = ctx.update.callback_query.from.id;
             }
 

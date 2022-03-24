@@ -456,8 +456,6 @@ var telegramSleet = /*#__PURE__*/function () {
                         return _context.finish(121);
 
                       case 124:
-                        // const newStringListUsers = listOfUsersRained.join(", ");
-                        // const cutStringListUsers = newStringListUsers.match(/.{1,3500}(\s|$)/g);
                         cutStringListUsers = [];
                         i = 0;
                         listOfUsersRained.forEach(function (word) {

@@ -21,16 +21,52 @@ var _rclient = require("../../services/rclient");
 
 var createUpdateUser = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(ctx) {
+    var userId, username, firstname, lastname;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            if (ctx.update.message.from.is_bot) {
-              _context2.next = 3;
+            username = '';
+            firstname = '';
+            lastname = '';
+
+            if (ctx && ctx.update && ctx.update.message && ctx.update.message.from && ctx.update.message.from.id) {
+              userId = ctx.update.message.from.id;
+              username = ctx.update.message.from.username ? ctx.update.message.from.username : '';
+              firstname = ctx.update.message.from.first_name ? ctx.update.message.from.first_name : '';
+              lastname = ctx.update.message.from.last_name ? ctx.update.message.from.last_name : '';
+            } else if (ctx && ctx.update && ctx.update.callback_query && ctx.update.callback_query.from && ctx.update.callback_query.from.id) {
+              userId = ctx.update.callback_query.from.id;
+              username = ctx.update.callback_query.from.username ? ctx.update.callback_query.from.username : '';
+              firstname = ctx.update.callback_query.from.first_name ? ctx.update.callback_query.from.first_name : '';
+              lastname = ctx.update.callback_query.from.last_name ? ctx.update.callback_query.from.last_name : '';
+            }
+
+            if (!(ctx && ctx.update && ctx.update.message && ctx.update.message.from && ctx.update.message.from.is_bot)) {
+              _context2.next = 6;
               break;
             }
 
-            _context2.next = 3;
+            return _context2.abrupt("return");
+
+          case 6:
+            if (!(ctx && ctx.update && ctx.update.callback_query && ctx.update.callback_query.from && ctx.update.callback_query.from.is_bot)) {
+              _context2.next = 8;
+              break;
+            }
+
+            return _context2.abrupt("return");
+
+          case 8:
+            if (userId) {
+              _context2.next = 10;
+              break;
+            }
+
+            return _context2.abrupt("return");
+
+          case 10:
+            _context2.next = 12;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -43,7 +79,7 @@ var createUpdateUser = /*#__PURE__*/function () {
                         _context.next = 2;
                         return _models["default"].user.findOne({
                           where: {
-                            user_id: "telegram-".concat(ctx.update.message.from.id)
+                            user_id: "telegram-".concat(userId)
                           },
                           transaction: t,
                           lock: t.LOCK.UPDATE
@@ -52,17 +88,17 @@ var createUpdateUser = /*#__PURE__*/function () {
                       case 2:
                         user = _context.sent;
 
-                        if (user) {
+                        if (!(!user && userId)) {
                           _context.next = 7;
                           break;
                         }
 
                         _context.next = 6;
                         return _models["default"].user.create({
-                          user_id: "telegram-".concat(ctx.update.message.from.id),
-                          username: ctx.update.message.from.username,
-                          firstname: ctx.update.message.from.first_name,
-                          lastname: ctx.update.message.from.last_name
+                          user_id: "telegram-".concat(userId),
+                          username: username,
+                          firstname: firstname,
+                          lastname: lastname
                         }, {
                           transaction: t,
                           lock: t.LOCK.UPDATE
@@ -77,16 +113,16 @@ var createUpdateUser = /*#__PURE__*/function () {
                           break;
                         }
 
-                        if (!(user.firstname !== ctx.update.message.from.first_name || user.lastname !== ctx.update.message.from.last_name || user.username !== ctx.update.message.from.username)) {
+                        if (!(user.firstname !== firstname || user.lastname !== lastname || user.username !== username)) {
                           _context.next = 12;
                           break;
                         }
 
                         _context.next = 11;
                         return user.update({
-                          firstname: ctx.update.message.from.first_name,
-                          lastname: ctx.update.message.from.last_name,
-                          username: ctx.update.message.from.username
+                          firstname: firstname,
+                          lastname: lastname,
+                          username: username
                         }, {
                           transaction: t,
                           lock: t.LOCK.UPDATE
@@ -208,7 +244,7 @@ var createUpdateUser = /*#__PURE__*/function () {
               console.log(err);
             });
 
-          case 3:
+          case 12:
           case "end":
             return _context2.stop();
         }
@@ -225,12 +261,24 @@ exports.createUpdateUser = createUpdateUser;
 
 var updateLastSeen = /*#__PURE__*/function () {
   var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(ctx) {
-    var updatedUser;
+    var userId, chatId, updatedUser;
     return _regenerator["default"].wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            _context4.next = 2;
+            if (ctx && ctx.update && ctx.update.message && ctx.update.message.from && ctx.update.message.from.id) {
+              userId = ctx.update.message.from.id;
+            } else if (ctx && ctx.update && ctx.update.callback_query && ctx.update.callback_query.from && ctx.update.callback_query.from.id) {
+              userId = ctx.update.callback_query.from.id;
+            }
+
+            if (ctx && ctx.update && ctx.update.message && ctx.update.message.chat && ctx.update.message.chat.id) {
+              chatId = ctx.update.message.chat.id;
+            } else if (ctx && ctx.update && ctx.update.callback_query && ctx.update.callback_query.message && ctx.update.callback_query.message.chat && ctx.update.callback_query.message.chat.id) {
+              chatId = ctx.update.callback_query.message.chat.id;
+            }
+
+            _context4.next = 4;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -244,7 +292,7 @@ var updateLastSeen = /*#__PURE__*/function () {
                         _context3.next = 2;
                         return _models["default"].user.findOne({
                           where: {
-                            user_id: "telegram-".concat(ctx.update.message.from.id)
+                            user_id: "telegram-".concat(userId)
                           },
                           transaction: t,
                           lock: t.LOCK.UPDATE
@@ -255,7 +303,7 @@ var updateLastSeen = /*#__PURE__*/function () {
                         _context3.next = 5;
                         return _models["default"].group.findOne({
                           where: {
-                            groupId: "telegram-".concat(ctx.update.message.chat.id)
+                            groupId: "telegram-".concat(chatId)
                           },
                           transaction: t,
                           lock: t.LOCK.UPDATE
@@ -263,18 +311,6 @@ var updateLastSeen = /*#__PURE__*/function () {
 
                       case 5:
                         group = _context3.sent;
-                        _context3.next = 8;
-                        return _models["default"].active.findOne({
-                          where: {
-                            userId: user.id,
-                            groupId: group.id
-                          },
-                          transaction: t,
-                          lock: t.LOCK.UPDATE
-                        });
-
-                      case 8:
-                        active = _context3.sent;
 
                         if (!group) {
                           _context3.next = 19;
@@ -285,6 +321,19 @@ var updateLastSeen = /*#__PURE__*/function () {
                           _context3.next = 19;
                           break;
                         }
+
+                        _context3.next = 10;
+                        return _models["default"].active.findOne({
+                          where: {
+                            userId: user.id,
+                            groupId: group.id
+                          },
+                          transaction: t,
+                          lock: t.LOCK.UPDATE
+                        });
+
+                      case 10:
+                        active = _context3.sent;
 
                         if (!active) {
                           _context3.next = 15;
@@ -358,10 +407,10 @@ var updateLastSeen = /*#__PURE__*/function () {
               console.log(err);
             });
 
-          case 2:
+          case 4:
             return _context4.abrupt("return", updatedUser);
 
-          case 3:
+          case 5:
           case "end":
             return _context4.stop();
         }

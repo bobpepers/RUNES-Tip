@@ -243,7 +243,7 @@ var telegramFaucetClaim = /*#__PURE__*/function () {
                         activity.unshift(finalActivity);
                         _context.t3 = ctx;
                         _context.next = 67;
-                        return (0, _telegram.faucetClaimedMessage)(lastFaucetTip.id, user, amountToTip);
+                        return (0, _telegram.faucetClaimedMessage)(faucetTip.id, user, amountToTip);
 
                       case 67:
                         _context.t4 = _context.sent;

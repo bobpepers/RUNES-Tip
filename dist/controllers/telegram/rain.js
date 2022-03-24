@@ -328,8 +328,6 @@ var telegramRain = /*#__PURE__*/function () {
                         return _context.finish(88);
 
                       case 91:
-                        // const newStringListUsers = listOfUsersRained.join(", ");
-                        // const cutStringListUsers = newStringListUsers.match(/.{1,3500}(\s|$)/g);
                         cutStringListUsers = [];
                         i = 0;
                         listOfUsersRained.forEach(function (word) {
