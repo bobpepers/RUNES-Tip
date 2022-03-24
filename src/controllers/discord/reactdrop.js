@@ -175,161 +175,165 @@ export const listenReactDrop = async (
         }
 
         if (reactDrop.emoji !== constructEmoji) {
-          await collector.send('Failed, pressed wrong emoji');
+          await collector.send('Failed, pressed wrong emoji').catch((e) => {
+            console.log('failed to send wrong emoji warning');
+            console.log(e);
+          });
           await findReactTip.update({ status: 'failed' });
         } else {
           const captchaPngFixed = captchaPng.replace('data:image/png;base64,', '');
           const awaitCaptchaMessage = await collector.send({
             embeds: [ReactdropCaptchaMessage(collector.id)],
             files: [new MessageAttachment(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')],
+          }).catch((e) => {
+            console.log('failed to send captcha');
+            console.log(e);
           });
-          const Ccollector = await awaitCaptchaMessage.channel.createMessageCollector({ filter, time: 60000, max: 1 });
-          await Ccollector.on('collect', async (m) => {
-            await db.sequelize.transaction({
-              isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-            }, async (t) => {
-              if (m.content === findReactTip.solution) {
-                await findReactTip.update(
-                  {
-                    status: 'success',
-                  },
-                  {
+          if (awaitCaptchaMessage) {
+            const Ccollector = await awaitCaptchaMessage.channel.createMessageCollector({ filter, time: 60000, max: 1 });
+            await Ccollector.on('collect', async (m) => {
+              await db.sequelize.transaction({
+                isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+              }, async (t) => {
+                if (m.content === findReactTip.solution) {
+                  await findReactTip.update(
+                    {
+                      status: 'success',
+                    },
+                    {
+                      lock: t.LOCK.UPDATE,
+                      transaction: t,
+                    },
+                  );
+                  const reactDropRecord = await db.reactdrop.findOne({
+                    where: {
+                      id: findReactTip.reactdropId,
+                    },
+                    include: [
+                      {
+                        model: db.group,
+                        as: 'group',
+                      },
+                      {
+                        model: db.channel,
+                        as: 'channel',
+                      },
+                    ],
                     lock: t.LOCK.UPDATE,
                     transaction: t,
-                  },
-                );
-                const reactDropRecord = await db.reactdrop.findOne({
-                  where: {
-                    id: findReactTip.reactdropId,
-                  },
-                  include: [
-                    {
-                      model: db.group,
-                      as: 'group',
-                    },
-                    {
-                      model: db.channel,
-                      as: 'channel',
-                    },
-                  ],
-                  lock: t.LOCK.UPDATE,
-                  transaction: t,
-                });
+                  });
 
-                const row = new MessageActionRow().addComponents(
-                  new MessageButton()
-                    .setLabel('Back to ReactDrop')
-                    .setStyle('LINK')
-                    .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`),
-                );
+                  const row = new MessageActionRow().addComponents(
+                    new MessageButton()
+                      .setLabel('Back to ReactDrop')
+                      .setStyle('LINK')
+                      .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`),
+                  );
 
-                await m.react('✅');
-                await collector.send({ content: '\u200b', components: [row] });
-              } else if (m.content !== findReactTip.solution) {
-                // console.log('content');
-                // console.log(m.content);
-                // console.log(findReactTip.solution);
-                await findReactTip.update({
-                  status: 'failed',
-                }, {
-                  lock: t.LOCK.UPDATE,
-                  transaction: t,
-                });
-                const reactDropRecord = await db.reactdrop.findOne({
-                  where: {
-                    id: findReactTip.reactdropId,
-                  },
-                  include: [
-                    {
-                      model: db.group,
-                      as: 'group',
+                  await m.react('✅');
+                  await collector.send({ content: '\u200b', components: [row] });
+                } else if (m.content !== findReactTip.solution) {
+                  await findReactTip.update({
+                    status: 'failed',
+                  }, {
+                    lock: t.LOCK.UPDATE,
+                    transaction: t,
+                  });
+                  const reactDropRecord = await db.reactdrop.findOne({
+                    where: {
+                      id: findReactTip.reactdropId,
                     },
-                    {
-                      model: db.channel,
-                      as: 'channel',
-                    },
-                  ],
-                  lock: t.LOCK.UPDATE,
-                  transaction: t,
-                });
-                const row = new MessageActionRow().addComponents(
-                  new MessageButton()
-                    .setLabel('Back to ReactDrop')
-                    .setStyle('LINK')
-                    .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`),
-                );
-                await m.react('❌');
-                await collector.send({
-                  content: `Failed
+                    include: [
+                      {
+                        model: db.group,
+                        as: 'group',
+                      },
+                      {
+                        model: db.channel,
+                        as: 'channel',
+                      },
+                    ],
+                    lock: t.LOCK.UPDATE,
+                    transaction: t,
+                  });
+                  const row = new MessageActionRow().addComponents(
+                    new MessageButton()
+                      .setLabel('Back to ReactDrop')
+                      .setStyle('LINK')
+                      .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`),
+                  );
+                  await m.react('❌');
+                  await collector.send({
+                    content: `Failed
 Solution: **${findReactTip.solution}**`,
-                  components: [row],
+                    components: [row],
+                  });
+                }
+                t.afterCommit(() => {
+                  console.log('done');
                 });
-              }
-              t.afterCommit(() => {
-                console.log('done');
+              }).catch(async (err) => {
+                try {
+                  await db.error.create({
+                    type: 'collectAnswerReactDrop',
+                    error: `${err}`,
+                  });
+                } catch (e) {
+                  logger.error(`Error Discord: ${e}`);
+                }
+                console.log('failed');
               });
-            }).catch(async (err) => {
-              try {
-                await db.error.create({
-                  type: 'collectAnswerReactDrop',
-                  error: `${err}`,
-                });
-              } catch (e) {
-                logger.error(`Error Discord: ${e}`);
-              }
-              console.log('failed');
             });
-          });
 
-          await Ccollector.on('end', async (collected) => {
-            // eslint-disable-next-line no-promise-executor-return
-            await new Promise((r) => setTimeout(r, 200));
-            await db.sequelize.transaction({
-              isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-            }, async (t) => {
-              const findReactUserTwo = await db.user.findOne({
-                where: {
-                  user_id: `discord-${collector.id}`,
-                },
-                lock: t.LOCK.UPDATE,
-                transaction: t,
-              });
-              const findReactTipTwo = await db.reactdroptip.findOne({
-                where: {
-                  userId: findReactUserTwo.id,
-                  reactdropId: reactDrop.id,
-                },
-                lock: t.LOCK.UPDATE,
-                transaction: t,
-              });
-              if (findReactTipTwo.status === 'waiting') {
-                await findReactTipTwo.update({
-                  status: 'failed',
-                }, {
+            await Ccollector.on('end', async (collected) => {
+              // eslint-disable-next-line no-promise-executor-return
+              await new Promise((r) => setTimeout(r, 200));
+              await db.sequelize.transaction({
+                isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+              }, async (t) => {
+                const findReactUserTwo = await db.user.findOne({
+                  where: {
+                    user_id: `discord-${collector.id}`,
+                  },
                   lock: t.LOCK.UPDATE,
                   transaction: t,
                 });
-                collector.send('Out of time');
-              }
-              t.afterCommit(() => {
-                console.log('done');
-              });
-            }).catch(async (err) => {
-              try {
-                await db.error.create({
-                  type: 'endAnswerReactDrop',
-                  error: `${err}`,
+                const findReactTipTwo = await db.reactdroptip.findOne({
+                  where: {
+                    userId: findReactUserTwo.id,
+                    reactdropId: reactDrop.id,
+                  },
+                  lock: t.LOCK.UPDATE,
+                  transaction: t,
                 });
-              } catch (e) {
-                logger.error(`Error Discord: ${e}`);
-              }
-              console.log(err);
-              await collector.send('Something went wrong').catch((e) => {
-                console.log(e);
+                if (findReactTipTwo.status === 'waiting') {
+                  await findReactTipTwo.update({
+                    status: 'failed',
+                  }, {
+                    lock: t.LOCK.UPDATE,
+                    transaction: t,
+                  });
+                  collector.send('Out of time');
+                }
+                t.afterCommit(() => {
+                  console.log('done');
+                });
+              }).catch(async (err) => {
+                try {
+                  await db.error.create({
+                    type: 'endAnswerReactDrop',
+                    error: `${err}`,
+                  });
+                } catch (e) {
+                  logger.error(`Error Discord: ${e}`);
+                }
+                console.log(err);
+                await collector.send('Something went wrong').catch((e) => {
+                  console.log(e);
+                });
               });
             });
-            // await queue.add(() => endingCollectReactdrop);
-          });
+          }
         }
       }
     }

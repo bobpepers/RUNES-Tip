@@ -13,6 +13,7 @@ import getCoinSettings from '../../config/settings';
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/client/discord/validateAmount";
 import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
+import { validateWithdrawalAddress } from '../../helpers/blockchain/validateWithdrawalAddress';
 
 const settings = getCoinSettings();
 
@@ -61,50 +62,40 @@ export const withdrawDiscordCreate = async (
       return;
     }
 
-    // Add new currencies here (default fallback Runebase)
-    let isValidAddressInfo = false;
-    if (settings.coin.setting === 'Runebase') {
-      try {
-        isValidAddressInfo = await getInstance().getAddressInfo(filteredMessage[2]);
-      } catch (e) {
-        //
-        console.log(e);
-        if (e.response && e.response.status === 500) {
-          if (message.channel.type === 'DM') {
-            await message.author.send({ embeds: [invalidAddressMessage(message)] });
-          }
-          if (message.channel.type === 'GUILD_TEXT') {
-            await message.author.send({ embeds: [invalidAddressMessage(message)] });
-            await message.channel.send({ embeds: [warnDirectMessage(userId, 'Withdraw')] });
-          }
-          return;
-        }
-        await message.author.send('Runebase node offline');
-        return;
+    const [
+      isInvalidAddress,
+      isNodeOffline,
+      failWithdrawalActivity,
+    ] = await validateWithdrawalAddress(
+      filteredMessage[2],
+      user,
+      t,
+    );
+
+    if (isNodeOffline) {
+      await message.author.send('Runebase node offline');
+    }
+
+    if (isInvalidAddress) {
+      await message.author.send({
+        embeds: [
+          invalidAddressMessage(message),
+        ],
+      });
+    }
+
+    if (isInvalidAddress || isNodeOffline) {
+      if (message.channel.type !== 'DM') {
+        await message.channel.send({
+          embeds: [
+            warnDirectMessage(userId, 'Withdraw'),
+          ],
+        });
       }
     }
 
-    // Add new currencies here (default fallback Runebase)
-    let isValidAddress = false;
-    if (settings.coin.setting === 'Runebase') {
-      isValidAddress = await getInstance().utils.isRunebaseAddress(filteredMessage[2]);
-    } else if (settings.coin.setting === 'Pirate') {
-      isValidAddress = await getInstance().utils.isPirateAddress(filteredMessage[2]);
-    } else if (settings.coin.setting === 'Komodo') {
-      isValidAddress = await getInstance().utils.isKomodoAddress(filteredMessage[2]);
-    } else {
-      isValidAddress = await getInstance().utils.isRunebaseAddress(filteredMessage[2]);
-    }
-    //
-
-    if (!isValidAddress) {
-      if (message.channel.type === 'DM') {
-        await message.author.send({ embeds: [invalidAddressMessage(message)] });
-      }
-      if (message.channel.type === 'GUILD_TEXT') {
-        await message.author.send({ embeds: [invalidAddressMessage(message)] });
-        await message.channel.send({ embeds: [warnDirectMessage(userId, 'Withdraw')] });
-      }
+    if (failWithdrawalActivity) {
+      activity.unshift(failWithdrawalActivity);
       return;
     }
 
