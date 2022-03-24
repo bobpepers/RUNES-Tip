@@ -1,43 +1,142 @@
-import { Transaction } from "sequelize";
+/* eslint-disable no-await-in-loop */
+/* eslint-disable import/prefer-default-export */
+import _ from "lodash";
+import { Transaction, Op } from "sequelize";
 import db from '../../models';
 import {
-  userNotFoundMessage,
-  unableToFindUserMessage,
-  tipSuccessMessage,
-  generalErrorMessage,
+  notEnoughUsers,
+  userListMessage,
+  tipSingleSuccessMessage,
+  tipMultipleSuccessMessage,
+  errorMessage,
 } from '../../messages/telegram';
-import getCoinSettings from '../../config/settings';
 import { validateAmount } from "../../helpers/client/telegram/validateAmount";
+import { waterFaucet } from "../../helpers/waterFaucet";
 import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
+import { getUserToMentionFromDatabaseRecord } from "../../helpers/client/telegram/userToMention";
 
 import logger from "../../helpers/logger";
 
-const settings = getCoinSettings();
-
-export const tipRunesToUser = async (
+export const tipToTelegramUser = async (
+  telegramClient,
+  telegramApiClient,
   ctx,
-  tipTo,
-  tipAmount,
-  bot,
-  runesGroup,
+  filteredMessage,
   io,
   groupTask,
   setting,
+  faucetSetting,
+  queue,
 ) => {
+  const activity = [];
   let user;
-  let activity;
+  let AmountPosition = 1;
+  let AmountPositionEnded = false;
+  const usersToTip = [];
+  let type = 'split';
+  let userActivity;
+
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     [
       user,
-      activity,
+      userActivity,
     ] = await userWalletExist(
       ctx,
       t,
       'tip',
     );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
     if (!user) return;
+
+    // make users to tip array
+    while (!AmountPositionEnded) {
+      let userExist = false;
+      if (
+        ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].type === 'text_mention'
+       && !ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].user.is_bot
+      ) {
+        console.log('is a text mention');
+        console.log(ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].user);
+        userExist = await db.user.findOne({
+          where: {
+            user_id: `telegram-${ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].user.id}`,
+          },
+          include: [
+            {
+              model: db.wallet,
+              as: 'wallet',
+              required: true,
+              include: [
+                {
+                  model: db.address,
+                  as: 'addresses',
+                  required: false,
+                },
+              ],
+            },
+          ],
+          lock: t.LOCK.UPDATE,
+          transaction: t,
+        });
+      } else if (ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].type === 'mention') {
+        console.log('is a regular mention');
+        console.log(filteredMessage[parseInt(AmountPosition, 10)]);
+        userExist = await db.user.findOne({
+          where: {
+            username: `${filteredMessage[parseInt(AmountPosition, 10)].substring(1)}`,
+            user_id: { [Op.startsWith]: 'telegram-' },
+          },
+          include: [
+            {
+              model: db.wallet,
+              as: 'wallet',
+              required: true,
+              include: [
+                {
+                  model: db.address,
+                  as: 'addresses',
+                  required: false,
+                },
+              ],
+            },
+          ],
+          lock: t.LOCK.UPDATE,
+          transaction: t,
+        });
+      }
+
+      if (userExist) {
+        const userIdTest = userExist.user_id.replace('telegram-', '');
+        console.log(ctx.update.message.from.id);
+        console.log('ctx.update.message.from');
+        console.log(userIdTest);
+        if (Number(userIdTest) !== ctx.update.message.from.id) {
+          if (!usersToTip.find((o) => o.id === userExist.id)) {
+            usersToTip.push(userExist);
+          }
+        }
+      }
+
+      AmountPosition += 1;
+      if (AmountPosition > ctx.update.message.entities.length) {
+        AmountPositionEnded = true;
+      }
+    }
+
+    if (usersToTip.length < 1) {
+      await ctx.replyWithHTML(notEnoughUsers('Tip'));
+      return;
+    }
+
+    if (filteredMessage[AmountPosition + 1] && filteredMessage[AmountPosition + 1].toLowerCase() === 'each') {
+      console.log('filteredMessage[AmountPosition + 1]');
+      console.log(filteredMessage[AmountPosition + 1]);
+      type = 'each';
+    }
 
     const [
       activityValiateAmount,
@@ -45,122 +144,204 @@ export const tipRunesToUser = async (
     ] = await validateAmount(
       ctx,
       t,
-      tipAmount,
+      filteredMessage[parseInt(AmountPosition, 10)],
       user,
       setting,
       'tip',
+      type,
+      usersToTip,
     );
+
     if (activityValiateAmount) {
-      activity = activityValiateAmount;
+      activity.unshift(activityValiateAmount);
       return;
     }
 
-    const userToTip = tipTo.substring(1);
-    const findUserToTip = await db.user.findOne({
-      where: {
-        username: userToTip,
-      },
-      include: [
-        {
-          model: db.wallet,
-          as: 'wallet',
-          include: [
-            {
-              model: db.address,
-              as: 'addresses',
-            },
-          ],
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-    if (!findUserToTip) {
-      activity = await db.activity.create({
-        type: 'tip_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      ctx.reply(unableToFindUserMessage());
-      return;
-    }
-
-    const wallet = await user.wallet.update({
+    const updatedBalance = await user.wallet.update({
       available: user.wallet.available - amount,
     }, {
-      transaction: t,
       lock: t.LOCK.UPDATE,
+      transaction: t,
     });
     const fee = ((amount / 100) * (setting.fee / 1e2)).toFixed(0);
-    const userTipAmount = (amount - Number(fee));
+    const userTipAmount = (amount - Number(fee)) / usersToTip.length;
 
-    const updatedFindUserToTip = findUserToTip.wallet.update({
-      available: findUserToTip.wallet.available + userTipAmount,
-    }, {
-      transaction: t,
-      lock: t.LOCK.UPDATE,
-    });
-
-    const tipTransaction = await db.tip.create({
-      feeAmount: Number(fee),
-      userId: user.id,
+    const faucetWatered = await waterFaucet(
+      t,
+      Number(fee),
+      faucetSetting,
+    );
+    const tipRecord = await db.tip.create({
+      feeAmount: fee,
       amount,
-      type: 'split',
-      userCount: 1,
+      type,
+      userCount: usersToTip.length,
+      userId: user.id,
       groupId: groupTask.id,
     }, {
-      transaction: t,
       lock: t.LOCK.UPDATE,
-    });
-    const tiptipTransaction = await db.tiptip.create({
-      userId: findUserToTip.id,
-      tipId: tipTransaction.id,
-      amount: Number(userTipAmount),
-      groupId: groupTask.id,
-    }, {
       transaction: t,
-      lock: t.LOCK.UPDATE,
     });
-
-    activity = await db.activity.create({
+    const preActivity = await db.activity.create({
       amount,
       type: 'tip_s',
-      earnerId: findUserToTip.id,
       spenderId: user.id,
-      earner_balance: updatedFindUserToTip.available + updatedFindUserToTip.locked,
-      spender_balance: wallet.available + wallet.locked,
+      tipId: tipRecord.id,
+      spender_balance: updatedBalance.available + updatedBalance.locked,
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-
-    ctx.reply(tipSuccessMessage(user, amount, findUserToTip));
-    logger.info(`Success tip Requested by: ${ctx.update.message.from.id}-${ctx.update.message.from.username} to ${findUserToTip.username} with ${amount / 1e8} ${settings.coin.ticker}`);
-
-    t.afterCommit(() => {
-      console.log('done');
-    });
-  }).catch((err) => {
-    ctx.reply(generalErrorMessage());
-  });
-  if (activity) {
-    activity = await db.activity.findOne({
+    const finalActivity = await db.activity.findOne({
       where: {
-        id: activity.id,
+        id: preActivity.id,
       },
       include: [
         {
-          model: db.user,
-          as: 'earner',
+          model: db.tip,
+          as: 'tip',
         },
         {
           model: db.user,
           as: 'spender',
         },
       ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
     });
+    activity.unshift(finalActivity);
+
+    const listOfUsersRained = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for (const tipee of usersToTip) {
+      // eslint-disable-next-line no-await-in-loop
+      const tipeeWallet = await tipee.wallet.update({
+        available: tipee.wallet.available + Number(userTipAmount),
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      // eslint-disable-next-line no-await-in-loop
+      const tiptipRecord = await db.tiptip.create({
+        amount: Number(userTipAmount),
+        userId: tipee.id,
+        tipId: tipRecord.id,
+        groupId: groupTask.id,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      let tipActivity;
+      // eslint-disable-next-line no-await-in-loop
+      tipActivity = await db.activity.create({
+        amount: Number(userTipAmount),
+        type: 'tiptip_s',
+        spenderId: user.id,
+        earnerId: tipee.id,
+        tipId: tipRecord.id,
+        tiptipId: tiptipRecord.id,
+        earner_balance: tipeeWallet.available + tipeeWallet.locked,
+        spender_balance: updatedBalance.available + updatedBalance.locked,
+      }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      // eslint-disable-next-line no-await-in-loop
+      tipActivity = await db.activity.findOne({
+        where: {
+          id: tipActivity.id,
+        },
+        include: [
+          {
+            model: db.user,
+            as: 'earner',
+          },
+          {
+            model: db.user,
+            as: 'spender',
+          },
+          {
+            model: db.tip,
+            as: 'tip',
+          },
+          {
+            model: db.tiptip,
+            as: 'tiptip',
+          },
+        ],
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      activity.unshift(tipActivity);
+
+      const [
+        userToMention,
+        userId,
+      ] = await getUserToMentionFromDatabaseRecord(tipee);
+
+      if (tipee.ignoreMe) {
+        listOfUsersRained.push(`${userToMention}`);
+      } else {
+        listOfUsersRained.push(`<a href="tg://user?id=${userId}">${userToMention}</a>`);
+      }
+    }
+
+    if (listOfUsersRained.length === 1) {
+      await ctx.replyWithHTML(
+        await tipSingleSuccessMessage(
+          ctx,
+          tipRecord.id,
+          listOfUsersRained,
+          userTipAmount,
+        ),
+      );
+    } else if (listOfUsersRained.length > 1) {
+      const newStringListUsers = listOfUsersRained.join(", ");
+      const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
+      // eslint-disable-next-line no-restricted-syntax
+      for (const element of cutStringListUsers) {
+        // eslint-disable-next-line no-await-in-loop
+        await ctx.replyWithHTML(
+          await userListMessage(
+            element,
+          ),
+        );
+      }
+
+      await ctx.replyWithHTML(
+        await tipMultipleSuccessMessage(
+          ctx,
+          tipRecord.id,
+          listOfUsersRained,
+          userTipAmount,
+          type,
+        ),
+      );
+    }
+
+    t.afterCommit(() => {
+      console.log('done');
+    });
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'Tip',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Telegram: ${e}`);
+    }
+    console.log(err);
+    logger.error(`tip error: ${err}`);
+    try {
+      await ctx.replyWithHTML(errorMessage(
+        'Tip',
+      ));
+    } catch (err) {
+      console.log(err);
+    }
+  });
+  if (activity.length > 0) {
     io.to('admin').emit('updateActivity', {
       activity,
     });

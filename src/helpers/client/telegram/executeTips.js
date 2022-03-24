@@ -23,14 +23,20 @@ export const executeTipFunction = async (
   let userBeingTipped;
   const chatId = Math.abs(ctx.message.chat.id);
   if (
-    filteredMessage[1].startsWith('<a')
-        && !filteredMessage[2].startsWith('<a')
+    ctx
+    && ctx.update
+    && ctx.update.message
+    && ctx.update.message.entities
+    && ctx.update.message.entities.length === 1
   ) {
     operationName = 'tip';
     userBeingTipped = filteredMessage[1];
   } else if (
-    filteredMessage[1].startsWith('<a')
-        && filteredMessage[2].startsWith('<a')
+    ctx
+    && ctx.update
+    && ctx.update.message
+    && ctx.update.message.entities
+    && ctx.update.message.entities.length > 1
   ) {
     operationName = 'tip';
     userBeingTipped = 'multiple users';

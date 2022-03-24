@@ -6,7 +6,7 @@ import { Transaction, Op } from "sequelize";
 import dotenv from 'dotenv';
 import db from '../../models';
 import {
-  groupNotFoundMessage,  
+  groupNotFoundMessage,
   invalidTimeMessage,
   afterSuccessMessage,
   notEnoughUsers,
@@ -340,7 +340,7 @@ export const telegramSleet = async (
       for (const element of cutStringListUsers) {
       // eslint-disable-next-line no-await-in-loop
         await ctx.replyWithHTML(
-          userListMessage(
+          await userListMessage(
             element,
           ),
         );

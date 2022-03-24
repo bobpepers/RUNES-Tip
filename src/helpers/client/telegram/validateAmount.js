@@ -61,6 +61,11 @@ export const validateAmount = async (
       amount,
     ];
   }
+
+  if (tipType === 'each' && preAmount.toLowerCase() !== 'all') {
+    amount *= usersToTip.length;
+  }
+
   if (amount % 1 !== 0) {
     activity = await db.activity.create({
       type: `${type}_f`,

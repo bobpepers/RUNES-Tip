@@ -8,6 +8,8 @@ import {
 
 const settings = getCoinSettings();
 
+const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
+
 export const featureDisabledServerMessage = async () => {
   const result = `<u><b>This feature has been disabled for this group</b></u>
   
@@ -534,10 +536,52 @@ export const invalidTimeMessage = async (
   return result;
 };
 
-export const userListMessage = (
+export const userListMessage = async (
   list,
 ) => {
   const result = `<b>${list}</b>`;
+  return result;
+};
+
+export const tipSingleSuccessMessage = async (
+  ctx,
+  id,
+  listOfUsersRained,
+  amount,
+) => {
+  const [
+    userToMention,
+    userId,
+  ] = await getUserToMentionCtx(ctx);
+
+  const result = `<u><b>Tip #${id}</b></u>
+  
+<a href="tg://user?id=${userId}">${userToMention}</a> tipped <b>${amount / 1e8} ${settings.coin.ticker}</b> to ${listOfUsersRained[0]}
+  
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
+  return result;
+};
+
+export const tipMultipleSuccessMessage = async (
+  ctx,
+  id,
+  listOfUsersRained,
+  amount,
+  type,
+) => {
+  const [
+    userToMention,
+    userId,
+  ] = await getUserToMentionCtx(ctx);
+  const result = `<u><b>Tip #${id}</b></u>
+  
+<a href="tg://user?id=${userId}">${userToMention}</a> tipped <b>${(amount * listOfUsersRained.length) / 1e8} ${settings.coin.ticker}</b> to ${listOfUsersRained.length} users
+
+Type: <b>${capitalize(type)}</b> 
+  
+💸 <b>${amount / 1e8} ${settings.coin.ticker}</b> each 💸
+
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
 

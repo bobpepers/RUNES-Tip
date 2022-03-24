@@ -5,43 +5,35 @@ import { telegramFaucetClaim } from '../controllers/telegram/faucet';
 import { fetchWalletBalance } from '../controllers/telegram/balance';
 import { fetchWalletDepositAddress } from '../controllers/telegram/deposit';
 import { withdrawTelegramCreate } from '../controllers/telegram/withdraw';
-import { tipRunesToUser } from '../controllers/telegram/tip';
+import { tipToTelegramUser } from '../controllers/telegram/tip';
 import { telegramRain } from '../controllers/telegram/rain';
 import { telegramFlood } from '../controllers/telegram/flood';
 import { telegramSleet } from '../controllers/telegram/sleet';
+import fetchPriceInfo from '../controllers/telegram/price';
 
 import { executeTipFunction } from '../helpers/client/telegram/executeTips';
 import { disallowDirectMessage } from '../helpers/client/telegram/disallowDirectMessage';
+import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
+import { myRateLimiter } from '../helpers/rateLimit';
 
+import { updateGroup } from '../controllers/telegram/group';
 import {
   updateLastSeen,
   createUpdateUser,
 } from '../controllers/telegram/user';
-
-import {
-  updateGroup,
-} from '../controllers/telegram/group';
-
 import {
   fetchReferralCount,
   createReferral,
   fetchReferralTopTen,
 } from '../controllers/telegram/referral';
-
-import fetchPriceInfo from '../controllers/telegram/price';
-
-import getCoinSettings from '../config/settings';
 import {
   telegramSettings,
   telegramWaterFaucetSettings,
 } from '../controllers/telegram/settings';
-import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
 
-import { myRateLimiter } from '../helpers/rateLimit';
+import getCoinSettings from '../config/settings';
 
 const settings = getCoinSettings();
-
-// import logger from "../helpers/logger";
 
 config();
 const { Api, TelegramClient } = require('telegram');
@@ -162,85 +154,6 @@ export const telegramRouter = async (
   telegramClient.action('deposit', depositCallBack);
   telegramClient.command('deposit', depositCallBack);
 
-  // telegramClient.command('rain', async (ctx) => {
-  //   const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
-  //   if (maintenance.maintenance || !maintenance.enabled) return;
-  //   const limited = await myRateLimiter(
-  //     telegramClient,
-  //     ctx,
-  //     'telegram',
-  //     'Rain',
-  //   );
-  //   if (limited) return;
-  //   const filteredMessageTelegram = ctx.update.message.text.split(' ');
-  //   if (!filteredMessageTelegram[1]) {
-  //     ctx.reply('invalid amount of arguments');
-  //   }
-  //   if (filteredMessageTelegram[1]) {
-  //     (async () => {
-  //       const groupTask = await updateGroup(ctx);
-  //       await queue.add(() => groupTask);
-  //       const groupTaskId = groupTask && groupTask.id;
-  //       const setting = await telegramSettings(ctx, 'rain', groupTaskId);
-  //       await queue.add(() => setting);
-  //       if (!setting) return;
-  //       const rainAmount = filteredMessageTelegram[1];
-  //       const task = await rainRunesToUsers(
-  //         ctx,
-  //         rainAmount,
-  //         telegramClient,
-  //         runesGroup,
-  //         io,
-  //         setting,
-  //       );
-  //       await queue.add(() => task);
-  //     })();
-  //   }
-  // });
-
-  telegramClient.command('withdraw', async (ctx) => {
-    const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
-    if (maintenance.maintenance || !maintenance.enabled) return;
-    const limited = await myRateLimiter(
-      telegramClient,
-      ctx,
-      'telegram',
-      'Withdraw',
-    );
-    if (limited) return;
-
-    const filteredMessageTelegram = ctx.update.message.text.split(' ');
-    if (!filteredMessageTelegram[1]) {
-      ctx.reply('insufficient Arguments');
-      return;
-    }
-    if (!filteredMessageTelegram[2]) {
-      ctx.reply('insufficient Arguments');
-      return;
-    }
-
-    const groupTask = await updateGroup(ctx);
-    const groupTaskId = groupTask && groupTask.id;
-    const setting = await telegramSettings(
-      ctx,
-      'withdraw',
-      groupTaskId,
-    );
-    await queue.add(() => setting);
-    if (!setting) return;
-    const withdrawalAddress = filteredMessageTelegram[1];
-    const withdrawalAmount = filteredMessageTelegram[2];
-    console.log('before withdrawal create');
-    const task = await withdrawTelegramCreate(
-      ctx,
-      withdrawalAddress,
-      withdrawalAmount,
-      io,
-      setting,
-    );
-    await queue.add(() => task);
-  });
-
   if (settings.coin.setting === 'Runebase') {
     telegramClient.command('referral', async (ctx) => {
       const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
@@ -284,10 +197,10 @@ export const telegramRouter = async (
   }
 
   telegramClient.on('new_chat_members', async (ctx) => {
-    const groupTask = await updateGroup(ctx);
-    await queue.add(() => groupTask);
-    const task = await createUpdateUser(ctx);
-    await queue.add(() => task);
+    await queue.add(async () => {
+      const groupTask = await updateGroup(ctx);
+      const task = await createUpdateUser(ctx);
+    });
     if (settings.coin.setting === 'Runebase') {
       if (ctx.update.message.chat.id === Number(runesGroup)) {
         await queue.add(async () => {
@@ -339,7 +252,7 @@ export const telegramRouter = async (
         });
       }
 
-      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'help') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'help') {
         const limited = await myRateLimiter(
           telegramClient,
           ctx,
@@ -353,7 +266,7 @@ export const telegramRouter = async (
         });
       }
 
-      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'price') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'price') {
         const limited = await myRateLimiter(
           telegramClient,
           ctx,
@@ -367,7 +280,7 @@ export const telegramRouter = async (
         });
       }
 
-      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'info') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'info') {
         const limited = await myRateLimiter(
           telegramClient,
           ctx,
@@ -384,7 +297,7 @@ export const telegramRouter = async (
         });
       }
 
-      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'faucet') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'faucet') {
         const limited = await myRateLimiter(
           telegramClient,
           ctx,
@@ -400,7 +313,7 @@ export const telegramRouter = async (
         });
       }
 
-      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'balance') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'balance') {
         const limited = await myRateLimiter(
           telegramClient,
           ctx,
@@ -417,7 +330,7 @@ export const telegramRouter = async (
         });
       }
 
-      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'deposit') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'deposit') {
         const limited = await myRateLimiter(
           telegramClient,
           ctx,
@@ -451,7 +364,7 @@ export const telegramRouter = async (
         }
       }
 
-      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'flood') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'flood') {
         const limited = await myRateLimiter(
           telegramClient,
           ctx,
@@ -491,7 +404,7 @@ export const telegramRouter = async (
         );
       }
 
-      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'sleet') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'sleet') {
         const limited = await myRateLimiter(
           telegramClient,
           ctx,
@@ -531,7 +444,7 @@ export const telegramRouter = async (
         );
       }
 
-      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'rain') {
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'rain') {
         const limited = await myRateLimiter(
           telegramClient,
           ctx,
@@ -601,7 +514,16 @@ export const telegramRouter = async (
         );
       }
 
-      if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'tip') {
+      console.log(ctx);
+      console.log(ctx.update.message.entities);
+      console.log(filteredMessageTelegram);
+      if (
+        filteredMessageTelegram[1]
+        && ctx.update
+        && ctx.update.message
+        && ctx.update.message.entities
+        && ctx.update.message.entities.length > 0
+      ) {
         const limited = await myRateLimiter(
           telegramClient,
           ctx,
@@ -620,32 +542,26 @@ export const telegramRouter = async (
         });
         if (disallow) return;
 
-        if (!filteredMessageTelegram[2]) {
-          ctx.reply('insufficient Arguments');
-          return;
-        }
-        if (!filteredMessageTelegram[3]) {
-          ctx.reply('insufficient Arguments');
-          return;
-        }
-
-        const setting = await telegramSettings(ctx, 'tip', groupTaskId);
+        const setting = await telegramSettings(
+          ctx,
+          'tip',
+          groupTaskId,
+        );
         if (!setting) return;
-        const tipAmount = filteredMessageTelegram[3];
-        const tipTo = filteredMessageTelegram[2];
-        if (groupTask) {
-          const task = await tipRunesToUser(
-            ctx,
-            tipTo,
-            tipAmount,
-            telegramClient,
-            runesGroup,
-            io,
-            groupTask,
-            setting,
-          );
-          await queue.add(() => task);
-        }
+
+        await executeTipFunction(
+          tipToTelegramUser,
+          queue,
+          filteredMessageTelegram[ctx.update.message.entities.length + 1],
+          telegramClient,
+          telegramApiClient,
+          ctx,
+          filteredMessageTelegram,
+          io,
+          groupTask,
+          setting,
+          faucetSetting,
+        );
       }
     }
   });

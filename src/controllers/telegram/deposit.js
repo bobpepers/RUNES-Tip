@@ -35,7 +35,9 @@ export const fetchWalletDepositAddress = async (
     if (!user) return;
 
     if (!user && !user.wallet && !user.wallet.addresses) {
-      await ctx.reply(depositAddressNotFoundMessage());
+      await ctx.replyWithHTML(
+        await depositAddressNotFoundMessage(),
+      );
       return;
     }
 
