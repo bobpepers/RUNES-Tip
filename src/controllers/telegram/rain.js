@@ -230,9 +230,6 @@ export const telegramRain = async (
       activity.unshift(tipActivity);
     }
 
-    // const newStringListUsers = listOfUsersRained.join(", ");
-    // const cutStringListUsers = newStringListUsers.match(/.{1,3500}(\s|$)/g);
-
     const cutStringListUsers = [];
     let i = 0;
     listOfUsersRained.forEach((word) => {

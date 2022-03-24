@@ -68,8 +68,18 @@ export const telegramRouter = async (
   telegramClient.command('help', async (ctx) => {
     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
     if (maintenance.maintenance || !maintenance.enabled) return;
-    const groupTask = await updateGroup(ctx);
     await queue.add(async () => {
+      await createUpdateUser(ctx);
+      await updateLastSeen(ctx);
+    });
+    const limited = await myRateLimiter(
+      telegramClient,
+      ctx,
+      'telegram',
+      'Help',
+    );
+    await queue.add(async () => {
+      const groupTask = await updateGroup(ctx);
       const task = await fetchHelp(ctx, io);
     });
   });
@@ -77,17 +87,38 @@ export const telegramRouter = async (
   const priceCallBack = async (ctx) => {
     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
     if (maintenance.maintenance || !maintenance.enabled) return;
-    const groupTask = await updateGroup(ctx);
     await queue.add(async () => {
+      await createUpdateUser(ctx);
+      await updateLastSeen(ctx);
+    });
+    const limited = await myRateLimiter(
+      telegramClient,
+      ctx,
+      'telegram',
+      'Price',
+    );
+    await queue.add(async () => {
+      const groupTask = await updateGroup(ctx);
       const task = await fetchPriceInfo(ctx, io);
     });
   };
 
   const faucetCallBack = async (ctx) => {
+    console.log('called faucetCallback');
     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
     if (maintenance.maintenance || !maintenance.enabled) return;
-    const groupTask = await updateGroup(ctx);
     await queue.add(async () => {
+      await createUpdateUser(ctx);
+      await updateLastSeen(ctx);
+    });
+    const limited = await myRateLimiter(
+      telegramClient,
+      ctx,
+      'telegram',
+      'Faucet',
+    );
+    await queue.add(async () => {
+      const groupTask = await updateGroup(ctx);
       const task = await telegramFaucetClaim(ctx, io);
     });
   };
@@ -95,6 +126,10 @@ export const telegramRouter = async (
   const balanceCallBack = async (ctx) => {
     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
     if (maintenance.maintenance || !maintenance.enabled) return;
+    await queue.add(async () => {
+      await createUpdateUser(ctx);
+      await updateLastSeen(ctx);
+    });
     const limited = await myRateLimiter(
       telegramClient,
       ctx,
@@ -102,8 +137,8 @@ export const telegramRouter = async (
       'Balance',
     );
     if (limited) return;
-    const groupTask = await updateGroup(ctx);
     await queue.add(async () => {
+      const groupTask = await updateGroup(ctx);
       const task = await fetchWalletBalance(
         ctx,
         io,
@@ -114,8 +149,18 @@ export const telegramRouter = async (
   const infoCallBack = async (ctx) => {
     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
     if (maintenance.maintenance || !maintenance.enabled) return;
-    const groupTask = await updateGroup(ctx);
     await queue.add(async () => {
+      await createUpdateUser(ctx);
+      await updateLastSeen(ctx);
+    });
+    const limited = await myRateLimiter(
+      telegramClient,
+      ctx,
+      'telegram',
+      'Info',
+    );
+    await queue.add(async () => {
+      const groupTask = await updateGroup(ctx);
       const task = await fetchInfo(
         ctx,
         io,
@@ -126,6 +171,10 @@ export const telegramRouter = async (
   const depositCallBack = async (ctx) => {
     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
     if (maintenance.maintenance || !maintenance.enabled) return;
+    await queue.add(async () => {
+      await createUpdateUser(ctx);
+      await updateLastSeen(ctx);
+    });
     const limited = await myRateLimiter(
       telegramClient,
       ctx,
@@ -133,9 +182,8 @@ export const telegramRouter = async (
       'Deposit',
     );
     if (limited) return;
-    const groupTask = await updateGroup(ctx);
-    await queue.add(() => groupTask);
     await queue.add(async () => {
+      const groupTask = await updateGroup(ctx);
       const task = await fetchWalletDepositAddress(
         ctx,
         io,
@@ -158,41 +206,41 @@ export const telegramRouter = async (
     telegramClient.command('referral', async (ctx) => {
       const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
       if (maintenance.maintenance || !maintenance.enabled) return;
-      const groupTask = await updateGroup(ctx);
-      await queue.add(() => groupTask);
-      const telegramUserId = ctx.update.message.from.id;
-      const telegramUserName = ctx.update.message.from.username;
-      const task = await fetchReferralCount(ctx, telegramUserId, telegramUserName);
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const groupTask = await updateGroup(ctx);
+        const telegramUserId = ctx.update.message.from.id;
+        const telegramUserName = ctx.update.message.from.username;
+        const task = await fetchReferralCount(ctx, telegramUserId, telegramUserName);
+      });
     });
 
     telegramClient.action('referral', async (ctx) => {
       const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
       if (maintenance.maintenance || !maintenance.enabled) return;
-      const groupTask = await updateGroup(ctx);
-      await queue.add(() => groupTask);
-      const telegramUserId = ctx.update.callback_query.from.id;
-      const telegramUserName = ctx.update.callback_query.from.username;
-      const task = await fetchReferralCount(ctx, telegramUserId, telegramUserName);
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const groupTask = await updateGroup(ctx);
+        const telegramUserId = ctx.update.callback_query.from.id;
+        const telegramUserName = ctx.update.callback_query.from.username;
+        const task = await fetchReferralCount(ctx, telegramUserId, telegramUserName);
+      });
     });
 
     telegramClient.command('top', async (ctx) => {
       const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
       if (maintenance.maintenance || !maintenance.enabled) return;
-      const groupTask = await updateGroup(ctx);
-      await queue.add(() => groupTask);
-      const task = await fetchReferralTopTen(ctx);
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const groupTask = await updateGroup(ctx);
+        const task = await fetchReferralTopTen(ctx);
+      });
     });
 
     telegramClient.action('ReferralTop', async (ctx) => {
       const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
       if (maintenance.maintenance || !maintenance.enabled) return;
-      const groupTask = await updateGroup(ctx);
-      await queue.add(() => groupTask);
-      const task = await fetchReferralTopTen(ctx);
-      await queue.add(() => task);
+      await queue.add(async () => {
+        const groupTask = await updateGroup(ctx);
+        const task = await fetchReferralTopTen(ctx);
+      });
     });
   }
 
@@ -216,8 +264,10 @@ export const telegramRouter = async (
 
   telegramClient.on('text', async (ctx) => {
     let lastSeen;
+    let groupTask;
     await queue.add(async () => {
       await createUpdateUser(ctx);
+      groupTask = await updateGroup(ctx);
       lastSeen = await updateLastSeen(ctx);
     });
 
@@ -230,7 +280,6 @@ export const telegramRouter = async (
       let disallow;
       const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
       if (maintenance.maintenance || !maintenance.enabled) return;
-      const groupTask = await updateGroup(ctx);
       const groupTaskId = groupTask && groupTask.id;
 
       const faucetSetting = await telegramWaterFaucetSettings(

@@ -156,7 +156,7 @@ export const telegramFaucetClaim = async (
     activity.unshift(finalActivity);
     await ctx.replyWithHTML(
       await faucetClaimedMessage(
-        lastFaucetTip.id,
+        faucetTip.id,
         user,
         amountToTip,
       ),

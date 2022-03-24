@@ -11,7 +11,7 @@ export const userWalletExist = async (
   functionName,
 ) => {
   let activity;
-  let userId;
+  let userId = 0;
   if (
     ctx
     && ctx.update
@@ -20,8 +20,7 @@ export const userWalletExist = async (
     && ctx.update.message.from.id
   ) {
     userId = ctx.update.message.from.id;
-  }
-  if (
+  } else if (
     ctx
     && ctx.update
     && ctx.update.callback_query
