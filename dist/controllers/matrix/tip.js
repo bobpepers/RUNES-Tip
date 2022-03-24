@@ -21,11 +21,11 @@ var _models = _interopRequireDefault(require("../../models"));
 
 var _matrix = require("../../messages/matrix");
 
-var _validateAmount = require("../../helpers/matrix/validateAmount");
+var _validateAmount = require("../../helpers/client/matrix/validateAmount");
 
 var _waterFaucet = require("../../helpers/waterFaucet");
 
-var _userWalletExist = require("../../helpers/matrix/userWalletExist");
+var _userWalletExist = require("../../helpers/client/matrix/userWalletExist");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 

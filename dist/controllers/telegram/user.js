@@ -73,18 +73,20 @@ var createUpdateUser = /*#__PURE__*/function () {
 
                       case 7:
                         if (!user) {
-                          _context.next = 42;
+                          _context.next = 39;
                           break;
                         }
 
-                        if (!(user.firstname !== ctx.update.message.from.first_name)) {
+                        if (!(user.firstname !== ctx.update.message.from.first_name || user.lastname !== ctx.update.message.from.last_name || user.username !== ctx.update.message.from.username)) {
                           _context.next = 12;
                           break;
                         }
 
                         _context.next = 11;
                         return user.update({
-                          firstname: ctx.update.message.from.first_name
+                          firstname: ctx.update.message.from.first_name,
+                          lastname: ctx.update.message.from.last_name,
+                          username: ctx.update.message.from.username
                         }, {
                           transaction: t,
                           lock: t.LOCK.UPDATE
@@ -94,41 +96,7 @@ var createUpdateUser = /*#__PURE__*/function () {
                         user = _context.sent;
 
                       case 12:
-                        if (!(user.lastname !== ctx.update.message.from.last_name)) {
-                          _context.next = 16;
-                          break;
-                        }
-
-                        _context.next = 15;
-                        return user.update({
-                          lastname: ctx.update.message.from.last_name
-                        }, {
-                          transaction: t,
-                          lock: t.LOCK.UPDATE
-                        });
-
-                      case 15:
-                        user = _context.sent;
-
-                      case 16:
-                        if (!(user.username !== ctx.update.message.from.username)) {
-                          _context.next = 20;
-                          break;
-                        }
-
-                        _context.next = 19;
-                        return user.update({
-                          username: ctx.update.message.from.username
-                        }, {
-                          transaction: t,
-                          lock: t.LOCK.UPDATE
-                        });
-
-                      case 19:
-                        user = _context.sent;
-
-                      case 20:
-                        _context.next = 22;
+                        _context.next = 14;
                         return _models["default"].wallet.findOne({
                           where: {
                             userId: user.id
@@ -137,15 +105,15 @@ var createUpdateUser = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 22:
+                      case 14:
                         wallet = _context.sent;
 
                         if (wallet) {
-                          _context.next = 27;
+                          _context.next = 19;
                           break;
                         }
 
-                        _context.next = 26;
+                        _context.next = 18;
                         return _models["default"].wallet.create({
                           userId: user.id,
                           available: 0,
@@ -155,11 +123,11 @@ var createUpdateUser = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 26:
+                      case 18:
                         wallet = _context.sent;
 
-                      case 27:
-                        _context.next = 29;
+                      case 19:
+                        _context.next = 21;
                         return _models["default"].address.findOne({
                           where: {
                             walletId: wallet.id
@@ -168,20 +136,20 @@ var createUpdateUser = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 29:
+                      case 21:
                         address = _context.sent;
 
                         if (address) {
-                          _context.next = 42;
+                          _context.next = 39;
                           break;
                         }
 
-                        _context.next = 33;
+                        _context.next = 25;
                         return (0, _rclient.getInstance)().getNewAddress();
 
-                      case 33:
+                      case 25:
                         newAddress = _context.sent;
-                        _context.next = 36;
+                        _context.next = 28;
                         return _models["default"].address.findOne({
                           where: {
                             address: newAddress
@@ -190,15 +158,15 @@ var createUpdateUser = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 36:
+                      case 28:
                         addressAlreadyExist = _context.sent;
 
                         if (addressAlreadyExist) {
-                          _context.next = 42;
+                          _context.next = 39;
                           break;
                         }
 
-                        _context.next = 40;
+                        _context.next = 32;
                         return _models["default"].address.create({
                           address: newAddress,
                           walletId: wallet.id,
@@ -209,16 +177,23 @@ var createUpdateUser = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 40:
+                      case 32:
                         address = _context.sent;
-                        ctx.reply((0, _telegram.welcomeMessage)(ctx));
+                        _context.t0 = ctx;
+                        _context.next = 36;
+                        return (0, _telegram.welcomeMessage)(user);
 
-                      case 42:
+                      case 36:
+                        _context.t1 = _context.sent;
+                        _context.next = 39;
+                        return _context.t0.replyWithHTML.call(_context.t0, _context.t1);
+
+                      case 39:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 43:
+                      case 40:
                       case "end":
                         return _context.stop();
                     }
@@ -250,6 +225,7 @@ exports.createUpdateUser = createUpdateUser;
 
 var updateLastSeen = /*#__PURE__*/function () {
   var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(ctx) {
+    var updatedUser;
     return _regenerator["default"].wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
@@ -259,7 +235,7 @@ var updateLastSeen = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(t) {
-                var user, group, active, updatedActive, _updatedActive, updatedUser;
+                var user, group, active, updatedActive, _updatedActive;
 
                 return _regenerator["default"].wrap(function _callee3$(_context3) {
                   while (1) {
@@ -383,6 +359,9 @@ var updateLastSeen = /*#__PURE__*/function () {
             });
 
           case 2:
+            return _context4.abrupt("return", updatedUser);
+
+          case 3:
           case "end":
             return _context4.stop();
         }

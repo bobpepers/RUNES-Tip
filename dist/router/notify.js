@@ -9,21 +9,13 @@ exports.notifyRouter = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
-
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _walletNotify = _interopRequireDefault(require("../helpers/runebase/walletNotify"));
+var _walletNotify = _interopRequireDefault(require("../helpers/blockchain/runebase/walletNotify"));
 
-var _walletNotify2 = _interopRequireDefault(require("../helpers/pirate/walletNotify"));
+var _walletNotify2 = _interopRequireDefault(require("../helpers/blockchain/pirate/walletNotify"));
 
-var _walletNotify3 = _interopRequireDefault(require("../helpers/komodo/walletNotify"));
-
-var _telegram = require("../messages/telegram");
-
-var _discord = require("../messages/discord");
-
-var _matrix = require("../messages/matrix");
+var _walletNotify3 = _interopRequireDefault(require("../helpers/blockchain/komodo/walletNotify"));
 
 var _syncRunebase = require("../services/syncRunebase");
 
@@ -31,7 +23,7 @@ var _syncPirate = require("../services/syncPirate");
 
 var _syncKomodo = require("../services/syncKomodo");
 
-var _directMessageRoom = require("../helpers/matrix/directMessageRoom");
+var _messageHandlers = require("../helpers/messageHandlers");
 
 var localhostOnly = function localhostOnly(req, res, next) {
   var hostmachine = req.headers.host.split(':')[0];
@@ -48,9 +40,9 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, mat
     if (settings.coin.setting === 'Runebase') {
       (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, matrixClient, queue);
     } else if (settings.coin.setting === 'Pirate') {
-      (0, _syncPirate.startPirateSync)(discordClient, telegramClient, queue);
+      (0, _syncPirate.startPirateSync)(discordClient, telegramClient, matrixClient, queue);
     } else if (settings.coin.setting === 'Komodo') {
-      (0, _syncKomodo.startKomodoSync)(discordClient, telegramClient, queue);
+      (0, _syncKomodo.startKomodoSync)(discordClient, telegramClient, matrixClient, queue);
     } else {
       (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, matrixClient, queue);
     }
@@ -61,7 +53,6 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, mat
   if (settings.coin.setting === 'Pirate') {
     app.post('/api/rpc/walletnotify', localhostOnly, _walletNotify2["default"], /*#__PURE__*/function () {
       var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res) {
-        var myClient;
         return _regenerator["default"].wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -72,38 +63,22 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, mat
                 }
 
                 console.log(res.locals.error);
-                _context.next = 12;
+                _context.next = 7;
                 break;
 
               case 4:
                 if (!(!res.locals.error && res.locals.transaction && res.locals.userId && res.locals.platform && res.locals.amount)) {
-                  _context.next = 12;
+                  _context.next = 7;
                   break;
                 }
 
-                if (res.locals.platform === 'telegram') {
-                  telegramClient.telegram.sendMessage(res.locals.userId, (0, _telegram.telegramIncomingDepositMessage)(res));
-                }
+                _context.next = 7;
+                return (0, _messageHandlers.incomingDepositMessageHandler)(discordClient, telegramClient, matrixClient, res);
 
-                if (!(res.locals.platform === 'discord')) {
-                  _context.next = 12;
-                  break;
-                }
-
-                _context.next = 9;
-                return discordClient.users.fetch(res.locals.userId, false);
-
-              case 9:
-                myClient = _context.sent;
-                _context.next = 12;
-                return myClient.send({
-                  embeds: [(0, _discord.discordIncomingDepositMessage)(res)]
-                });
-
-              case 12:
+              case 7:
                 res.sendStatus(200);
 
-              case 13:
+              case 8:
               case "end":
                 return _context.stop();
             }
@@ -118,7 +93,6 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, mat
   } else if (settings.coin.setting === 'Komodo') {
     app.post('/api/rpc/walletnotify', localhostOnly, _walletNotify3["default"], /*#__PURE__*/function () {
       var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(req, res) {
-        var myClient;
         return _regenerator["default"].wrap(function _callee2$(_context2) {
           while (1) {
             switch (_context2.prev = _context2.next) {
@@ -129,38 +103,22 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, mat
                 }
 
                 console.log(res.locals.error);
-                _context2.next = 12;
+                _context2.next = 7;
                 break;
 
               case 4:
                 if (!(!res.locals.error && res.locals.transaction && res.locals.userId && res.locals.platform && res.locals.amount)) {
-                  _context2.next = 12;
+                  _context2.next = 7;
                   break;
                 }
 
-                if (res.locals.platform === 'telegram') {
-                  telegramClient.telegram.sendMessage(res.locals.userId, (0, _telegram.telegramIncomingDepositMessage)(res));
-                }
+                _context2.next = 7;
+                return (0, _messageHandlers.incomingDepositMessageHandler)(discordClient, telegramClient, matrixClient, res);
 
-                if (!(res.locals.platform === 'discord')) {
-                  _context2.next = 12;
-                  break;
-                }
-
-                _context2.next = 9;
-                return discordClient.users.fetch(res.locals.userId, false);
-
-              case 9:
-                myClient = _context2.sent;
-                _context2.next = 12;
-                return myClient.send({
-                  embeds: [(0, _discord.discordIncomingDepositMessage)(res)]
-                });
-
-              case 12:
+              case 7:
                 res.sendStatus(200);
 
-              case 13:
+              case 8:
               case "end":
                 return _context2.stop();
             }
@@ -175,8 +133,6 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, mat
   } else if (settings.coin.setting === 'Runebase') {
     app.post('/api/rpc/walletnotify', localhostOnly, _walletNotify["default"], /*#__PURE__*/function () {
       var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(req, res) {
-        var myClient, _yield$findUserDirect, _yield$findUserDirect2, directUserMessageRoom, isCurrentRoomDirectMessage, userState;
-
         return _regenerator["default"].wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
@@ -187,62 +143,22 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, mat
                 }
 
                 console.log(res.locals.error);
-                _context3.next = 23;
+                _context3.next = 7;
                 break;
 
               case 4:
                 if (!(!res.locals.error && res.locals.transaction && res.locals.userId && res.locals.platform && res.locals.amount)) {
-                  _context3.next = 23;
+                  _context3.next = 7;
                   break;
                 }
 
-                if (res.locals.platform === 'telegram') {
-                  telegramClient.telegram.sendMessage(res.locals.userId, (0, _telegram.telegramIncomingDepositMessage)(res));
-                }
+                _context3.next = 7;
+                return (0, _messageHandlers.incomingDepositMessageHandler)(discordClient, telegramClient, matrixClient, res);
 
-                if (!(res.locals.platform === 'discord')) {
-                  _context3.next = 12;
-                  break;
-                }
-
-                _context3.next = 9;
-                return discordClient.users.fetch(res.locals.userId, false);
-
-              case 9:
-                myClient = _context3.sent;
-                _context3.next = 12;
-                return myClient.send({
-                  embeds: [(0, _discord.discordIncomingDepositMessage)(res)]
-                });
-
-              case 12:
-                if (!(res.locals.platform === 'matrix')) {
-                  _context3.next = 23;
-                  break;
-                }
-
-                _context3.next = 15;
-                return (0, _directMessageRoom.findUserDirectMessageRoom)(matrixClient, res.locals.userId);
-
-              case 15:
-                _yield$findUserDirect = _context3.sent;
-                _yield$findUserDirect2 = (0, _slicedToArray2["default"])(_yield$findUserDirect, 3);
-                directUserMessageRoom = _yield$findUserDirect2[0];
-                isCurrentRoomDirectMessage = _yield$findUserDirect2[1];
-                userState = _yield$findUserDirect2[2];
-
-                if (!directUserMessageRoom) {
-                  _context3.next = 23;
-                  break;
-                }
-
-                _context3.next = 23;
-                return matrixClient.sendEvent(directUserMessageRoom.roomId, "m.room.message", (0, _matrix.matrixIncomingDepositMessage)(res));
-
-              case 23:
+              case 7:
                 res.sendStatus(200);
 
-              case 24:
+              case 8:
               case "end":
                 return _context3.stop();
             }
@@ -257,8 +173,6 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, mat
   } else {
     app.post('/api/rpc/walletnotify', localhostOnly, _walletNotify["default"], /*#__PURE__*/function () {
       var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(req, res) {
-        var myClient, _yield$findUserDirect3, _yield$findUserDirect4, directUserMessageRoom, isCurrentRoomDirectMessage, userState;
-
         return _regenerator["default"].wrap(function _callee4$(_context4) {
           while (1) {
             switch (_context4.prev = _context4.next) {
@@ -269,62 +183,22 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, mat
                 }
 
                 console.log(res.locals.error);
-                _context4.next = 23;
+                _context4.next = 7;
                 break;
 
               case 4:
                 if (!(!res.locals.error && res.locals.transaction && res.locals.userId && res.locals.platform && res.locals.amount)) {
-                  _context4.next = 23;
+                  _context4.next = 7;
                   break;
                 }
 
-                if (res.locals.platform === 'telegram') {
-                  telegramClient.telegram.sendMessage(res.locals.userId, (0, _telegram.telegramIncomingDepositMessage)(res));
-                }
+                _context4.next = 7;
+                return (0, _messageHandlers.incomingDepositMessageHandler)(discordClient, telegramClient, matrixClient, res);
 
-                if (!(res.locals.platform === 'discord')) {
-                  _context4.next = 12;
-                  break;
-                }
-
-                _context4.next = 9;
-                return discordClient.users.fetch(res.locals.userId, false);
-
-              case 9:
-                myClient = _context4.sent;
-                _context4.next = 12;
-                return myClient.send({
-                  embeds: [(0, _discord.discordIncomingDepositMessage)(res)]
-                });
-
-              case 12:
-                if (!(res.locals.platform === 'matrix')) {
-                  _context4.next = 23;
-                  break;
-                }
-
-                _context4.next = 15;
-                return (0, _directMessageRoom.findUserDirectMessageRoom)(matrixClient, res.locals.userId);
-
-              case 15:
-                _yield$findUserDirect3 = _context4.sent;
-                _yield$findUserDirect4 = (0, _slicedToArray2["default"])(_yield$findUserDirect3, 3);
-                directUserMessageRoom = _yield$findUserDirect4[0];
-                isCurrentRoomDirectMessage = _yield$findUserDirect4[1];
-                userState = _yield$findUserDirect4[2];
-
-                if (!directUserMessageRoom) {
-                  _context4.next = 23;
-                  break;
-                }
-
-                _context4.next = 23;
-                return matrixClient.sendEvent(directUserMessageRoom.roomId, "m.room.message", (0, _matrix.matrixIncomingDepositMessage)(res));
-
-              case 23:
+              case 7:
                 res.sendStatus(200);
 
-              case 24:
+              case 8:
               case "end":
                 return _context4.stop();
             }

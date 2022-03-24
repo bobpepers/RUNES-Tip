@@ -15,11 +15,11 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _models = _interopRequireDefault(require("../../models"));
 
-var _patcher = require("../../helpers/pirate/patcher");
+var _patcher = require("../../helpers/blockchain/pirate/patcher");
 
-var _patcher2 = require("../../helpers/runebase/patcher");
+var _patcher2 = require("../../helpers/blockchain/runebase/patcher");
 
-var _patcher3 = require("../../helpers/komodo/patcher");
+var _patcher3 = require("../../helpers/blockchain/komodo/patcher");
 
 var _settings = _interopRequireDefault(require("../../config/settings"));
 

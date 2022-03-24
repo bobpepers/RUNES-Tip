@@ -9,6 +9,8 @@ exports.fetchWalletBalance = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _sequelize = require("sequelize");
@@ -17,64 +19,79 @@ var _models = _interopRequireDefault(require("../../models"));
 
 var _telegram = require("../../messages/telegram");
 
+var _userWalletExist = require("../../helpers/client/telegram/userWalletExist");
+
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
 var fetchWalletBalance = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(ctx, telegramUserId, telegramUserName, io) {
-    var user, activity;
-    return _regenerator["default"].wrap(function _callee2$(_context2) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(ctx, io) {
+    var activity, user, userActivity;
+    return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
-            _context2.next = 2;
+            activity = [];
+            _context3.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var priceInfo;
+                var _yield$userWalletExis, _yield$userWalletExis2, createActivity, findActivity, priceInfo;
+
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
                         _context.next = 2;
-                        return _models["default"].user.findOne({
+                        return (0, _userWalletExist.userWalletExist)(ctx, t, 'balance');
+
+                      case 2:
+                        _yield$userWalletExis = _context.sent;
+                        _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
+                        user = _yield$userWalletExis2[0];
+                        userActivity = _yield$userWalletExis2[1];
+
+                        if (userActivity) {
+                          activity.unshift(userActivity);
+                        }
+
+                        if (user) {
+                          _context.next = 9;
+                          break;
+                        }
+
+                        return _context.abrupt("return");
+
+                      case 9:
+                        _context.next = 11;
+                        return _models["default"].activity.create({
+                          type: 'balance',
+                          earnerId: user.id,
+                          earner_balance: user.wallet.available + user.wallet.locked
+                        }, {
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 11:
+                        createActivity = _context.sent;
+                        _context.next = 14;
+                        return _models["default"].activity.findOne({
                           where: {
-                            user_id: "telegram-".concat(telegramUserId)
+                            id: createActivity.id
                           },
                           include: [{
-                            model: _models["default"].wallet,
-                            as: 'wallet',
-                            include: [{
-                              model: _models["default"].address,
-                              as: 'addresses'
-                            }]
+                            model: _models["default"].user,
+                            as: 'earner'
                           }],
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 2:
-                        user = _context.sent;
-
-                        if (user) {
-                          _context.next = 6;
-                          break;
-                        }
-
-                        ctx.reply("User not found");
-                        return _context.abrupt("return");
-
-                      case 6:
-                        if (user.wallet) {
-                          _context.next = 9;
-                          break;
-                        }
-
-                        ctx.reply("Wallet not found");
-                        return _context.abrupt("return");
-
-                      case 9:
-                        _context.next = 11;
+                      case 14:
+                        findActivity = _context.sent;
+                        activity.unshift(findActivity);
+                        _context.next = 18;
                         return _models["default"].priceInfo.findOne({
                           where: {
                             currency: 'USD'
@@ -83,42 +100,66 @@ var fetchWalletBalance = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 11:
+                      case 18:
                         priceInfo = _context.sent;
 
-                        if (!(ctx.update && ctx.update.message && ctx.update.message.chat && ctx.update.message.chat.type && ctx.update.message.chat.type !== 'private')) {
-                          _context.next = 15;
-                          break;
-                        }
-
-                        _context.next = 15;
-                        return ctx.reply("i have sent you a direct message");
-
-                      case 15:
-                        console.log(ctx);
-
                         if (!ctx.update.callback_query) {
-                          _context.next = 21;
+                          _context.next = 30;
                           break;
                         }
 
-                        _context.next = 19;
-                        return ctx.telegram.sendMessage(ctx.update.callback_query.from.id, (0, _telegram.balanceMessage)(telegramUserName, user, priceInfo));
-
-                      case 19:
-                        _context.next = 23;
-                        break;
-
-                      case 21:
-                        _context.next = 23;
-                        return ctx.telegram.sendMessage(ctx.update.message.from.id, (0, _telegram.balanceMessage)(telegramUserName, user, priceInfo));
-
-                      case 23:
-                        t.afterCommit(function () {
-                          _logger["default"].info("Success Balance Requested by: ".concat(telegramUserId, "-").concat(telegramUserName));
-                        });
+                        _context.t0 = ctx.telegram;
+                        _context.t1 = ctx.update.callback_query.from.id;
+                        _context.next = 24;
+                        return (0, _telegram.balanceMessage)(user, priceInfo);
 
                       case 24:
+                        _context.t2 = _context.sent;
+                        _context.t3 = {
+                          parse_mode: 'HTML'
+                        };
+                        _context.next = 28;
+                        return _context.t0.sendMessage.call(_context.t0, _context.t1, _context.t2, _context.t3);
+
+                      case 28:
+                        _context.next = 38;
+                        break;
+
+                      case 30:
+                        _context.t4 = ctx.telegram;
+                        _context.t5 = ctx.update.message.from.id;
+                        _context.next = 34;
+                        return (0, _telegram.balanceMessage)(user, priceInfo);
+
+                      case 34:
+                        _context.t6 = _context.sent;
+                        _context.t7 = {
+                          parse_mode: 'HTML'
+                        };
+                        _context.next = 38;
+                        return _context.t4.sendMessage.call(_context.t4, _context.t5, _context.t6, _context.t7);
+
+                      case 38:
+                        if (!(ctx.update && ctx.update.message && ctx.update.message.chat && ctx.update.message.chat.type && ctx.update.message.chat.type !== 'private')) {
+                          _context.next = 45;
+                          break;
+                        }
+
+                        _context.t8 = ctx;
+                        _context.next = 42;
+                        return (0, _telegram.warnDirectMessage)(user);
+
+                      case 42:
+                        _context.t9 = _context.sent;
+                        _context.next = 45;
+                        return _context.t8.replyWithHTML.call(_context.t8, _context.t9);
+
+                      case 45:
+                        t.afterCommit(function () {
+                          _logger["default"].info("Success Balance Requested by: ");
+                        });
+
+                      case 46:
                       case "end":
                         return _context.stop();
                     }
@@ -126,24 +167,79 @@ var fetchWalletBalance = /*#__PURE__*/function () {
                 }, _callee);
               }));
 
-              return function (_x5) {
+              return function (_x3) {
                 return _ref2.apply(this, arguments);
               };
-            }())["catch"](function (err) {
-              console.log(err);
+            }())["catch"]( /*#__PURE__*/function () {
+              var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(err) {
+                return _regenerator["default"].wrap(function _callee2$(_context2) {
+                  while (1) {
+                    switch (_context2.prev = _context2.next) {
+                      case 0:
+                        _context2.prev = 0;
+                        _context2.next = 3;
+                        return _models["default"].error.create({
+                          type: 'balance',
+                          error: "".concat(err)
+                        });
 
-              _logger["default"].error("Error Balance Requested by: ".concat(telegramUserId, "-").concat(telegramUserName, " - ").concat(err));
-            });
+                      case 3:
+                        _context2.next = 8;
+                        break;
 
-          case 2:
+                      case 5:
+                        _context2.prev = 5;
+                        _context2.t0 = _context2["catch"](0);
+
+                        _logger["default"].error("Error Telegram: ".concat(_context2.t0));
+
+                      case 8:
+                        console.log(err);
+
+                        _logger["default"].error("Balance error: ".concat(err));
+
+                        _context2.prev = 10;
+                        _context2.next = 13;
+                        return ctx.replyWithHTML((0, _telegram.errorMessage)('Balance'));
+
+                      case 13:
+                        _context2.next = 18;
+                        break;
+
+                      case 15:
+                        _context2.prev = 15;
+                        _context2.t1 = _context2["catch"](10);
+                        console.log(_context2.t1);
+
+                      case 18:
+                      case "end":
+                        return _context2.stop();
+                    }
+                  }
+                }, _callee2, null, [[0, 5], [10, 15]]);
+              }));
+
+              return function (_x4) {
+                return _ref3.apply(this, arguments);
+              };
+            }());
+
+          case 3:
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
+
+          case 4:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
-    }, _callee2);
+    }, _callee3);
   }));
 
-  return function fetchWalletBalance(_x, _x2, _x3, _x4) {
+  return function fetchWalletBalance(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 }();

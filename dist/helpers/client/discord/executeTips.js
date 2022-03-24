@@ -11,7 +11,7 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _discord = require("../../messages/discord");
+var _discord = require("../../../messages/discord");
 
 // import BigNumber from "bignumber.js";
 // import db from '../../models';

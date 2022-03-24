@@ -9,8 +9,6 @@ exports.startRunebaseSync = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
-var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
-
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _lodash = _interopRequireDefault(require("lodash"));
@@ -19,19 +17,13 @@ var _sequelize = require("sequelize");
 
 var _models = _interopRequireDefault(require("../models"));
 
-var _telegram = require("../messages/telegram");
-
-var _discord = require("../messages/discord");
-
-var _matrix = require("../messages/matrix");
-
 var _settings = _interopRequireDefault(require("../config/settings"));
 
 var _rclient = require("./rclient");
 
 var _waterFaucet = require("../helpers/waterFaucet");
 
-var _directMessageRoom = require("../helpers/matrix/directMessageRoom");
+var _messageHandlers = require("../helpers/messageHandlers");
 
 function _asyncIterator(iterable) { var method, async, sync, retry = 2; for ("undefined" != typeof Symbol && (async = Symbol.asyncIterator, sync = Symbol.iterator); retry--;) { if (async && null != (method = iterable[async])) return method.call(iterable); if (sync && null != (method = iterable[sync])) return new AsyncFromSyncIterator(method.call(iterable)); async = "@@asyncIterator", sync = "@@iterator"; } throw new TypeError("Object is not async iterable"); }
 
@@ -354,136 +346,22 @@ var syncTransactions = /*#__PURE__*/function () {
 
                                           case 44:
                                             t.afterCommit( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
-                                              var userClientId, myClient, _yield$findUserDirect, _yield$findUserDirect2, directUserMessageRoom, isCurrentRoomDirectMessage, userState, _myClient, _yield$findUserDirect3, _yield$findUserDirect4, _directUserMessageRoom, _isCurrentRoomDirectMessage, _userState;
-
                                               return _regenerator["default"].wrap(function _callee3$(_context3) {
                                                 while (1) {
                                                   switch (_context3.prev = _context3.next) {
                                                     case 0:
-                                                      _context3.prev = 0;
+                                                      _context3.next = 2;
+                                                      return (0, _messageHandlers.isDepositOrWithdrawalCompleteMessageHandler)(isDepositComplete, isWithdrawalComplete, discordClient, telegramClient, matrixClient, userToMessage, trans, detail.amount);
 
-                                                      if (!isDepositComplete) {
-                                                        _context3.next = 22;
-                                                        break;
-                                                      }
-
-                                                      if (!userToMessage.user_id.startsWith('discord')) {
-                                                        _context3.next = 9;
-                                                        break;
-                                                      }
-
-                                                      userClientId = userToMessage.user_id.replace('discord-', '');
-                                                      _context3.next = 6;
-                                                      return discordClient.users.fetch(userClientId, false);
-
-                                                    case 6:
-                                                      myClient = _context3.sent;
-                                                      _context3.next = 9;
-                                                      return myClient.send({
-                                                        embeds: [(0, _discord.discordDepositConfirmedMessage)(detail.amount)]
-                                                      });
-
-                                                    case 9:
-                                                      if (userToMessage.user_id.startsWith('telegram')) {
-                                                        userClientId = userToMessage.user_id.replace('telegram-', '');
-                                                        telegramClient.telegram.sendMessage(userClientId, (0, _telegram.telegramDepositConfirmedMessage)(detail.amount));
-                                                      }
-
-                                                      if (!userToMessage.user_id.startsWith('matrix')) {
-                                                        _context3.next = 22;
-                                                        break;
-                                                      }
-
-                                                      userClientId = userToMessage.user_id.replace('matrix-', '');
-                                                      _context3.next = 14;
-                                                      return (0, _directMessageRoom.findUserDirectMessageRoom)(matrixClient, userClientId // message.sender.roomId,
-                                                      );
-
-                                                    case 14:
-                                                      _yield$findUserDirect = _context3.sent;
-                                                      _yield$findUserDirect2 = (0, _slicedToArray2["default"])(_yield$findUserDirect, 3);
-                                                      directUserMessageRoom = _yield$findUserDirect2[0];
-                                                      isCurrentRoomDirectMessage = _yield$findUserDirect2[1];
-                                                      userState = _yield$findUserDirect2[2];
-
-                                                      if (!directUserMessageRoom) {
-                                                        _context3.next = 22;
-                                                        break;
-                                                      }
-
-                                                      _context3.next = 22;
-                                                      return matrixClient.sendEvent(directUserMessageRoom.roomId, "m.room.message", (0, _matrix.matrixDepositConfirmedMessage)(detail.amount));
-
-                                                    case 22:
-                                                      if (!isWithdrawalComplete) {
-                                                        _context3.next = 43;
-                                                        break;
-                                                      }
-
-                                                      if (!userToMessage.user_id.startsWith('discord')) {
-                                                        _context3.next = 30;
-                                                        break;
-                                                      }
-
-                                                      userClientId = userToMessage.user_id.replace('discord-', '');
-                                                      _context3.next = 27;
-                                                      return discordClient.users.fetch(userClientId, false);
-
-                                                    case 27:
-                                                      _myClient = _context3.sent;
-                                                      _context3.next = 30;
-                                                      return _myClient.send({
-                                                        embeds: [(0, _discord.discordWithdrawalConfirmedMessage)(userClientId, trans)]
-                                                      });
-
-                                                    case 30:
-                                                      if (userToMessage.user_id.startsWith('telegram')) {
-                                                        userClientId = userToMessage.user_id.replace('telegram-', '');
-                                                        telegramClient.telegram.sendMessage(userClientId, (0, _telegram.telegramWithdrawalConfirmedMessage)(userToMessage));
-                                                      }
-
-                                                      if (!userToMessage.user_id.startsWith('matrix')) {
-                                                        _context3.next = 43;
-                                                        break;
-                                                      }
-
-                                                      userClientId = userToMessage.user_id.replace('matrix-', '');
-                                                      _context3.next = 35;
-                                                      return (0, _directMessageRoom.findUserDirectMessageRoom)(matrixClient, userClientId);
-
-                                                    case 35:
-                                                      _yield$findUserDirect3 = _context3.sent;
-                                                      _yield$findUserDirect4 = (0, _slicedToArray2["default"])(_yield$findUserDirect3, 3);
-                                                      _directUserMessageRoom = _yield$findUserDirect4[0];
-                                                      _isCurrentRoomDirectMessage = _yield$findUserDirect4[1];
-                                                      _userState = _yield$findUserDirect4[2];
-
-                                                      if (!_directUserMessageRoom) {
-                                                        _context3.next = 43;
-                                                        break;
-                                                      }
-
-                                                      _context3.next = 43;
-                                                      return matrixClient.sendEvent(_directUserMessageRoom.roomId, "m.room.message", (0, _matrix.matrixWithdrawalConfirmedMessage)(userClientId, trans));
-
-                                                    case 43:
-                                                      _context3.next = 48;
-                                                      break;
-
-                                                    case 45:
-                                                      _context3.prev = 45;
-                                                      _context3.t0 = _context3["catch"](0);
-                                                      console.log(_context3.t0);
-
-                                                    case 48:
+                                                    case 2:
                                                       console.log('done');
 
-                                                    case 49:
+                                                    case 3:
                                                     case "end":
                                                       return _context3.stop();
                                                   }
                                                 }
-                                              }, _callee3, null, [[0, 45]]);
+                                              }, _callee3);
                                             })));
 
                                           case 45:

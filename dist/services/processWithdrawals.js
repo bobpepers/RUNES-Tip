@@ -27,17 +27,17 @@ var _matrix = require("../messages/matrix");
 
 var _processWithdrawal = require("./processWithdrawal");
 
-var _directMessageRoom = require("../helpers/matrix/directMessageRoom");
+var _directMessageRoom = require("../helpers/client/matrix/directMessageRoom");
 
 (0, _dotenv.config)();
 
 var processWithdrawals = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(telegramClient, discordClient, matrixClient) {
-    return _regenerator["default"].wrap(function _callee3$(_context3) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(telegramClient, discordClient, matrixClient) {
+    return _regenerator["default"].wrap(function _callee4$(_context4) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context4.prev = _context4.next) {
           case 0:
-            _context3.next = 2;
+            _context4.next = 2;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -168,7 +168,7 @@ var processWithdrawals = /*#__PURE__*/function () {
                                   _context.prev = 0;
 
                                   if (!transaction) {
-                                    _context.next = 23;
+                                    _context.next = 39;
                                     break;
                                   }
 
@@ -189,21 +189,36 @@ var processWithdrawals = /*#__PURE__*/function () {
                                   });
 
                                 case 9:
-                                  if (transaction.address.wallet.user.user_id.startsWith('telegram-')) {
-                                    userTelegramId = transaction.address.wallet.user.user_id.replace('telegram-', '');
-                                    telegramClient.telegram.sendMessage(userTelegramId, (0, _telegram.withdrawalAcceptedMessage)(transaction, updatedTrans));
+                                  if (!transaction.address.wallet.user.user_id.startsWith('telegram-')) {
+                                    _context.next = 19;
+                                    break;
                                   }
 
+                                  userTelegramId = transaction.address.wallet.user.user_id.replace('telegram-', '');
+                                  _context.t0 = telegramClient.telegram;
+                                  _context.t1 = userTelegramId;
+                                  _context.next = 15;
+                                  return (0, _telegram.withdrawalAcceptedMessage)(transaction, updatedTrans);
+
+                                case 15:
+                                  _context.t2 = _context.sent;
+                                  _context.t3 = {
+                                    parse_mode: 'HTML'
+                                  };
+                                  _context.next = 19;
+                                  return _context.t0.sendMessage.call(_context.t0, _context.t1, _context.t2, _context.t3);
+
+                                case 19:
                                   if (!transaction.address.wallet.user.user_id.startsWith('matrix-')) {
-                                    _context.next = 22;
+                                    _context.next = 31;
                                     break;
                                   }
 
                                   userMatrixId = transaction.address.wallet.user.user_id.replace('matrix-', '');
-                                  _context.next = 14;
+                                  _context.next = 23;
                                   return (0, _directMessageRoom.findUserDirectMessageRoom)(matrixClient, userMatrixId);
 
-                                case 14:
+                                case 23:
                                   _yield$findUserDirect = _context.sent;
                                   _yield$findUserDirect2 = (0, _slicedToArray2["default"])(_yield$findUserDirect, 3);
                                   directUserMessageRoom = _yield$findUserDirect2[0];
@@ -211,31 +226,42 @@ var processWithdrawals = /*#__PURE__*/function () {
                                   userState = _yield$findUserDirect2[2];
 
                                   if (!directUserMessageRoom) {
-                                    _context.next = 22;
+                                    _context.next = 31;
                                     break;
                                   }
 
-                                  _context.next = 22;
+                                  _context.next = 31;
                                   return matrixClient.sendEvent(directUserMessageRoom.roomId, "m.room.message", (0, _matrix.matrixWithdrawalAcceptedMessage)(updatedTrans));
 
-                                case 22:
-                                  telegramClient.telegram.sendMessage(Number(process.env.TELEGRAM_ADMIN_ID), (0, _telegram.withdrawalAcceptedAdminMessage)(updatedTrans));
+                                case 31:
+                                  _context.t4 = telegramClient.telegram;
+                                  _context.t5 = Number(process.env.TELEGRAM_ADMIN_ID);
+                                  _context.next = 35;
+                                  return (0, _telegram.withdrawalAcceptedAdminMessage)(updatedTrans);
 
-                                case 23:
-                                  _context.next = 28;
+                                case 35:
+                                  _context.t6 = _context.sent;
+                                  _context.t7 = {
+                                    parse_mode: 'HTML'
+                                  };
+                                  _context.next = 39;
+                                  return _context.t4.sendMessage.call(_context.t4, _context.t5, _context.t6, _context.t7);
+
+                                case 39:
+                                  _context.next = 44;
                                   break;
 
-                                case 25:
-                                  _context.prev = 25;
-                                  _context.t0 = _context["catch"](0);
-                                  console.log(_context.t0);
+                                case 41:
+                                  _context.prev = 41;
+                                  _context.t8 = _context["catch"](0);
+                                  console.log(_context.t8);
 
-                                case 28:
+                                case 44:
                                 case "end":
                                   return _context.stop();
                               }
                             }
-                          }, _callee, null, [[0, 25]]);
+                          }, _callee, null, [[0, 41]]);
                         })));
 
                       case 29:
@@ -249,17 +275,47 @@ var processWithdrawals = /*#__PURE__*/function () {
               return function (_x4) {
                 return _ref2.apply(this, arguments);
               };
-            }())["catch"](function (err) {
-              console.log(err);
-              telegramClient.telegram.sendMessage(Number(process.env.TELEGRAM_ADMIN_ID), "Something went wrong");
-            });
+            }())["catch"]( /*#__PURE__*/function () {
+              var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(err) {
+                return _regenerator["default"].wrap(function _callee3$(_context3) {
+                  while (1) {
+                    switch (_context3.prev = _context3.next) {
+                      case 0:
+                        console.log(err);
+                        _context3.prev = 1;
+                        _context3.next = 4;
+                        return telegramClient.telegram.sendMessage(Number(process.env.TELEGRAM_ADMIN_ID), "Something went wrong with withdrawals", {
+                          parse_mode: 'HTML'
+                        });
+
+                      case 4:
+                        _context3.next = 9;
+                        break;
+
+                      case 6:
+                        _context3.prev = 6;
+                        _context3.t0 = _context3["catch"](1);
+                        console.log(_context3.t0);
+
+                      case 9:
+                      case "end":
+                        return _context3.stop();
+                    }
+                  }
+                }, _callee3, null, [[1, 6]]);
+              }));
+
+              return function (_x5) {
+                return _ref4.apply(this, arguments);
+              };
+            }());
 
           case 2:
           case "end":
-            return _context3.stop();
+            return _context4.stop();
         }
       }
-    }, _callee3);
+    }, _callee4);
   }));
 
   return function processWithdrawals(_x, _x2, _x3) {

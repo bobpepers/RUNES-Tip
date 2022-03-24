@@ -13,21 +13,21 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _bignumber = _interopRequireDefault(require("bignumber.js"));
 
-var _models = _interopRequireDefault(require("../../models"));
+var _models = _interopRequireDefault(require("../../../models"));
 
-var _discord = require("../../messages/discord");
+var _telegram = require("../../../messages/telegram");
 
 var capitalize = function capitalize(s) {
   return s && s[0].toUpperCase() + s.slice(1);
 };
 
 var validateAmount = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(message, t, preAmount, user, setting, type) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(ctx, t, preAmount, user, setting, type) {
     var tipType,
         usersToTip,
         activity,
-        capType,
         amount,
+        capType,
         _args = arguments;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
@@ -35,11 +35,11 @@ var validateAmount = /*#__PURE__*/function () {
           case 0:
             tipType = _args.length > 6 && _args[6] !== undefined ? _args[6] : null;
             usersToTip = _args.length > 7 && _args[7] !== undefined ? _args[7] : null;
-            capType = capitalize(type);
             amount = 0;
+            capType = capitalize(type);
 
             if (preAmount) {
-              _context.next = 11;
+              _context.next = 15;
               break;
             }
 
@@ -54,56 +54,31 @@ var validateAmount = /*#__PURE__*/function () {
 
           case 7:
             activity = _context.sent;
-            _context.next = 10;
-            return message.channel.send({
-              embeds: [(0, _discord.invalidAmountMessage)(message, capType)]
-            });
-
-          case 10:
-            return _context.abrupt("return", [activity, amount]);
+            _context.t0 = ctx;
+            _context.next = 11;
+            return (0, _telegram.invalidAmountMessage)();
 
           case 11:
+            _context.t1 = _context.sent;
+            _context.next = 14;
+            return _context.t0.replyWithHTML.call(_context.t0, _context.t1);
+
+          case 14:
+            return _context.abrupt("return", [activity, amount]);
+
+          case 15:
             if (preAmount.toLowerCase() === 'all') {
               amount = user.wallet.available;
             } else {
               amount = new _bignumber["default"](preAmount).times(1e8).toNumber();
             }
 
-            if (!(amount < setting.min)) {
-              _context.next = 19;
-              break;
-            }
-
-            _context.next = 15;
-            return _models["default"].activity.create({
-              type: "".concat(type, "_f"),
-              spenderId: user.id
-            }, {
-              lock: t.LOCK.UPDATE,
-              transaction: t
-            });
-
-          case 15:
-            activity = _context.sent;
-            _context.next = 18;
-            return message.channel.send({
-              embeds: [(0, _discord.minimumMessage)(message, setting, capType)]
-            });
-
-          case 18:
-            return _context.abrupt("return", [activity, amount]);
-
-          case 19:
-            if (tipType === 'each' && preAmount.toLowerCase() !== 'all') {
-              amount *= usersToTip.length;
-            }
-
-            if (!(amount % 1 !== 0)) {
+            if (!(amount < Number(setting.min))) {
               _context.next = 27;
               break;
             }
 
-            _context.next = 23;
+            _context.next = 19;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
               spenderId: user.id
@@ -112,23 +87,31 @@ var validateAmount = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 23:
+          case 19:
             activity = _context.sent;
+            _context.t2 = ctx;
+            _context.next = 23;
+            return (0, _telegram.minimumMessage)(setting, capitalize(type));
+
+          case 23:
+            _context.t3 = _context.sent;
             _context.next = 26;
-            return message.channel.send({
-              embeds: [(0, _discord.invalidAmountMessage)(message, capType)]
-            });
+            return _context.t2.replyWithHTML.call(_context.t2, _context.t3);
 
           case 26:
             return _context.abrupt("return", [activity, amount]);
 
           case 27:
-            if (!(amount <= 0)) {
-              _context.next = 34;
+            if (tipType === 'each' && preAmount.toLowerCase() !== 'all') {
+              amount *= usersToTip.length;
+            }
+
+            if (!(amount % 1 !== 0)) {
+              _context.next = 39;
               break;
             }
 
-            _context.next = 30;
+            _context.next = 31;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
               spenderId: user.id
@@ -137,23 +120,56 @@ var validateAmount = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 30:
+          case 31:
             activity = _context.sent;
-            _context.next = 33;
-            return message.channel.send({
-              embeds: [(0, _discord.invalidAmountMessage)(message, capType)]
-            });
+            _context.t4 = ctx;
+            _context.next = 35;
+            return (0, _telegram.invalidAmountMessage)();
 
-          case 33:
+          case 35:
+            _context.t5 = _context.sent;
+            _context.next = 38;
+            return _context.t4.replyWithHTML.call(_context.t4, _context.t5);
+
+          case 38:
             return _context.abrupt("return", [activity, amount]);
 
-          case 34:
-            if (!(user.wallet.available < amount)) {
-              _context.next = 41;
+          case 39:
+            if (!(amount <= 0)) {
+              _context.next = 50;
               break;
             }
 
-            _context.next = 37;
+            _context.next = 42;
+            return _models["default"].activity.create({
+              type: "".concat(type, "_f"),
+              spenderId: user.id
+            }, {
+              lock: t.LOCK.UPDATE,
+              transaction: t
+            });
+
+          case 42:
+            activity = _context.sent;
+            _context.t6 = ctx;
+            _context.next = 46;
+            return (0, _telegram.invalidAmountMessage)();
+
+          case 46:
+            _context.t7 = _context.sent;
+            _context.next = 49;
+            return _context.t6.replyWithHTML.call(_context.t6, _context.t7);
+
+          case 49:
+            return _context.abrupt("return", [activity, amount]);
+
+          case 50:
+            if (!(user.wallet.available < amount)) {
+              _context.next = 61;
+              break;
+            }
+
+            _context.next = 53;
             return _models["default"].activity.create({
               type: "".concat(type, "_i"),
               spenderId: user.id,
@@ -163,21 +179,25 @@ var validateAmount = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 37:
+          case 53:
             activity = _context.sent;
-            _context.next = 40;
-            return message.channel.send({
-              embeds: [(0, _discord.insufficientBalanceMessage)(message, capType)]
-            });
+            _context.t8 = ctx;
+            _context.next = 57;
+            return (0, _telegram.insufficientBalanceMessage)(capType);
 
-          case 40:
+          case 57:
+            _context.t9 = _context.sent;
+            _context.next = 60;
+            return _context.t8.replyWithHTML.call(_context.t8, _context.t9);
+
+          case 60:
             return _context.abrupt("return", [activity, amount]);
 
-          case 41:
+          case 61:
             console.log("amount: ".concat(amount));
             return _context.abrupt("return", [activity, amount]);
 
-          case 43:
+          case 63:
           case "end":
             return _context.stop();
         }

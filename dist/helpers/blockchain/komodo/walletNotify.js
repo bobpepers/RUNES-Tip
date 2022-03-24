@@ -13,16 +13,16 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _sequelize = require("sequelize");
 
-var _rclient = require("../../services/rclient");
+var _rclient = require("../../../services/rclient");
 
-var _models = _interopRequireDefault(require("../../models"));
+var _models = _interopRequireDefault(require("../../../models"));
 
-var _logger = _interopRequireDefault(require("../logger"));
+var _logger = _interopRequireDefault(require("../../logger"));
 
 /**
- * Notify New Transaction From Runebase Node
+ * Notify New Transaction From Komodo Node
  */
-var walletNotifyRunebase = /*#__PURE__*/function () {
+var walletNotifyKomodo = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(req, res, next) {
     var txId, transaction;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
@@ -53,7 +53,7 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
                                 switch (_context.prev = _context.next) {
                                   case 0:
                                     if (!(detail.category === 'receive')) {
-                                      _context.next = 17;
+                                      _context.next = 18;
                                       break;
                                     }
 
@@ -78,7 +78,7 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
                                     address = _context.sent;
 
                                     if (!address) {
-                                      _context.next = 17;
+                                      _context.next = 18;
                                       break;
                                     }
 
@@ -95,10 +95,10 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
                                     if (address.wallet.user.user_id.startsWith('matrix')) {
                                       res.locals.platform = 'matrix';
                                       res.locals.userId = address.wallet.user.user_id.replace('matrix-', '');
-                                    } // console.log(transaction);
+                                    }
 
-
-                                    _context.next = 10;
+                                    console.log(transaction);
+                                    _context.next = 11;
                                     return _models["default"].transaction.findOrCreate({
                                       where: {
                                         txid: transaction.txid,
@@ -116,15 +116,15 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
                                       lock: t.LOCK.UPDATE
                                     });
 
-                                  case 10:
+                                  case 11:
                                     res.locals.transaction = _context.sent;
 
                                     if (!res.locals.transaction[1]) {
-                                      _context.next = 16;
+                                      _context.next = 17;
                                       break;
                                     }
 
-                                    _context.next = 14;
+                                    _context.next = 15;
                                     return _models["default"].activity.findOrCreate({
                                       where: {
                                         transactionId: res.locals.transaction[0].id
@@ -139,14 +139,14 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
                                       lock: t.LOCK.UPDATE
                                     });
 
-                                  case 14:
+                                  case 15:
                                     activity = _context.sent;
                                     res.locals.amount = detail.amount;
 
-                                  case 16:
+                                  case 17:
                                     _logger["default"].info("deposit detected for addressid: ".concat(res.locals.transaction[0].addressId, " and txid: ").concat(res.locals.transaction[0].txid));
 
-                                  case 17:
+                                  case 18:
                                   case "end":
                                     return _context.stop();
                                 }
@@ -186,10 +186,10 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
     }, _callee3);
   }));
 
-  return function walletNotifyRunebase(_x, _x2, _x3) {
+  return function walletNotifyKomodo(_x, _x2, _x3) {
     return _ref.apply(this, arguments);
   };
 }();
 
-var _default = walletNotifyRunebase;
+var _default = walletNotifyKomodo;
 exports["default"] = _default;

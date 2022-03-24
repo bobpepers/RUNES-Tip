@@ -15,11 +15,11 @@ var _sequelize = require("sequelize");
 
 var _dotenv = require("dotenv");
 
-var _rclient = require("../../services/rclient");
+var _rclient = require("../../../services/rclient");
 
-var _models = _interopRequireDefault(require("../../models"));
+var _models = _interopRequireDefault(require("../../../models"));
 
-var _logger = _interopRequireDefault(require("../logger"));
+var _logger = _interopRequireDefault(require("../../logger"));
 
 (0, _dotenv.config)();
 /**

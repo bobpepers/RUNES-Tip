@@ -15,7 +15,7 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _dotenv = require("dotenv");
 
-var _executeTips = require("../helpers/matrix/executeTips");
+var _executeTips = require("../helpers/client/matrix/executeTips");
 
 var _isMaintenanceOrDisabled = require("../helpers/isMaintenanceOrDisabled");
 
@@ -39,7 +39,7 @@ var _price = require("../controllers/matrix/price");
 
 var _fees = require("../controllers/matrix/fees");
 
-var _directMessageRoom = require("../helpers/matrix/directMessageRoom");
+var _directMessageRoom = require("../helpers/client/matrix/directMessageRoom");
 
 var _user = require("../controllers/matrix/user");
 
@@ -63,11 +63,7 @@ var _hurricane = require("../controllers/discord/hurricane");
 
 var _faucet = require("../controllers/discord/faucet");
 
-var _price2 = require("../controllers/discord/price");
-
 var _rateLimit = require("../helpers/rateLimit");
-
-var _trivia = require("../controllers/discord/trivia");
 
 var _reactdrop = require("../controllers/discord/reactdrop");
 

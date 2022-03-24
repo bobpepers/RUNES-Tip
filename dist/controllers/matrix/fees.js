@@ -21,7 +21,7 @@ var _models = _interopRequireDefault(require("../../models"));
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
-var _userWalletExist = require("../../helpers/matrix/userWalletExist");
+var _userWalletExist = require("../../helpers/client/matrix/userWalletExist");
 
 var findFee = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(name, groupId, t) {

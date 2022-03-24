@@ -21,11 +21,11 @@ var _discord = require("../../messages/discord");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
-var _validateAmount = require("../../helpers/discord/validateAmount");
+var _validateAmount = require("../../helpers/client/discord/validateAmount");
 
-var _mapMembers = require("../../helpers/discord/mapMembers");
+var _mapMembers = require("../../helpers/client/discord/mapMembers");
 
-var _userWalletExist = require("../../helpers/discord/userWalletExist");
+var _userWalletExist = require("../../helpers/client/discord/userWalletExist");
 
 var _waterFaucet = require("../../helpers/waterFaucet");
 
@@ -54,39 +54,25 @@ var discordRain = /*#__PURE__*/function () {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
-                        if (!(!groupTask || !channelTask)) {
-                          _context.next = 4;
-                          break;
-                        }
-
-                        _context.next = 3;
-                        return message.channel.send({
-                          embeds: [(0, _discord.NotInDirectMessage)(message, 'Flood')]
-                        });
-
-                      case 3:
-                        return _context.abrupt("return");
-
-                      case 4:
-                        _context.next = 6;
+                        _context.next = 2;
                         return discordClient.guilds.cache.get(message.guildId).members.fetch({
                           withPresences: true
                         });
 
-                      case 6:
+                      case 2:
                         members = _context.sent;
-                        _context.next = 9;
+                        _context.next = 5;
                         return members.filter(function (member) {
                           var memberStatus = member && member.presence && member.presence.status;
                           return memberStatus === "online";
                         });
 
-                      case 9:
+                      case 5:
                         onlineMembers = _context.sent;
-                        _context.next = 12;
+                        _context.next = 8;
                         return (0, _userWalletExist.userWalletExist)(message, t, filteredMessage[1].toLowerCase());
 
-                      case 12:
+                      case 8:
                         _yield$userWalletExis = _context.sent;
                         _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
                         user = _yield$userWalletExis2[0];
@@ -97,43 +83,43 @@ var discordRain = /*#__PURE__*/function () {
                         }
 
                         if (user) {
-                          _context.next = 19;
+                          _context.next = 15;
                           break;
                         }
 
                         return _context.abrupt("return");
 
-                      case 19:
-                        _context.next = 21;
+                      case 15:
+                        _context.next = 17;
                         return (0, _mapMembers.mapMembers)(message, t, filteredMessage[3], onlineMembers, setting);
 
-                      case 21:
+                      case 17:
                         withoutBots = _context.sent;
-                        _context.next = 24;
+                        _context.next = 20;
                         return (0, _validateAmount.validateAmount)(message, t, filteredMessage[2], user, setting, filteredMessage[1].toLowerCase());
 
-                      case 24:
+                      case 20:
                         _yield$validateAmount = _context.sent;
                         _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
                         activityValiateAmount = _yield$validateAmount2[0];
                         amount = _yield$validateAmount2[1];
 
                         if (!activityValiateAmount) {
-                          _context.next = 31;
+                          _context.next = 27;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 31:
+                      case 27:
                         if (!(withoutBots.length < 2)) {
-                          _context.next = 40;
+                          _context.next = 36;
                           break;
                         }
 
                         console.log(withoutBots.length);
-                        _context.next = 35;
+                        _context.next = 31;
                         return _models["default"].activity.create({
                           type: 'rain_f',
                           spenderId: user.id
@@ -142,19 +128,19 @@ var discordRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 35:
+                      case 31:
                         fActivity = _context.sent;
                         activity.unshift(fActivity);
-                        _context.next = 39;
+                        _context.next = 35;
                         return message.channel.send({
                           embeds: [(0, _discord.notEnoughActiveUsersMessage)(message, 'Rain')]
                         });
 
-                      case 39:
+                      case 35:
                         return _context.abrupt("return");
 
-                      case 40:
-                        _context.next = 42;
+                      case 36:
+                        _context.next = 38;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -162,16 +148,16 @@ var discordRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 42:
+                      case 38:
                         updatedBalance = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
-                        _context.next = 47;
+                        _context.next = 43;
                         return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
 
-                      case 47:
+                      case 43:
                         faucetWatered = _context.sent;
-                        _context.next = 50;
+                        _context.next = 46;
                         return _models["default"].rain.create({
                           feeAmount: Number(fee),
                           amount: amount,
@@ -184,9 +170,9 @@ var discordRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 50:
+                      case 46:
                         rainRecord = _context.sent;
-                        _context.next = 53;
+                        _context.next = 49;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'rain_s',
@@ -198,9 +184,9 @@ var discordRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 53:
+                      case 49:
                         preActivity = _context.sent;
-                        _context.next = 56;
+                        _context.next = 52;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -216,25 +202,25 @@ var discordRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 56:
+                      case 52:
                         finalActivity = _context.sent;
                         activity.unshift(finalActivity);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(withoutBots);
-                        _context.prev = 60;
+                        _context.prev = 56;
 
                         _iterator.s();
 
-                      case 62:
+                      case 58:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 81;
+                          _context.next = 77;
                           break;
                         }
 
                         rainee = _step.value;
-                        _context.next = 66;
+                        _context.next = 62;
                         return rainee.wallet.update({
                           available: rainee.wallet.available + Number(amountPerUser)
                         }, {
@@ -242,9 +228,9 @@ var discordRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 66:
+                      case 62:
                         raineeWallet = _context.sent;
-                        _context.next = 69;
+                        _context.next = 65;
                         return _models["default"].raintip.create({
                           amount: amountPerUser,
                           userId: rainee.id,
@@ -256,7 +242,7 @@ var discordRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 69:
+                      case 65:
                         raintipRecord = _context.sent;
 
                         if (rainee.ignoreMe) {
@@ -268,7 +254,7 @@ var discordRain = /*#__PURE__*/function () {
 
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context.next = 74;
+                        _context.next = 70;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
                           type: 'raintip_s',
@@ -283,9 +269,9 @@ var discordRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 74:
+                      case 70:
                         tipActivity = _context.sent;
-                        _context.next = 77;
+                        _context.next = 73;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -307,91 +293,91 @@ var discordRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 77:
+                      case 73:
                         tipActivity = _context.sent;
                         activity.unshift(tipActivity);
 
+                      case 75:
+                        _context.next = 58;
+                        break;
+
+                      case 77:
+                        _context.next = 82;
+                        break;
+
                       case 79:
-                        _context.next = 62;
-                        break;
-
-                      case 81:
-                        _context.next = 86;
-                        break;
-
-                      case 83:
-                        _context.prev = 83;
-                        _context.t0 = _context["catch"](60);
+                        _context.prev = 79;
+                        _context.t0 = _context["catch"](56);
 
                         _iterator.e(_context.t0);
 
-                      case 86:
-                        _context.prev = 86;
+                      case 82:
+                        _context.prev = 82;
 
                         _iterator.f();
 
-                        return _context.finish(86);
+                        return _context.finish(82);
 
-                      case 89:
+                      case 85:
                         newStringListUsers = listOfUsersRained.join(", ");
                         console.log(newStringListUsers);
                         cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                        _context.prev = 93;
+                        _context.prev = 89;
 
                         _iterator2.s();
 
-                      case 95:
+                      case 91:
                         if ((_step2 = _iterator2.n()).done) {
-                          _context.next = 101;
+                          _context.next = 97;
                           break;
                         }
 
                         element = _step2.value;
-                        _context.next = 99;
+                        _context.next = 95;
                         return message.channel.send(element);
 
+                      case 95:
+                        _context.next = 91;
+                        break;
+
+                      case 97:
+                        _context.next = 102;
+                        break;
+
                       case 99:
-                        _context.next = 95;
-                        break;
-
-                      case 101:
-                        _context.next = 106;
-                        break;
-
-                      case 103:
-                        _context.prev = 103;
-                        _context.t1 = _context["catch"](93);
+                        _context.prev = 99;
+                        _context.t1 = _context["catch"](89);
 
                         _iterator2.e(_context.t1);
 
-                      case 106:
-                        _context.prev = 106;
+                      case 102:
+                        _context.prev = 102;
 
                         _iterator2.f();
 
-                        return _context.finish(106);
+                        return _context.finish(102);
 
-                      case 109:
-                        _context.next = 111;
+                      case 105:
+                        _context.next = 107;
                         return message.channel.send({
                           embeds: [(0, _discord.AfterSuccessMessage)(message, rainRecord.id, amount, withoutBots, amountPerUser, 'Rain', 'rained')]
                         });
 
-                      case 111:
+                      case 107:
                         // logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 112:
+                      case 108:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[60, 83, 86, 89], [93, 103, 106, 109]]);
+                }, _callee, null, [[56, 79, 82, 85], [89, 99, 102, 105]]);
               }));
 
               return function (_x10) {

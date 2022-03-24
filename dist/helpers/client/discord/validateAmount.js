@@ -13,16 +13,16 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _bignumber = _interopRequireDefault(require("bignumber.js"));
 
-var _models = _interopRequireDefault(require("../../models"));
+var _models = _interopRequireDefault(require("../../../models"));
 
-var _matrix = require("../../messages/matrix");
+var _discord = require("../../../messages/discord");
 
 var capitalize = function capitalize(s) {
   return s && s[0].toUpperCase() + s.slice(1);
 };
 
 var validateAmount = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(matrixClient, message, t, preAmount, user, setting, type) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(message, t, preAmount, user, setting, type) {
     var tipType,
         usersToTip,
         activity,
@@ -33,8 +33,8 @@ var validateAmount = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            tipType = _args.length > 7 && _args[7] !== undefined ? _args[7] : null;
-            usersToTip = _args.length > 8 && _args[8] !== undefined ? _args[8] : null;
+            tipType = _args.length > 6 && _args[6] !== undefined ? _args[6] : null;
+            usersToTip = _args.length > 7 && _args[7] !== undefined ? _args[7] : null;
             capType = capitalize(type);
             amount = 0;
 
@@ -55,7 +55,9 @@ var validateAmount = /*#__PURE__*/function () {
           case 7:
             activity = _context.sent;
             _context.next = 10;
-            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidAmountMessage)(message, capType));
+            return message.channel.send({
+              embeds: [(0, _discord.invalidAmountMessage)(message, capType)]
+            });
 
           case 10:
             return _context.abrupt("return", [activity, amount]);
@@ -84,7 +86,9 @@ var validateAmount = /*#__PURE__*/function () {
           case 15:
             activity = _context.sent;
             _context.next = 18;
-            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.minimumMessage)(message, setting, capType));
+            return message.channel.send({
+              embeds: [(0, _discord.minimumMessage)(message, setting, capType)]
+            });
 
           case 18:
             return _context.abrupt("return", [activity, amount]);
@@ -111,7 +115,9 @@ var validateAmount = /*#__PURE__*/function () {
           case 23:
             activity = _context.sent;
             _context.next = 26;
-            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidAmountMessage)(message, capType));
+            return message.channel.send({
+              embeds: [(0, _discord.invalidAmountMessage)(message, capType)]
+            });
 
           case 26:
             return _context.abrupt("return", [activity, amount]);
@@ -134,7 +140,9 @@ var validateAmount = /*#__PURE__*/function () {
           case 30:
             activity = _context.sent;
             _context.next = 33;
-            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidAmountMessage)(message, capType));
+            return message.channel.send({
+              embeds: [(0, _discord.invalidAmountMessage)(message, capType)]
+            });
 
           case 33:
             return _context.abrupt("return", [activity, amount]);
@@ -158,7 +166,9 @@ var validateAmount = /*#__PURE__*/function () {
           case 37:
             activity = _context.sent;
             _context.next = 40;
-            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.insufficientBalanceMessage)(message, capType));
+            return message.channel.send({
+              embeds: [(0, _discord.insufficientBalanceMessage)(message, capType)]
+            });
 
           case 40:
             return _context.abrupt("return", [activity, amount]);
@@ -175,7 +185,7 @@ var validateAmount = /*#__PURE__*/function () {
     }, _callee);
   }));
 
-  return function validateAmount(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
+  return function validateAmount(_x, _x2, _x3, _x4, _x5, _x6) {
     return _ref.apply(this, arguments);
   };
 }();

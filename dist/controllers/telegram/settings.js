@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.telegramSettings = void 0;
+exports.telegramWaterFaucetSettings = exports.telegramSettings = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -57,40 +57,91 @@ var telegramSettings = /*#__PURE__*/function () {
 
           case 8:
             if (setting) {
-              _context.next = 11;
+              _context.next = 18;
               break;
             }
 
-            ctx.reply('settings not found');
-            return _context.abrupt("return", false);
+            _context.prev = 9;
+            _context.next = 12;
+            return ctx.reply('settings not found');
 
-          case 11:
-            if (!(!setting.enabled && setting.groupId)) {
-              _context.next = 14;
-              break;
-            }
-
-            ctx.reply((0, _telegram.featureDisabledServerMessage)());
-            return _context.abrupt("return", false);
+          case 12:
+            _context.next = 17;
+            break;
 
           case 14:
-            if (setting.enabled) {
-              _context.next = 17;
+            _context.prev = 14;
+            _context.t0 = _context["catch"](9);
+            console.log(_context.t0);
+
+          case 17:
+            return _context.abrupt("return", false);
+
+          case 18:
+            if (!(!setting.enabled && setting.groupId)) {
+              _context.next = 32;
               break;
             }
 
-            ctx.reply((0, _telegram.featureDisabledGlobalMessage)());
+            _context.prev = 19;
+            _context.t1 = ctx;
+            _context.next = 23;
+            return (0, _telegram.featureDisabledServerMessage)();
+
+          case 23:
+            _context.t2 = _context.sent;
+            _context.next = 26;
+            return _context.t1.replyWithHTML.call(_context.t1, _context.t2);
+
+          case 26:
+            _context.next = 31;
+            break;
+
+          case 28:
+            _context.prev = 28;
+            _context.t3 = _context["catch"](19);
+            console.log(_context.t3);
+
+          case 31:
             return _context.abrupt("return", false);
 
-          case 17:
+          case 32:
+            if (setting.enabled) {
+              _context.next = 46;
+              break;
+            }
+
+            _context.prev = 33;
+            _context.t4 = ctx;
+            _context.next = 37;
+            return (0, _telegram.featureDisabledGlobalMessage)();
+
+          case 37:
+            _context.t5 = _context.sent;
+            _context.next = 40;
+            return _context.t4.replyWithHTML.call(_context.t4, _context.t5);
+
+          case 40:
+            _context.next = 45;
+            break;
+
+          case 42:
+            _context.prev = 42;
+            _context.t6 = _context["catch"](33);
+            console.log(_context.t6);
+
+          case 45:
+            return _context.abrupt("return", false);
+
+          case 46:
             return _context.abrupt("return", setting);
 
-          case 18:
+          case 47:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee);
+    }, _callee, null, [[9, 14], [19, 28], [33, 42]]);
   }));
 
   return function telegramSettings(_x, _x2) {
@@ -99,3 +150,81 @@ var telegramSettings = /*#__PURE__*/function () {
 }();
 
 exports.telegramSettings = telegramSettings;
+
+var telegramWaterFaucetSettings = /*#__PURE__*/function () {
+  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
+    var groupId,
+        channelId,
+        setting,
+        _args2 = arguments;
+    return _regenerator["default"].wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            groupId = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : null;
+            channelId = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : null;
+            _context2.next = 4;
+            return _models["default"].features.findOne({
+              where: {
+                type: 'local',
+                name: 'faucet',
+                groupId: groupId,
+                channelId: channelId
+              }
+            });
+
+          case 4:
+            setting = _context2.sent;
+
+            if (setting) {
+              _context2.next = 9;
+              break;
+            }
+
+            _context2.next = 8;
+            return _models["default"].features.findOne({
+              where: {
+                type: 'local',
+                name: 'faucet',
+                groupId: groupId,
+                channelId: null
+              }
+            });
+
+          case 8:
+            setting = _context2.sent;
+
+          case 9:
+            if (setting) {
+              _context2.next = 13;
+              break;
+            }
+
+            _context2.next = 12;
+            return _models["default"].features.findOne({
+              where: {
+                type: 'global',
+                name: 'faucet'
+              }
+            });
+
+          case 12:
+            setting = _context2.sent;
+
+          case 13:
+            return _context2.abrupt("return", setting);
+
+          case 14:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  }));
+
+  return function telegramWaterFaucetSettings() {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+exports.telegramWaterFaucetSettings = telegramWaterFaucetSettings;

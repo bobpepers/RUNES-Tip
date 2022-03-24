@@ -25,9 +25,9 @@ var _settings = _interopRequireDefault(require("../../config/settings"));
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
-var _validateAmount = require("../../helpers/matrix/validateAmount");
+var _validateAmount = require("../../helpers/client/matrix/validateAmount");
 
-var _userWalletExist = require("../../helpers/matrix/userWalletExist");
+var _userWalletExist = require("../../helpers/client/matrix/userWalletExist");
 
 /* eslint-disable import/prefer-default-export */
 var settings = (0, _settings["default"])();

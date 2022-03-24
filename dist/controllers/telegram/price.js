@@ -83,9 +83,12 @@ var fetchPriceInfo = /*#__PURE__*/function () {
 
           case 22:
             activity = _context.sent;
-            io.to('admin').emit('updateActivity', {
-              activity: activity
-            });
+
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
 
           case 24:
           case "end":

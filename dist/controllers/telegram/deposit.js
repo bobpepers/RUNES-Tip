@@ -9,11 +9,15 @@ exports.fetchWalletDepositAddress = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _sequelize = require("sequelize");
 
 var _qrcode = _interopRequireDefault(require("qrcode"));
+
+var _userWalletExist = require("../../helpers/client/telegram/userWalletExist");
 
 var _models = _interopRequireDefault(require("../../models"));
 
@@ -22,76 +26,149 @@ var _telegram = require("../../messages/telegram");
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
 var fetchWalletDepositAddress = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(ctx, telegramUserId, telegramUserName, io) {
-    return _regenerator["default"].wrap(function _callee2$(_context2) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(ctx, io) {
+    var user, userActivity, activity;
+    return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
-            _context2.next = 2;
+            activity = [];
+            _context3.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var user, depositQr, depositQrFixed;
+                var _yield$userWalletExis, _yield$userWalletExis2, depositQr, depositQrFixed, userId, preActivity, finalActivity;
+
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
                         _context.next = 2;
-                        return _models["default"].user.findOne({
+                        return (0, _userWalletExist.userWalletExist)(ctx, t, 'info');
+
+                      case 2:
+                        _yield$userWalletExis = _context.sent;
+                        _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
+                        user = _yield$userWalletExis2[0];
+                        userActivity = _yield$userWalletExis2[1];
+
+                        if (userActivity) {
+                          activity.unshift(userActivity);
+                        }
+
+                        if (user) {
+                          _context.next = 9;
+                          break;
+                        }
+
+                        return _context.abrupt("return");
+
+                      case 9:
+                        if (!(!user && !user.wallet && !user.wallet.addresses)) {
+                          _context.next = 17;
+                          break;
+                        }
+
+                        _context.t0 = ctx;
+                        _context.next = 13;
+                        return (0, _telegram.depositAddressNotFoundMessage)();
+
+                      case 13:
+                        _context.t1 = _context.sent;
+                        _context.next = 16;
+                        return _context.t0.replyWithHTML.call(_context.t0, _context.t1);
+
+                      case 16:
+                        return _context.abrupt("return");
+
+                      case 17:
+                        _context.next = 19;
+                        return _qrcode["default"].toDataURL(user.wallet.addresses[0].address);
+
+                      case 19:
+                        depositQr = _context.sent;
+                        depositQrFixed = depositQr.replace('data:image/png;base64,', '');
+                        userId = user.user_id.replace('telegram-', '');
+                        _context.t2 = ctx.telegram;
+                        _context.t3 = userId;
+                        _context.t4 = {
+                          source: Buffer.from(depositQrFixed, 'base64')
+                        };
+                        _context.next = 27;
+                        return (0, _telegram.depositAddressMessage)(user);
+
+                      case 27:
+                        _context.t5 = _context.sent;
+                        _context.t6 = {
+                          caption: _context.t5,
+                          parse_mode: 'HTML'
+                        };
+                        _context.next = 31;
+                        return _context.t2.sendPhoto.call(_context.t2, _context.t3, _context.t4, _context.t6);
+
+                      case 31:
+                        _context.t7 = ctx.telegram;
+                        _context.t8 = ctx.update.message.from.id;
+                        _context.next = 35;
+                        return (0, _telegram.depositAddressMessage)(user);
+
+                      case 35:
+                        _context.t9 = _context.sent;
+                        _context.t10 = {
+                          parse_mode: 'HTML'
+                        };
+                        _context.next = 39;
+                        return _context.t7.sendMessage.call(_context.t7, _context.t8, _context.t9, _context.t10);
+
+                      case 39:
+                        if (!(ctx.update && ctx.update.message && ctx.update.message.chat && ctx.update.message.chat.type && ctx.update.message.chat.type !== 'private')) {
+                          _context.next = 46;
+                          break;
+                        }
+
+                        _context.t11 = ctx;
+                        _context.next = 43;
+                        return (0, _telegram.warnDirectMessage)(user);
+
+                      case 43:
+                        _context.t12 = _context.sent;
+                        _context.next = 46;
+                        return _context.t11.replyWithHTML.call(_context.t11, _context.t12);
+
+                      case 46:
+                        _context.next = 48;
+                        return _models["default"].activity.create({
+                          type: 'deposit',
+                          earnerId: user.id
+                        }, {
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 48:
+                        preActivity = _context.sent;
+                        _context.next = 51;
+                        return _models["default"].activity.findOne({
                           where: {
-                            user_id: "telegram-".concat(telegramUserId)
+                            id: preActivity.id
                           },
                           include: [{
-                            model: _models["default"].wallet,
-                            as: 'wallet',
-                            include: [{
-                              model: _models["default"].address,
-                              as: 'addresses'
-                            }]
+                            model: _models["default"].user,
+                            as: 'earner'
                           }],
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 2:
-                        user = _context.sent;
-
-                        if (!user && !user.wallet && !user.wallet.addresses) {
-                          ctx.reply((0, _telegram.depositAddressNotFoundMessage)());
-                        }
-
-                        if (!(user && user.wallet && user.wallet.addresses)) {
-                          _context.next = 13;
-                          break;
-                        }
-
-                        _context.next = 7;
-                        return _qrcode["default"].toDataURL(user.wallet.addresses[0].address);
-
-                      case 7:
-                        depositQr = _context.sent;
-                        depositQrFixed = depositQr.replace('data:image/png;base64,', '');
-                        _context.next = 11;
-                        return ctx.replyWithPhoto({
-                          source: Buffer.from(depositQrFixed, 'base64')
-                        }, {
-                          caption: (0, _telegram.depositAddressMessage)(telegramUserName, user),
-                          parse_mode: 'MarkdownV2'
-                        });
-
-                      case 11:
-                        _context.next = 13;
-                        return ctx.reply((0, _telegram.depositAddressMessage)(telegramUserName, user), {
-                          parse_mode: 'MarkdownV2'
-                        });
-
-                      case 13:
+                      case 51:
+                        finalActivity = _context.sent;
+                        activity.unshift(finalActivity);
                         t.afterCommit(function () {
-                          _logger["default"].info("Success Deposit Address Requested by: ".concat(telegramUserId, "-").concat(telegramUserName));
+                          console.log('telegram deposit address request done');
                         });
 
-                      case 14:
+                      case 54:
                       case "end":
                         return _context.stop();
                     }
@@ -99,22 +176,79 @@ var fetchWalletDepositAddress = /*#__PURE__*/function () {
                 }, _callee);
               }));
 
-              return function (_x5) {
+              return function (_x3) {
                 return _ref2.apply(this, arguments);
               };
-            }())["catch"](function (err) {
-              _logger["default"].error("Error Deposit Address Requested by: ".concat(telegramUserId, "-").concat(telegramUserName, " - ").concat(err));
-            });
+            }())["catch"]( /*#__PURE__*/function () {
+              var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(err) {
+                return _regenerator["default"].wrap(function _callee2$(_context2) {
+                  while (1) {
+                    switch (_context2.prev = _context2.next) {
+                      case 0:
+                        _context2.prev = 0;
+                        _context2.next = 3;
+                        return _models["default"].error.create({
+                          type: 'deposit',
+                          error: "".concat(err)
+                        });
 
-          case 2:
+                      case 3:
+                        _context2.next = 8;
+                        break;
+
+                      case 5:
+                        _context2.prev = 5;
+                        _context2.t0 = _context2["catch"](0);
+
+                        _logger["default"].error("Error Telegram: ".concat(_context2.t0));
+
+                      case 8:
+                        console.log(err);
+
+                        _logger["default"].error("deposit error: ".concat(err));
+
+                        _context2.prev = 10;
+                        _context2.next = 13;
+                        return ctx.replyWithHTML((0, _telegram.errorMessage)('Deposit'));
+
+                      case 13:
+                        _context2.next = 18;
+                        break;
+
+                      case 15:
+                        _context2.prev = 15;
+                        _context2.t1 = _context2["catch"](10);
+                        console.log(_context2.t1);
+
+                      case 18:
+                      case "end":
+                        return _context2.stop();
+                    }
+                  }
+                }, _callee2, null, [[0, 5], [10, 15]]);
+              }));
+
+              return function (_x4) {
+                return _ref3.apply(this, arguments);
+              };
+            }());
+
+          case 3:
+            if (activity.length > 0) {
+              io.to('admin').emit('updateActivity', {
+                activity: activity
+              });
+            }
+
+          case 4:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
-    }, _callee2);
+    }, _callee3);
   }));
 
-  return function fetchWalletDepositAddress(_x, _x2, _x3, _x4) {
+  return function fetchWalletDepositAddress(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 }();

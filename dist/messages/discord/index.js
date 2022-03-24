@@ -243,8 +243,8 @@ var discordErrorMessage = function discordErrorMessage(title) {
 
 exports.discordErrorMessage = discordErrorMessage;
 
-var discordDepositConfirmedMessage = function discordDepositConfirmedMessage(amount) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Deposit').setDescription("Deposit Confirmed \n".concat(amount, " ").concat(settings.coin.ticker, " has been credited to your wallet")).setTimestamp().setFooter({
+var discordDepositConfirmedMessage = function discordDepositConfirmedMessage(amount, trans) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Deposit #".concat(trans.id)).setDescription("Deposit Confirmed \n".concat(amount, " ").concat(settings.coin.ticker, " has been credited to your wallet")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -254,7 +254,7 @@ var discordDepositConfirmedMessage = function discordDepositConfirmedMessage(amo
 exports.discordDepositConfirmedMessage = discordDepositConfirmedMessage;
 
 var discordIncomingDepositMessage = function discordIncomingDepositMessage(res) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Deposit').setDescription("incoming deposit detected for ".concat(res.locals.amount, " ").concat(settings.coin.ticker, "\nBalance will be reflected in your wallet in ~").concat(settings.min.confirmations, "+ confirmations\n").concat(settings.coin.explorer, "/tx/").concat(res.locals.transaction[0].txid)).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Deposit #".concat(res.locals.transaction[0].id)).setDescription("incoming deposit detected for ".concat(res.locals.amount, " ").concat(settings.coin.ticker, "\nBalance will be reflected in your wallet in ~").concat(settings.min.confirmations, "+ confirmations\n").concat(settings.coin.explorer, "/tx/").concat(res.locals.transaction[0].txid)).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });

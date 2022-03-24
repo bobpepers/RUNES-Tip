@@ -17,15 +17,13 @@ var _sequelize = require("sequelize");
 
 var _models = _interopRequireDefault(require("../models"));
 
-var _telegram = require("../messages/telegram");
-
-var _discord = require("../messages/discord");
-
 var _settings = _interopRequireDefault(require("../config/settings"));
 
 var _rclient = require("./rclient");
 
 var _waterFaucet = require("../helpers/waterFaucet");
+
+var _messageHandlers = require("../helpers/messageHandlers");
 
 function _asyncIterator(iterable) { var method, async, sync, retry = 2; for ("undefined" != typeof Symbol && (async = Symbol.asyncIterator, sync = Symbol.iterator); retry--;) { if (async && null != (method = iterable[async])) return method.call(iterable); if (sync && null != (method = iterable[sync])) return new AsyncFromSyncIterator(method.call(iterable)); async = "@@asyncIterator", sync = "@@iterator"; } throw new TypeError("Object is not async iterable"); }
 
@@ -119,7 +117,7 @@ var sequentialLoop = /*#__PURE__*/function () {
 }();
 
 var syncTransactions = /*#__PURE__*/function () {
-  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(discordClient, telegramClient) {
+  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(discordClient, telegramClient, matrixClient) {
     var transactions, _iteratorAbruptCompletion, _didIteratorError, _iteratorError, _loop, _iterator, _step;
 
     return _regenerator["default"].wrap(function _callee5$(_context6) {
@@ -335,71 +333,17 @@ var syncTransactions = /*#__PURE__*/function () {
 
                                 case 44:
                                   t.afterCommit( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
-                                    var userClientId, myClient, _myClient;
-
                                     return _regenerator["default"].wrap(function _callee3$(_context3) {
                                       while (1) {
                                         switch (_context3.prev = _context3.next) {
                                           case 0:
-                                            if (!isDepositComplete) {
-                                              _context3.next = 9;
-                                              break;
-                                            }
+                                            _context3.next = 2;
+                                            return (0, _messageHandlers.isDepositOrWithdrawalCompleteMessageHandler)(isDepositComplete, isWithdrawalComplete, discordClient, telegramClient, matrixClient, userToMessage, trans, transaction.details[0].amount);
 
-                                            if (!userToMessage.user_id.startsWith('discord')) {
-                                              _context3.next = 8;
-                                              break;
-                                            }
-
-                                            userClientId = userToMessage.user_id.replace('discord-', '');
-                                            _context3.next = 5;
-                                            return discordClient.users.fetch(userClientId, false);
-
-                                          case 5:
-                                            myClient = _context3.sent;
-                                            _context3.next = 8;
-                                            return myClient.send({
-                                              embeds: [(0, _discord.discordDepositConfirmedMessage)(transaction.details[0].amount)]
-                                            });
-
-                                          case 8:
-                                            if (userToMessage.user_id.startsWith('telegram')) {
-                                              userClientId = userToMessage.user_id.replace('telegram-', '');
-                                              telegramClient.telegram.sendMessage(userClientId, (0, _telegram.telegramDepositConfirmedMessage)(transaction.details[0].amount));
-                                            }
-
-                                          case 9:
-                                            if (!isWithdrawalComplete) {
-                                              _context3.next = 18;
-                                              break;
-                                            }
-
-                                            if (!userToMessage.user_id.startsWith('discord')) {
-                                              _context3.next = 17;
-                                              break;
-                                            }
-
-                                            userClientId = userToMessage.user_id.replace('discord-', '');
-                                            _context3.next = 14;
-                                            return discordClient.users.fetch(userClientId, false);
-
-                                          case 14:
-                                            _myClient = _context3.sent;
-                                            _context3.next = 17;
-                                            return _myClient.send({
-                                              embeds: [(0, _discord.discordWithdrawalConfirmedMessage)(userClientId, trans)]
-                                            });
-
-                                          case 17:
-                                            if (userToMessage.user_id.startsWith('telegram')) {
-                                              userClientId = userToMessage.user_id.replace('telegram-', '');
-                                              telegramClient.telegram.sendMessage(userClientId, (0, _telegram.telegramWithdrawalConfirmedMessage)(userToMessage));
-                                            }
-
-                                          case 18:
+                                          case 2:
                                             console.log('done');
 
-                                          case 19:
+                                          case 3:
                                           case "end":
                                             return _context3.stop();
                                         }
@@ -415,7 +359,7 @@ var syncTransactions = /*#__PURE__*/function () {
                           }, _callee4);
                         }));
 
-                        return function (_x6) {
+                        return function (_x7) {
                           return _ref3.apply(this, arguments);
                         };
                       }());
@@ -495,7 +439,7 @@ var syncTransactions = /*#__PURE__*/function () {
     }, _callee5, null, [[5, 17, 21, 31], [22,, 26, 30]]);
   }));
 
-  return function syncTransactions(_x4, _x5) {
+  return function syncTransactions(_x4, _x5, _x6) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -576,13 +520,13 @@ var insertBlock = /*#__PURE__*/function () {
     }, _callee6, null, [[0, 19]]);
   }));
 
-  return function insertBlock(_x7) {
+  return function insertBlock(_x8) {
     return _ref5.apply(this, arguments);
   };
 }();
 
 var startKomodoSync = /*#__PURE__*/function () {
-  var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee11(discordClient, telegramClient, queue) {
+  var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee11(discordClient, telegramClient, matrixClient, queue) {
     var currentBlockCount, startBlock, blocks, numOfIterations;
     return _regenerator["default"].wrap(function _callee11$(_context12) {
       while (1) {
@@ -627,7 +571,7 @@ var startKomodoSync = /*#__PURE__*/function () {
                               switch (_context8.prev = _context8.next) {
                                 case 0:
                                   _context8.next = 2;
-                                  return syncTransactions(discordClient, telegramClient);
+                                  return syncTransactions(discordClient, telegramClient, matrixClient);
 
                                 case 2:
                                   task = _context8.sent;
@@ -675,7 +619,7 @@ var startKomodoSync = /*#__PURE__*/function () {
                 }, _callee9);
               }));
 
-              return function (_x11) {
+              return function (_x13) {
                 return _ref7.apply(this, arguments);
               };
             }(), /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee10() {
@@ -701,7 +645,7 @@ var startKomodoSync = /*#__PURE__*/function () {
     }, _callee11);
   }));
 
-  return function startKomodoSync(_x8, _x9, _x10) {
+  return function startKomodoSync(_x9, _x10, _x11, _x12) {
     return _ref6.apply(this, arguments);
   };
 }();

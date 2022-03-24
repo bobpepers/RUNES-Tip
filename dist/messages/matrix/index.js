@@ -118,22 +118,22 @@ exports.depositAddressMessage = depositAddressMessage;
 
 var matrixIncomingDepositMessage = function matrixIncomingDepositMessage(res) {
   var result = {
-    body: "incoming deposit detected for ".concat(res.locals.amount, " ").concat(settings.coin.ticker, "\nBalance will be reflected in your wallet in ~").concat(settings.min.confirmations, "+ confirmations\n").concat(settings.coin.explorer, "/tx/").concat(res.locals.transaction[0].txid),
+    body: "Deposit #".concat(res.locals.transaction[0].id, "\nincoming deposit detected for ").concat(res.locals.amount, " ").concat(settings.coin.ticker, "\nBalance will be reflected in your wallet in ~").concat(settings.min.confirmations, "+ confirmations\n").concat(settings.coin.explorer, "/tx/").concat(res.locals.transaction[0].txid),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote>\n<p>incoming deposit detected for <strong>".concat(res.locals.amount, " ").concat(settings.coin.ticker, "</strong><br>\nBalance will be reflected in your wallet in <strong>~").concat(settings.min.confirmations, "+ confirmations</strong><br>\n").concat(settings.coin.explorer, "/tx/").concat(res.locals.transaction[0].txid, "</p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p>\n</blockquote>")
+    formatted_body: "<blockquote><h5>Deposit #".concat(res.locals.transaction[0].id, "</h5>\n<p>incoming deposit detected for <strong>").concat(res.locals.amount, " ").concat(settings.coin.ticker, "</strong><br>\nBalance will be reflected in your wallet in <strong>~").concat(settings.min.confirmations, "+ confirmations</strong><br>\n").concat(settings.coin.explorer, "/tx/").concat(res.locals.transaction[0].txid, "</p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p>\n</blockquote>")
   };
   return result;
 };
 
 exports.matrixIncomingDepositMessage = matrixIncomingDepositMessage;
 
-var matrixDepositConfirmedMessage = function matrixDepositConfirmedMessage(amount) {
+var matrixDepositConfirmedMessage = function matrixDepositConfirmedMessage(amount, trans) {
   var result = {
-    body: "Deposit Confirmed \n".concat(amount, " ").concat(settings.coin.ticker, " has been credited to your wallet"),
+    body: "Deposit #".concat(trans.id, "\nDeposit Confirmed \n").concat(amount, " ").concat(settings.coin.ticker, " has been credited to your wallet"),
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: "<blockquote>\n<p>Deposit Confirmed<br> \n".concat(amount, " ").concat(settings.coin.ticker, " has been credited to your wallet</p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p>\n</blockquote>")
+    formatted_body: "<blockquote><h5>Deposit #".concat(trans.id, "</h5>\n<p>Deposit Confirmed<br> \n").concat(amount, " ").concat(settings.coin.ticker, " has been credited to your wallet</p>\n<p><font color=\"").concat(settings.bot.color, "\">").concat(settings.bot.name, " v").concat(_package["default"].version, "</font></p>\n</blockquote>")
   };
   return result;
 }; /// /

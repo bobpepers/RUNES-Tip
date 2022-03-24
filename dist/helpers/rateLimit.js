@@ -7,7 +7,7 @@ var _typeof = require("@babel/runtime/helpers/typeof");
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.limitWithdraw = exports.limitTrivia = exports.limitTip = exports.limitThunderStorm = exports.limitThunder = exports.limitStats = exports.limitSoak = exports.limitSleet = exports.limitReactDrop = exports.limitRain = exports.limitPublicStats = exports.limitPrice = exports.limitListTransactions = exports.limitLeaderboard = exports.limitInfo = exports.limitIgnoreMe = exports.limitHurricane = exports.limitHelp = exports.limitFlood = exports.limitFaucet = exports.limitDeposit = exports.limitBalance = void 0;
+exports.myRateLimiter = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -112,1282 +112,414 @@ var rateLimiterTrivia = new RateLimiterFlexible["default"].RateLimiterMemory({
   duration: 120
 });
 var rateLimiterListTransactions = new RateLimiterFlexible["default"].RateLimiterMemory({
-  points: 4,
+  points: 2,
+  duration: 30
+});
+var rateLimiterFees = new RateLimiterFlexible["default"].RateLimiterMemory({
+  points: 2,
+  duration: 30
+});
+var rateLimiterVoiceRain = new RateLimiterFlexible["default"].RateLimiterMemory({
+  points: 180,
   duration: 120
 });
 
-var limitListTransactions = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(message) {
-    var limited, notError;
+var myRateLimiter = /*#__PURE__*/function () {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(client, message, platform, title) {
+    var userId, notError;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             _context.prev = 0;
-            _context.next = 3;
-            return rateLimiterListTransactions.consume(message.author.id, 1);
+            console.log(message);
 
-          case 3:
-            limited = _context.sent;
-            return _context.abrupt("return", false);
+            if (platform === 'discord') {
+              userId = message.author.id;
+            }
 
-          case 7:
-            _context.prev = 7;
-            _context.t0 = _context["catch"](0);
-            _context.prev = 9;
-            _context.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
+            if (platform === 'telegram') {
+              if (message && message.update && message.update.message && message.update.message.from && message.update.message.from.id) {
+                userId = message.update.message.from.id;
+              }
 
-          case 12:
-            notError = _context.sent;
+              if (message && message.update && message.update.callback_query && message.update.callback_query.from && message.update.callback_query.from.id) {
+                userId = message.update.callback_query.from.id;
+              }
+            }
 
-            if (!(notError.remainingPoints > 0)) {
-              _context.next = 16;
+            if (platform === 'matrix') {
+              userId = message.author.id;
+            }
+
+            _context.prev = 5;
+
+            if (!(title.toLowerCase() === 'listtransactions')) {
+              _context.next = 10;
               break;
             }
 
-            _context.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'List Transactions')]
-            });
+            _context.next = 9;
+            return rateLimiterListTransactions.consume(userId, 1);
 
-          case 16:
-            return _context.abrupt("return", true);
+          case 9:
+            return _context.abrupt("return", false);
 
-          case 19:
-            _context.prev = 19;
-            _context.t1 = _context["catch"](9);
-            return _context.abrupt("return", true);
+          case 10:
+            if (!(title.toLowerCase() === 'trivia')) {
+              _context.next = 14;
+              break;
+            }
+
+            _context.next = 13;
+            return rateLimiterTrivia.consume(userId, 1);
+
+          case 13:
+            return _context.abrupt("return", false);
+
+          case 14:
+            if (!(title.toLowerCase() === 'thunder')) {
+              _context.next = 18;
+              break;
+            }
+
+            _context.next = 17;
+            return rateLimiterThunder.consume(userId, 1);
+
+          case 17:
+            return _context.abrupt("return", false);
+
+          case 18:
+            if (!(title.toLowerCase() === 'thunderstorm')) {
+              _context.next = 22;
+              break;
+            }
+
+            _context.next = 21;
+            return rateLimiterThunderstorm.consume(userId, 1);
+
+          case 21:
+            return _context.abrupt("return", false);
 
           case 22:
+            if (!(title.toLowerCase() === 'stats')) {
+              _context.next = 26;
+              break;
+            }
+
+            _context.next = 25;
+            return rateLimiterStats.consume(userId, 1);
+
+          case 25:
+            return _context.abrupt("return", false);
+
+          case 26:
+            if (!(title.toLowerCase() === 'leaderboard')) {
+              _context.next = 30;
+              break;
+            }
+
+            _context.next = 29;
+            return rateLimiterLeaderboard.consume(userId, 1);
+
+          case 29:
+            return _context.abrupt("return", false);
+
+          case 30:
+            if (!(title.toLowerCase() === 'publicstats')) {
+              _context.next = 34;
+              break;
+            }
+
+            _context.next = 33;
+            return rateLimiterPublicStats.consume(userId, 1);
+
+          case 33:
+            return _context.abrupt("return", false);
+
+          case 34:
+            if (!(title.toLowerCase() === 'faucet')) {
+              _context.next = 38;
+              break;
+            }
+
+            _context.next = 37;
+            return rateLimiterFaucet.consume(userId, 1);
+
+          case 37:
+            return _context.abrupt("return", false);
+
+          case 38:
+            if (!(title.toLowerCase() === 'deposit')) {
+              _context.next = 42;
+              break;
+            }
+
+            _context.next = 41;
+            return rateLimiterDeposit.consume(userId, 1);
+
+          case 41:
+            return _context.abrupt("return", false);
+
+          case 42:
+            if (!(title.toLowerCase() === 'balance')) {
+              _context.next = 46;
+              break;
+            }
+
+            _context.next = 45;
+            return rateLimiterBalance.consume(userId, 1);
+
+          case 45:
+            return _context.abrupt("return", false);
+
+          case 46:
+            if (!(title.toLowerCase() === 'price')) {
+              _context.next = 50;
+              break;
+            }
+
+            _context.next = 49;
+            return rateLimiterPrice.consume(userId, 1);
+
+          case 49:
+            return _context.abrupt("return", false);
+
+          case 50:
+            if (!(title.toLowerCase() === 'tip')) {
+              _context.next = 54;
+              break;
+            }
+
+            _context.next = 53;
+            return rateLimiterTip.consume(userId, 1);
+
+          case 53:
+            return _context.abrupt("return", false);
+
+          case 54:
+            if (!(title.toLowerCase() === 'withdraw')) {
+              _context.next = 58;
+              break;
+            }
+
+            _context.next = 57;
+            return rateLimiterWithdraw.consume(userId, 1);
+
+          case 57:
+            return _context.abrupt("return", false);
+
+          case 58:
+            if (!(title.toLowerCase() === 'help')) {
+              _context.next = 62;
+              break;
+            }
+
+            _context.next = 61;
+            return rateLimiterHelp.consume(userId, 1);
+
+          case 61:
+            return _context.abrupt("return", false);
+
+          case 62:
+            if (!(title.toLowerCase() === 'info')) {
+              _context.next = 66;
+              break;
+            }
+
+            _context.next = 65;
+            return rateLimiterInfo.consume(userId, 1);
+
+          case 65:
+            return _context.abrupt("return", false);
+
+          case 66:
+            if (!(title.toLowerCase() === 'rain')) {
+              _context.next = 70;
+              break;
+            }
+
+            _context.next = 69;
+            return rateLimiterRain.consume(userId, 1);
+
+          case 69:
+            return _context.abrupt("return", false);
+
+          case 70:
+            if (!(title.toLowerCase() === 'soak')) {
+              _context.next = 74;
+              break;
+            }
+
+            _context.next = 73;
+            return rateLimiterSoak.consume(userId, 1);
+
+          case 73:
+            return _context.abrupt("return", false);
+
+          case 74:
+            if (!(title.toLowerCase() === 'flood')) {
+              _context.next = 78;
+              break;
+            }
+
+            _context.next = 77;
+            return rateLimiterFlood.consume(userId, 1);
+
+          case 77:
+            return _context.abrupt("return", false);
+
+          case 78:
+            if (!(title.toLowerCase() === 'hurricane')) {
+              _context.next = 82;
+              break;
+            }
+
+            _context.next = 81;
+            return rateLimiterHurricane.consume(userId, 1);
+
+          case 81:
+            return _context.abrupt("return", false);
+
+          case 82:
+            if (!(title.toLowerCase() === 'ignoreme')) {
+              _context.next = 86;
+              break;
+            }
+
+            _context.next = 85;
+            return rateLimiterIgnoreMe.consume(userId, 1);
+
+          case 85:
+            return _context.abrupt("return", false);
+
+          case 86:
+            if (!(title.toLowerCase() === 'sleet')) {
+              _context.next = 90;
+              break;
+            }
+
+            _context.next = 89;
+            return rateLimiterSleet.consume(userId, 1);
+
+          case 89:
+            return _context.abrupt("return", false);
+
+          case 90:
+            if (!(title.toLowerCase() === 'reactdrop')) {
+              _context.next = 94;
+              break;
+            }
+
+            _context.next = 93;
+            return rateLimiterReactdrop.consume(userId, 1);
+
+          case 93:
+            return _context.abrupt("return", false);
+
+          case 94:
+            if (!(title.toLowerCase() === 'fees')) {
+              _context.next = 98;
+              break;
+            }
+
+            _context.next = 97;
+            return rateLimiterFees.consume(userId, 1);
+
+          case 97:
+            return _context.abrupt("return", false);
+
+          case 98:
+            if (!(title.toLowerCase() === 'voicerain')) {
+              _context.next = 102;
+              break;
+            }
+
+            _context.next = 101;
+            return rateLimiterVoiceRain.consume(userId, 1);
+
+          case 101:
+            return _context.abrupt("return", false);
+
+          case 102:
+            throw new Error("no Rate limiter could be reached");
+
+          case 105:
+            _context.prev = 105;
+            _context.t0 = _context["catch"](5);
+            _context.prev = 107;
+            _context.next = 110;
+            return errorConsumer.consume(userId, 1);
+
+          case 110:
+            notError = _context.sent;
+
+            if (!(notError.remainingPoints > 0)) {
+              _context.next = 121;
+              break;
+            }
+
+            if (!(platform === 'discord')) {
+              _context.next = 115;
+              break;
+            }
+
+            _context.next = 115;
+            return message.channel.send({
+              embeds: [(0, _discord.discordLimitSpamMessage)(message, title)]
+            });
+
+          case 115:
+            if (!(platform === 'telegram')) {
+              _context.next = 118;
+              break;
+            }
+
+            _context.next = 118;
+            return message.channel.send({
+              embeds: [(0, _discord.discordLimitSpamMessage)(message, title)]
+            });
+
+          case 118:
+            if (!(platform === 'matrix')) {
+              _context.next = 121;
+              break;
+            }
+
+            _context.next = 121;
+            return message.channel.send({
+              embeds: [(0, _discord.discordLimitSpamMessage)(message, title)]
+            });
+
+          case 121:
+            return _context.abrupt("return", true);
+
+          case 124:
+            _context.prev = 124;
+            _context.t1 = _context["catch"](107);
+            return _context.abrupt("return", true);
+
+          case 127:
+            _context.next = 133;
+            break;
+
+          case 129:
+            _context.prev = 129;
+            _context.t2 = _context["catch"](0);
+            console.log(_context.t2);
+            return _context.abrupt("return", true);
+
+          case 133:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 7], [9, 19]]);
+    }, _callee, null, [[0, 129], [5, 105], [107, 124]]);
   }));
 
-  return function limitListTransactions(_x) {
+  return function myRateLimiter(_x, _x2, _x3, _x4) {
     return _ref.apply(this, arguments);
   };
 }();
 
-exports.limitListTransactions = limitListTransactions;
-
-var limitTrivia = /*#__PURE__*/function () {
-  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee2$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            _context2.prev = 0;
-            _context2.next = 3;
-            return rateLimiterTrivia.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context2.sent;
-            return _context2.abrupt("return", false);
-
-          case 7:
-            _context2.prev = 7;
-            _context2.t0 = _context2["catch"](0);
-            _context2.prev = 9;
-            _context2.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context2.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context2.next = 16;
-              break;
-            }
-
-            _context2.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Trivia')]
-            });
-
-          case 16:
-            return _context2.abrupt("return", true);
-
-          case 19:
-            _context2.prev = 19;
-            _context2.t1 = _context2["catch"](9);
-            return _context2.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context2.stop();
-        }
-      }
-    }, _callee2, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitTrivia(_x2) {
-    return _ref2.apply(this, arguments);
-  };
-}();
-
-exports.limitTrivia = limitTrivia;
-
-var limitThunder = /*#__PURE__*/function () {
-  var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee3$(_context3) {
-      while (1) {
-        switch (_context3.prev = _context3.next) {
-          case 0:
-            _context3.prev = 0;
-            _context3.next = 3;
-            return rateLimiterThunder.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context3.sent;
-            return _context3.abrupt("return", false);
-
-          case 7:
-            _context3.prev = 7;
-            _context3.t0 = _context3["catch"](0);
-            _context3.prev = 9;
-            _context3.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context3.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context3.next = 16;
-              break;
-            }
-
-            _context3.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Thunder')]
-            });
-
-          case 16:
-            return _context3.abrupt("return", true);
-
-          case 19:
-            _context3.prev = 19;
-            _context3.t1 = _context3["catch"](9);
-            return _context3.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context3.stop();
-        }
-      }
-    }, _callee3, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitThunder(_x3) {
-    return _ref3.apply(this, arguments);
-  };
-}();
-
-exports.limitThunder = limitThunder;
-
-var limitThunderStorm = /*#__PURE__*/function () {
-  var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee4$(_context4) {
-      while (1) {
-        switch (_context4.prev = _context4.next) {
-          case 0:
-            _context4.prev = 0;
-            _context4.next = 3;
-            return rateLimiterThunderstorm.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context4.sent;
-            return _context4.abrupt("return", false);
-
-          case 7:
-            _context4.prev = 7;
-            _context4.t0 = _context4["catch"](0);
-            _context4.prev = 9;
-            _context4.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context4.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context4.next = 16;
-              break;
-            }
-
-            _context4.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Thunderstorm')]
-            });
-
-          case 16:
-            return _context4.abrupt("return", true);
-
-          case 19:
-            _context4.prev = 19;
-            _context4.t1 = _context4["catch"](9);
-            return _context4.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context4.stop();
-        }
-      }
-    }, _callee4, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitThunderStorm(_x4) {
-    return _ref4.apply(this, arguments);
-  };
-}();
-
-exports.limitThunderStorm = limitThunderStorm;
-
-var limitStats = /*#__PURE__*/function () {
-  var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee5$(_context5) {
-      while (1) {
-        switch (_context5.prev = _context5.next) {
-          case 0:
-            _context5.prev = 0;
-            _context5.next = 3;
-            return rateLimiterStats.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context5.sent;
-            return _context5.abrupt("return", false);
-
-          case 7:
-            _context5.prev = 7;
-            _context5.t0 = _context5["catch"](0);
-            _context5.prev = 9;
-            _context5.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context5.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context5.next = 16;
-              break;
-            }
-
-            _context5.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Tip')]
-            });
-
-          case 16:
-            return _context5.abrupt("return", true);
-
-          case 19:
-            _context5.prev = 19;
-            _context5.t1 = _context5["catch"](9);
-            return _context5.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context5.stop();
-        }
-      }
-    }, _callee5, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitStats(_x5) {
-    return _ref5.apply(this, arguments);
-  };
-}();
-
-exports.limitStats = limitStats;
-
-var limitLeaderboard = /*#__PURE__*/function () {
-  var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee6$(_context6) {
-      while (1) {
-        switch (_context6.prev = _context6.next) {
-          case 0:
-            _context6.prev = 0;
-            _context6.next = 3;
-            return rateLimiterLeaderboard.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context6.sent;
-            return _context6.abrupt("return", false);
-
-          case 7:
-            _context6.prev = 7;
-            _context6.t0 = _context6["catch"](0);
-            _context6.prev = 9;
-            _context6.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context6.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context6.next = 16;
-              break;
-            }
-
-            _context6.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Tip')]
-            });
-
-          case 16:
-            return _context6.abrupt("return", true);
-
-          case 19:
-            _context6.prev = 19;
-            _context6.t1 = _context6["catch"](9);
-            return _context6.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context6.stop();
-        }
-      }
-    }, _callee6, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitLeaderboard(_x6) {
-    return _ref6.apply(this, arguments);
-  };
-}();
-
-exports.limitLeaderboard = limitLeaderboard;
-
-var limitPublicStats = /*#__PURE__*/function () {
-  var _ref7 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee7(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee7$(_context7) {
-      while (1) {
-        switch (_context7.prev = _context7.next) {
-          case 0:
-            _context7.prev = 0;
-            _context7.next = 3;
-            return rateLimiterPublicStats.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context7.sent;
-            return _context7.abrupt("return", false);
-
-          case 7:
-            _context7.prev = 7;
-            _context7.t0 = _context7["catch"](0);
-            _context7.prev = 9;
-            _context7.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context7.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context7.next = 16;
-              break;
-            }
-
-            _context7.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Tip')]
-            });
-
-          case 16:
-            return _context7.abrupt("return", true);
-
-          case 19:
-            _context7.prev = 19;
-            _context7.t1 = _context7["catch"](9);
-            return _context7.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context7.stop();
-        }
-      }
-    }, _callee7, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitPublicStats(_x7) {
-    return _ref7.apply(this, arguments);
-  };
-}();
-
-exports.limitPublicStats = limitPublicStats;
-
-var limitFaucet = /*#__PURE__*/function () {
-  var _ref8 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee8(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee8$(_context8) {
-      while (1) {
-        switch (_context8.prev = _context8.next) {
-          case 0:
-            _context8.prev = 0;
-            _context8.next = 3;
-            return rateLimiterFaucet.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context8.sent;
-            return _context8.abrupt("return", false);
-
-          case 7:
-            _context8.prev = 7;
-            _context8.t0 = _context8["catch"](0);
-            _context8.prev = 9;
-            _context8.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context8.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context8.next = 16;
-              break;
-            }
-
-            _context8.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Tip')]
-            });
-
-          case 16:
-            return _context8.abrupt("return", true);
-
-          case 19:
-            _context8.prev = 19;
-            _context8.t1 = _context8["catch"](9);
-            return _context8.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context8.stop();
-        }
-      }
-    }, _callee8, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitFaucet(_x8) {
-    return _ref8.apply(this, arguments);
-  };
-}();
-
-exports.limitFaucet = limitFaucet;
-
-var limitDeposit = /*#__PURE__*/function () {
-  var _ref9 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee9(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee9$(_context9) {
-      while (1) {
-        switch (_context9.prev = _context9.next) {
-          case 0:
-            _context9.prev = 0;
-            _context9.next = 3;
-            return rateLimiterDeposit.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context9.sent;
-            return _context9.abrupt("return", false);
-
-          case 7:
-            _context9.prev = 7;
-            _context9.t0 = _context9["catch"](0);
-            _context9.prev = 9;
-            _context9.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context9.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context9.next = 16;
-              break;
-            }
-
-            _context9.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Tip')]
-            });
-
-          case 16:
-            return _context9.abrupt("return", true);
-
-          case 19:
-            _context9.prev = 19;
-            _context9.t1 = _context9["catch"](9);
-            return _context9.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context9.stop();
-        }
-      }
-    }, _callee9, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitDeposit(_x9) {
-    return _ref9.apply(this, arguments);
-  };
-}();
-
-exports.limitDeposit = limitDeposit;
-
-var limitBalance = /*#__PURE__*/function () {
-  var _ref10 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee10(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee10$(_context10) {
-      while (1) {
-        switch (_context10.prev = _context10.next) {
-          case 0:
-            _context10.prev = 0;
-            _context10.next = 3;
-            return rateLimiterBalance.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context10.sent;
-            return _context10.abrupt("return", false);
-
-          case 7:
-            _context10.prev = 7;
-            _context10.t0 = _context10["catch"](0);
-            _context10.prev = 9;
-            _context10.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context10.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context10.next = 16;
-              break;
-            }
-
-            _context10.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Tip')]
-            });
-
-          case 16:
-            return _context10.abrupt("return", true);
-
-          case 19:
-            _context10.prev = 19;
-            _context10.t1 = _context10["catch"](9);
-            return _context10.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context10.stop();
-        }
-      }
-    }, _callee10, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitBalance(_x10) {
-    return _ref10.apply(this, arguments);
-  };
-}();
-
-exports.limitBalance = limitBalance;
-
-var limitPrice = /*#__PURE__*/function () {
-  var _ref11 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee11(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee11$(_context11) {
-      while (1) {
-        switch (_context11.prev = _context11.next) {
-          case 0:
-            _context11.prev = 0;
-            _context11.next = 3;
-            return rateLimiterPrice.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context11.sent;
-            return _context11.abrupt("return", false);
-
-          case 7:
-            _context11.prev = 7;
-            _context11.t0 = _context11["catch"](0);
-            _context11.prev = 9;
-            _context11.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context11.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context11.next = 16;
-              break;
-            }
-
-            _context11.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Price')]
-            });
-
-          case 16:
-            return _context11.abrupt("return", true);
-
-          case 19:
-            _context11.prev = 19;
-            _context11.t1 = _context11["catch"](9);
-            return _context11.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context11.stop();
-        }
-      }
-    }, _callee11, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitPrice(_x11) {
-    return _ref11.apply(this, arguments);
-  };
-}();
-
-exports.limitPrice = limitPrice;
-
-var limitTip = /*#__PURE__*/function () {
-  var _ref12 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee12(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee12$(_context12) {
-      while (1) {
-        switch (_context12.prev = _context12.next) {
-          case 0:
-            _context12.prev = 0;
-            _context12.next = 3;
-            return rateLimiterTip.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context12.sent;
-            return _context12.abrupt("return", false);
-
-          case 7:
-            _context12.prev = 7;
-            _context12.t0 = _context12["catch"](0);
-            _context12.prev = 9;
-            _context12.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context12.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context12.next = 16;
-              break;
-            }
-
-            _context12.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Tip')]
-            });
-
-          case 16:
-            return _context12.abrupt("return", true);
-
-          case 19:
-            _context12.prev = 19;
-            _context12.t1 = _context12["catch"](9);
-            return _context12.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context12.stop();
-        }
-      }
-    }, _callee12, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitTip(_x12) {
-    return _ref12.apply(this, arguments);
-  };
-}();
-
-exports.limitTip = limitTip;
-
-var limitWithdraw = /*#__PURE__*/function () {
-  var _ref13 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee13(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee13$(_context13) {
-      while (1) {
-        switch (_context13.prev = _context13.next) {
-          case 0:
-            _context13.prev = 0;
-            _context13.next = 3;
-            return rateLimiterWithdraw.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context13.sent;
-            return _context13.abrupt("return", false);
-
-          case 7:
-            _context13.prev = 7;
-            _context13.t0 = _context13["catch"](0);
-            _context13.prev = 9;
-            _context13.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context13.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context13.next = 16;
-              break;
-            }
-
-            _context13.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Withdraw')]
-            });
-
-          case 16:
-            return _context13.abrupt("return", true);
-
-          case 19:
-            _context13.prev = 19;
-            _context13.t1 = _context13["catch"](9);
-            return _context13.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context13.stop();
-        }
-      }
-    }, _callee13, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitWithdraw(_x13) {
-    return _ref13.apply(this, arguments);
-  };
-}();
-
-exports.limitWithdraw = limitWithdraw;
-
-var limitHelp = /*#__PURE__*/function () {
-  var _ref14 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee14(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee14$(_context14) {
-      while (1) {
-        switch (_context14.prev = _context14.next) {
-          case 0:
-            _context14.prev = 0;
-            _context14.next = 3;
-            return rateLimiterHelp.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context14.sent;
-            return _context14.abrupt("return", false);
-
-          case 7:
-            _context14.prev = 7;
-            _context14.t0 = _context14["catch"](0);
-            _context14.prev = 9;
-            _context14.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context14.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context14.next = 16;
-              break;
-            }
-
-            _context14.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Help')]
-            });
-
-          case 16:
-            return _context14.abrupt("return", true);
-
-          case 19:
-            _context14.prev = 19;
-            _context14.t1 = _context14["catch"](9);
-            return _context14.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context14.stop();
-        }
-      }
-    }, _callee14, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitHelp(_x14) {
-    return _ref14.apply(this, arguments);
-  };
-}();
-
-exports.limitHelp = limitHelp;
-
-var limitInfo = /*#__PURE__*/function () {
-  var _ref15 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee15(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee15$(_context15) {
-      while (1) {
-        switch (_context15.prev = _context15.next) {
-          case 0:
-            _context15.prev = 0;
-            _context15.next = 3;
-            return rateLimiterInfo.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context15.sent;
-            return _context15.abrupt("return", false);
-
-          case 7:
-            _context15.prev = 7;
-            _context15.t0 = _context15["catch"](0);
-            _context15.prev = 9;
-            _context15.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context15.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context15.next = 16;
-              break;
-            }
-
-            _context15.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Info')]
-            });
-
-          case 16:
-            return _context15.abrupt("return", true);
-
-          case 19:
-            _context15.prev = 19;
-            _context15.t1 = _context15["catch"](9);
-            return _context15.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context15.stop();
-        }
-      }
-    }, _callee15, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitInfo(_x15) {
-    return _ref15.apply(this, arguments);
-  };
-}();
-
-exports.limitInfo = limitInfo;
-
-var limitRain = /*#__PURE__*/function () {
-  var _ref16 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee16(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee16$(_context16) {
-      while (1) {
-        switch (_context16.prev = _context16.next) {
-          case 0:
-            _context16.prev = 0;
-            _context16.next = 3;
-            return rateLimiterRain.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context16.sent;
-            return _context16.abrupt("return", false);
-
-          case 7:
-            _context16.prev = 7;
-            _context16.t0 = _context16["catch"](0);
-            _context16.prev = 9;
-            _context16.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context16.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context16.next = 16;
-              break;
-            }
-
-            _context16.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Rain')]
-            });
-
-          case 16:
-            return _context16.abrupt("return", true);
-
-          case 19:
-            _context16.prev = 19;
-            _context16.t1 = _context16["catch"](9);
-            return _context16.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context16.stop();
-        }
-      }
-    }, _callee16, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitRain(_x16) {
-    return _ref16.apply(this, arguments);
-  };
-}();
-
-exports.limitRain = limitRain;
-
-var limitSoak = /*#__PURE__*/function () {
-  var _ref17 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee17(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee17$(_context17) {
-      while (1) {
-        switch (_context17.prev = _context17.next) {
-          case 0:
-            _context17.prev = 0;
-            _context17.next = 3;
-            return rateLimiterSoak.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context17.sent;
-            return _context17.abrupt("return", false);
-
-          case 7:
-            _context17.prev = 7;
-            _context17.t0 = _context17["catch"](0);
-            _context17.prev = 9;
-            _context17.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context17.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context17.next = 16;
-              break;
-            }
-
-            _context17.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Soak')]
-            });
-
-          case 16:
-            return _context17.abrupt("return", true);
-
-          case 19:
-            _context17.prev = 19;
-            _context17.t1 = _context17["catch"](9);
-            return _context17.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context17.stop();
-        }
-      }
-    }, _callee17, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitSoak(_x17) {
-    return _ref17.apply(this, arguments);
-  };
-}();
-
-exports.limitSoak = limitSoak;
-
-var limitFlood = /*#__PURE__*/function () {
-  var _ref18 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee18(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee18$(_context18) {
-      while (1) {
-        switch (_context18.prev = _context18.next) {
-          case 0:
-            _context18.prev = 0;
-            _context18.next = 3;
-            return rateLimiterFlood.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context18.sent;
-            return _context18.abrupt("return", false);
-
-          case 7:
-            _context18.prev = 7;
-            _context18.t0 = _context18["catch"](0);
-            _context18.prev = 9;
-            _context18.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context18.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context18.next = 16;
-              break;
-            }
-
-            _context18.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Flood')]
-            });
-
-          case 16:
-            return _context18.abrupt("return", true);
-
-          case 19:
-            _context18.prev = 19;
-            _context18.t1 = _context18["catch"](9);
-            return _context18.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context18.stop();
-        }
-      }
-    }, _callee18, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitFlood(_x18) {
-    return _ref18.apply(this, arguments);
-  };
-}();
-
-exports.limitFlood = limitFlood;
-
-var limitHurricane = /*#__PURE__*/function () {
-  var _ref19 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee19(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee19$(_context19) {
-      while (1) {
-        switch (_context19.prev = _context19.next) {
-          case 0:
-            _context19.prev = 0;
-            _context19.next = 3;
-            return rateLimiterHurricane.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context19.sent;
-            return _context19.abrupt("return", false);
-
-          case 7:
-            _context19.prev = 7;
-            _context19.t0 = _context19["catch"](0);
-            _context19.prev = 9;
-            _context19.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context19.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context19.next = 16;
-              break;
-            }
-
-            _context19.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Hurricane')]
-            });
-
-          case 16:
-            return _context19.abrupt("return", true);
-
-          case 19:
-            _context19.prev = 19;
-            _context19.t1 = _context19["catch"](9);
-            return _context19.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context19.stop();
-        }
-      }
-    }, _callee19, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitHurricane(_x19) {
-    return _ref19.apply(this, arguments);
-  };
-}();
-
-exports.limitHurricane = limitHurricane;
-
-var limitIgnoreMe = /*#__PURE__*/function () {
-  var _ref20 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee20(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee20$(_context20) {
-      while (1) {
-        switch (_context20.prev = _context20.next) {
-          case 0:
-            _context20.prev = 0;
-            _context20.next = 3;
-            return rateLimiterIgnoreMe.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context20.sent;
-            return _context20.abrupt("return", false);
-
-          case 7:
-            _context20.prev = 7;
-            _context20.t0 = _context20["catch"](0);
-            _context20.prev = 9;
-            _context20.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context20.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context20.next = 16;
-              break;
-            }
-
-            _context20.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'IgnoreMe')]
-            });
-
-          case 16:
-            return _context20.abrupt("return", true);
-
-          case 19:
-            _context20.prev = 19;
-            _context20.t1 = _context20["catch"](9);
-            return _context20.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context20.stop();
-        }
-      }
-    }, _callee20, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitIgnoreMe(_x20) {
-    return _ref20.apply(this, arguments);
-  };
-}();
-
-exports.limitIgnoreMe = limitIgnoreMe;
-
-var limitSleet = /*#__PURE__*/function () {
-  var _ref21 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee21(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee21$(_context21) {
-      while (1) {
-        switch (_context21.prev = _context21.next) {
-          case 0:
-            _context21.prev = 0;
-            _context21.next = 3;
-            return rateLimiterSleet.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context21.sent;
-            return _context21.abrupt("return", false);
-
-          case 7:
-            _context21.prev = 7;
-            _context21.t0 = _context21["catch"](0);
-            _context21.prev = 9;
-            _context21.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context21.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context21.next = 16;
-              break;
-            }
-
-            _context21.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'Sleet')]
-            });
-
-          case 16:
-            return _context21.abrupt("return", true);
-
-          case 19:
-            _context21.prev = 19;
-            _context21.t1 = _context21["catch"](9);
-            return _context21.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context21.stop();
-        }
-      }
-    }, _callee21, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitSleet(_x21) {
-    return _ref21.apply(this, arguments);
-  };
-}();
-
-exports.limitSleet = limitSleet;
-
-var limitReactDrop = /*#__PURE__*/function () {
-  var _ref22 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee22(message) {
-    var limited, notError;
-    return _regenerator["default"].wrap(function _callee22$(_context22) {
-      while (1) {
-        switch (_context22.prev = _context22.next) {
-          case 0:
-            _context22.prev = 0;
-            _context22.next = 3;
-            return rateLimiterReactdrop.consume(message.author.id, 1);
-
-          case 3:
-            limited = _context22.sent;
-            return _context22.abrupt("return", false);
-
-          case 7:
-            _context22.prev = 7;
-            _context22.t0 = _context22["catch"](0);
-            _context22.prev = 9;
-            _context22.next = 12;
-            return errorConsumer.consume(message.author.id, 1);
-
-          case 12:
-            notError = _context22.sent;
-
-            if (!(notError.remainingPoints > 0)) {
-              _context22.next = 16;
-              break;
-            }
-
-            _context22.next = 16;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, 'ReactDrop')]
-            });
-
-          case 16:
-            return _context22.abrupt("return", true);
-
-          case 19:
-            _context22.prev = 19;
-            _context22.t1 = _context22["catch"](9);
-            return _context22.abrupt("return", true);
-
-          case 22:
-          case "end":
-            return _context22.stop();
-        }
-      }
-    }, _callee22, null, [[0, 7], [9, 19]]);
-  }));
-
-  return function limitReactDrop(_x22) {
-    return _ref22.apply(this, arguments);
-  };
-}();
-
-exports.limitReactDrop = limitReactDrop;
+exports.myRateLimiter = myRateLimiter;

@@ -11,9 +11,9 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _models = _interopRequireDefault(require("../../models"));
+var _models = _interopRequireDefault(require("../../../models"));
 
-var _matrix = require("../../messages/matrix");
+var _matrix = require("../../../messages/matrix");
 
 var capitalize = function capitalize(s) {
   return s && s[0].toUpperCase() + s.slice(1);

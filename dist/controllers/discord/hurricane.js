@@ -21,11 +21,11 @@ var _models = _interopRequireDefault(require("../../models"));
 
 var _discord = require("../../messages/discord");
 
-var _validateAmount = require("../../helpers/discord/validateAmount");
+var _validateAmount = require("../../helpers/client/discord/validateAmount");
 
-var _mapMembers = require("../../helpers/discord/mapMembers");
+var _mapMembers = require("../../helpers/client/discord/mapMembers");
 
-var _userWalletExist = require("../../helpers/discord/userWalletExist");
+var _userWalletExist = require("../../helpers/client/discord/userWalletExist");
 
 var _waterFaucet = require("../../helpers/waterFaucet");
 
@@ -56,76 +56,62 @@ var discordHurricane = /*#__PURE__*/function () {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
-                        if (!(!groupTask || !channelTask)) {
+                        if (!(Number(filteredMessage[2]) > 50)) {
                           _context.next = 4;
                           break;
                         }
 
                         _context.next = 3;
                         return message.channel.send({
-                          embeds: [(0, _discord.NotInDirectMessage)(message, 'Hurricane')]
+                          embeds: [(0, _discord.hurricaneMaxUserAmountMessage)(message)]
                         });
 
                       case 3:
                         return _context.abrupt("return");
 
                       case 4:
-                        if (!(Number(filteredMessage[2]) > 50)) {
+                        if (!(Number(filteredMessage[2]) % 1 !== 0)) {
                           _context.next = 8;
                           break;
                         }
 
                         _context.next = 7;
                         return message.channel.send({
-                          embeds: [(0, _discord.hurricaneMaxUserAmountMessage)(message)]
+                          embeds: [(0, _discord.hurricaneInvalidUserAmount)(message)]
                         });
 
                       case 7:
                         return _context.abrupt("return");
 
                       case 8:
-                        if (!(Number(filteredMessage[2]) % 1 !== 0)) {
+                        if (!(Number(filteredMessage[2]) <= 0)) {
                           _context.next = 12;
                           break;
                         }
 
                         _context.next = 11;
                         return message.channel.send({
-                          embeds: [(0, _discord.hurricaneInvalidUserAmount)(message)]
+                          embeds: [(0, _discord.hurricaneUserZeroAmountMessage)(message)]
                         });
 
                       case 11:
                         return _context.abrupt("return");
 
                       case 12:
-                        if (!(Number(filteredMessage[2]) <= 0)) {
-                          _context.next = 16;
-                          break;
-                        }
-
-                        _context.next = 15;
-                        return message.channel.send({
-                          embeds: [(0, _discord.hurricaneUserZeroAmountMessage)(message)]
-                        });
-
-                      case 15:
-                        return _context.abrupt("return");
-
-                      case 16:
-                        _context.next = 18;
+                        _context.next = 14;
                         return discordClient.guilds.cache.get(message.guildId).members.fetch({
                           withPresences: true
                         });
 
-                      case 18:
+                      case 14:
                         members = _context.sent;
                         onlineMembers = members.filter(function (member) {
                           return member.presence && member.presence.status === "online" || member.presence && member.presence.status === "idle" || member.presence && member.presence.status === "dnd";
                         });
-                        _context.next = 22;
+                        _context.next = 18;
                         return (0, _userWalletExist.userWalletExist)(message, t, filteredMessage[1].toLowerCase());
 
-                      case 22:
+                      case 18:
                         _yield$userWalletExis = _context.sent;
                         _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
                         user = _yield$userWalletExis2[0];
@@ -136,43 +122,43 @@ var discordHurricane = /*#__PURE__*/function () {
                         }
 
                         if (user) {
-                          _context.next = 29;
+                          _context.next = 25;
                           break;
                         }
 
                         return _context.abrupt("return");
 
-                      case 29:
-                        _context.next = 31;
+                      case 25:
+                        _context.next = 27;
                         return (0, _mapMembers.mapMembers)(message, t, filteredMessage[4], onlineMembers, setting);
 
-                      case 31:
+                      case 27:
                         preWithoutBots = _context.sent;
                         withoutBots = _lodash["default"].sampleSize(preWithoutBots, Number(filteredMessage[2]));
-                        _context.next = 35;
+                        _context.next = 31;
                         return (0, _validateAmount.validateAmount)(message, t, filteredMessage[3], user, setting, filteredMessage[1].toLowerCase());
 
-                      case 35:
+                      case 31:
                         _yield$validateAmount = _context.sent;
                         _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
                         activityValiateAmount = _yield$validateAmount2[0];
                         amount = _yield$validateAmount2[1];
 
                         if (!activityValiateAmount) {
-                          _context.next = 42;
+                          _context.next = 38;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 42:
+                      case 38:
                         if (!(withoutBots.length < 1)) {
-                          _context.next = 50;
+                          _context.next = 46;
                           break;
                         }
 
-                        _context.next = 45;
+                        _context.next = 41;
                         return _models["default"].activity.create({
                           type: 'hurricane_f',
                           spenderId: user.id
@@ -181,19 +167,19 @@ var discordHurricane = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 45:
+                      case 41:
                         activityA = _context.sent;
                         activity.unshift(activityA);
-                        _context.next = 49;
+                        _context.next = 45;
                         return message.channel.send({
                           embeds: [(0, _discord.notEnoughActiveUsersMessage)(message, 'Hurricane')]
                         });
 
-                      case 49:
+                      case 45:
                         return _context.abrupt("return");
 
-                      case 50:
-                        _context.next = 52;
+                      case 46:
+                        _context.next = 48;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -201,16 +187,16 @@ var discordHurricane = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 52:
+                      case 48:
                         updatedBalance = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
-                        _context.next = 57;
+                        _context.next = 53;
                         return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
 
-                      case 57:
+                      case 53:
                         faucetWatered = _context.sent;
-                        _context.next = 60;
+                        _context.next = 56;
                         return _models["default"].hurricane.create({
                           amount: amount,
                           feeAmount: fee,
@@ -223,9 +209,9 @@ var discordHurricane = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 60:
+                      case 56:
                         hurricaneRecord = _context.sent;
-                        _context.next = 63;
+                        _context.next = 59;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'hurricane_s',
@@ -237,9 +223,9 @@ var discordHurricane = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 63:
+                      case 59:
                         factivity = _context.sent;
-                        _context.next = 66;
+                        _context.next = 62;
                         return _models["default"].activity.findOne({
                           where: {
                             id: factivity.id
@@ -255,25 +241,25 @@ var discordHurricane = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 66:
+                      case 62:
                         activityC = _context.sent;
                         activity.unshift(activityC);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(withoutBots);
-                        _context.prev = 70;
+                        _context.prev = 66;
 
                         _iterator.s();
 
-                      case 72:
+                      case 68:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 91;
+                          _context.next = 87;
                           break;
                         }
 
                         hurricaneee = _step.value;
-                        _context.next = 76;
+                        _context.next = 72;
                         return hurricaneee.wallet.update({
                           available: hurricaneee.wallet.available + Number(amountPerUser)
                         }, {
@@ -281,9 +267,9 @@ var discordHurricane = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 76:
+                      case 72:
                         hurricaneeeWallet = _context.sent;
-                        _context.next = 79;
+                        _context.next = 75;
                         return _models["default"].hurricanetip.create({
                           amount: amountPerUser,
                           userId: hurricaneee.id,
@@ -295,7 +281,7 @@ var discordHurricane = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 79:
+                      case 75:
                         hurricanetipRecord = _context.sent;
 
                         if (hurricaneee.ignoreMe) {
@@ -307,7 +293,7 @@ var discordHurricane = /*#__PURE__*/function () {
 
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context.next = 84;
+                        _context.next = 80;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
                           type: 'hurricanetip_s',
@@ -322,9 +308,9 @@ var discordHurricane = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 84:
+                      case 80:
                         tipActivity = _context.sent;
-                        _context.next = 87;
+                        _context.next = 83;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -346,89 +332,89 @@ var discordHurricane = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 87:
+                      case 83:
                         tipActivity = _context.sent;
                         activity.unshift(tipActivity);
 
+                      case 85:
+                        _context.next = 68;
+                        break;
+
+                      case 87:
+                        _context.next = 92;
+                        break;
+
                       case 89:
-                        _context.next = 72;
-                        break;
-
-                      case 91:
-                        _context.next = 96;
-                        break;
-
-                      case 93:
-                        _context.prev = 93;
-                        _context.t0 = _context["catch"](70);
+                        _context.prev = 89;
+                        _context.t0 = _context["catch"](66);
 
                         _iterator.e(_context.t0);
 
-                      case 96:
-                        _context.prev = 96;
+                      case 92:
+                        _context.prev = 92;
 
                         _iterator.f();
 
-                        return _context.finish(96);
+                        return _context.finish(92);
 
-                      case 99:
+                      case 95:
                         newStringListUsers = listOfUsersRained.join(", ");
                         cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                        _context.prev = 102;
+                        _context.prev = 98;
 
                         _iterator2.s();
 
-                      case 104:
+                      case 100:
                         if ((_step2 = _iterator2.n()).done) {
-                          _context.next = 110;
+                          _context.next = 106;
                           break;
                         }
 
                         element = _step2.value;
-                        _context.next = 108;
+                        _context.next = 104;
                         return message.channel.send(element);
 
+                      case 104:
+                        _context.next = 100;
+                        break;
+
+                      case 106:
+                        _context.next = 111;
+                        break;
+
                       case 108:
-                        _context.next = 104;
-                        break;
-
-                      case 110:
-                        _context.next = 115;
-                        break;
-
-                      case 112:
-                        _context.prev = 112;
-                        _context.t1 = _context["catch"](102);
+                        _context.prev = 108;
+                        _context.t1 = _context["catch"](98);
 
                         _iterator2.e(_context.t1);
 
-                      case 115:
-                        _context.prev = 115;
+                      case 111:
+                        _context.prev = 111;
 
                         _iterator2.f();
 
-                        return _context.finish(115);
+                        return _context.finish(111);
 
-                      case 118:
-                        _context.next = 120;
+                      case 114:
+                        _context.next = 116;
                         return message.channel.send({
                           embeds: [(0, _discord.AfterSuccessMessage)(message, hurricaneRecord.id, amount, withoutBots, amountPerUser, '⛈ Hurricane ⛈', 'hurricaned')]
                         });
 
-                      case 120:
+                      case 116:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 121:
+                      case 117:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[70, 93, 96, 99], [102, 112, 115, 118]]);
+                }, _callee, null, [[66, 89, 92, 95], [98, 108, 111, 114]]);
               }));
 
               return function (_x10) {

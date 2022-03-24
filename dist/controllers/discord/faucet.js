@@ -21,7 +21,7 @@ var _models = _interopRequireDefault(require("../../models"));
 
 var _settings = _interopRequireDefault(require("../../config/settings"));
 
-var _userWalletExist = require("../../helpers/discord/userWalletExist");
+var _userWalletExist = require("../../helpers/client/discord/userWalletExist");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
