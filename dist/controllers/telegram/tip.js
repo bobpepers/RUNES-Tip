@@ -56,7 +56,7 @@ var tipToTelegramUser = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, _loop, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, updatedBalance, fee, userTipAmount, faucetWatered, tipRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, tipee, tipeeWallet, tiptipRecord, tipActivity, _yield$getUserToMenti, _yield$getUserToMenti2, userToMention, userId, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, _loop, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, updatedBalance, fee, userTipAmount, faucetWatered, tipRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, tipee, tipeeWallet, tiptipRecord, tipActivity, _yield$getUserToMenti, _yield$getUserToMenti2, userToMention, userId, cutStringListUsers, i, _i, _cutStringListUsers, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context2) {
                   while (1) {
@@ -431,82 +431,74 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                         return _context2.t2.replyWithHTML.call(_context2.t2, _context2.t3);
 
                       case 90:
-                        _context2.next = 122;
+                        _context2.next = 114;
                         break;
 
                       case 92:
                         if (!(listOfUsersRained.length > 1)) {
-                          _context2.next = 122;
+                          _context2.next = 114;
                           break;
                         }
 
-                        newStringListUsers = listOfUsersRained.join(", ");
-                        cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
+                        // const newStringListUsers = listOfUsersRained.join(", ");
+                        // const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
+                        cutStringListUsers = [];
+                        i = 0;
+                        listOfUsersRained.forEach(function (word) {
+                          if (!cutStringListUsers[parseInt(i, 10)]) {
+                            cutStringListUsers[parseInt(i, 10)] = word;
+                          } else if (cutStringListUsers[parseInt(i, 10)].length + word.length + 1 <= 3500) {
+                            cutStringListUsers[parseInt(i, 10)] += ",".concat(word);
+                          } else {
+                            i += 1;
+                            cutStringListUsers[parseInt(i, 10)] = word;
+                          }
+                        }); // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
-                        _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                        _context2.prev = 96;
+                        _i = 0, _cutStringListUsers = cutStringListUsers;
 
-                        _iterator2.s();
-
-                      case 98:
-                        if ((_step2 = _iterator2.n()).done) {
+                      case 97:
+                        if (!(_i < _cutStringListUsers.length)) {
                           _context2.next = 108;
                           break;
                         }
 
-                        element = _step2.value;
+                        element = _cutStringListUsers[_i];
                         _context2.t4 = ctx;
-                        _context2.next = 103;
+                        _context2.next = 102;
                         return (0, _telegram.userListMessage)(element);
 
-                      case 103:
+                      case 102:
                         _context2.t5 = _context2.sent;
-                        _context2.next = 106;
+                        _context2.next = 105;
                         return _context2.t4.replyWithHTML.call(_context2.t4, _context2.t5);
 
-                      case 106:
-                        _context2.next = 98;
+                      case 105:
+                        _i++;
+                        _context2.next = 97;
                         break;
 
                       case 108:
-                        _context2.next = 113;
-                        break;
-
-                      case 110:
-                        _context2.prev = 110;
-                        _context2.t6 = _context2["catch"](96);
-
-                        _iterator2.e(_context2.t6);
-
-                      case 113:
-                        _context2.prev = 113;
-
-                        _iterator2.f();
-
-                        return _context2.finish(113);
-
-                      case 116:
-                        _context2.t7 = ctx;
-                        _context2.next = 119;
+                        _context2.t6 = ctx;
+                        _context2.next = 111;
                         return (0, _telegram.tipMultipleSuccessMessage)(ctx, tipRecord.id, listOfUsersRained, userTipAmount, type);
 
-                      case 119:
-                        _context2.t8 = _context2.sent;
-                        _context2.next = 122;
-                        return _context2.t7.replyWithHTML.call(_context2.t7, _context2.t8);
+                      case 111:
+                        _context2.t7 = _context2.sent;
+                        _context2.next = 114;
+                        return _context2.t6.replyWithHTML.call(_context2.t6, _context2.t7);
 
-                      case 122:
+                      case 114:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 123:
+                      case 115:
                       case "end":
                         return _context2.stop();
                     }
                   }
-                }, _callee, null, [[48, 77, 80, 83], [96, 110, 113, 116]]);
+                }, _callee, null, [[48, 77, 80, 83]]);
               }));
 
               return function (_x10) {

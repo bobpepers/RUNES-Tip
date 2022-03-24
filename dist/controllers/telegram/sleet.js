@@ -54,7 +54,7 @@ var telegramSleet = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, group, groupFailActivity, textTime, cutLastTimeLetter, cutNumberTime, isnum, lastSeenOptions, activityA, dateObj, usersToRain, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, sleetRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, sleetee, sleeteeWallet, sleettipRecord, _yield$getUserToMenti, _yield$getUserToMenti2, userToMention, userId, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, group, groupFailActivity, textTime, cutLastTimeLetter, cutNumberTime, isnum, lastSeenOptions, activityA, dateObj, usersToRain, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, sleetRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, sleetee, sleeteeWallet, sleettipRecord, _yield$getUserToMenti, _yield$getUserToMenti2, userToMention, userId, tipActivity, cutStringListUsers, i, _i, _cutStringListUsers, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -267,7 +267,7 @@ var telegramSleet = /*#__PURE__*/function () {
 
                       case 68:
                         if (!(usersToRain.length >= 2)) {
-                          _context.next = 153;
+                          _context.next = 145;
                           break;
                         }
 
@@ -455,73 +455,65 @@ var telegramSleet = /*#__PURE__*/function () {
                         return _context.finish(121);
 
                       case 124:
-                        newStringListUsers = listOfUsersRained.join(", ");
-                        cutStringListUsers = newStringListUsers.match(/.{1,3500}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
+                        // const newStringListUsers = listOfUsersRained.join(", ");
+                        // const cutStringListUsers = newStringListUsers.match(/.{1,3500}(\s|$)/g);
+                        cutStringListUsers = [];
+                        i = 0;
+                        listOfUsersRained.forEach(function (word) {
+                          if (!cutStringListUsers[parseInt(i, 10)]) {
+                            cutStringListUsers[parseInt(i, 10)] = word;
+                          } else if (cutStringListUsers[parseInt(i, 10)].length + word.length + 1 <= 3500) {
+                            cutStringListUsers[parseInt(i, 10)] += ",".concat(word);
+                          } else {
+                            i += 1;
+                            cutStringListUsers[parseInt(i, 10)] = word;
+                          }
+                        }); // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
-                        _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                        _context.prev = 127;
+                        _i = 0, _cutStringListUsers = cutStringListUsers;
 
-                        _iterator2.s();
-
-                      case 129:
-                        if ((_step2 = _iterator2.n()).done) {
+                      case 128:
+                        if (!(_i < _cutStringListUsers.length)) {
                           _context.next = 139;
                           break;
                         }
 
-                        element = _step2.value;
+                        element = _cutStringListUsers[_i];
                         _context.t3 = ctx;
-                        _context.next = 134;
+                        _context.next = 133;
                         return (0, _telegram.userListMessage)(element);
 
-                      case 134:
+                      case 133:
                         _context.t4 = _context.sent;
-                        _context.next = 137;
+                        _context.next = 136;
                         return _context.t3.replyWithHTML.call(_context.t3, _context.t4);
 
-                      case 137:
-                        _context.next = 129;
+                      case 136:
+                        _i++;
+                        _context.next = 128;
                         break;
 
                       case 139:
-                        _context.next = 144;
-                        break;
-
-                      case 141:
-                        _context.prev = 141;
-                        _context.t5 = _context["catch"](127);
-
-                        _iterator2.e(_context.t5);
-
-                      case 144:
-                        _context.prev = 144;
-
-                        _iterator2.f();
-
-                        return _context.finish(144);
-
-                      case 147:
-                        _context.t6 = ctx;
-                        _context.next = 150;
+                        _context.t5 = ctx;
+                        _context.next = 142;
                         return (0, _telegram.afterSuccessMessage)(ctx, sleetRecord.id, amount, listOfUsersRained.length, amountPerUser, 'Sleet', 'sleeted');
 
-                      case 150:
-                        _context.t7 = _context.sent;
-                        _context.next = 153;
-                        return _context.t6.replyWithHTML.call(_context.t6, _context.t7);
+                      case 142:
+                        _context.t6 = _context.sent;
+                        _context.next = 145;
+                        return _context.t5.replyWithHTML.call(_context.t5, _context.t6);
 
-                      case 153:
+                      case 145:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 154:
+                      case 146:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[89, 118, 121, 124], [127, 141, 144, 147]]);
+                }, _callee, null, [[89, 118, 121, 124]]);
               }));
 
               return function (_x10) {

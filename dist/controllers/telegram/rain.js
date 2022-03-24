@@ -54,7 +54,7 @@ var telegramRain = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, members, onlineMembers, withoutBots, fActivity, updatedBalance, fee, amountPerUser, faucetWatered, rainRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, rainee, raineeWallet, raintipRecord, _yield$getUserToMenti, _yield$getUserToMenti2, userToMention, userId, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, members, onlineMembers, withoutBots, fActivity, updatedBalance, fee, amountPerUser, faucetWatered, rainRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, rainee, raineeWallet, raintipRecord, _yield$getUserToMenti, _yield$getUserToMenti2, userToMention, userId, tipActivity, cutStringListUsers, i, _i, _cutStringListUsers, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -328,73 +328,65 @@ var telegramRain = /*#__PURE__*/function () {
                         return _context.finish(88);
 
                       case 91:
-                        newStringListUsers = listOfUsersRained.join(", ");
-                        cutStringListUsers = newStringListUsers.match(/.{1,3500}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
+                        // const newStringListUsers = listOfUsersRained.join(", ");
+                        // const cutStringListUsers = newStringListUsers.match(/.{1,3500}(\s|$)/g);
+                        cutStringListUsers = [];
+                        i = 0;
+                        listOfUsersRained.forEach(function (word) {
+                          if (!cutStringListUsers[parseInt(i, 10)]) {
+                            cutStringListUsers[parseInt(i, 10)] = word;
+                          } else if (cutStringListUsers[parseInt(i, 10)].length + word.length + 1 <= 3500) {
+                            cutStringListUsers[parseInt(i, 10)] += ",".concat(word);
+                          } else {
+                            i += 1;
+                            cutStringListUsers[parseInt(i, 10)] = word;
+                          }
+                        }); // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
-                        _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                        _context.prev = 94;
+                        _i = 0, _cutStringListUsers = cutStringListUsers;
 
-                        _iterator2.s();
-
-                      case 96:
-                        if ((_step2 = _iterator2.n()).done) {
+                      case 95:
+                        if (!(_i < _cutStringListUsers.length)) {
                           _context.next = 106;
                           break;
                         }
 
-                        element = _step2.value;
+                        element = _cutStringListUsers[_i];
                         _context.t1 = ctx;
-                        _context.next = 101;
+                        _context.next = 100;
                         return (0, _telegram2.userListMessage)(element);
 
-                      case 101:
+                      case 100:
                         _context.t2 = _context.sent;
-                        _context.next = 104;
+                        _context.next = 103;
                         return _context.t1.replyWithHTML.call(_context.t1, _context.t2);
 
-                      case 104:
-                        _context.next = 96;
+                      case 103:
+                        _i++;
+                        _context.next = 95;
                         break;
 
                       case 106:
-                        _context.next = 111;
-                        break;
-
-                      case 108:
-                        _context.prev = 108;
-                        _context.t3 = _context["catch"](94);
-
-                        _iterator2.e(_context.t3);
-
-                      case 111:
-                        _context.prev = 111;
-
-                        _iterator2.f();
-
-                        return _context.finish(111);
-
-                      case 114:
-                        _context.t4 = ctx;
-                        _context.next = 117;
+                        _context.t3 = ctx;
+                        _context.next = 109;
                         return (0, _telegram2.afterSuccessMessage)(ctx, rainRecord.id, amount, withoutBots.length, amountPerUser, 'Rain', 'rained');
 
-                      case 117:
-                        _context.t5 = _context.sent;
-                        _context.next = 120;
-                        return _context.t4.replyWithHTML.call(_context.t4, _context.t5);
+                      case 109:
+                        _context.t4 = _context.sent;
+                        _context.next = 112;
+                        return _context.t3.replyWithHTML.call(_context.t3, _context.t4);
 
-                      case 120:
+                      case 112:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 121:
+                      case 113:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[56, 85, 88, 91], [94, 108, 111, 114]]);
+                }, _callee, null, [[56, 85, 88, 91]]);
               }));
 
               return function (_x10) {
