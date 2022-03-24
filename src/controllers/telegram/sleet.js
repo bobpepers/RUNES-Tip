@@ -159,10 +159,11 @@ export const telegramSleet = async (
     //
 
     const usersToRain = await db.user.findAll({
+      limit: 400,
       where: {
         [Op.and]: [
           {
-            user_id: { [Op.not]: `discord-${ctx.update.message.from.id}` },
+            id: { [Op.not]: user.id },
           },
           {
             banned: false,
@@ -343,7 +344,7 @@ export const telegramSleet = async (
         if (!cutStringListUsers[parseInt(i, 10)]) {
           cutStringListUsers[parseInt(i, 10)] = word;
         } else if (cutStringListUsers[parseInt(i, 10)].length + word.length + 1 <= 3500) {
-          cutStringListUsers[parseInt(i, 10)] += `,${word}`;
+          cutStringListUsers[parseInt(i, 10)] += `, ${word}`;
         } else {
           i += 1;
           cutStringListUsers[parseInt(i, 10)] = word;
