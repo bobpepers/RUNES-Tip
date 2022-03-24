@@ -230,8 +230,22 @@ export const telegramRain = async (
       activity.unshift(tipActivity);
     }
 
-    const newStringListUsers = listOfUsersRained.join(", ");
-    const cutStringListUsers = newStringListUsers.match(/.{1,3500}(\s|$)/g);
+    // const newStringListUsers = listOfUsersRained.join(", ");
+    // const cutStringListUsers = newStringListUsers.match(/.{1,3500}(\s|$)/g);
+
+    const cutStringListUsers = [];
+    let i = 0;
+    listOfUsersRained.forEach((word) => {
+      if (!cutStringListUsers[parseInt(i, 10)]) {
+        cutStringListUsers[parseInt(i, 10)] = word;
+      } else if (cutStringListUsers[parseInt(i, 10)].length + word.length + 1 <= 3500) {
+        cutStringListUsers[parseInt(i, 10)] += `,${word}`;
+      } else {
+        i += 1;
+        cutStringListUsers[parseInt(i, 10)] = word;
+      }
+    });
+
     // eslint-disable-next-line no-restricted-syntax
     for (const element of cutStringListUsers) {
       // eslint-disable-next-line no-await-in-loop

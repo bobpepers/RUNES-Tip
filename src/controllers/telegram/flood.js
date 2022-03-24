@@ -244,8 +244,35 @@ export const telegramFlood = async (
       activity.unshift(tipActivity);
     }
 
-    const newStringListUsers = listOfUsersRained.join(", ");
-    const cutStringListUsers = newStringListUsers.match(/.{1,3500}(\s|$)/g);
+    // Soltion 1: doesn't work for telegram
+    // const newStringListUsers = listOfUsersRained.join(", ");
+    // const cutStringListUsers = newStringListUsers.match(/.{1,3500}(\s|$)/g);
+
+    // Solution 2: using reducer, shows linting error
+    // const reducer = (ac, val) => {
+    //   if (ac.length > 0 && ac[ac.length - 1].length + val.length <= 30) {
+    //     ac[ac.length - 1] += `, ${val}`;
+    //   } else {
+    //     ac.push(val);
+    //   }
+    //   return ac;
+    // };
+    // const cutStringListUsers = listOfUsersRained.reduce(reducer, []);
+
+    // Solution 3
+    const cutStringListUsers = [];
+    let i = 0;
+    listOfUsersRained.forEach((word) => {
+      if (!cutStringListUsers[parseInt(i, 10)]) {
+        cutStringListUsers[parseInt(i, 10)] = word;
+      } else if (cutStringListUsers[parseInt(i, 10)].length + word.length + 1 <= 3500) {
+        cutStringListUsers[parseInt(i, 10)] += `,${word}`;
+      } else {
+        i += 1;
+        cutStringListUsers[parseInt(i, 10)] = word;
+      }
+    });
+
     // eslint-disable-next-line no-restricted-syntax
     for (const element of cutStringListUsers) {
       // eslint-disable-next-line no-await-in-loop
