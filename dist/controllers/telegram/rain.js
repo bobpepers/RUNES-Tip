@@ -336,7 +336,7 @@ var telegramRain = /*#__PURE__*/function () {
                           if (!cutStringListUsers[parseInt(i, 10)]) {
                             cutStringListUsers[parseInt(i, 10)] = word;
                           } else if (cutStringListUsers[parseInt(i, 10)].length + word.length + 1 <= 3500) {
-                            cutStringListUsers[parseInt(i, 10)] += ",".concat(word);
+                            cutStringListUsers[parseInt(i, 10)] += ", ".concat(word);
                           } else {
                             i += 1;
                             cutStringListUsers[parseInt(i, 10)] = word;

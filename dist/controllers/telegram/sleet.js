@@ -217,8 +217,9 @@ var telegramSleet = /*#__PURE__*/function () {
                       case 57:
                         _context.next = 59;
                         return _models["default"].user.findAll({
+                          limit: 400,
                           where: (0, _defineProperty2["default"])({}, _sequelize.Op.and, [{
-                            user_id: (0, _defineProperty2["default"])({}, _sequelize.Op.not, "discord-".concat(ctx.update.message.from.id))
+                            id: (0, _defineProperty2["default"])({}, _sequelize.Op.not, user.id)
                           }, {
                             banned: false
                           }]),
@@ -463,7 +464,7 @@ var telegramSleet = /*#__PURE__*/function () {
                           if (!cutStringListUsers[parseInt(i, 10)]) {
                             cutStringListUsers[parseInt(i, 10)] = word;
                           } else if (cutStringListUsers[parseInt(i, 10)].length + word.length + 1 <= 3500) {
-                            cutStringListUsers[parseInt(i, 10)] += ",".concat(word);
+                            cutStringListUsers[parseInt(i, 10)] += ", ".concat(word);
                           } else {
                             i += 1;
                             cutStringListUsers[parseInt(i, 10)] = word;
