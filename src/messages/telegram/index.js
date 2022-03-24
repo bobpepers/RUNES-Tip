@@ -331,35 +331,42 @@ ${settings.bot.command.telegram} price
     
       
 ${settings.bot.command.telegram} info
-/info
-<code>Displays coin info</code>
+/info<code>Displays coin info</code>
     
     
 ${settings.bot.command.telegram} balance
 /balance
 <code>Display wallet balance</code>
 
-${settings.bot.command.telegram} faucet
-/faucet
-<code>Claim faucet</code>
-    
-      
-${settings.bot.command.telegram} tip [@user] [amount]
-<code>Tips the @ mentioned user with the desired amount, e.g.</code>
-${settings.bot.command.telegram} tip @Bagosan 1.00
-    
-      
-${settings.bot.command.telegram} rain [amount]
-<code>Rains the desired amount onto all active users (active time 3 hours), e.g.</code>
-${settings.bot.command.telegram} rain 1.00
-    
-      
 ${settings.bot.command.telegram} deposit
 /deposit
 <code>Displays your deposit address</code>
-    
+
+${settings.bot.command.telegram} faucet
+/faucet
+<code>Claim faucet</code>    
       
-${settings.bot.command.telegram} withdraw [address] [amount]
+${settings.bot.command.telegram} tip &lt;@user&gt; &lt;amount&gt;
+<code>Tips the @ mentioned user with the desired amount, e.g.</code>
+example: ${settings.bot.command.telegram} tip @Bagosan 1.00   
+
+${settings.bot.command.discord} &lt;@user&gt; &lt;@user&gt; &lt;@user&gt; &lt;amount|all&gt; [split|each]
+<code>Tips the @ mentioned users with the desired amount</code>
+example: ${settings.bot.command.discord} @test123456 @test123457 1.00 each
+    
+${settings.bot.command.discord} rain &lt;amount|all&gt;
+Rains the desired amount onto all recently online users
+example: ${settings.bot.command.discord} rain 10
+
+${settings.bot.command.telegram} flood &lt;amount|all&gt;
+<code>Floods the desired amount onto all users (including offline users)</code>
+example: ${settings.bot.command.telegram} flood 5.00
+
+${settings.bot.command.telegram} sleet &lt;amount&gt;
+<code>Sleets the desired amount onto all active users (default time is 15min), e.g.</code>
+${settings.bot.command.telegram} sleet 1.00
+      
+${settings.bot.command.telegram} withdraw &lt;address&gt; &lt;amount&gt;
 <code>Withdraws the entered amount to a ${settings.coin.ticker} address of your choice, e.g.</code>
 ${settings.bot.command.telegram} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
 <code>Note: Minimal amount to withdraw: ${withdraw.min / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${withdraw.fee / 1e2}% ${settings.coin.ticker} will be automatically deducted from the amount. half of the fee is donated to common faucet pot.</code>
@@ -369,8 +376,7 @@ ${settings.coin.name === 'Runebase'
 /referral
 <code>Displays your referral count</code>
 <code>Note: We reward members for every 10 new members they add. current reward = 20 ${settings.coin.ticker}</code>
-      
-    
+ 
 ${settings.bot.command.telegram} referral top
 /top
 <code>Displays referral top 10</code>`}     

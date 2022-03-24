@@ -52,7 +52,7 @@ export const fetchHelp = async (
         parse_mode: 'HTML',
         ...Markup.inlineKeyboard(
           [
-            [Markup.button.callback('balance', 'balance'),
+            [Markup.button.callback('Balance', 'balance'),
               Markup.button.callback('Price', 'price')],
             [Markup.button.callback('Info', 'info'),
               Markup.button.callback('Deposit', 'deposit')],

@@ -166,7 +166,7 @@ export const telegramRouter = async (
       await queue.add(() => task);
     });
 
-    telegramClient.action('Referral', async (ctx) => {
+    telegramClient.action('referral', async (ctx) => {
       const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
       if (maintenance.maintenance || !maintenance.enabled) return;
       const groupTask = await updateGroup(ctx);
