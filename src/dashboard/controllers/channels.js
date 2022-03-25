@@ -1,7 +1,4 @@
-// import { parseDomain } from "parse-domain";
 import db from '../../models';
-
-const { Op } = require('sequelize');
 
 export const banChannel = async (req, res, next) => {
   try {
@@ -10,21 +7,33 @@ export const banChannel = async (req, res, next) => {
         id: req.body.id,
       },
     });
-    res.locals.channel = await channel.update({
+    const updatedChannel = await channel.update({
       banned: !channel.banned,
       banMessage: req.body.banMessage,
+    });
+
+    res.locals.channel = await db.channel.findOne({
+      where: {
+        id: req.body.id,
+      },
+      include: [
+        {
+          model: db.group,
+          as: 'group',
+        },
+      ],
     });
   } catch (err) {
     res.locals.error = err;
     console.log(err);
   }
-  console.log(res.locals.channel);
+  // console.log(res.locals.channel);
   next();
 };
 
 export const fetchChannels = async (req, res, next) => {
-  console.log('fetcChannels_____________________________');
-  console.log(req.body);
+  // console.log('fetcChannels_____________________________');
+  // console.log(req.body);
   const channelOptions = {};
   if (req.body.id !== '') {
     channelOptions.id = Number(req.body.id);
@@ -53,6 +62,6 @@ export const fetchChannels = async (req, res, next) => {
     ],
   };
   res.locals.channels = await db.channel.findAll(options);
-  console.log(res.locals.channels);
+  // console.log(res.locals.channels);
   next();
 };

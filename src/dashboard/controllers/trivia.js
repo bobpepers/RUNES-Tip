@@ -3,8 +3,6 @@
 import _ from 'lodash';
 import db from '../../models';
 
-const { Sequelize, Op } = require('sequelize');
-
 export const removeTriviaQuestion = async (
   req,
   res,

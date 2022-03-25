@@ -2,9 +2,11 @@
 import BigNumber from "bignumber.js";
 import db from '../../models';
 
-const { Op } = require('sequelize');
-
-export const updateFeature = async (req, res, next) => {
+export const updateFeature = async (
+  req,
+  res,
+  next,
+) => {
   const amount = new BigNumber(req.body.min).times(1e8).toNumber();
   const fee = new BigNumber(req.body.fee).times(1e2).toNumber();
   const maxSampleSize = Number(req.body.maxSampleSize);
@@ -78,7 +80,11 @@ export const updateFeature = async (req, res, next) => {
   next();
 };
 
-export const removeFeature = async (req, res, next) => {
+export const removeFeature = async (
+  req,
+  res,
+  next,
+) => {
   const feature = await db.features.findOne({
     where: {
       id: req.body.id,
@@ -89,9 +95,11 @@ export const removeFeature = async (req, res, next) => {
   next();
 };
 
-export const fetchFeatures = async (req, res, next) => {
-  console.log(req.body);
-
+export const fetchFeatures = async (
+  req,
+  res,
+  next,
+) => {
   const options = {
     order: [
       ['id', 'DESC'],
@@ -118,8 +126,12 @@ export const fetchFeatures = async (req, res, next) => {
   next();
 };
 
-export const addFeature = async (req, res, next) => {
-  console.log(req.body);
+export const addFeature = async (
+  req,
+  res,
+  next,
+) => {
+  // console.log(req.body);
   const featureOptions = {
     type: 'local',
   };
@@ -193,9 +205,6 @@ export const addFeature = async (req, res, next) => {
   }
 
   if (!feature) {
-    console.log(req.user.id);
-    console.log("req.user.id");
-    console.log(' ');
     const newFeature = await db.features.create({
       type: 'local',
       name: req.body.feature,
@@ -228,7 +237,7 @@ export const addFeature = async (req, res, next) => {
         },
       ],
     });
-    console.log(res.locals.feature);
+    // console.log(res.locals.feature);
     next();
   }
 

@@ -5,20 +5,26 @@ import logger from "../../helpers/logger";
 import { getInstance } from "../../services/rclient";
 import getCoinSettings from '../../config/settings';
 
+import {
+  discordWelcomeMessage,
+} from '../../messages/discord';
+
 const settings = getCoinSettings();
 
 export const createUpdateDiscordUser = async (
-  message,
+  discordClient,
+  userInfo,
   queue,
 ) => {
   await queue.add(async () => {
+    let newAccount = false;
     await db.sequelize.transaction({
       isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
     }, async (t) => {
       let user = await db.user.findOne(
         {
           where: {
-            user_id: `discord-${message.author.id}`,
+            user_id: `discord-${userInfo.id}`,
           },
           transaction: t,
           lock: t.LOCK.UPDATE,
@@ -26,8 +32,8 @@ export const createUpdateDiscordUser = async (
       );
       if (!user) {
         user = await db.user.create({
-          user_id: `discord-${message.author.id}`,
-          username: `${message.author.username}#${message.author.discriminator}`,
+          user_id: `discord-${userInfo.id}`,
+          username: `${userInfo.username}#${userInfo.discriminator}`,
           firstname: '',
           lastname: '',
         }, {
@@ -36,10 +42,10 @@ export const createUpdateDiscordUser = async (
         });
       }
       if (user) {
-        if (user.username !== `${message.author.username}#${message.author.discriminator}`) {
+        if (user.username !== `${userInfo.username}#${userInfo.discriminator}`) {
           user = await user.update(
             {
-              username: `${message.author.username}#${message.author.discriminator}`,
+              username: `${userInfo.username}#${userInfo.discriminator}`,
             },
             {
               transaction: t,
@@ -65,6 +71,7 @@ export const createUpdateDiscordUser = async (
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
+          newAccount = true;
         }
         let address = await db.address.findOne(
           {
@@ -97,14 +104,22 @@ export const createUpdateDiscordUser = async (
               lock: t.LOCK.UPDATE,
             });
           }
-          message.author.send(`Welcome ${message.author.username}, we created a wallet for you.
-Type "${settings.bot.command.discord} help" for usage info`);
         }
       }
 
-      t.afterCommit(() => {
-        console.log('done');
-        // ctx.reply(`done`);
+      t.afterCommit(async () => {
+        if (newAccount) {
+          const userClient = await discordClient.users.fetch(userInfo.id).catch((e) => {
+            console.log(e);
+          });
+          if (userClient) {
+            await userClient.send({
+              embeds: [discordWelcomeMessage(userInfo)],
+            }).catch((e) => {
+              console.log(e);
+            });
+          }
+        }
       });
     }).catch(async (err) => {
       try {
@@ -121,10 +136,16 @@ Type "${settings.bot.command.discord} help" for usage info`);
   });
 };
 
-export const updateDiscordLastSeen = async (client, message) => {
+export const updateDiscordLastSeen = async (
+  message,
+  userInfo,
+) => {
   let updatedUser;
   let guildId;
-  if (message.guildId) {
+
+  if (message.guild && message.guild.id) {
+    guildId = message.guild.id;
+  } else if (message.guildId) {
     guildId = message.guildId;
   }
 
@@ -134,7 +155,7 @@ export const updateDiscordLastSeen = async (client, message) => {
     const user = await db.user.findOne(
       {
         where: {
-          user_id: `discord-${message.author.id}`,
+          user_id: `discord-${userInfo.id}`,
         },
         transaction: t,
         lock: t.LOCK.UPDATE,

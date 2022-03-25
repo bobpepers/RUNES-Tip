@@ -1,6 +1,5 @@
+import { Transaction } from 'sequelize';
 import db from '../../models';
-
-const { Sequelize, Transaction, Op } = require('sequelize');
 
 export const fetchUser = async (req, res, next) => {
   res.locals.user = await db.dashboardUser.findOne({

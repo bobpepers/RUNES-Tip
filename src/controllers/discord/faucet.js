@@ -1,6 +1,10 @@
 /* eslint-disable import/prefer-default-export */
 import { Transaction } from "sequelize";
 import {
+  MessageActionRow,
+  MessageButton,
+} from "discord.js";
+import {
   dryFaucetMessage,
   claimTooFactFaucetMessage,
   faucetClaimedMessage,
@@ -15,7 +19,6 @@ const settings = getCoinSettings();
 
 export const discordFaucetClaim = async (
   message,
-  filteredMessage,
   io,
 ) => {
   let user;
@@ -30,7 +33,7 @@ export const discordFaucetClaim = async (
     ] = await userWalletExist(
       message,
       t,
-      filteredMessage[1].toLowerCase(),
+      'faucet',
     );
     if (userActivity) {
       activity.unshift(userActivity);
@@ -55,6 +58,13 @@ export const discordFaucetClaim = async (
       return;
     }
 
+    const row = new MessageActionRow().addComponents(
+      new MessageButton()
+        .setCustomId('claimFaucet')
+        .setLabel('Claim Faucet')
+        .setStyle('PRIMARY'),
+    );
+
     if (Number(faucet.amount) < 10000) {
       const fActivity = await db.activity.create({
         type: 'faucettip_i',
@@ -63,7 +73,10 @@ export const discordFaucetClaim = async (
         transaction: t,
       });
       activity.push(fActivity);
-      await message.channel.send({ embeds: [dryFaucetMessage()] });
+      await message.channel.send({
+        embeds: [dryFaucetMessage()],
+        components: [row],
+      });
       return;
     }
     const lastFaucetTip = await db.faucettip.findOne({
@@ -94,7 +107,10 @@ export const discordFaucetClaim = async (
         transaction: t,
       });
       activity.push(activityT);
-      await message.channel.send({ embeds: [claimTooFactFaucetMessage(username, distance)] });
+      await message.channel.send({
+        embeds: [claimTooFactFaucetMessage(username, distance)],
+        components: [row],
+      });
       return;
     }
     const amountToTip = Number(((faucet.amount / 100) * (settings.faucet / 1e2)).toFixed(0));
@@ -155,6 +171,7 @@ export const discordFaucetClaim = async (
           amountToTip,
         ),
       ],
+      components: [row],
     });
   }).catch(async (err) => {
     try {

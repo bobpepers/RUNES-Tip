@@ -1,15 +1,19 @@
+import {
+  Transaction,
+} from 'sequelize';
 import db from '../../models';
 
 const crypto = require('crypto');
-
-const { Sequelize, Transaction, Op } = require('sequelize');
-const { getInstance } = require('../../services/rclient');
 
 /**
  *
  * Is IP Banned?
  */
-export const isIpBanned = async (req, res, next) => {
+export const isIpBanned = async (
+  req,
+  res,
+  next,
+) => {
   const ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   const banned = await db.ip.find({
     where: {
@@ -33,7 +37,11 @@ export const isIpBanned = async (req, res, next) => {
 /**
  * insert Ip
  */
-export const insertIp = async (req, res, next) => {
+export const insertIp = async (
+  req,
+  res,
+  next,
+) => {
   const ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
   await db.sequelize.transaction({

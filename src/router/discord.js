@@ -81,8 +81,59 @@ export const discordRouter = (
   discordClient.on('voiceStateUpdate', async (oldMember, newMember) => {
     await queue.add(async () => {
       const groupTask = await updateDiscordGroup(discordClient, newMember);
-      const channelTask = await updateDiscordChannel(discordClient, newMember, groupTask);
+      const channelTask = await updateDiscordChannel(newMember, groupTask);
     });
+  });
+
+  discordClient.on("interactionCreate", async (interaction) => {
+    let groupTask;
+    let groupTaskId;
+    let channelTask;
+    let channelTaskId;
+    let lastSeenDiscordTask;
+    if (!interaction.user.bot) {
+      const maintenance = await isMaintenanceOrDisabled(interaction, 'discord');
+      if (maintenance.maintenance || !maintenance.enabled) return;
+      const walletExists = await createUpdateDiscordUser(
+        discordClient,
+        interaction.user,
+        queue,
+      );
+      await queue.add(async () => {
+        groupTask = await updateDiscordGroup(discordClient, interaction);
+        channelTask = await updateDiscordChannel(interaction, groupTask);
+        lastSeenDiscordTask = await updateDiscordLastSeen(
+          discordClient,
+          interaction.user,
+        );
+      });
+      if (interaction.isButton()) {
+        if (interaction.customId === 'claimFaucet') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'Faucet',
+          );
+          if (limited) return;
+          const setting = await discordSettings(
+            interaction,
+            'faucet',
+            groupTaskId,
+            channelTaskId,
+          );
+          if (!setting) return;
+
+          await queue.add(async () => {
+            const task = await discordFaucetClaim(
+              interaction,
+              io,
+            );
+          });
+          interaction.deferUpdate();
+        }
+      }
+    }
   });
 
   discordClient.on("messageCreate", async (message) => {
@@ -96,13 +147,17 @@ export const discordRouter = (
     if (!message.author.bot) {
       const maintenance = await isMaintenanceOrDisabled(message, 'discord');
       if (maintenance.maintenance || !maintenance.enabled) return;
-      const walletExists = await createUpdateDiscordUser(message, queue);
+      const walletExists = await createUpdateDiscordUser(
+        discordClient,
+        message.author,
+        queue,
+      );
       await queue.add(async () => {
         groupTask = await updateDiscordGroup(discordClient, message);
-        channelTask = await updateDiscordChannel(discordClient, message, groupTask);
+        channelTask = await updateDiscordChannel(message, groupTask);
         lastSeenDiscordTask = await updateDiscordLastSeen(
           discordClient,
-          message,
+          message.author,
         );
       });
       groupTaskId = groupTask && groupTask.id;
@@ -325,7 +380,6 @@ export const discordRouter = (
       await queue.add(async () => {
         const task = await discordFaucetClaim(
           message,
-          filteredMessageDiscord,
           io,
         );
       });

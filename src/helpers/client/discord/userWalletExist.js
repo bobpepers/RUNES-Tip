@@ -11,9 +11,15 @@ export const userWalletExist = async (
   functionName,
 ) => {
   let activity;
+  let userId;
+  if (message.user) {
+    userId = message.user.id;
+  } else if (message.author) {
+    userId = message.author.id;
+  }
   const user = await db.user.findOne({
     where: {
-      user_id: `discord-${message.author.id}`,
+      user_id: `discord-${userId}`,
     },
     include: [
       {

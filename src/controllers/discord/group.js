@@ -3,7 +3,10 @@ import { Transaction } from "sequelize";
 import db from '../../models';
 import logger from "../../helpers/logger";
 
-export const updateDiscordGroup = async (client, message) => {
+export const updateDiscordGroup = async (
+  client,
+  message,
+) => {
   let group;
   let guildId;
 

@@ -47,7 +47,7 @@ export const fetchDeposits = async (
     transactionOptions.to_from = { [Op.like]: `%${req.body.from}%` };
   }
   if (req.body.userId !== '') {
-    userOptions.userId = { [Op.like]: `%${req.body.userId}%` };
+    userOptions.user_id = { [Op.like]: `%${req.body.userId}%` };
   }
   if (req.body.username !== '') {
     userOptions.username = { [Op.like]: `%${req.body.username}%` };
@@ -79,6 +79,6 @@ export const fetchDeposits = async (
     ],
   };
   res.locals.deposits = await db.transaction.findAll(options);
-  console.log(res.locals.deposits);
+  // console.log(res.locals.deposits);
   next();
 };

@@ -1,8 +1,11 @@
 import nodemailer from 'nodemailer';
-// import axios from 'axios';
+import {
+  Sequelize,
+  Transaction,
+  Op,
+} from 'sequelize';
 import db from '../../models';
 
-const { Sequelize, Transaction, Op } = require('sequelize');
 const { getInstance } = require('../../services/rclient');
 
 require('dotenv').config();
@@ -20,7 +23,11 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const fetchAdminLiability = async (req, res, next) => {
+export const fetchAdminLiability = async (
+  req,
+  res,
+  next,
+) => {
   let available = 0;
   let locked = 0;
   let unconfirmedDeposits = 0;
@@ -72,11 +79,6 @@ export const fetchAdminLiability = async (req, res, next) => {
 
     });
 
-    console.log(sumAvailable);
-    console.log(sumLocked);
-    console.log(sumUnconfirmedDeposits);
-    console.log(sumUnconfirmedWithdrawals);
-
     available = sumAvailable[0].dataValues.total_available ? sumAvailable[0].dataValues.total_available : 0;
     locked = sumLocked[0].dataValues.total_locked ? sumLocked[0].dataValues.total_locked : 0;
     unconfirmedDeposits = sumUnconfirmedDeposits[0].dataValues.total_amount ? sumUnconfirmedDeposits[0].dataValues.total_amount : 0;
@@ -84,17 +86,6 @@ export const fetchAdminLiability = async (req, res, next) => {
 
     res.locals.liability = ((Number(available) + Number(locked)) + Number(unconfirmedDeposits)) - Number(unconfirmledWithdrawals);
 
-    console.log('sumAvailable');
-
-    console.log(available);
-    console.log(locked);
-    console.log(unconfirmedDeposits);
-    console.log(unconfirmledWithdrawals);
-    console.log(res.locals.liability);
-    // const response = await getInstance().getWalletInfo();
-    // console.log(response);
-    // res.locals.balance = response.balance;
-    // console.log(req.body);
     next();
   } catch (error) {
     console.log(error);
@@ -103,12 +94,15 @@ export const fetchAdminLiability = async (req, res, next) => {
   }
 };
 
-export const fetchAdminNodeBalance = async (req, res, next) => {
+export const fetchAdminNodeBalance = async (
+  req,
+  res,
+  next,
+) => {
   try {
     const response = await getInstance().getWalletInfo();
     console.log(response);
     res.locals.balance = response.balance;
-    // console.log(req.body);
     next();
   } catch (error) {
     console.log(error);
@@ -120,11 +114,12 @@ export const fetchAdminNodeBalance = async (req, res, next) => {
 /**
  * isAdmin
  */
-export const isAdmin = async (req, res, next) => {
-  console.log('req.user.role');
-  console.log(req.user.role);
+export const isAdmin = async (
+  req,
+  res,
+  next,
+) => {
   if (req.user.role !== 4 && req.user.role !== 8) {
-    console.log('unauthorized');
     res.status(401).send({
       error: 'Unauthorized',
     });

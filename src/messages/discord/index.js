@@ -1186,6 +1186,54 @@ export const ReactDropReturnInitiatorMessage = () => {
   return result;
 };
 
+export const discordWelcomeMessage = (
+  userInfo,
+) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(`Bot`)
+    .setDescription(`Welcome <@${userInfo.id}>, we created a wallet for you.
+Type "${settings.bot.command.discord} help" for usage info`)
+    .setThumbnail(settings.coin.logo)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
+export const discordBotMaintenanceMessage = () => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(`Bot`)
+    .setDescription(`Discord tipbot maintenance`)
+    .setThumbnail(settings.coin.logo)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
+export const discordBotDisabledMessage = () => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(`Bot`)
+    .setDescription(`Discord tipbot disabled`)
+    .setThumbnail(settings.coin.logo)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
 export const triviaReturnInitiatorMessage = () => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)

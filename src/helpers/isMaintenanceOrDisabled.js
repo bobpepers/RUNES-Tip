@@ -10,6 +10,11 @@ import {
   telegramBotMaintenanceMessage,
 } from '../messages/telegram';
 
+import {
+  discordBotMaintenanceMessage,
+  discordBotDisabledMessage,
+} from '../messages/discord';
+
 export const isMaintenanceOrDisabled = async (
   message,
   side,
@@ -23,9 +28,17 @@ export const isMaintenanceOrDisabled = async (
 
   if (side === 'discord') {
     if (!botSetting.enabled) {
-      message.reply('Discord tipbot disabled');
+      await message.reply({
+        embeds: [discordBotDisabledMessage()],
+      }).catch((e) => {
+        console.log(e);
+      });
     } else if (botSetting.maintenance) {
-      message.reply('Discord tipbot maintenance');
+      await message.reply({
+        embeds: [discordBotMaintenanceMessage()],
+      }).catch((e) => {
+        console.log(e);
+      });
     }
   }
 

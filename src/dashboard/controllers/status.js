@@ -1,6 +1,4 @@
 const crypto = require('crypto');
-
-const { Sequelize, Transaction, Op } = require('sequelize');
 const { getInstance } = require('../../services/rclient');
 
 /**

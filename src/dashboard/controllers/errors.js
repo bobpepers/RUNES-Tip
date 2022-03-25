@@ -1,8 +1,10 @@
 import db from '../../models';
 
-const { Op } = require('sequelize');
-
-export const fetchErrors = async (req, res, next) => {
+export const fetchErrors = async (
+  req,
+  res,
+  next,
+) => {
   const userOptions = {};
 
   const options = {

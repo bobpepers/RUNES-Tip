@@ -135,9 +135,12 @@ export const myRateLimiter = async (
 ) => {
   try {
     let userId;
-    console.log(message);
     if (platform === 'discord') {
-      userId = message.author.id;
+      if (message.user) {
+        userId = message.user.id;
+      } else if (message.author) {
+        userId = message.author.id;
+      }
     }
     if (platform === 'telegram') {
       if (
@@ -265,6 +268,7 @@ export const myRateLimiter = async (
         const notError = await errorConsumer.consume(userId, 1);
         if (notError.remainingPoints > 0) {
           if (platform === 'discord') {
+            console.log('send error message ratelimiter');
             await message.channel.send({
               embeds: [
                 discordLimitSpamMessage(
@@ -273,6 +277,7 @@ export const myRateLimiter = async (
                 ),
               ],
             });
+            console.log('after send reply');
           }
           if (platform === 'telegram') {
             await message.channel.send({ embeds: [discordLimitSpamMessage(message, title)] });
@@ -288,6 +293,7 @@ export const myRateLimiter = async (
     }
   } catch (lastErrorCatch) {
     console.log(lastErrorCatch);
+    console.log('catching the last error');
     return true;
   }
 };

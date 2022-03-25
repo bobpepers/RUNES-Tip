@@ -273,7 +273,7 @@ export const fetchWithdrawals = async (req, res, next) => {
     transactionOptions.to_from = { [Op.like]: `%${req.body.to}%` };
   }
   if (req.body.userId !== '') {
-    userOptions.userId = { [Op.like]: `%${req.body.userId}%` };
+    userOptions.user_id = { [Op.like]: `%${req.body.userId}%` };
   }
   if (req.body.username !== '') {
     userOptions.username = { [Op.like]: `%${req.body.username}%` };

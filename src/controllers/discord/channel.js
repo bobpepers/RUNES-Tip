@@ -3,7 +3,6 @@ import db from '../../models';
 import logger from "../../helpers/logger";
 
 export const updateDiscordChannel = async (
-  client,
   message,
   group,
 ) => {
@@ -60,7 +59,7 @@ export const updateDiscordChannel = async (
     }
 
     t.afterCommit(() => {
-      console.log('done');
+      console.log('done update discord channel');
     });
   }).catch(async (err) => {
     try {

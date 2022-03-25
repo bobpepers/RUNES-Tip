@@ -1,7 +1,6 @@
 // import { parseDomain } from "parse-domain";
+import { Op } from 'sequelize';
 import db from '../../models';
-
-const { Op } = require('sequelize');
 
 export const banServer = async (req, res, next) => {
   console.log('ban server');

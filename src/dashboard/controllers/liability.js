@@ -1,7 +1,7 @@
+import {
+  Sequelize, Op,
+} from 'sequelize';
 import db from '../../models';
-
-const { Sequelize, Op } = require('sequelize');
-const { getInstance } = require('../../services/rclient');
 
 export const fetchLiability = async (req, res, next) => {
   let available = 0;

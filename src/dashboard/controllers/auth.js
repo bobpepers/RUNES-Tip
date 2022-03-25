@@ -1,9 +1,11 @@
+import {
+  Transaction,
+  Op,
+} from 'sequelize';
 import { sendVerificationEmail } from '../helpers/email';
 import db from '../../models';
 import { generateVerificationToken } from '../helpers/generate';
 import timingSafeEqual from '../helpers/timingSafeEqual';
-
-const { Transaction, Op } = require('sequelize');
 
 /**
  *
@@ -172,13 +174,11 @@ export const signup = async (req, res, next) => {
   });
 
   if (User && User.username.toLowerCase() === username.toLowerCase()) {
-    console.log('already exists');
     return res.status(401).send({
       error: 'USERNAME_ALREADY_EXIST',
     });
   }
   if (User && User.email.toLowerCase() === email.toLowerCase()) {
-    console.log('e-mail already exists');
     return res.status(401).send({
       error: 'EMAIL_ALREADY_EXIST',
     });

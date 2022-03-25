@@ -1,7 +1,6 @@
 // import { parseDomain } from "parse-domain";
+import { Op } from 'sequelize';
 import db from '../../models';
-
-const { Op } = require('sequelize');
 
 export const fetchDashboardUsers = async (req, res, next) => {
   const userOptions = {};

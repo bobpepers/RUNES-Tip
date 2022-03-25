@@ -1,10 +1,7 @@
-// import { parseDomain } from "parse-domain";
+import { Op } from 'sequelize';
 import db from '../../models';
 
-const { Op } = require('sequelize');
-
 export const banUser = async (req, res, next) => {
-  console.log('ban user');
   try {
     const user = await db.user.findOne({
       where: {
@@ -34,17 +31,17 @@ export const fetchUsers = async (req, res, next) => {
     userOptions.id = { [Op.like]: `%${Number(req.body.id)}%` };
   }
   if (req.body.userId !== '') {
-    userOptions.userId = { [Op.like]: `%${req.body.userId}%` };
+    userOptions.user_id = { [Op.like]: `%${req.body.userId}%` };
   }
   if (req.body.username !== '') {
     userOptions.username = { [Op.like]: `%${req.body.username}%` };
   }
   if (req.body.platform !== 'all') {
     if (req.body.platform === 'telegram') {
-      userOptions.userId = { [Op.startsWith]: 'telegram-' };
+      userOptions.user_id = { [Op.startsWith]: 'telegram-' };
     }
     if (req.body.platform === 'discord') {
-      userOptions.userId = { [Op.startsWith]: 'discord-' };
+      userOptions.user_id = { [Op.startsWith]: 'discord-' };
     }
   }
   if (req.body.banned !== 'all') {
@@ -68,7 +65,8 @@ export const fetchUsers = async (req, res, next) => {
       },
     ],
   };
+
   res.locals.users = await db.user.findAll(options);
-  console.log(res.locals.users);
+  // console.log(res.locals.users);
   next();
 };
