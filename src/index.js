@@ -1,5 +1,4 @@
 /* eslint-disable import/first */
-import { addExitCallback } from 'catch-exit';
 import {
   Client,
   Intents,
@@ -18,6 +17,7 @@ import dotenv from 'dotenv';
 import passport from 'passport';
 import olm from '@matrix-org/olm';
 import sdk from 'matrix-js-sdk';
+import { LocalStorage } from "node-localstorage";
 import { router } from "./router";
 import { dashboardRouter } from "./dashboard/router";
 import { updatePrice } from "./helpers/updatePrice";
@@ -38,12 +38,10 @@ import {
 
 global.Olm = olm;
 
-const { LocalStorage } = require('node-localstorage');
+// const { LocalStorage } = require('node-localstorage');
 
 const localStorage = new LocalStorage('./scratch');
-const {
-  LocalStorageCryptoStore,
-} = require('matrix-js-sdk/lib/crypto/store/localStorage-crypto-store');
+const { LocalStorageCryptoStore } = require('matrix-js-sdk/lib/crypto/store/localStorage-crypto-store');
 
 dotenv.config();
 const settings = getCoinSettings();
@@ -124,16 +122,12 @@ io.on("connection", async (socket) => {
     && (socket.request.user.role === 4
       || socket.request.user.role === 8)
   ) {
-    // console.log('joined admin socket');
-    // console.log(userId);
     socket.join('admin');
-    sockets[userId] = socket;
+    sockets[parseInt(userId, 10)] = socket;
   }
   // console.log(Object.keys(sockets).length);
   socket.on("disconnect", () => {
-    delete sockets[userId];
-    // console.log("Client disconnected");
-    // console.log(userId);
+    delete sockets[parseInt(userId, 10)];
   });
 });
 
@@ -284,7 +278,7 @@ const schedulePriceUpdate = schedule.scheduleJob('*/20 * * * *', () => { // Upda
   updatePrice();
 });
 
-const scheduleWithdrawal = schedule.scheduleJob('*/5 * * * *', async () => { // Process a withdrawal every 5 minutes
+const scheduleWithdrawal = schedule.scheduleJob('*/8 * * * *', async () => { // Process a withdrawal every 8 minutes
   const autoWithdrawalSetting = await db.features.findOne({
     where: {
       name: 'autoWithdrawal',
@@ -300,12 +294,6 @@ const scheduleWithdrawal = schedule.scheduleJob('*/5 * * * *', async () => { // 
 });
 
 // Handle olm library process unhandeled rejections
-// addExitCallback((signal) => {
-//   console.log('signal');
-//   console.log(signal);
-// });
-
-// global.onerror = () => console.log("global onerror fired");
 
 process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled Rejection capture');
@@ -320,47 +308,9 @@ process.on('uncaughtException', (e, origin) => {
   console.log('origin');
   console.log(origin);
 });
-global.catch((err) => { /* ignore */ }); // mark error as handled
-process.catch((err) => { /* ignore */ }); // mark error as handled
-
-global.on('unhandledRejection', (reason, promise) => {
-  console.log('Unhandled Rejection capture');
-  console.log('Unhandled Rejection at:', reason.stack || reason);
-  console.log('promise');
-  console.log(promise);
-});
-
-global.on('uncaughtException', (e, origin) => {
-  console.log('Unhandled Exception capture');
-  console.log('uncaughtException: ', e.stack);
-  console.log('origin');
-  console.log(origin);
-});
-
-window.on('unhandledRejection', (reason, promise) => {
-  console.log('Unhandled Rejection capture');
-  console.log('Unhandled Rejection at:', reason.stack || reason);
-  console.log('promise');
-  console.log(promise);
-});
-
-window.on('uncaughtException', (e, origin) => {
-  console.log('Unhandled Exception capture');
-  console.log('uncaughtException: ', e.stack);
-  console.log('origin');
-  console.log(origin);
-});
 
 process.on('exit', (code) => {
   console.log(`About to exit with code: ${code}`);
 });
-
-setInterval(() => {
-  console.log('app still running');
-}, 1000);
-
-// const p = Promise.reject(new Error("err"));
-
-// setTimeout(() => p.catch(() => {}), 86400);
 
 console.log('server listening on:', port);

@@ -138,6 +138,9 @@ export const discordRouter = (
         }
       }
     }
+    // await interaction.deferUpdate().catch((e) => {
+    //   console.log(e);
+    // });
   });
 
   discordClient.on("messageCreate", async (message) => {

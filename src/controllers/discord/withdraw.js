@@ -1,7 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { Transaction } from "sequelize";
 import db from '../../models';
-import { getInstance } from '../../services/rclient';
 import {
   invalidAddressMessage,
   reviewMessage,
@@ -9,13 +8,10 @@ import {
   discordErrorMessage,
   cannotSendMessageUser,
 } from '../../messages/discord';
-import getCoinSettings from '../../config/settings';
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/client/discord/validateAmount";
 import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 import { validateWithdrawalAddress } from '../../helpers/blockchain/validateWithdrawalAddress';
-
-const settings = getCoinSettings();
 
 export const withdrawDiscordCreate = async (
   discordClient,

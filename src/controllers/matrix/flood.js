@@ -1,6 +1,11 @@
 /* eslint-disable import/prefer-default-export */
 import { Transaction } from "sequelize";
 import db from '../../models';
+import logger from "../../helpers/logger";
+import { validateAmount } from "../../helpers/client/matrix/validateAmount";
+import { mapMembers } from "../../helpers/client/matrix/mapMembers";
+import { userWalletExist } from "../../helpers/client/matrix/userWalletExist";
+import { waterFaucet } from "../../helpers/waterFaucet";
 import {
   afterSuccessMessage,
   notInDirectMessage,
@@ -8,12 +13,6 @@ import {
   userListMessage,
   errorMessage,
 } from '../../messages/matrix';
-
-import logger from "../../helpers/logger";
-import { validateAmount } from "../../helpers/client/matrix/validateAmount";
-import { mapMembers } from "../../helpers/client/matrix/mapMembers";
-import { userWalletExist } from "../../helpers/client/matrix/userWalletExist";
-import { waterFaucet } from "../../helpers/waterFaucet";
 
 export const matrixFlood = async (
   matrixClient,

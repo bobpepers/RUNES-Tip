@@ -1,15 +1,10 @@
 import { Transaction } from "sequelize";
 import db from '../../models';
 import logger from "../../helpers/logger";
-
 import { getInstance } from "../../services/rclient";
-import getCoinSettings from '../../config/settings';
-
 import {
   discordWelcomeMessage,
 } from '../../messages/discord';
-
-const settings = getCoinSettings();
 
 export const createUpdateDiscordUser = async (
   discordClient,

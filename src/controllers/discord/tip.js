@@ -55,20 +55,17 @@ export const tipRunesToDiscordUser = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
-    console.log(usersToTip);
-    console.log(AmountPosition);
-    console.log(type);
 
     // make users to tip array
     while (!AmountPositionEnded) {
       let discordId;
-      if (filteredMessage[AmountPosition].startsWith('<@!')) {
-        discordId = filteredMessage[AmountPosition].slice(3).slice(0, -1);
+      if (filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@!')) {
+        discordId = filteredMessage[parseInt(AmountPosition, 10)].slice(3).slice(0, -1);
       } else if (
-        filteredMessage[AmountPosition].startsWith('<@')
-        && !filteredMessage[AmountPosition].startsWith('<@!')
+        filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@')
+        && !filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@!')
       ) {
-        discordId = filteredMessage[AmountPosition].slice(2).slice(0, -1);
+        discordId = filteredMessage[parseInt(AmountPosition, 10)].slice(2).slice(0, -1);
       }
 
       console.log(discordId);
@@ -104,13 +101,17 @@ export const tipRunesToDiscordUser = async (
       }
       // usersToTip.push(filteredMessage[AmountPosition]);
       AmountPosition += 1;
-      if (!filteredMessage[AmountPosition].startsWith('<@')) {
+      if (!filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@')) {
         AmountPositionEnded = true;
       }
     }
 
     if (usersToTip.length < 1) {
-      await message.channel.send({ embeds: [notEnoughUsersToTip(message)] });
+      await message.channel.send({
+        embeds: [
+          notEnoughUsersToTip(message),
+        ],
+      });
       return;
     }
 
@@ -124,7 +125,7 @@ export const tipRunesToDiscordUser = async (
     ] = await validateAmount(
       message,
       t,
-      filteredMessage[AmountPosition],
+      filteredMessage[parseInt(AmountPosition, 10)],
       user,
       setting,
       'tip',

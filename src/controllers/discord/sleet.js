@@ -4,7 +4,7 @@ import db from '../../models';
 import {
   notEnoughActiveUsersMessage,
   AfterSuccessMessage,
-  NotInDirectMessage,
+  // NotInDirectMessage,
   discordErrorMessage,
   invalidTimeMessage,
 } from '../../messages/discord';

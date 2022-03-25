@@ -1,6 +1,6 @@
 /* eslint no-underscore-dangle: [2, { "allow": ["_eventName", "_address", "_time", "_orderId"] }] */
 import _ from "lodash";
-import { Transaction, Op } from "sequelize";
+import { Transaction } from "sequelize";
 import db from '../models';
 import getCoinSettings from '../config/settings';
 import { getInstance } from "./rclient";

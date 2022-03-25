@@ -1,7 +1,6 @@
 import { MessageAttachment } from "discord.js";
 import { Transaction } from "sequelize";
 import QRCode from "qrcode";
-import s from "connect-redis";
 import db from '../../models';
 import {
   warnDirectMessage,
