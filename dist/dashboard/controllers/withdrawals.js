@@ -462,7 +462,7 @@ var fetchWithdrawals = /*#__PURE__*/function () {
             }
 
             if (req.body.userId !== '') {
-              userOptions.userId = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.userId, "%"));
+              userOptions.user_id = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.userId, "%"));
             }
 
             if (req.body.username !== '') {

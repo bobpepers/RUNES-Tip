@@ -13,13 +13,8 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var crypto = require('crypto');
 
-var _require = require('sequelize'),
-    Sequelize = _require.Sequelize,
-    Transaction = _require.Transaction,
-    Op = _require.Op;
-
-var _require2 = require('../../services/rclient'),
-    getInstance = _require2.getInstance;
+var _require = require('../../services/rclient'),
+    getInstance = _require.getInstance;
 /**
  * insert Ip
  */

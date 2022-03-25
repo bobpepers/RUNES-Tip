@@ -13,11 +13,9 @@ var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/de
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _models = _interopRequireDefault(require("../../models"));
+var _sequelize = require("sequelize");
 
-// import { parseDomain } from "parse-domain";
-var _require = require('sequelize'),
-    Op = _require.Op;
+var _models = _interopRequireDefault(require("../../models"));
 
 var fetchActivity = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
@@ -32,26 +30,26 @@ var fetchActivity = /*#__PURE__*/function () {
             earnerOptions = {};
 
             if (req.body.id !== '') {
-              activityOptions.id = (0, _defineProperty2["default"])({}, Op.like, "%".concat(Number(req.body.id), "%"));
+              activityOptions.id = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(Number(req.body.id), "%"));
             }
 
             if (req.body.type !== '') {
-              activityOptions.type = (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.type, "%"));
+              activityOptions.type = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.type, "%"));
             }
 
             if (req.body.spender !== '') {
-              spenderOptions = (0, _defineProperty2["default"])({}, Op.or, [{
-                username: (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.spender, "%"))
+              spenderOptions = (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
+                username: (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.spender, "%"))
               }, {
-                id: (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.spender, "%"))
+                id: (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.spender, "%"))
               }]);
             }
 
             if (req.body.earner !== '') {
-              earnerOptions = (0, _defineProperty2["default"])({}, Op.or, [{
-                username: (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.earner, "%"))
+              earnerOptions = (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
+                username: (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.earner, "%"))
               }, {
-                id: (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.earner, "%"))
+                id: (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.earner, "%"))
               }]);
             }
 

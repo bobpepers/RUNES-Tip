@@ -13,9 +13,6 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _models = _interopRequireDefault(require("../../models"));
 
-var _require = require('sequelize'),
-    Op = _require.Op;
-
 var fetchErrors = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
     var userOptions, options;

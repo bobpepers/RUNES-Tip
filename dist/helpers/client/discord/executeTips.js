@@ -17,7 +17,7 @@ var _discord = require("../../../messages/discord");
 // import db from '../../models';
 var executeTipFunction = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(tipFunction, queue, amount, discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, setting, faucetSetting) {
-    var operationName, userBeingTipped;
+    var operationName, userBeingTipped, msgFilter;
     return _regenerator["default"].wrap(function _callee5$(_context5) {
       while (1) {
         switch (_context5.prev = _context5.next) {
@@ -33,103 +33,124 @@ var executeTipFunction = /*#__PURE__*/function () {
             }
 
             if (!(amount && amount.toLowerCase() === 'all')) {
-              _context5.next = 5;
+              _context5.next = 8;
               break;
             }
 
-            message.channel.send({
+            _context5.next = 4;
+            return message.channel.send({
               embeds: [(0, _discord.confirmAllAmoutMessageDiscord)(message, operationName, userBeingTipped)]
-            }).then( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
-              var msgFilter;
-              return _regenerator["default"].wrap(function _callee3$(_context3) {
-                while (1) {
-                  switch (_context3.prev = _context3.next) {
-                    case 0:
-                      msgFilter = function msgFilter(m) {
-                        var filtered = m.author.id === message.author.id && (m.content.toUpperCase() === 'YES' || m.content.toUpperCase() === 'Y' || m.content.toUpperCase() === 'NO' || m.content.toUpperCase() === 'N');
-                        return filtered;
-                      };
+            })["catch"](function (e) {
+              console.log('failed to send message');
+              console.log(e);
+            });
 
-                      message.channel.awaitMessages({
-                        filter: msgFilter,
-                        max: 1,
-                        time: 30000,
-                        errors: ['time']
-                      }).then( /*#__PURE__*/function () {
-                        var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(collected) {
-                          var collectedMessage;
-                          return _regenerator["default"].wrap(function _callee2$(_context2) {
+          case 4:
+            msgFilter = function msgFilter(m) {
+              var filtered = m.author.id === message.author.id && (m.content.toUpperCase() === 'YES' || m.content.toUpperCase() === 'Y' || m.content.toUpperCase() === 'NO' || m.content.toUpperCase() === 'N');
+              return filtered;
+            };
+
+            message.channel.awaitMessages({
+              filter: msgFilter,
+              max: 1,
+              time: 30000,
+              errors: ['time']
+            }).then( /*#__PURE__*/function () {
+              var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(collected) {
+                var collectedMessage;
+                return _regenerator["default"].wrap(function _callee2$(_context2) {
+                  while (1) {
+                    switch (_context2.prev = _context2.next) {
+                      case 0:
+                        collectedMessage = collected.first();
+
+                        if (!(collectedMessage.content.toUpperCase() === 'YES' || collectedMessage.content.toUpperCase() === 'Y')) {
+                          _context2.next = 6;
+                          break;
+                        }
+
+                        _context2.next = 4;
+                        return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
+                          var task;
+                          return _regenerator["default"].wrap(function _callee$(_context) {
                             while (1) {
-                              switch (_context2.prev = _context2.next) {
+                              switch (_context.prev = _context.next) {
                                 case 0:
-                                  collectedMessage = collected.first();
+                                  _context.next = 2;
+                                  return tipFunction(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, setting, faucetSetting, queue);
 
-                                  if (!(collectedMessage.content.toUpperCase() === 'YES' || collectedMessage.content.toUpperCase() === 'Y')) {
-                                    _context2.next = 6;
-                                    break;
-                                  }
+                                case 2:
+                                  task = _context.sent;
 
-                                  _context2.next = 4;
-                                  return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
-                                    var task;
-                                    return _regenerator["default"].wrap(function _callee$(_context) {
-                                      while (1) {
-                                        switch (_context.prev = _context.next) {
-                                          case 0:
-                                            _context.next = 2;
-                                            return tipFunction(discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, setting, faucetSetting, queue);
-
-                                          case 2:
-                                            task = _context.sent;
-
-                                          case 3:
-                                          case "end":
-                                            return _context.stop();
-                                        }
-                                      }
-                                    }, _callee);
-                                  })));
-
-                                case 4:
-                                  _context2.next = 7;
-                                  break;
-
-                                case 6:
-                                  if (collectedMessage.content.toUpperCase() === 'NO' || collectedMessage.content.toUpperCase() === 'N') {
-                                    message.channel.send({
-                                      embeds: [(0, _discord.canceledAllAmoutMessageDiscord)(message, operationName, userBeingTipped)]
-                                    });
-                                  }
-
-                                case 7:
+                                case 3:
                                 case "end":
-                                  return _context2.stop();
+                                  return _context.stop();
                               }
                             }
-                          }, _callee2);
-                        }));
+                          }, _callee);
+                        })));
 
-                        return function (_x12) {
-                          return _ref3.apply(this, arguments);
-                        };
-                      }())["catch"](function (collected) {
-                        message.channel.send({
-                          embeds: [(0, _discord.timeOutAllAmoutMessageDiscord)(message, operationName, userBeingTipped)]
+                      case 4:
+                        _context2.next = 9;
+                        break;
+
+                      case 6:
+                        if (!(collectedMessage.content.toUpperCase() === 'NO' || collectedMessage.content.toUpperCase() === 'N')) {
+                          _context2.next = 9;
+                          break;
+                        }
+
+                        _context2.next = 9;
+                        return message.channel.send({
+                          embeds: [(0, _discord.canceledAllAmoutMessageDiscord)(message, operationName, userBeingTipped)]
+                        })["catch"](function (e) {
+                          console.log('failed to send cancel message');
+                          console.log(e);
                         });
-                      });
 
-                    case 2:
-                    case "end":
-                      return _context3.stop();
+                      case 9:
+                      case "end":
+                        return _context2.stop();
+                    }
                   }
-                }
-              }, _callee3);
-            })));
-            _context5.next = 7;
+                }, _callee2);
+              }));
+
+              return function (_x12) {
+                return _ref2.apply(this, arguments);
+              };
+            }())["catch"]( /*#__PURE__*/function () {
+              var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(collected) {
+                return _regenerator["default"].wrap(function _callee3$(_context3) {
+                  while (1) {
+                    switch (_context3.prev = _context3.next) {
+                      case 0:
+                        _context3.next = 2;
+                        return message.channel.send({
+                          embeds: [(0, _discord.timeOutAllAmoutMessageDiscord)(message, operationName, userBeingTipped)]
+                        })["catch"](function (e) {
+                          console.log('failed to send timeout message');
+                          console.log(e);
+                        });
+
+                      case 2:
+                      case "end":
+                        return _context3.stop();
+                    }
+                  }
+                }, _callee3);
+              }));
+
+              return function (_x13) {
+                return _ref4.apply(this, arguments);
+              };
+            }());
+            _context5.next = 10;
             break;
 
-          case 5:
-            _context5.next = 7;
+          case 8:
+            _context5.next = 10;
             return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4() {
               var task;
               return _regenerator["default"].wrap(function _callee4$(_context4) {
@@ -150,7 +171,7 @@ var executeTipFunction = /*#__PURE__*/function () {
               }, _callee4);
             })));
 
-          case 7:
+          case 10:
           case "end":
             return _context5.stop();
         }

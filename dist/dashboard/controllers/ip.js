@@ -11,17 +11,11 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _sequelize = require("sequelize");
+
 var _models = _interopRequireDefault(require("../../models"));
 
 var crypto = require('crypto');
-
-var _require = require('sequelize'),
-    Sequelize = _require.Sequelize,
-    Transaction = _require.Transaction,
-    Op = _require.Op;
-
-var _require2 = require('../../services/rclient'),
-    getInstance = _require2.getInstance;
 /**
  *
  * Is IP Banned?
@@ -88,7 +82,7 @@ var insertIp = /*#__PURE__*/function () {
             ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
             _context3.next = 3;
             return _models["default"].sequelize.transaction({
-              isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE
+              isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(t) {
                 return _regenerator["default"].wrap(function _callee2$(_context2) {

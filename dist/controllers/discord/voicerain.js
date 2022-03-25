@@ -452,11 +452,14 @@ var discordVoiceRain = /*#__PURE__*/function () {
                       case 8:
                         _logger["default"].error("voicerain error: ".concat(err));
 
-                        message.channel.send({
+                        _context2.next = 11;
+                        return message.channel.send({
                           embeds: [(0, _discord.discordErrorMessage)("VoiceRain")]
+                        })["catch"](function (e) {
+                          console.log(e);
                         });
 
-                      case 10:
+                      case 11:
                       case "end":
                         return _context2.stop();
                     }

@@ -30,7 +30,7 @@ var fetchBlockNumber = /*#__PURE__*/function () {
             _context.prev = 0;
 
             if (!(settings.coin.setting === 'Runebase')) {
-              _context.next = 9;
+              _context.next = 8;
               break;
             }
 
@@ -39,77 +39,74 @@ var fetchBlockNumber = /*#__PURE__*/function () {
 
           case 4:
             response = _context.sent;
-            console.log(response);
             res.locals.blockNumberNode = response;
-            _context.next = 29;
+            _context.next = 26;
             break;
 
-          case 9:
+          case 8:
             if (!(settings.coin.setting === 'Pirate')) {
-              _context.next = 17;
+              _context.next = 15;
               break;
             }
 
-            _context.next = 12;
+            _context.next = 11;
             return getInstance().getBlockCount();
 
-          case 12:
+          case 11:
             response = _context.sent;
-            console.log(response);
             res.locals.blockNumberNode = response;
-            _context.next = 29;
+            _context.next = 26;
             break;
 
-          case 17:
+          case 15:
             if (!(settings.coin.setting === 'Dust')) {
-              _context.next = 25;
+              _context.next = 22;
               break;
             }
 
-            _context.next = 20;
+            _context.next = 18;
             return getInstance().getBlockCount();
 
-          case 20:
+          case 18:
             response = _context.sent;
-            console.log(response);
             res.locals.blockNumberNode = response;
-            _context.next = 29;
+            _context.next = 26;
             break;
 
-          case 25:
-            _context.next = 27;
+          case 22:
+            _context.next = 24;
             return getInstance().getBlockCount();
 
-          case 27:
+          case 24:
             response = _context.sent;
             res.locals.blockNumberNode = response;
 
-          case 29:
-            _context.next = 31;
+          case 26:
+            _context.next = 28;
             return _models["default"].block.findOne({
               order: [['id', 'DESC']]
             });
 
-          case 31:
+          case 28:
             dbBlockNumber = _context.sent;
             res.locals.blockNumberDb = dbBlockNumber.id;
             next();
-            _context.next = 41;
+            _context.next = 38;
             break;
 
-          case 36:
-            _context.prev = 36;
+          case 33:
+            _context.prev = 33;
             _context.t0 = _context["catch"](0);
             console.log(_context.t0);
             res.locals.error = _context.t0;
             next();
 
-          case 41:
+          case 38:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 36]]);
+    }, _callee, null, [[0, 33]]);
   }));
 
   return function fetchBlockNumber(_x, _x2, _x3) {

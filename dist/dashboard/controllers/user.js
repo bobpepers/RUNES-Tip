@@ -11,12 +11,9 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _models = _interopRequireDefault(require("../../models"));
+var _sequelize = require("sequelize");
 
-var _require = require('sequelize'),
-    Sequelize = _require.Sequelize,
-    Transaction = _require.Transaction,
-    Op = _require.Op;
+var _models = _interopRequireDefault(require("../../models"));
 
 var fetchUser = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
@@ -61,7 +58,7 @@ var updateLastSeen = /*#__PURE__*/function () {
           case 0:
             _context3.next = 2;
             return _models["default"].sequelize.transaction({
-              isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE
+              isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(t) {
                 var user, updatedUser;

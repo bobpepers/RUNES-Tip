@@ -13,12 +13,11 @@ var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/de
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _sequelize = require("sequelize");
+
 var _models = _interopRequireDefault(require("../../models"));
 
 // import { parseDomain } from "parse-domain";
-var _require = require('sequelize'),
-    Op = _require.Op;
-
 var fetchDashboardUsers = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
     var userOptions, options;
@@ -29,15 +28,15 @@ var fetchDashboardUsers = /*#__PURE__*/function () {
             userOptions = {};
 
             if (req.body.id !== '') {
-              userOptions.id = (0, _defineProperty2["default"])({}, Op.like, "%".concat(Number(req.body.id), "%"));
+              userOptions.id = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(Number(req.body.id), "%"));
             }
 
             if (req.body.username !== '') {
-              userOptions.username = (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.username, "%"));
+              userOptions.username = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.username, "%"));
             }
 
             if (req.body.email !== '') {
-              userOptions.email = (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.email, "%"));
+              userOptions.email = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.email, "%"));
             }
 
             if (req.body.role !== 'all') {

@@ -18,7 +18,7 @@ var _models = _interopRequireDefault(require("../../models"));
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
 var updateDiscordChannel = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(client, message, group) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(message, group) {
     var channelId, channelRecord;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
@@ -103,7 +103,7 @@ var updateDiscordChannel = /*#__PURE__*/function () {
 
                       case 15:
                         t.afterCommit(function () {
-                          console.log('done');
+                          console.log('done update discord channel');
                         });
 
                       case 16:
@@ -114,7 +114,7 @@ var updateDiscordChannel = /*#__PURE__*/function () {
                 }, _callee);
               }));
 
-              return function (_x4) {
+              return function (_x3) {
                 return _ref2.apply(this, arguments);
               };
             }())["catch"]( /*#__PURE__*/function () {
@@ -153,7 +153,7 @@ var updateDiscordChannel = /*#__PURE__*/function () {
                 }, _callee2, null, [[0, 5]]);
               }));
 
-              return function (_x5) {
+              return function (_x4) {
                 return _ref3.apply(this, arguments);
               };
             }());
@@ -169,7 +169,7 @@ var updateDiscordChannel = /*#__PURE__*/function () {
     }, _callee3);
   }));
 
-  return function updateDiscordChannel(_x, _x2, _x3) {
+  return function updateDiscordChannel(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 }();

@@ -121,7 +121,7 @@ var fetchDeposits = /*#__PURE__*/function () {
             }
 
             if (req.body.userId !== '') {
-              userOptions.userId = (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.userId, "%"));
+              userOptions.user_id = (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.userId, "%"));
             }
 
             if (req.body.username !== '') {
@@ -150,10 +150,10 @@ var fetchDeposits = /*#__PURE__*/function () {
 
           case 11:
             res.locals.deposits = _context2.sent;
-            console.log(res.locals.deposits);
+            // console.log(res.locals.deposits);
             next();
 
-          case 14:
+          case 13:
           case "end":
             return _context2.stop();
         }

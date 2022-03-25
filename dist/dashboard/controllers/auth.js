@@ -13,6 +13,8 @@ var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/de
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _sequelize = require("sequelize");
+
 var _email = require("../helpers/email");
 
 var _models = _interopRequireDefault(require("../../models"));
@@ -21,15 +23,10 @@ var _generate = require("../helpers/generate");
 
 var _timingSafeEqual = _interopRequireDefault(require("../helpers/timingSafeEqual"));
 
-var _require = require('sequelize'),
-    Transaction = _require.Transaction,
-    Op = _require.Op;
 /**
  *
  * Is Dashboard User Banned?
  */
-
-
 var isDashboardUserBanned = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
     return _regenerator["default"].wrap(function _callee$(_context) {
@@ -91,7 +88,7 @@ var signin = /*#__PURE__*/function () {
               res.locals.email = req.user_email;
 
               _models["default"].dashboardUser.findOne({
-                where: (0, _defineProperty2["default"])({}, Op.or, [{
+                where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
                   email: email.toLowerCase()
                 }])
               }).then( /*#__PURE__*/function () {
@@ -291,7 +288,7 @@ var signup = /*#__PURE__*/function () {
           case 6:
             _context6.next = 8;
             return _models["default"].dashboardUser.findOne({
-              where: (0, _defineProperty2["default"])({}, Op.or, [{
+              where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
                 username: username
               }, {
                 email: email.toLowerCase()
@@ -302,30 +299,28 @@ var signup = /*#__PURE__*/function () {
             User = _context6.sent;
 
             if (!(User && User.username.toLowerCase() === username.toLowerCase())) {
-              _context6.next = 12;
+              _context6.next = 11;
               break;
             }
 
-            console.log('already exists');
             return _context6.abrupt("return", res.status(401).send({
               error: 'USERNAME_ALREADY_EXIST'
             }));
 
-          case 12:
+          case 11:
             if (!(User && User.email.toLowerCase() === email.toLowerCase())) {
-              _context6.next = 15;
+              _context6.next = 13;
               break;
             }
 
-            console.log('e-mail already exists');
             return _context6.abrupt("return", res.status(401).send({
               error: 'EMAIL_ALREADY_EXIST'
             }));
 
-          case 15:
-            _context6.next = 17;
+          case 13:
+            _context6.next = 15;
             return _models["default"].sequelize.transaction({
-              isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE
+              isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(t) {
                 var verificationToken, newUser;
@@ -373,7 +368,7 @@ var signup = /*#__PURE__*/function () {
               };
             }());
 
-          case 17:
+          case 15:
           case "end":
             return _context6.stop();
         }
@@ -403,7 +398,7 @@ var resendVerification = /*#__PURE__*/function () {
             email = req.body.email;
 
             _models["default"].dashboardUser.findOne({
-              where: (0, _defineProperty2["default"])({}, Op.or, [{
+              where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
                 email: email.toLowerCase()
               }])
             }).then( /*#__PURE__*/function () {
@@ -484,7 +479,7 @@ var verifyEmail = function verifyEmail(req, res, next) {
       token = _req$body.token;
 
   _models["default"].dashboardUser.findOne({
-    where: (0, _defineProperty2["default"])({}, Op.or, [{
+    where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
       email: email.toLowerCase()
     }])
   }).then(function (user) {

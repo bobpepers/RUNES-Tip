@@ -13,11 +13,9 @@ var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/de
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _models = _interopRequireDefault(require("../../models"));
+var _sequelize = require("sequelize");
 
-// import { parseDomain } from "parse-domain";
-var _require = require('sequelize'),
-    Op = _require.Op;
+var _models = _interopRequireDefault(require("../../models"));
 
 var banUser = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
@@ -26,9 +24,8 @@ var banUser = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            console.log('ban user');
-            _context.prev = 1;
-            _context.next = 4;
+            _context.prev = 0;
+            _context.next = 3;
             return _models["default"].user.findOne({
               where: {
                 id: req.body.id
@@ -39,34 +36,34 @@ var banUser = /*#__PURE__*/function () {
               }]
             });
 
-          case 4:
+          case 3:
             user = _context.sent;
-            _context.next = 7;
+            _context.next = 6;
             return user.update({
               banned: !user.banned,
               banMessage: req.body.banMessage
             });
 
-          case 7:
+          case 6:
             res.locals.user = _context.sent;
-            _context.next = 14;
+            _context.next = 13;
             break;
 
-          case 10:
-            _context.prev = 10;
-            _context.t0 = _context["catch"](1);
+          case 9:
+            _context.prev = 9;
+            _context.t0 = _context["catch"](0);
             res.locals.error = _context.t0;
             console.log(_context.t0);
 
-          case 14:
+          case 13:
             next();
 
-          case 15:
+          case 14:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[1, 10]]);
+    }, _callee, null, [[0, 9]]);
   }));
 
   return function banUser(_x, _x2, _x3) {
@@ -86,24 +83,24 @@ var fetchUsers = /*#__PURE__*/function () {
             userOptions = {};
 
             if (req.body.id !== '') {
-              userOptions.id = (0, _defineProperty2["default"])({}, Op.like, "%".concat(Number(req.body.id), "%"));
+              userOptions.id = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(Number(req.body.id), "%"));
             }
 
             if (req.body.userId !== '') {
-              userOptions.userId = (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.userId, "%"));
+              userOptions.user_id = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.userId, "%"));
             }
 
             if (req.body.username !== '') {
-              userOptions.username = (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.username, "%"));
+              userOptions.username = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.username, "%"));
             }
 
             if (req.body.platform !== 'all') {
               if (req.body.platform === 'telegram') {
-                userOptions.userId = (0, _defineProperty2["default"])({}, Op.startsWith, 'telegram-');
+                userOptions.user_id = (0, _defineProperty2["default"])({}, _sequelize.Op.startsWith, 'telegram-');
               }
 
               if (req.body.platform === 'discord') {
-                userOptions.userId = (0, _defineProperty2["default"])({}, Op.startsWith, 'discord-');
+                userOptions.user_id = (0, _defineProperty2["default"])({}, _sequelize.Op.startsWith, 'discord-');
               }
             }
 
@@ -130,10 +127,10 @@ var fetchUsers = /*#__PURE__*/function () {
 
           case 9:
             res.locals.users = _context2.sent;
-            console.log(res.locals.users);
+            // console.log(res.locals.users);
             next();
 
-          case 12:
+          case 11:
           case "end":
             return _context2.stop();
         }

@@ -13,14 +13,9 @@ var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/de
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _sequelize = require("sequelize");
+
 var _models = _interopRequireDefault(require("../../models"));
-
-var _require = require('sequelize'),
-    Sequelize = _require.Sequelize,
-    Op = _require.Op;
-
-var _require2 = require('../../services/rclient'),
-    getInstance = _require2.getInstance;
 
 var fetchLiability = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
@@ -39,22 +34,22 @@ var fetchLiability = /*#__PURE__*/function () {
             _context.prev = 7;
             _context.next = 10;
             return _models["default"].wallet.findAll({
-              attributes: [[Sequelize.fn('sum', Sequelize.col('available')), 'total_available']]
+              attributes: [[_sequelize.Sequelize.fn('sum', _sequelize.Sequelize.col('available')), 'total_available']]
             });
 
           case 10:
             sumAvailable = _context.sent;
             _context.next = 13;
             return _models["default"].wallet.findAll({
-              attributes: [[Sequelize.fn('sum', Sequelize.col('locked')), 'total_locked']]
+              attributes: [[_sequelize.Sequelize.fn('sum', _sequelize.Sequelize.col('locked')), 'total_locked']]
             });
 
           case 13:
             sumLocked = _context.sent;
             _context.next = 16;
             return _models["default"].transaction.findAll({
-              attributes: [[Sequelize.fn('sum', Sequelize.col('amount')), 'total_amount']],
-              where: (0, _defineProperty2["default"])({}, Op.and, [{
+              attributes: [[_sequelize.Sequelize.fn('sum', _sequelize.Sequelize.col('amount')), 'total_amount']],
+              where: (0, _defineProperty2["default"])({}, _sequelize.Op.and, [{
                 type: 'receive'
               }, {
                 phase: 'confirming'
@@ -65,8 +60,8 @@ var fetchLiability = /*#__PURE__*/function () {
             sumUnconfirmedDeposits = _context.sent;
             _context.next = 19;
             return _models["default"].transaction.findAll({
-              attributes: [[Sequelize.fn('sum', Sequelize.col('amount')), 'total_amount']],
-              where: (0, _defineProperty2["default"])({}, Op.and, [{
+              attributes: [[_sequelize.Sequelize.fn('sum', _sequelize.Sequelize.col('amount')), 'total_amount']],
+              where: (0, _defineProperty2["default"])({}, _sequelize.Op.and, [{
                 type: 'send'
               }, {
                 phase: 'confirming'
@@ -77,8 +72,8 @@ var fetchLiability = /*#__PURE__*/function () {
             sumUnconfirmedWithdrawals = _context.sent;
             _context.next = 22;
             return _models["default"].reactdrop.findAll({
-              attributes: [[Sequelize.fn('sum', Sequelize.col('amount')), 'total_amount']],
-              where: (0, _defineProperty2["default"])({}, Op.and, [{
+              attributes: [[_sequelize.Sequelize.fn('sum', _sequelize.Sequelize.col('amount')), 'total_amount']],
+              where: (0, _defineProperty2["default"])({}, _sequelize.Op.and, [{
                 ended: false
               }])
             });
@@ -87,8 +82,8 @@ var fetchLiability = /*#__PURE__*/function () {
             sumRunningReactdrops = _context.sent;
             _context.next = 25;
             return _models["default"].trivia.findAll({
-              attributes: [[Sequelize.fn('sum', Sequelize.col('amount')), 'total_amount']],
-              where: (0, _defineProperty2["default"])({}, Op.and, [{
+              attributes: [[_sequelize.Sequelize.fn('sum', _sequelize.Sequelize.col('amount')), 'total_amount']],
+              where: (0, _defineProperty2["default"])({}, _sequelize.Op.and, [{
                 ended: false
               }])
             });

@@ -16,9 +16,6 @@ var _bignumber = _interopRequireDefault(require("bignumber.js"));
 var _models = _interopRequireDefault(require("../../models"));
 
 // import { parseDomain } from "parse-domain";
-var _require = require('sequelize'),
-    Op = _require.Op;
-
 var updateFeature = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
     var amount, fee, maxSampleSize, feature, updatedFeature;
@@ -169,7 +166,6 @@ var fetchFeatures = /*#__PURE__*/function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            console.log(req.body);
             options = {
               order: [['id', 'DESC']],
               include: [{
@@ -186,14 +182,14 @@ var fetchFeatures = /*#__PURE__*/function () {
                 required: false
               }]
             };
-            _context3.next = 4;
+            _context3.next = 3;
             return _models["default"].features.findAll(options);
 
-          case 4:
+          case 3:
             res.locals.features = _context3.sent;
             next();
 
-          case 6:
+          case 5:
           case "end":
             return _context3.stop();
         }
@@ -215,7 +211,7 @@ var addFeature = /*#__PURE__*/function () {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            console.log(req.body);
+            // console.log(req.body);
             featureOptions = {
               type: 'local'
             };
@@ -290,10 +286,10 @@ var addFeature = /*#__PURE__*/function () {
               where: featureOptions,
               order: [['id', 'DESC']]
             };
-            _context4.next = 20;
+            _context4.next = 19;
             return _models["default"].features.findOne(options);
 
-          case 20:
+          case 19:
             feature = _context4.sent;
 
             if (feature) {
@@ -302,14 +298,11 @@ var addFeature = /*#__PURE__*/function () {
             }
 
             if (feature) {
-              _context4.next = 34;
+              _context4.next = 29;
               break;
             }
 
-            console.log(req.user.id);
-            console.log("req.user.id");
-            console.log(' ');
-            _context4.next = 28;
+            _context4.next = 24;
             return _models["default"].features.create({
               type: 'local',
               name: req.body.feature,
@@ -321,9 +314,9 @@ var addFeature = /*#__PURE__*/function () {
               enabled: req.body.enabled === 'enable'
             });
 
-          case 28:
+          case 24:
             newFeature = _context4.sent;
-            _context4.next = 31;
+            _context4.next = 27;
             return _models["default"].features.findOne({
               where: {
                 id: newFeature.id
@@ -343,15 +336,15 @@ var addFeature = /*#__PURE__*/function () {
               }]
             });
 
-          case 31:
+          case 27:
             res.locals.feature = _context4.sent;
-            console.log(res.locals.feature);
+            // console.log(res.locals.feature);
             next();
 
-          case 34:
+          case 29:
             next();
 
-          case 35:
+          case 30:
           case "end":
             return _context4.stop();
         }

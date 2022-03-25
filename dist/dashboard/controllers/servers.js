@@ -13,12 +13,11 @@ var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/de
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _sequelize = require("sequelize");
+
 var _models = _interopRequireDefault(require("../../models"));
 
 // import { parseDomain } from "parse-domain";
-var _require = require('sequelize'),
-    Op = _require.Op;
-
 var banServer = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
     var group;
@@ -83,11 +82,11 @@ var fetchServers = /*#__PURE__*/function () {
 
             if (req.body.platform !== 'all') {
               if (req.body.platform === 'telegram') {
-                userOptions.groupId = (0, _defineProperty2["default"])({}, Op.startsWith, 'telegram-');
+                userOptions.groupId = (0, _defineProperty2["default"])({}, _sequelize.Op.startsWith, 'telegram-');
               }
 
               if (req.body.platform === 'discord') {
-                userOptions.groupId = (0, _defineProperty2["default"])({}, Op.startsWith, 'discord-');
+                userOptions.groupId = (0, _defineProperty2["default"])({}, _sequelize.Op.startsWith, 'discord-');
               }
             }
 

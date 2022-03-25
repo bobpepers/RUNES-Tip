@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.warnDirectMessage = exports.walletNotFoundMessage = exports.voiceChannelNotFound = exports.userNotFoundMessage = exports.unableToFindUserTipMessage = exports.unIngoreMeMessage = exports.triviaReturnInitiatorMessage = exports.triviaMessageDiscord = exports.transactionNotFoundMessage = exports.tipSingleSuccessMessage = exports.tipMultipleSuccessMessage = exports.tipFaucetSuccessMessage = exports.timeOutAllAmoutMessageDiscord = exports.thunderstormUserZeroAmountMessage = exports.thunderstormMaxUserAmountMessage = exports.thunderstormInvalidUserAmount = exports.statsMessage = exports.reviewMessage = exports.reactDropMessage = exports.priceMessage = exports.notEnoughUsersToTip = exports.notEnoughActiveUsersMessage = exports.notAVoiceChannel = exports.noTriviaQuestionFoundMessage = exports.minimumWithdrawalMessage = exports.minimumTimeReactDropMessage = exports.minimumMessage = exports.maxTimeTriviaMessage = exports.maxTimeReactdropMessage = exports.listTransactionsMessage = exports.invalidTimeMessage = exports.invalidPeopleAmountMessage = exports.invalidEmojiMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.ignoreMeMessage = exports.hurricaneUserZeroAmountMessage = exports.hurricaneMaxUserAmountMessage = exports.hurricaneInvalidUserAmount = exports.helpMessageTwo = exports.helpMessageOne = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.featureDisabledChannelMessage = exports.faucetClaimedMessage = exports.enablePublicStatsMeMessage = exports.dryFaucetMessage = exports.discordWithdrawalRejectedMessage = exports.discordWithdrawalConfirmedMessage = exports.discordWithdrawalAcceptedMessage = exports.discordUserWithdrawalRejectMessage = exports.discordUserBannedMessage = exports.discordServerBannedMessage = exports.discordLimitSpamMessage = exports.discordIncomingDepositMessage = exports.discordErrorMessage = exports.discordDepositConfirmedMessage = exports.discordChannelBannedMessage = exports.disablePublicStatsMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessageDiscord = exports.coinInfoMessage = exports.claimTooFactFaucetMessage = exports.cannotSendMessageUser = exports.canceledAllAmoutMessageDiscord = exports.balanceMessage = exports.ReactdropCaptchaMessage = exports.ReactDropReturnInitiatorMessage = exports.NotInDirectMessage = exports.DiscordFeeMessage = exports.AfterTriviaSuccessMessage = exports.AfterThunderSuccess = exports.AfterSuccessMessage = exports.AfterReactDropSuccessMessage = void 0;
+exports.warnDirectMessage = exports.walletNotFoundMessage = exports.voiceChannelNotFound = exports.userNotFoundMessage = exports.unableToFindUserTipMessage = exports.unIngoreMeMessage = exports.triviaReturnInitiatorMessage = exports.triviaMessageDiscord = exports.transactionNotFoundMessage = exports.tipSingleSuccessMessage = exports.tipMultipleSuccessMessage = exports.tipFaucetSuccessMessage = exports.timeOutAllAmoutMessageDiscord = exports.thunderstormUserZeroAmountMessage = exports.thunderstormMaxUserAmountMessage = exports.thunderstormInvalidUserAmount = exports.statsMessage = exports.reviewMessage = exports.reactDropMessage = exports.priceMessage = exports.notEnoughUsersToTip = exports.notEnoughActiveUsersMessage = exports.notAVoiceChannel = exports.noTriviaQuestionFoundMessage = exports.minimumWithdrawalMessage = exports.minimumTimeReactDropMessage = exports.minimumMessage = exports.maxTimeTriviaMessage = exports.maxTimeReactdropMessage = exports.listTransactionsMessage = exports.invalidTimeMessage = exports.invalidPeopleAmountMessage = exports.invalidEmojiMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.ignoreMeMessage = exports.hurricaneUserZeroAmountMessage = exports.hurricaneMaxUserAmountMessage = exports.hurricaneInvalidUserAmount = exports.helpMessageTwo = exports.helpMessageOne = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.featureDisabledChannelMessage = exports.faucetClaimedMessage = exports.enablePublicStatsMeMessage = exports.dryFaucetMessage = exports.discordWithdrawalRejectedMessage = exports.discordWithdrawalConfirmedMessage = exports.discordWithdrawalAcceptedMessage = exports.discordWelcomeMessage = exports.discordUserWithdrawalRejectMessage = exports.discordUserBannedMessage = exports.discordServerBannedMessage = exports.discordLimitSpamMessage = exports.discordIncomingDepositMessage = exports.discordErrorMessage = exports.discordDepositConfirmedMessage = exports.discordChannelBannedMessage = exports.discordBotMaintenanceMessage = exports.discordBotDisabledMessage = exports.disablePublicStatsMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessageDiscord = exports.coinInfoMessage = exports.claimTooFactFaucetMessage = exports.cannotSendMessageUser = exports.canceledAllAmoutMessageDiscord = exports.balanceMessage = exports.ReactdropCaptchaMessage = exports.ReactDropReturnInitiatorMessage = exports.NotInDirectMessage = exports.DiscordFeeMessage = exports.AfterTriviaSuccessMessage = exports.AfterThunderSuccess = exports.AfterSuccessMessage = exports.AfterReactDropSuccessMessage = void 0;
 
 var _discord = require("discord.js");
 
@@ -799,6 +799,36 @@ var ReactDropReturnInitiatorMessage = function ReactDropReturnInitiatorMessage()
 };
 
 exports.ReactDropReturnInitiatorMessage = ReactDropReturnInitiatorMessage;
+
+var discordWelcomeMessage = function discordWelcomeMessage(userInfo) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Bot").setDescription("Welcome <@".concat(userInfo.id, ">, we created a wallet for you.\nType \"").concat(settings.bot.command.discord, " help\" for usage info")).setThumbnail(settings.coin.logo).setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.discordWelcomeMessage = discordWelcomeMessage;
+
+var discordBotMaintenanceMessage = function discordBotMaintenanceMessage() {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Bot").setDescription("Discord tipbot maintenance").setThumbnail(settings.coin.logo).setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.discordBotMaintenanceMessage = discordBotMaintenanceMessage;
+
+var discordBotDisabledMessage = function discordBotDisabledMessage() {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Bot").setDescription("Discord tipbot disabled").setThumbnail(settings.coin.logo).setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.discordBotDisabledMessage = discordBotDisabledMessage;
 
 var triviaReturnInitiatorMessage = function triviaReturnInitiatorMessage() {
   var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Trivia").setDescription("Nobody claimed, returning funds to trivia initiator").setThumbnail(settings.coin.logo).setTimestamp().setFooter({

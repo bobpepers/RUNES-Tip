@@ -13,13 +13,9 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _models = _interopRequireDefault(require("../../models"));
 
-// import { parseDomain } from "parse-domain";
-var _require = require('sequelize'),
-    Op = _require.Op;
-
 var banChannel = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
-    var channel;
+    var channel, updatedChannel;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -41,26 +37,39 @@ var banChannel = /*#__PURE__*/function () {
             });
 
           case 6:
-            res.locals.channel = _context.sent;
-            _context.next = 13;
-            break;
+            updatedChannel = _context.sent;
+            _context.next = 9;
+            return _models["default"].channel.findOne({
+              where: {
+                id: req.body.id
+              },
+              include: [{
+                model: _models["default"].group,
+                as: 'group'
+              }]
+            });
 
           case 9:
-            _context.prev = 9;
+            res.locals.channel = _context.sent;
+            _context.next = 16;
+            break;
+
+          case 12:
+            _context.prev = 12;
             _context.t0 = _context["catch"](0);
             res.locals.error = _context.t0;
             console.log(_context.t0);
 
-          case 13:
-            console.log(res.locals.channel);
+          case 16:
+            // console.log(res.locals.channel);
             next();
 
-          case 15:
+          case 17:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 9]]);
+    }, _callee, null, [[0, 12]]);
   }));
 
   return function banChannel(_x, _x2, _x3) {
@@ -77,8 +86,8 @@ var fetchChannels = /*#__PURE__*/function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            console.log('fetcChannels_____________________________');
-            console.log(req.body);
+            // console.log('fetcChannels_____________________________');
+            // console.log(req.body);
             channelOptions = {};
 
             if (req.body.id !== '') {
@@ -106,15 +115,15 @@ var fetchChannels = /*#__PURE__*/function () {
                 as: 'group'
               }]
             };
-            _context2.next = 10;
+            _context2.next = 8;
             return _models["default"].channel.findAll(options);
 
-          case 10:
+          case 8:
             res.locals.channels = _context2.sent;
-            console.log(res.locals.channels);
+            // console.log(res.locals.channels);
             next();
 
-          case 13:
+          case 10:
           case "end":
             return _context2.stop();
         }
