@@ -155,7 +155,7 @@ export const discordSleet = async (
       where: {
         [Op.and]: [
           {
-            user_id: { [Op.not]: `discord-${message.author.id}` },
+            id: { [Op.not]: user.id },
           },
           {
             banned: false,
@@ -195,7 +195,14 @@ export const discordSleet = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await message.channel.send({ embeds: [notEnoughActiveUsersMessage(message, 'Sleet')] });
+      await message.channel.send({
+        embeds: [
+          notEnoughActiveUsersMessage(
+            message,
+            'Sleet',
+          ),
+        ],
+      });
       return;
     }
     if (usersToRain.length >= 2) {

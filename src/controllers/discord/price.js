@@ -50,18 +50,14 @@ export const discordPrice = async (
     if (user && user.wallet) {
       const userId = user.user_id.replace('discord-', '');
 
-      try {
-        const priceRecord = await db.priceInfo.findAll({});
-        let replyString = ``;
-        replyString += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('\n');
-        if (message.channel.type === 'DM') {
-          await message.author.send({ embeds: [priceMessage(replyString)] });
-        }
-        if (message.channel.type === 'GUILD_TEXT') {
-          await message.channel.send({ embeds: [priceMessage(replyString)] });
-        }
-      } catch (error) {
-        console.log(error);
+      const priceRecord = await db.priceInfo.findAll({});
+      let replyString = ``;
+      replyString += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('\n');
+      if (message.channel.type === 'DM') {
+        await message.author.send({ embeds: [priceMessage(replyString)] });
+      }
+      if (message.channel.type === 'GUILD_TEXT') {
+        await message.channel.send({ embeds: [priceMessage(replyString)] });
       }
 
       const createActivity = await db.activity.create({
@@ -90,7 +86,6 @@ export const discordPrice = async (
 
     t.afterCommit(() => {
       console.log('done price request');
-      // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
     });
   }).catch(async (err) => {
     try {

@@ -6,6 +6,8 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _catchExit = require("catch-exit");
+
 var _discord = require("discord.js");
 
 var _lodash = _interopRequireDefault(require("lodash"));
@@ -44,14 +46,6 @@ var _updatePrice = require("./helpers/updatePrice");
 
 var _initDatabaseRecords = require("./helpers/initDatabaseRecords");
 
-var _patcher = require("./helpers/blockchain/runebase/patcher");
-
-var _patcher2 = require("./helpers/blockchain/pirate/patcher");
-
-var _patcher3 = require("./helpers/blockchain/komodo/patcher");
-
-var _recover = require("./helpers/recover");
-
 var _models = _interopRequireDefault(require("./models"));
 
 var _settings = _interopRequireDefault(require("./config/settings"));
@@ -62,7 +56,15 @@ var _syncRunebase = require("./services/syncRunebase");
 
 var _syncPirate = require("./services/syncPirate");
 
+var _patcher = require("./helpers/blockchain/runebase/patcher");
+
+var _patcher2 = require("./helpers/blockchain/pirate/patcher");
+
+var _patcher3 = require("./helpers/blockchain/komodo/patcher");
+
 var _processWithdrawals = require("./services/processWithdrawals");
+
+var _recover = require("./helpers/recover");
 
 /* eslint-disable import/first */
 global.Olm = _olm["default"];
@@ -369,14 +371,63 @@ var scheduleWithdrawal = _nodeSchedule["default"].scheduleJob('*/5 * * * *', /*#
     }
   }, _callee3);
 }))); // Handle olm library process unhandeled rejections
+// addExitCallback((signal) => {
+//   console.log('signal');
+//   console.log(signal);
+// });
+// global.onerror = () => console.log("global onerror fired");
 
 
 process.on('unhandledRejection', function (reason, promise) {
   console.log('Unhandled Rejection capture');
   console.log('Unhandled Rejection at:', reason.stack || reason);
+  console.log('promise');
+  console.log(promise);
 });
-process.on('uncaughtException', function (e) {
+process.on('uncaughtException', function (e, origin) {
   console.log('Unhandled Exception capture');
   console.log('uncaughtException: ', e.stack);
+  console.log('origin');
+  console.log(origin);
 });
+global["catch"](function (err) {
+  /* ignore */
+}); // mark error as handled
+
+process["catch"](function (err) {
+  /* ignore */
+}); // mark error as handled
+
+global.on('unhandledRejection', function (reason, promise) {
+  console.log('Unhandled Rejection capture');
+  console.log('Unhandled Rejection at:', reason.stack || reason);
+  console.log('promise');
+  console.log(promise);
+});
+global.on('uncaughtException', function (e, origin) {
+  console.log('Unhandled Exception capture');
+  console.log('uncaughtException: ', e.stack);
+  console.log('origin');
+  console.log(origin);
+});
+window.on('unhandledRejection', function (reason, promise) {
+  console.log('Unhandled Rejection capture');
+  console.log('Unhandled Rejection at:', reason.stack || reason);
+  console.log('promise');
+  console.log(promise);
+});
+window.on('uncaughtException', function (e, origin) {
+  console.log('Unhandled Exception capture');
+  console.log('uncaughtException: ', e.stack);
+  console.log('origin');
+  console.log(origin);
+});
+process.on('exit', function (code) {
+  console.log("About to exit with code: ".concat(code));
+});
+setInterval(function () {
+  console.log('app still running');
+}, 1000); // const p = Promise.reject(new Error("err"));
+// setTimeout(() => p.catch(() => {}), 86400);
+
 console.log('server listening on:', port);

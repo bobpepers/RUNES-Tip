@@ -126,7 +126,7 @@ var rateLimiterVoiceRain = new RateLimiterFlexible["default"].RateLimiterMemory(
 
 var myRateLimiter = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(client, message, platform, title) {
-    var userId, notError;
+    var userId, discordChannelId, notError, discordChannel;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -138,6 +138,10 @@ var myRateLimiter = /*#__PURE__*/function () {
                 userId = message.user.id;
               } else if (message.author) {
                 userId = message.author.id;
+              }
+
+              if (message.channelId) {
+                discordChannelId = message.channelId;
               }
             }
 
@@ -458,71 +462,87 @@ var myRateLimiter = /*#__PURE__*/function () {
             notError = _context.sent;
 
             if (!(notError.remainingPoints > 0)) {
-              _context.next = 122;
+              _context.next = 127;
               break;
             }
 
             if (!(platform === 'discord')) {
-              _context.next = 116;
+              _context.next = 121;
               break;
             }
 
             console.log('send error message ratelimiter');
             _context.next = 115;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, title)]
+            return client.channels.fetch(discordChannelId)["catch"](function (e) {
+              console.log(e);
             });
 
           case 115:
+            discordChannel = _context.sent;
+
+            if (!discordChannel) {
+              _context.next = 120;
+              break;
+            }
+
+            console.log('found discord channel');
+            _context.next = 120;
+            return discordChannel.send({
+              embeds: [(0, _discord.discordLimitSpamMessage)(userId, title)]
+            })["catch"](function (e) {
+              console.log(e);
+            });
+
+          case 120:
             console.log('after send reply');
 
-          case 116:
+          case 121:
             if (!(platform === 'telegram')) {
-              _context.next = 119;
+              _context.next = 124;
               break;
             }
 
-            _context.next = 119;
+            _context.next = 124;
             return message.channel.send({
               embeds: [(0, _discord.discordLimitSpamMessage)(message, title)]
             });
 
-          case 119:
+          case 124:
             if (!(platform === 'matrix')) {
-              _context.next = 122;
+              _context.next = 127;
               break;
             }
 
-            _context.next = 122;
+            _context.next = 127;
             return message.channel.send({
               embeds: [(0, _discord.discordLimitSpamMessage)(message, title)]
             });
 
-          case 122:
+          case 127:
             return _context.abrupt("return", true);
-
-          case 125:
-            _context.prev = 125;
-            _context.t1 = _context["catch"](106);
-            return _context.abrupt("return", true);
-
-          case 128:
-            _context.next = 135;
-            break;
 
           case 130:
             _context.prev = 130;
+            _context.t1 = _context["catch"](106);
+            return _context.abrupt("return", true);
+
+          case 133:
+            _context.next = 140;
+            break;
+
+          case 135:
+            _context.prev = 135;
             _context.t2 = _context["catch"](0);
             console.log(_context.t2);
             console.log('catching the last error');
             return _context.abrupt("return", true);
 
-          case 135:
+          case 140:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 130], [4, 104], [106, 125]]);
+    }, _callee, null, [[0, 135], [4, 104], [106, 130]]);
   }));
 
   return function myRateLimiter(_x, _x2, _x3, _x4) {

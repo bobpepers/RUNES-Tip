@@ -765,7 +765,7 @@ export const discordTrivia = async (
     }
 
     t.afterCommit(() => {
-      console.log('done');
+      console.log('done trivia transaction');
     });
   }).catch(async (err) => {
     try {

@@ -30,7 +30,10 @@ export const processWithdrawal = async (transaction) => {
     try {
       const preResponse = await getInstance().zSendMany(
         process.env.PIRATE_MAIN_ADDRESS,
-        [{ address: transaction.to_from, amount: amount.toFixed(8) }],
+        [{
+          address: transaction.to_from,
+          amount: amount.toFixed(8),
+        }],
         1,
         0.0001,
       );
@@ -38,6 +41,7 @@ export const processWithdrawal = async (transaction) => {
       while (!opStatus || opStatus[0].status === 'executing') {
         // eslint-disable-next-line no-await-in-loop
         await new Promise((resolve) => setTimeout(resolve, 1000));
+        // eslint-disable-next-line no-await-in-loop
         opStatus = await getInstance().zGetOperationStatus([preResponse]);
       }
       response = opStatus[0].result.txid;

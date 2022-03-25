@@ -78,16 +78,15 @@ var discordPrice = /*#__PURE__*/function () {
 
                       case 9:
                         if (!(user && user.wallet)) {
-                          _context.next = 35;
+                          _context.next = 29;
                           break;
                         }
 
                         userId = user.user_id.replace('discord-', '');
-                        _context.prev = 11;
-                        _context.next = 14;
+                        _context.next = 13;
                         return _models["default"].priceInfo.findAll({});
 
-                      case 14:
+                      case 13:
                         priceRecord = _context.sent;
                         replyString = "";
                         replyString += priceRecord.map(function (a) {
@@ -95,37 +94,28 @@ var discordPrice = /*#__PURE__*/function () {
                         }).join('\n');
 
                         if (!(message.channel.type === 'DM')) {
-                          _context.next = 20;
+                          _context.next = 19;
                           break;
                         }
 
-                        _context.next = 20;
+                        _context.next = 19;
                         return message.author.send({
                           embeds: [(0, _discord.priceMessage)(replyString)]
                         });
 
-                      case 20:
+                      case 19:
                         if (!(message.channel.type === 'GUILD_TEXT')) {
-                          _context.next = 23;
+                          _context.next = 22;
                           break;
                         }
 
-                        _context.next = 23;
+                        _context.next = 22;
                         return message.channel.send({
                           embeds: [(0, _discord.priceMessage)(replyString)]
                         });
 
-                      case 23:
-                        _context.next = 28;
-                        break;
-
-                      case 25:
-                        _context.prev = 25;
-                        _context.t0 = _context["catch"](11);
-                        console.log(_context.t0);
-
-                      case 28:
-                        _context.next = 30;
+                      case 22:
+                        _context.next = 24;
                         return _models["default"].activity.create({
                           type: 'price',
                           earnerId: user.id
@@ -134,9 +124,9 @@ var discordPrice = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 30:
+                      case 24:
                         createActivity = _context.sent;
-                        _context.next = 33;
+                        _context.next = 27;
                         return _models["default"].activity.findOne({
                           where: {
                             id: createActivity.id
@@ -149,21 +139,21 @@ var discordPrice = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 33:
+                      case 27:
                         findActivity = _context.sent;
                         activity.unshift(findActivity);
 
-                      case 35:
+                      case 29:
                         t.afterCommit(function () {
-                          console.log('done price request'); // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
+                          console.log('done price request');
                         });
 
-                      case 36:
+                      case 30:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[11, 25]]);
+                }, _callee);
               }));
 
               return function (_x3) {

@@ -49,18 +49,15 @@ var settings = (0, _settings["default"])();
 
 function shuffle(array) {
   var currentIndex = array.length;
-  var randomIndex; // While there remain elements to shuffle...
+  var randomIndex;
 
   while (currentIndex !== 0) {
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex); // currentIndex--;
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1; // eslint-disable-next-line no-param-reassign
 
-    currentIndex -= 1; // And swap it with the current element.
-    // eslint-disable-next-line no-param-reassign
-
-    var _ref = [array[randomIndex], array[currentIndex]];
-    array[currentIndex] = _ref[0];
-    array[randomIndex] = _ref[1];
+    var _ref = [array[parseInt(randomIndex, 10)], array[parseInt(currentIndex, 10)]];
+    array[parseInt(currentIndex, 10)] = _ref[0];
+    array[parseInt(randomIndex, 10)] = _ref[1];
   }
 
   return array;

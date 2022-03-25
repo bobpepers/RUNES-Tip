@@ -1222,7 +1222,7 @@ var discordTrivia = /*#__PURE__*/function () {
 
                       case 140:
                         t.afterCommit(function () {
-                          console.log('done');
+                          console.log('done trivia transaction');
                         });
 
                       case 141:

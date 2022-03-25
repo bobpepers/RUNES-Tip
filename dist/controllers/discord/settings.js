@@ -145,10 +145,9 @@ var discordSettings = /*#__PURE__*/function () {
             return _context.abrupt("return", false);
 
           case 30:
-            console.log(setting);
             return _context.abrupt("return", setting);
 
-          case 32:
+          case 31:
           case "end":
             return _context.stop();
         }

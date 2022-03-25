@@ -1,4 +1,5 @@
 /* eslint-disable import/first */
+import { addExitCallback } from 'catch-exit';
 import {
   Client,
   Intents,
@@ -21,19 +22,19 @@ import { router } from "./router";
 import { dashboardRouter } from "./dashboard/router";
 import { updatePrice } from "./helpers/updatePrice";
 import { initDatabaseRecords } from "./helpers/initDatabaseRecords";
-import { patchRunebaseDeposits } from "./helpers/blockchain/runebase/patcher";
-import { patchPirateDeposits } from "./helpers/blockchain/pirate/patcher";
-import { patchKomodoDeposits } from "./helpers/blockchain/komodo/patcher";
-import {
-  recoverDiscordReactdrops,
-  recoverDiscordTrivia,
-} from './helpers/recover';
 import db from "./models";
 import getCoinSettings from './config/settings';
 import { startKomodoSync } from "./services/syncKomodo";
 import { startRunebaseSync } from "./services/syncRunebase";
 import { startPirateSync } from "./services/syncPirate";
+import { patchRunebaseDeposits } from "./helpers/blockchain/runebase/patcher";
+import { patchPirateDeposits } from "./helpers/blockchain/pirate/patcher";
+import { patchKomodoDeposits } from "./helpers/blockchain/komodo/patcher";
 import { processWithdrawals } from "./services/processWithdrawals";
+import {
+  recoverDiscordReactdrops,
+  recoverDiscordTrivia,
+} from './helpers/recover';
 
 global.Olm = olm;
 
@@ -299,14 +300,67 @@ const scheduleWithdrawal = schedule.scheduleJob('*/5 * * * *', async () => { // 
 });
 
 // Handle olm library process unhandeled rejections
+// addExitCallback((signal) => {
+//   console.log('signal');
+//   console.log(signal);
+// });
+
+// global.onerror = () => console.log("global onerror fired");
+
 process.on('unhandledRejection', (reason, promise) => {
   console.log('Unhandled Rejection capture');
   console.log('Unhandled Rejection at:', reason.stack || reason);
+  console.log('promise');
+  console.log(promise);
 });
 
-process.on('uncaughtException', (e) => {
+process.on('uncaughtException', (e, origin) => {
   console.log('Unhandled Exception capture');
   console.log('uncaughtException: ', e.stack);
+  console.log('origin');
+  console.log(origin);
 });
+global.catch((err) => { /* ignore */ }); // mark error as handled
+process.catch((err) => { /* ignore */ }); // mark error as handled
+
+global.on('unhandledRejection', (reason, promise) => {
+  console.log('Unhandled Rejection capture');
+  console.log('Unhandled Rejection at:', reason.stack || reason);
+  console.log('promise');
+  console.log(promise);
+});
+
+global.on('uncaughtException', (e, origin) => {
+  console.log('Unhandled Exception capture');
+  console.log('uncaughtException: ', e.stack);
+  console.log('origin');
+  console.log(origin);
+});
+
+window.on('unhandledRejection', (reason, promise) => {
+  console.log('Unhandled Rejection capture');
+  console.log('Unhandled Rejection at:', reason.stack || reason);
+  console.log('promise');
+  console.log(promise);
+});
+
+window.on('uncaughtException', (e, origin) => {
+  console.log('Unhandled Exception capture');
+  console.log('uncaughtException: ', e.stack);
+  console.log('origin');
+  console.log(origin);
+});
+
+process.on('exit', (code) => {
+  console.log(`About to exit with code: ${code}`);
+});
+
+setInterval(() => {
+  console.log('app still running');
+}, 1000);
+
+// const p = Promise.reject(new Error("err"));
+
+// setTimeout(() => p.catch(() => {}), 86400);
 
 console.log('server listening on:', port);

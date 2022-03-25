@@ -89,36 +89,7 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
 
                       case 14:
                         transactions = _context.sent;
-
-                        if (!(message.channel.type === 'DM')) {
-                          _context.next = 18;
-                          break;
-                        }
-
-                        _context.next = 18;
-                        return message.author.send({
-                          embeds: [(0, _discord.listTransactionsMessage)(userId, user, transactions)]
-                        });
-
-                      case 18:
-                        if (!(message.channel.type === 'GUILD_TEXT')) {
-                          _context.next = 23;
-                          break;
-                        }
-
-                        _context.next = 21;
-                        return message.author.send({
-                          embeds: [(0, _discord.listTransactionsMessage)(userId, user, transactions)]
-                        });
-
-                      case 21:
-                        _context.next = 23;
-                        return message.channel.send({
-                          embeds: [(0, _discord.warnDirectMessage)(userId, 'Balance')]
-                        });
-
-                      case 23:
-                        _context.next = 25;
+                        _context.next = 17;
                         return _models["default"].activity.create({
                           type: 'listtransactions_s',
                           earnerId: user.id
@@ -127,9 +98,9 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 25:
+                      case 17:
                         createActivity = _context.sent;
-                        _context.next = 28;
+                        _context.next = 20;
                         return _models["default"].activity.findOne({
                           where: {
                             id: createActivity.id
@@ -142,13 +113,39 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 28:
+                      case 20:
                         findActivity = _context.sent;
                         activity.unshift(findActivity);
 
+                        if (!(message.channel.type === 'DM')) {
+                          _context.next = 25;
+                          break;
+                        }
+
+                        _context.next = 25;
+                        return message.author.send({
+                          embeds: [(0, _discord.listTransactionsMessage)(userId, user, transactions)]
+                        });
+
+                      case 25:
+                        if (!(message.channel.type === 'GUILD_TEXT')) {
+                          _context.next = 30;
+                          break;
+                        }
+
+                        _context.next = 28;
+                        return message.author.send({
+                          embeds: [(0, _discord.listTransactionsMessage)(userId, user, transactions)]
+                        });
+
+                      case 28:
+                        _context.next = 30;
+                        return message.channel.send({
+                          embeds: [(0, _discord.warnDirectMessage)(userId, 'Balance')]
+                        });
+
                       case 30:
                         t.afterCommit(function () {
-                          // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
                           console.log('done list transactions request');
                         });
 
@@ -187,7 +184,7 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
                         _logger["default"].error("Error Discord: ".concat(_context2.t0));
 
                       case 8:
-                        _logger["default"].error("Error Discord List Transactions Requested by: ".concat(message.author.id, "-").concat(message.author.username, "#").concat(message.author.discriminator, " - ").concat(err));
+                        _logger["default"].error("Error Discord List Transactions Requested by: ".concat(err));
 
                         if (!(err.code && err.code === 50007)) {
                           _context2.next = 14;

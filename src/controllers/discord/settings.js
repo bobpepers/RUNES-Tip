@@ -65,7 +65,7 @@ export const discordSettings = async (
     });
     return false;
   }
-  console.log(setting);
+  // console.log(setting);
   return setting;
 };
 

@@ -101,8 +101,14 @@ export const discordThunderStorm = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await message.channel.send({ embeds: [notEnoughActiveUsersMessage(message, 'ThunderStorm')] });
-      // await message.channel.send('Not enough online users');
+      await message.channel.send({
+        embeds: [
+          notEnoughActiveUsersMessage(
+            message,
+            'ThunderStorm',
+          ),
+        ],
+      });
       return;
     }
 
@@ -267,7 +273,11 @@ export const discordThunderStorm = async (
     }
     console.log(err);
     logger.error(`thunderstorm error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("ThunderStorm")] }).catch((e) => {
+    message.channel.send({
+      embeds: [
+        discordErrorMessage("ThunderStorm"),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
   });

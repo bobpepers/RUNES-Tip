@@ -1,6 +1,7 @@
 import { MessageAttachment } from "discord.js";
 import { Transaction } from "sequelize";
 import QRCode from "qrcode";
+import s from "connect-redis";
 import db from '../../models';
 import {
   warnDirectMessage,
@@ -81,7 +82,6 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
       });
       activity.unshift(finalActivity);
     }
-
     t.afterCommit(() => {
       logger.info(`Success Deposit Address Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
     });

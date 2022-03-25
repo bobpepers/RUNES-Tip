@@ -11,7 +11,11 @@ import { isDepositOrWithdrawalCompleteMessageHandler } from '../helpers/messageH
 
 const settings = getCoinSettings();
 
-const sequentialLoop = async (iterations, process, exit) => {
+const sequentialLoop = async (
+  iterations,
+  process,
+  exit,
+) => {
   let index = 0;
   let done = false;
   let shouldExit = false;

@@ -88,7 +88,11 @@ export const discordThunder = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await message.channel.send({ embeds: [notEnoughActiveUsersMessage(message, 'Thunder')] });
+      await message.channel.send({
+        embeds: [
+          notEnoughActiveUsersMessage(message, 'Thunder'),
+        ],
+      });
       return;
     }
     if (withoutBots.length === 1) {

@@ -372,7 +372,11 @@ export const tipCoinsToDiscordFaucet = async (
     }
 
     if (usersToTip.length < 1) {
-      await message.channel.send({ embeds: [notEnoughUsersToTip(message)] });
+      await message.channel.send({
+        embeds: [
+          notEnoughUsersToTip(message),
+        ],
+      });
       return;
     }
 
@@ -521,7 +525,14 @@ export const tipCoinsToDiscordFaucet = async (
         listOfUsersRained.push(`<@${userIdReceivedRain}>`);
       }
     }
-    await message.channel.send({ embeds: [tipFaucetSuccessMessage(message, userTipAmount)] });
+    await message.channel.send({
+      embeds: [
+        tipFaucetSuccessMessage(
+          message,
+          userTipAmount,
+        ),
+      ],
+    });
 
     t.afterCommit(() => {
       console.log('done');
@@ -537,7 +548,11 @@ export const tipCoinsToDiscordFaucet = async (
     }
     console.log(err);
     logger.error(`tipFaucet error: ${err}`);
-    await message.channel.send({ embeds: [discordErrorMessage("Tip")] }).catch((e) => {
+    await message.channel.send({
+      embeds: [
+        discordErrorMessage("Tip"),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
   });

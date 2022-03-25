@@ -135,11 +135,15 @@ export const myRateLimiter = async (
 ) => {
   try {
     let userId;
+    let discordChannelId;
     if (platform === 'discord') {
       if (message.user) {
         userId = message.user.id;
       } else if (message.author) {
         userId = message.author.id;
+      }
+      if (message.channelId) {
+        discordChannelId = message.channelId;
       }
     }
     if (platform === 'telegram') {
@@ -269,14 +273,23 @@ export const myRateLimiter = async (
         if (notError.remainingPoints > 0) {
           if (platform === 'discord') {
             console.log('send error message ratelimiter');
-            await message.channel.send({
-              embeds: [
-                discordLimitSpamMessage(
-                  message,
-                  title,
-                ),
-              ],
+            const discordChannel = await client.channels.fetch(discordChannelId).catch((e) => {
+              console.log(e);
             });
+            if (discordChannel) {
+              console.log('found discord channel');
+              await discordChannel.send({
+                embeds: [
+                  discordLimitSpamMessage(
+                    userId,
+                    title,
+                  ),
+                ],
+              }).catch((e) => {
+                console.log(e);
+              });
+            }
+
             console.log('after send reply');
           }
           if (platform === 'telegram') {

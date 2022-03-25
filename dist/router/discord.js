@@ -187,31 +187,41 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
         while (1) {
           switch (_context6.prev = _context6.next) {
             case 0:
-              if (interaction.user.bot) {
-                _context6.next = 26;
-                break;
-              }
-
-              _context6.next = 3;
-              return (0, _isMaintenanceOrDisabled.isMaintenanceOrDisabled)(interaction, 'discord');
-
-            case 3:
-              maintenance = _context6.sent;
-
-              if (!(maintenance.maintenance || !maintenance.enabled)) {
-                _context6.next = 6;
+              if (interaction.isButton()) {
+                _context6.next = 2;
                 break;
               }
 
               return _context6.abrupt("return");
 
+            case 2:
+              console.log('interaction started');
+
+              if (interaction.user.bot) {
+                _context6.next = 30;
+                break;
+              }
+
+              _context6.next = 6;
+              return (0, _isMaintenanceOrDisabled.isMaintenanceOrDisabled)(interaction, 'discord');
+
             case 6:
-              _context6.next = 8;
+              maintenance = _context6.sent;
+
+              if (!(maintenance.maintenance || !maintenance.enabled)) {
+                _context6.next = 9;
+                break;
+              }
+
+              return _context6.abrupt("return");
+
+            case 9:
+              _context6.next = 11;
               return (0, _user.createUpdateDiscordUser)(discordClient, interaction.user, queue);
 
-            case 8:
+            case 11:
               walletExists = _context6.sent;
-              _context6.next = 11;
+              _context6.next = 14;
               return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4() {
                 return _regenerator["default"].wrap(function _callee4$(_context4) {
                   while (1) {
@@ -241,46 +251,46 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
                 }, _callee4);
               })));
 
-            case 11:
+            case 14:
               if (!interaction.isButton()) {
-                _context6.next = 26;
+                _context6.next = 30;
                 break;
               }
 
               if (!(interaction.customId === 'claimFaucet')) {
+                _context6.next = 30;
+                break;
+              }
+
+              _context6.next = 18;
+              return (0, _rateLimit.myRateLimiter)(discordClient, interaction, 'discord', 'Faucet');
+
+            case 18:
+              limited = _context6.sent;
+
+              if (!limited) {
+                _context6.next = 21;
+                break;
+              }
+
+              return _context6.abrupt("return");
+
+            case 21:
+              _context6.next = 23;
+              return (0, _settings.discordSettings)(interaction, 'faucet', groupTaskId, channelTaskId);
+
+            case 23:
+              setting = _context6.sent;
+
+              if (setting) {
                 _context6.next = 26;
                 break;
               }
 
-              _context6.next = 15;
-              return (0, _rateLimit.myRateLimiter)(discordClient, interaction, 'discord', 'Faucet');
-
-            case 15:
-              limited = _context6.sent;
-
-              if (!limited) {
-                _context6.next = 18;
-                break;
-              }
-
               return _context6.abrupt("return");
 
-            case 18:
-              _context6.next = 20;
-              return (0, _settings.discordSettings)(interaction, 'faucet', groupTaskId, channelTaskId);
-
-            case 20:
-              setting = _context6.sent;
-
-              if (setting) {
-                _context6.next = 23;
-                break;
-              }
-
-              return _context6.abrupt("return");
-
-            case 23:
-              _context6.next = 25;
+            case 26:
+              _context6.next = 28;
               return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5() {
                 var task;
                 return _regenerator["default"].wrap(function _callee5$(_context5) {
@@ -301,10 +311,13 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
                 }, _callee5);
               })));
 
-            case 25:
-              interaction.deferUpdate();
+            case 28:
+              _context6.next = 30;
+              return interaction.deferUpdate()["catch"](function (e) {
+                console.log(e);
+              });
 
-            case 26:
+            case 30:
             case "end":
               return _context6.stop();
           }

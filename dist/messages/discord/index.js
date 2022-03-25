@@ -143,8 +143,8 @@ var AfterReactDropSuccessMessage = function AfterReactDropSuccessMessage(endReac
 
 exports.AfterReactDropSuccessMessage = AfterReactDropSuccessMessage;
 
-var discordLimitSpamMessage = function discordLimitSpamMessage(message, myFunctionName) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(myFunctionName).setDescription("\uD83D\uDEAB Slow down! \uD83D\uDEAB\n<@".concat(message.author.id, ">, you're using this command too fast, wait a while before using it again.")).setTimestamp().setFooter({
+var discordLimitSpamMessage = function discordLimitSpamMessage(userId, myFunctionName) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(myFunctionName).setDescription("\uD83D\uDEAB Slow down! \uD83D\uDEAB\n<@".concat(userId, ">, you're using this command too fast, wait a while before using it again.")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });

@@ -53,14 +53,6 @@ export const fetchDiscordListTransactions = async (
         transaction: t,
       });
 
-      if (message.channel.type === 'DM') {
-        await message.author.send({ embeds: [listTransactionsMessage(userId, user, transactions)] });
-      }
-
-      if (message.channel.type === 'GUILD_TEXT') {
-        await message.author.send({ embeds: [listTransactionsMessage(userId, user, transactions)] });
-        await message.channel.send({ embeds: [warnDirectMessage(userId, 'Balance')] });
-      }
       const createActivity = await db.activity.create({
         type: 'listtransactions_s',
         earnerId: user.id,
@@ -83,10 +75,17 @@ export const fetchDiscordListTransactions = async (
         transaction: t,
       });
       activity.unshift(findActivity);
+      if (message.channel.type === 'DM') {
+        await message.author.send({ embeds: [listTransactionsMessage(userId, user, transactions)] });
+      }
+
+      if (message.channel.type === 'GUILD_TEXT') {
+        await message.author.send({ embeds: [listTransactionsMessage(userId, user, transactions)] });
+        await message.channel.send({ embeds: [warnDirectMessage(userId, 'Balance')] });
+      }
     }
 
     t.afterCommit(() => {
-      // logger.info(`Success Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
       console.log('done list transactions request');
     });
   }).catch(async (err) => {
@@ -98,7 +97,7 @@ export const fetchDiscordListTransactions = async (
     } catch (e) {
       logger.error(`Error Discord: ${e}`);
     }
-    logger.error(`Error Discord List Transactions Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
+    logger.error(`Error Discord List Transactions Requested by: ${err}`);
     if (err.code && err.code === 50007) {
       await message.channel.send({ embeds: [cannotSendMessageUser("List transactions", message)] }).catch((e) => {
         console.log(e);

@@ -86,6 +86,8 @@ export const discordRouter = (
   });
 
   discordClient.on("interactionCreate", async (interaction) => {
+    if (!interaction.isButton()) return;
+    console.log('interaction started');
     let groupTask;
     let groupTaskId;
     let channelTask;
@@ -130,7 +132,9 @@ export const discordRouter = (
               io,
             );
           });
-          interaction.deferUpdate();
+          await interaction.deferUpdate().catch((e) => {
+            console.log(e);
+          });
         }
       }
     }

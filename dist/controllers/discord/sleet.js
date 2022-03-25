@@ -208,7 +208,7 @@ var discordSleet = /*#__PURE__*/function () {
                         _context.next = 55;
                         return _models["default"].user.findAll({
                           where: (0, _defineProperty2["default"])({}, _sequelize.Op.and, [{
-                            user_id: (0, _defineProperty2["default"])({}, _sequelize.Op.not, "discord-".concat(message.author.id))
+                            id: (0, _defineProperty2["default"])({}, _sequelize.Op.not, user.id)
                           }, {
                             banned: false
                           }]),

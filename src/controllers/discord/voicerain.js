@@ -59,7 +59,11 @@ export const discordVoiceRain = async (
     });
 
     if (!voiceChannel) {
-      await message.channel.send({ embeds: [voiceChannelNotFound(message)] });
+      await message.channel.send({
+        embeds: [
+          voiceChannelNotFound(message),
+        ],
+      });
       return;
     }
 
@@ -111,7 +115,14 @@ export const discordVoiceRain = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await message.channel.send({ embeds: [notEnoughActiveUsersMessage(message, 'Voice Rain')] });
+      await message.channel.send({
+        embeds: [
+          notEnoughActiveUsersMessage(
+            message,
+            'Voice Rain',
+          ),
+        ],
+      });
       return;
     }
 

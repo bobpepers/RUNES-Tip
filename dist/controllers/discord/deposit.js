@@ -17,6 +17,8 @@ var _sequelize = require("sequelize");
 
 var _qrcode = _interopRequireDefault(require("qrcode"));
 
+var _connectRedis = _interopRequireDefault(require("connect-redis"));
+
 var _models = _interopRequireDefault(require("../../models"));
 
 var _discord2 = require("../../messages/discord");
