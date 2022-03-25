@@ -278,7 +278,13 @@ export const discordVoiceRain = async (
       logger.error(`Error Discord: ${e}`);
     }
     logger.error(`voicerain error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("VoiceRain")] });
+    await message.channel.send({
+      embeds: [
+        discordErrorMessage("VoiceRain"),
+      ],
+    }).catch((e) => {
+      console.log(e);
+    });
   });
   if (activity.length > 0) {
     io.to('admin').emit('updateActivity', {

@@ -360,7 +360,11 @@ export const discordSleet = async (
     }
     console.log(err);
     logger.error(`sleet error: ${err}`);
-    await message.channel.send({ embeds: [discordErrorMessage("Sleet")] }).catch((e) => {
+    await message.channel.send({
+      embeds: [
+        discordErrorMessage("Sleet"),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
   });
