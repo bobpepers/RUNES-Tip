@@ -19,11 +19,7 @@ var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
 var _rclient = require("../../services/rclient");
 
-var _settings = _interopRequireDefault(require("../../config/settings"));
-
 var _discord = require("../../messages/discord");
-
-var settings = (0, _settings["default"])();
 
 var createUpdateDiscordUser = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(discordClient, userInfo, queue) {

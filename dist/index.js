@@ -6,8 +6,6 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _catchExit = require("catch-exit");
-
 var _discord = require("discord.js");
 
 var _lodash = _interopRequireDefault(require("lodash"));
@@ -38,6 +36,8 @@ var _olm = _interopRequireDefault(require("@matrix-org/olm"));
 
 var _matrixJsSdk = _interopRequireDefault(require("matrix-js-sdk"));
 
+var _nodeLocalstorage = require("node-localstorage");
+
 var _router = require("./router");
 
 var _router2 = require("./dashboard/router");
@@ -67,15 +67,12 @@ var _processWithdrawals = require("./services/processWithdrawals");
 var _recover = require("./helpers/recover");
 
 /* eslint-disable import/first */
-global.Olm = _olm["default"];
+global.Olm = _olm["default"]; // const { LocalStorage } = require('node-localstorage');
 
-var _require = require('node-localstorage'),
-    LocalStorage = _require.LocalStorage;
+var localStorage = new _nodeLocalstorage.LocalStorage('./scratch');
 
-var localStorage = new LocalStorage('./scratch');
-
-var _require2 = require('matrix-js-sdk/lib/crypto/store/localStorage-crypto-store'),
-    LocalStorageCryptoStore = _require2.LocalStorageCryptoStore;
+var _require = require('matrix-js-sdk/lib/crypto/store/localStorage-crypto-store'),
+    LocalStorageCryptoStore = _require.LocalStorageCryptoStore;
 
 _dotenv["default"].config();
 
@@ -162,16 +159,13 @@ io.on("connection", /*#__PURE__*/function () {
             userId = socket.request.session.passport ? socket.request.session.passport.user : '';
 
             if (socket.request.user && (socket.request.user.role === 4 || socket.request.user.role === 8)) {
-              // console.log('joined admin socket');
-              // console.log(userId);
               socket.join('admin');
-              sockets[userId] = socket;
+              sockets[parseInt(userId, 10)] = socket;
             } // console.log(Object.keys(sockets).length);
 
 
             socket.on("disconnect", function () {
-              delete sockets[userId]; // console.log("Client disconnected");
-              // console.log(userId);
+              delete sockets[parseInt(userId, 10)];
             });
 
           case 3:
@@ -344,7 +338,7 @@ var schedulePriceUpdate = _nodeSchedule["default"].scheduleJob('*/20 * * * *', f
   (0, _updatePrice.updatePrice)();
 });
 
-var scheduleWithdrawal = _nodeSchedule["default"].scheduleJob('*/5 * * * *', /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
+var scheduleWithdrawal = _nodeSchedule["default"].scheduleJob('*/8 * * * *', /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
   var autoWithdrawalSetting;
   return _regenerator["default"].wrap(function _callee3$(_context3) {
     while (1) {
@@ -371,11 +365,6 @@ var scheduleWithdrawal = _nodeSchedule["default"].scheduleJob('*/5 * * * *', /*#
     }
   }, _callee3);
 }))); // Handle olm library process unhandeled rejections
-// addExitCallback((signal) => {
-//   console.log('signal');
-//   console.log(signal);
-// });
-// global.onerror = () => console.log("global onerror fired");
 
 
 process.on('unhandledRejection', function (reason, promise) {
@@ -390,44 +379,7 @@ process.on('uncaughtException', function (e, origin) {
   console.log('origin');
   console.log(origin);
 });
-global["catch"](function (err) {
-  /* ignore */
-}); // mark error as handled
-
-process["catch"](function (err) {
-  /* ignore */
-}); // mark error as handled
-
-global.on('unhandledRejection', function (reason, promise) {
-  console.log('Unhandled Rejection capture');
-  console.log('Unhandled Rejection at:', reason.stack || reason);
-  console.log('promise');
-  console.log(promise);
-});
-global.on('uncaughtException', function (e, origin) {
-  console.log('Unhandled Exception capture');
-  console.log('uncaughtException: ', e.stack);
-  console.log('origin');
-  console.log(origin);
-});
-window.on('unhandledRejection', function (reason, promise) {
-  console.log('Unhandled Rejection capture');
-  console.log('Unhandled Rejection at:', reason.stack || reason);
-  console.log('promise');
-  console.log(promise);
-});
-window.on('uncaughtException', function (e, origin) {
-  console.log('Unhandled Exception capture');
-  console.log('uncaughtException: ', e.stack);
-  console.log('origin');
-  console.log(origin);
-});
 process.on('exit', function (code) {
   console.log("About to exit with code: ".concat(code));
 });
-setInterval(function () {
-  console.log('app still running');
-}, 1000); // const p = Promise.reject(new Error("err"));
-// setTimeout(() => p.catch(() => {}), 86400);
-
 console.log('server listening on:', port);

@@ -17,11 +17,7 @@ var _sequelize = require("sequelize");
 
 var _models = _interopRequireDefault(require("../../models"));
 
-var _rclient = require("../../services/rclient");
-
 var _discord = require("../../messages/discord");
-
-var _settings = _interopRequireDefault(require("../../config/settings"));
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
@@ -32,8 +28,6 @@ var _userWalletExist = require("../../helpers/client/discord/userWalletExist");
 var _validateWithdrawalAddress = require("../../helpers/blockchain/validateWithdrawalAddress");
 
 /* eslint-disable import/prefer-default-export */
-var settings = (0, _settings["default"])();
-
 var withdrawDiscordCreate = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(discordClient, message, filteredMessage, io, groupTask, channelTask, setting) {
     var user, userActivity, activity;
