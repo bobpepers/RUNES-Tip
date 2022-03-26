@@ -51,11 +51,6 @@ export const discordHurricane = async (
       await message.channel.send({ embeds: [hurricaneUserZeroAmountMessage(message)] });
       return;
     }
-    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-    const onlineMembers = members.filter((member) => (member.presence && member.presence.status === "online")
-      || (member.presence && member.presence.status === "idle")
-      || (member.presence && member.presence.status === "dnd"));
-
     [
       user,
       userActivity,
@@ -68,6 +63,11 @@ export const discordHurricane = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
+
+    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
+    const onlineMembers = members.filter((member) => (member.presence && member.presence.status === "online")
+      || (member.presence && member.presence.status === "idle")
+      || (member.presence && member.presence.status === "dnd"));
 
     const preWithoutBots = await mapMembers(
       message,

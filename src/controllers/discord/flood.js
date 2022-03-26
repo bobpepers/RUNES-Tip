@@ -36,13 +36,6 @@ export const discordFlood = async (
     //  return;
     // }
 
-    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-
-    const onlineMembers = members.filter((member) => {
-      console.log(member.presence);
-      return member;
-    });
-
     [
       user,
       userActivity,
@@ -55,6 +48,13 @@ export const discordFlood = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
+
+    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
+
+    const onlineMembers = members.filter((member) => {
+      console.log(member.presence);
+      return member;
+    });
 
     const withoutBots = await mapMembers(
       message,

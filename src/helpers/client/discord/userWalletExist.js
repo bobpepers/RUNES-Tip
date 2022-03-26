@@ -1,6 +1,6 @@
 import db from '../../../models';
 import {
-  walletNotFoundMessage,
+  userNotFoundMessage,
 } from '../../../messages/discord';
 
 const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
@@ -45,7 +45,14 @@ export const userWalletExist = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    await message.channel.send({ embeds: [walletNotFoundMessage(message, capitalize(functionName))] });
+    await message.reply({
+      embeds: [
+        userNotFoundMessage(
+          message,
+          capitalize(functionName),
+        ),
+      ],
+    });
   }
   return [
     user,

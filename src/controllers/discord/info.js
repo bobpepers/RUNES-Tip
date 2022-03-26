@@ -8,6 +8,7 @@ import {
 } from '../../messages/discord';
 import db from '../../models';
 import logger from "../../helpers/logger";
+import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 
 export const discordCoinInfo = async (
   message,
@@ -17,6 +18,20 @@ export const discordCoinInfo = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    const [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      message,
+      t,
+      'info',
+    );
+
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
+    if (!user) return;
+
     const blockHeight = await db.block.findOne({
       order: [['id', 'DESC']],
       lock: t.LOCK.UPDATE,
@@ -28,21 +43,35 @@ export const discordCoinInfo = async (
       transaction: t,
     });
     if (message.channel.type === 'DM') {
-      await message.author.send({ embeds: [coinInfoMessage(blockHeight.id, priceInfo)] });
+      await message.author.send({
+        embeds: [
+          coinInfoMessage(
+            blockHeight.id,
+            priceInfo,
+          ),
+        ],
+      });
     }
     if (message.channel.type === 'GUILD_TEXT') {
-      await message.author.send({ embeds: [coinInfoMessage(blockHeight.id, priceInfo)] });
-      await message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Coin Info')] });
+      await message.author.send({
+        embeds: [
+          coinInfoMessage(
+            blockHeight.id,
+            priceInfo,
+          ),
+        ],
+      });
+      await message.channel.send({
+        embeds: [
+          warnDirectMessage(
+            message.author.id,
+            'Coin Info',
+          ),
+        ],
+      });
     }
-    const user = await db.user.findOne({
-      where: {
-        user_id: `discord-${message.author.id}`,
-      },
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
     const preActivity = await db.activity.create({
-      type: 'info',
+      type: 'info_s',
       earnerId: user.id,
     }, {
       lock: t.LOCK.UPDATE,

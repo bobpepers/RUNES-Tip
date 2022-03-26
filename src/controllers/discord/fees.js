@@ -5,6 +5,7 @@ import {
 } from '../../messages/discord';
 import db from '../../models';
 import logger from "../../helpers/logger";
+import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 
 export const findFee = async (
   name,
@@ -59,38 +60,18 @@ export const fetchFeeSchedule = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const user = await db.user.findOne({
-      where: {
-        user_id: `discord-${message.author.id}`,
-      },
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-
-    if (!user) {
-      const preActivityFail = await db.activity.create({
-        type: 'fees_f',
-        earnerId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      const finalActivityFail = await db.activity.findOne({
-        where: {
-          id: preActivityFail.id,
-        },
-        include: [
-          {
-            model: db.user,
-            as: 'earner',
-          },
-        ],
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      activity.unshift(finalActivityFail);
-      await message.author.send("User not found!");
+    const [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      message,
+      t,
+      'fees',
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
     }
+    if (!user) return;
 
     fee.tip = await findFee(
       'tip',

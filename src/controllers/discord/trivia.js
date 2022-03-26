@@ -23,6 +23,7 @@ import db from '../../models';
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/client/discord/validateAmount";
 import { waterFaucet } from "../../helpers/waterFaucet";
+import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 
 export const listenTrivia = async (
   triviaMessage,
@@ -428,30 +429,18 @@ export const discordTrivia = async (
     //  return;
     // }
 
-    user = await db.user.findOne({
-      where: {
-        user_id: `discord-${message.author.id}`,
-      },
-      include: [
-        {
-          model: db.wallet,
-          as: 'wallet',
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-    if (!user) {
-      const failActivity = await db.activity.create({
-        type: 'trivia_f',
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      activity.unshift(failActivity);
-      await message.channel.send({ embeds: [userNotFoundMessage(message, 'Trivia')] });
-      return;
+    const [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      message,
+      t,
+      'trivia',
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
     }
+    if (!user) return;
 
     const [
       activityValiateAmount,

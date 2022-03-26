@@ -93,7 +93,8 @@ export const matrixRouter = async (
         if (room
             && room.currentState
             && room.currentState.joinedMemberCount === 1
-            && room.currentState.invitedMemberCount === 0) {
+            && room.currentState.invitedMemberCount === 0
+        ) {
           try {
             await matrixClient.leave(room.roomId);
             await matrixClient.forget(room.roomId, true);

@@ -22,13 +22,11 @@ export const withdrawDiscordCreate = async (
   channelTask,
   setting,
 ) => {
-  let user;
-  let userActivity;
   const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(

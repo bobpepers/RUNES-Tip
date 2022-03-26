@@ -180,7 +180,7 @@ export const AfterTriviaSuccessMessage = (
     .setColor(settings.bot.color)
     .setTitle(`Trivia #${endTrivia.id}`)
     .setDescription(`:tada:[Trivia](https://discord.com/channels/${endTrivia.group.groupId.replace("discord-", "")}/${endTrivia.channel.channelId.replace("discord-", "")}/${endTrivia.discordMessageId}) started by <@${initiator}> has finished!:tada:
-    
+
 :money_with_wings:${endTrivia.triviatips.length} ${endTrivia.triviatips.length === 1 ? 'user' : 'users'} will share ${endTrivia.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)!:money_with_wings:`)
     .setTimestamp()
     .setFooter({
@@ -196,7 +196,7 @@ export const AfterReactDropSuccessMessage = (endReactDrop, amountEach, initiator
     .setColor(settings.bot.color)
     .setTitle(`Reactdrop #${endReactDrop.id}`)
     .setDescription(`:tada:[React airdrop](https://discord.com/channels/${endReactDrop.group.groupId.replace("discord-", "")}/${endReactDrop.channel.channelId.replace("discord-", "")}/${endReactDrop.discordMessageId}) started by <@${initiator}> has finished!:tada:
-    
+
 :money_with_wings:${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)!:money_with_wings:`)
     .setTimestamp()
     .setFooter({
@@ -357,7 +357,7 @@ export const discordDepositConfirmedMessage = (
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle(`Deposit #${trans.id}`)
-    .setDescription(`Deposit Confirmed 
+    .setDescription(`Deposit Confirmed
 ${amount} ${settings.coin.ticker} has been credited to your wallet`)
     .setTimestamp()
     .setFooter({
@@ -421,7 +421,7 @@ export const reviewMessage = (message, transaction) => {
     .setColor(settings.bot.color)
     .setTitle(`Withdraw #${transaction.id}`)
     .setDescription(`<@${message.author.id}>, Your withdrawal is being reviewed
-    
+
 amount: ${amount}
 fee: ${fee}
 total: ${total}`)
@@ -655,7 +655,7 @@ export const tipMultipleSuccessMessage = (
     .setTitle(`Tip #${id}`)
     .setDescription(`<@${message.author.id}> tipped **${(amount * listOfUsersRained.length) / 1e8} ${settings.coin.ticker}** to ${listOfUsersRained.length} users
 
-Type: **${capitalize(type)}**  
+Type: **${capitalize(type)}**
 
 💸 **${amount / 1e8} ${settings.coin.ticker}** each 💸`)
     .setTimestamp()
@@ -803,7 +803,7 @@ export const confirmAllAmoutMessageDiscord = (
     .setColor(settings.bot.color)
     .setTitle(capitalize(operationName))
     .setDescription(`<@${message.author.id}>, are you sure that you want to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}?
-Accepted answers: **yes/no/y/n**; 
+Accepted answers: **yes/no/y/n**;
 Auto-cancel in 30 seconds.`)
     .setTimestamp()
     .setFooter({
@@ -1039,7 +1039,10 @@ export const insufficientBalanceMessage = (
   return result;
 };
 
-export const userNotFoundMessage = (message, title) => {
+export const userNotFoundMessage = (
+  message,
+  title,
+) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle(title)
@@ -1293,7 +1296,7 @@ Displays your deposit address
 Displays fee schedule
 
 \`${settings.bot.command.discord} publicstats\`
-Enable/Disable public statistics (determines if you want to be shown on the leaderboards) 
+Enable/Disable public statistics (determines if you want to be shown on the leaderboards)
 default: disabled
 
 \`${settings.bot.command.discord} withdraw <address> <amount|all>\`

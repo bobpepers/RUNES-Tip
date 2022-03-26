@@ -5,6 +5,7 @@ import {
 } from '../../messages/discord';
 import db from '../../models';
 import logger from "../../helpers/logger";
+import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 
 export const discordPrice = async (
   message,
@@ -14,25 +15,18 @@ export const discordPrice = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const user = await db.user.findOne({
-      where: {
-        user_id: `discord-${message.author.id}`,
-      },
-      include: [
-        {
-          model: db.wallet,
-          as: 'wallet',
-          include: [
-            {
-              model: db.address,
-              as: 'addresses',
-            },
-          ],
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
+    const [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      message,
+      t,
+      'price',
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
+    if (!user) return;
 
     const priceInfo = await db.priceInfo.findOne({
       where: {
@@ -42,47 +36,52 @@ export const discordPrice = async (
       transaction: t,
     });
 
-    if (!user && !user.wallet) {
-      // ctx.reply(`Wallet not found`);
-      await message.author.send("Wallet not found");
-    }
+    const userId = user.user_id.replace('discord-', '');
 
-    if (user && user.wallet) {
-      const userId = user.user_id.replace('discord-', '');
-
-      const priceRecord = await db.priceInfo.findAll({});
-      let replyString = ``;
-      replyString += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('\n');
-      if (message.channel.type === 'DM') {
-        await message.author.send({ embeds: [priceMessage(replyString)] });
-      }
-      if (message.channel.type === 'GUILD_TEXT') {
-        await message.channel.send({ embeds: [priceMessage(replyString)] });
-      }
-
-      const createActivity = await db.activity.create({
-        type: 'price',
-        earnerId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-
-      const findActivity = await db.activity.findOne({
-        where: {
-          id: createActivity.id,
-        },
-        include: [
-          {
-            model: db.user,
-            as: 'earner',
-          },
+    const priceRecord = await db.priceInfo.findAll({});
+    let replyString = ``;
+    replyString += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('\n');
+    if (message.channel.type === 'DM') {
+      await message.author.send({
+        embeds: [
+          priceMessage(
+            replyString,
+          ),
         ],
-        lock: t.LOCK.UPDATE,
-        transaction: t,
       });
-      activity.unshift(findActivity);
     }
+    if (message.channel.type === 'GUILD_TEXT') {
+      await message.channel.send({
+        embeds: [
+          priceMessage(
+            replyString,
+          ),
+        ],
+      });
+    }
+
+    const createActivity = await db.activity.create({
+      type: 'price_s',
+      earnerId: user.id,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    const findActivity = await db.activity.findOne({
+      where: {
+        id: createActivity.id,
+      },
+      include: [
+        {
+          model: db.user,
+          as: 'earner',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    activity.unshift(findActivity);
 
     t.afterCommit(() => {
       console.log('done price request');

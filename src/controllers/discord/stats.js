@@ -6,12 +6,12 @@ import {
   warnDirectMessage,
   statsMessage,
   invalidTimeMessage,
-  walletNotFoundMessage,
   discordErrorMessage,
 } from '../../messages/discord';
 import db from '../../models';
 import getCoinSettings from '../../config/settings';
 import logger from "../../helpers/logger";
+import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 
 const settings = getCoinSettings();
 
@@ -83,33 +83,18 @@ export const discordStats = async (
     let cutNumberTime;
     let isnum;
 
-    let user = await db.user.findOne({
-      where: {
-        user_id: `discord-${message.author.id}`,
-      },
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-
-    if (!user) {
-      const activityA = await db.activity.create({
-        type: 'stats_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      activity.unshift(activityA);
-      await message.channel.send({
-        embeds: [
-          walletNotFoundMessage(
-            message,
-            'Stats',
-          ),
-        ],
-      });
-      return;
+    const [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      message,
+      t,
+      filteredMessageDiscord[1].toLowerCase(),
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
     }
+    if (!user) return;
 
     if (filteredMessageDiscord[2]) {
     // eslint-disable-next-line prefer-destructuring
@@ -177,7 +162,7 @@ export const discordStats = async (
       childWhereOptionsTriviaTips.createdAt = { [Op.gte]: dateObj };
     }
     childWhereOptionsTriviaTips.amount = { [Op.ne]: null };
-    parentWhereOptions.user_id = `discord-${message.author.id}`;
+    parentWhereOptions.id = user.id;
 
     if (message.channel.type === 'GUILD_TEXT') {
       childWhereOptions.groupId = groupTask.id;
@@ -192,7 +177,7 @@ export const discordStats = async (
       });
     }
 
-    user = await db.user.findOne({
+    const userWithIncludes = await db.user.findOne({
       where: parentWhereOptions,
       include: [
       // Spend
@@ -484,52 +469,52 @@ export const discordStats = async (
     let groupedTrivia;
     let groupedTriviaTips;
 
-    console.log(user.triviatips);
+    console.log(userWithIncludes.triviatips);
     if (message.channel.type === 'DM') {
     // spend
-      groupedTips = user.tips ? groupGlobal(user.tips, 'spend', 'tips') : {};
-      groupedReactdrops = user.reactdrops ? groupGlobal(user.reactdrops, 'spend', 'reactdrops') : {};
-      groupedFloods = user.floods ? groupGlobal(user.floods, 'spend', 'floods') : {};
-      groupedSoaks = user.soaks ? groupGlobal(user.soaks, 'spend', 'soaks') : {};
-      groupedHurricanes = user.hurricanes ? groupGlobal(user.hurricanes, 'spend', 'hurricanes') : {};
-      groupedThunderStorms = user.thunderstorms ? groupGlobal(user.thunderstorms, 'spend', 'thunderstorms') : {};
-      groupedThunders = user.thunders ? groupGlobal(user.thunders, 'spend', 'thunders') : {};
-      groupedSleets = user.sleets ? groupGlobal(user.sleets, 'spend', 'sleets') : {};
-      groupedTrivia = user.trivias ? groupGlobal(user.trivias, 'spend', 'trivias') : {};
+      groupedTips = userWithIncludes.tips ? groupGlobal(userWithIncludes.tips, 'spend', 'tips') : {};
+      groupedReactdrops = userWithIncludes.reactdrops ? groupGlobal(userWithIncludes.reactdrops, 'spend', 'reactdrops') : {};
+      groupedFloods = userWithIncludes.floods ? groupGlobal(userWithIncludes.floods, 'spend', 'floods') : {};
+      groupedSoaks = userWithIncludes.soaks ? groupGlobal(userWithIncludes.soaks, 'spend', 'soaks') : {};
+      groupedHurricanes = userWithIncludes.hurricanes ? groupGlobal(userWithIncludes.hurricanes, 'spend', 'hurricanes') : {};
+      groupedThunderStorms = userWithIncludes.thunderstorms ? groupGlobal(userWithIncludes.thunderstorms, 'spend', 'thunderstorms') : {};
+      groupedThunders = userWithIncludes.thunders ? groupGlobal(userWithIncludes.thunders, 'spend', 'thunders') : {};
+      groupedSleets = userWithIncludes.sleets ? groupGlobal(userWithIncludes.sleets, 'spend', 'sleets') : {};
+      groupedTrivia = userWithIncludes.trivias ? groupGlobal(userWithIncludes.trivias, 'spend', 'trivias') : {};
 
       // earned
-      groupedTipTips = user.tiptips ? groupGlobal(user.tiptips, 'earned', 'tips') : {};
-      groupedReactdropTips = user.reactdroptips ? groupGlobal(user.reactdroptips, 'earned', 'reactdrops') : {};
-      groupedFloodTips = user.floodtips ? groupGlobal(user.floodtips, 'earned', 'floods') : {};
-      groupedSoakTips = user.soaktips ? groupGlobal(user.soaktips, 'earned', 'soaks') : {};
-      groupedHurricaneTips = user.hurricanetips ? groupGlobal(user.hurricanetips, 'earned', 'hurricanes') : {};
-      groupedThunderStormTips = user.thunderstormtips ? groupGlobal(user.thunderstormtips, 'earned', 'thunderstorms') : {};
-      groupedThunderTips = user.thundertips ? groupGlobal(user.thundertips, 'earned', 'thunders') : {};
-      groupedSleetTips = user.sleettips ? groupGlobal(user.sleettips, 'earned', 'sleets') : {};
-      groupedTriviaTips = user.triviatips ? groupGlobal(user.triviatips, 'earned', 'trivias') : {};
+      groupedTipTips = userWithIncludes.tiptips ? groupGlobal(userWithIncludes.tiptips, 'earned', 'tips') : {};
+      groupedReactdropTips = userWithIncludes.reactdroptips ? groupGlobal(userWithIncludes.reactdroptips, 'earned', 'reactdrops') : {};
+      groupedFloodTips = userWithIncludes.floodtips ? groupGlobal(userWithIncludes.floodtips, 'earned', 'floods') : {};
+      groupedSoakTips = userWithIncludes.soaktips ? groupGlobal(userWithIncludes.soaktips, 'earned', 'soaks') : {};
+      groupedHurricaneTips = userWithIncludes.hurricanetips ? groupGlobal(userWithIncludes.hurricanetips, 'earned', 'hurricanes') : {};
+      groupedThunderStormTips = userWithIncludes.thunderstormtips ? groupGlobal(userWithIncludes.thunderstormtips, 'earned', 'thunderstorms') : {};
+      groupedThunderTips = userWithIncludes.thundertips ? groupGlobal(userWithIncludes.thundertips, 'earned', 'thunders') : {};
+      groupedSleetTips = userWithIncludes.sleettips ? groupGlobal(userWithIncludes.sleettips, 'earned', 'sleets') : {};
+      groupedTriviaTips = userWithIncludes.triviatips ? groupGlobal(userWithIncludes.triviatips, 'earned', 'trivias') : {};
     }
     if (message.channel.type === 'GUILD_TEXT') {
     // spend
-      groupedTips = user.tips ? group(user.tips, 'spend', 'tips') : {};
-      groupedReactdrops = user.reactdrops ? group(user.reactdrops, 'spend', 'reactdrops') : {};
-      groupedFloods = user.floods ? group(user.floods, 'spend', 'floods') : {};
-      groupedSoaks = user.soaks ? group(user.soaks, 'spend', 'soaks') : {};
-      groupedHurricanes = user.hurricanes ? group(user.hurricanes, 'spend', 'hurricanes') : {};
-      groupedThunderStorms = user.thunderstorms ? group(user.thunderstorms, 'spend', 'thunderstorms') : {};
-      groupedThunders = user.thunders ? group(user.thunders, 'spend', 'thunders') : {};
-      groupedSleets = user.sleets ? group(user.sleets, 'spend', 'sleets') : {};
-      groupedTrivia = user.trivias ? group(user.trivias, 'spend', 'trivias') : {};
+      groupedTips = userWithIncludes.tips ? group(userWithIncludes.tips, 'spend', 'tips') : {};
+      groupedReactdrops = userWithIncludes.reactdrops ? group(userWithIncludes.reactdrops, 'spend', 'reactdrops') : {};
+      groupedFloods = userWithIncludes.floods ? group(userWithIncludes.floods, 'spend', 'floods') : {};
+      groupedSoaks = userWithIncludes.soaks ? group(userWithIncludes.soaks, 'spend', 'soaks') : {};
+      groupedHurricanes = userWithIncludes.hurricanes ? group(userWithIncludes.hurricanes, 'spend', 'hurricanes') : {};
+      groupedThunderStorms = userWithIncludes.thunderstorms ? group(userWithIncludes.thunderstorms, 'spend', 'thunderstorms') : {};
+      groupedThunders = userWithIncludes.thunders ? group(userWithIncludes.thunders, 'spend', 'thunders') : {};
+      groupedSleets = userWithIncludes.sleets ? group(userWithIncludes.sleets, 'spend', 'sleets') : {};
+      groupedTrivia = userWithIncludes.trivias ? group(userWithIncludes.trivias, 'spend', 'trivias') : {};
 
       // earned
-      groupedTipTips = user.tiptips ? group(user.tiptips, 'earned', 'tips') : {};
-      groupedReactdropTips = user.reactdroptips ? group(user.reactdroptips, 'earned', 'reactdrops') : {};
-      groupedFloodTips = user.floodtips ? group(user.floodtips, 'earned', 'floods') : {};
-      groupedSoakTips = user.soaktips ? group(user.soaktips, 'earned', 'soaks') : {};
-      groupedHurricaneTips = user.hurricanetips ? group(user.hurricanetips, 'earned', 'hurricanes') : {};
-      groupedThunderStormTips = user.thunderstormtips ? group(user.thunderstormtips, 'earned', 'thunderstorms') : {};
-      groupedThunderTips = user.thundertips ? group(user.thundertips, 'earned', 'thunders') : {};
-      groupedSleetTips = user.sleettips ? group(user.sleettips, 'earned', 'sleets') : {};
-      groupedTriviaTips = user.triviatips ? group(user.triviatips, 'earned', 'trivias') : {};
+      groupedTipTips = userWithIncludes.tiptips ? group(userWithIncludes.tiptips, 'earned', 'tips') : {};
+      groupedReactdropTips = userWithIncludes.reactdroptips ? group(userWithIncludes.reactdroptips, 'earned', 'reactdrops') : {};
+      groupedFloodTips = userWithIncludes.floodtips ? group(userWithIncludes.floodtips, 'earned', 'floods') : {};
+      groupedSoakTips = userWithIncludes.soaktips ? group(userWithIncludes.soaktips, 'earned', 'soaks') : {};
+      groupedHurricaneTips = userWithIncludes.hurricanetips ? group(userWithIncludes.hurricanetips, 'earned', 'hurricanes') : {};
+      groupedThunderStormTips = userWithIncludes.thunderstormtips ? group(userWithIncludes.thunderstormtips, 'earned', 'thunderstorms') : {};
+      groupedThunderTips = userWithIncludes.thundertips ? group(userWithIncludes.thundertips, 'earned', 'thunders') : {};
+      groupedSleetTips = userWithIncludes.sleettips ? group(userWithIncludes.sleettips, 'earned', 'sleets') : {};
+      groupedTriviaTips = userWithIncludes.triviatips ? group(userWithIncludes.triviatips, 'earned', 'trivias') : {};
     }
 
     // merge results into a single object
@@ -648,10 +633,10 @@ export const discordStats = async (
     + (mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.reactdrops ? mergedObject[`${serverObj}`].earned.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0);
 
       const serverString = `_**${serverObj}**_
-    
+
 ${mergedObject[`${serverObj}`].spend ? '_Spend_\n' : ''}
 ${spendTips ? `Tips: ${spendTips}\n` : ''}${spendRains ? `Rains: ${spendRains}\n` : ''}${spendFloods ? `Floods: ${spendFloods}\n` : ''}${spendSoaks ? `Soaks: ${spendSoaks}\n` : ''}${spendHurricanes ? `Hurricanes: ${spendHurricanes}\n` : ''}${spendThunders ? `Thunders: ${spendThunders}\n` : ''}${spendThunderstorms ? `Thunderstorms: ${spendThunderstorms}\n` : ''}${spendReactDrops ? `ReactDrops: ${spendReactDrops}\n` : ''}${spendTrivias ? `Trivia: ${spendTrivias}\n` : ''}${spendTotal ? `Total Spend: ${spendTotal} ${settings.coin.ticker}\n` : ''}
-  
+
 ${mergedObject[`${serverObj}`].earned ? '_Earned_\n' : ''}
 ${earnedTips ? `Tips: ${earnedTips}\n` : ''}${earnedRains ? `Rains: ${earnedRains}\n` : ''}${earnedFloods ? `Floods: ${earnedFloods}\n` : ''}${earnedSoaks ? `Soaks: ${earnedSoaks}\n` : ''}${earnedHurricanes ? `Hurricanes: ${earnedHurricanes}\n` : ''}${earnedThunders ? `Thunders: ${earnedThunders}\n` : ''}${earnedThunderstorms ? `Thunderstorms: ${earnedThunderstorms}\n` : ''}${earnedReactDrops ? `ReactDrops: ${earnedReactDrops}\n` : ''}${earnedTrivias ? `Trivia: ${earnedTrivias}\n` : ''}${earnedTotal ? `Total Earned: ${earnedTotal} ${settings.coin.ticker}\n` : ''}`;
       // eslint-disable-next-line no-await-in-loop

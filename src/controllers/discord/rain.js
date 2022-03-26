@@ -26,8 +26,6 @@ export const discordRain = async (
   queue,
 ) => {
   const activity = [];
-  let userActivity;
-  let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -36,17 +34,7 @@ export const discordRain = async (
     //  return;
     // }
 
-    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-    const onlineMembers = await members.filter((member) => {
-      const memberStatus = member
-        && member.presence
-        && member.presence.status;
-      return (
-        memberStatus === "online"
-      );
-    });
-
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(
@@ -58,6 +46,16 @@ export const discordRain = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
+
+    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
+    const onlineMembers = await members.filter((member) => {
+      const memberStatus = member
+        && member.presence
+        && member.presence.status;
+      return (
+        memberStatus === "online"
+      );
+    });
 
     const withoutBots = await mapMembers(
       message,

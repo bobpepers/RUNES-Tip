@@ -30,8 +30,6 @@ export const discordThunderStorm = async (
   queue,
 ) => {
   const activity = [];
-  let userActivity;
-  let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -40,21 +38,37 @@ export const discordThunderStorm = async (
     //  return;
     // }
     if (Number(filteredMessage[2]) > 50) {
-      await message.channel.send({ embeds: [thunderstormMaxUserAmountMessage(message)] });
+      await message.channel.send({
+        embeds: [
+          thunderstormMaxUserAmountMessage(
+            message,
+          ),
+        ],
+      });
       return;
     }
     if (Number(filteredMessage[2]) % 1 !== 0) {
-      await message.channel.send({ embeds: [thunderstormInvalidUserAmount(message)] });
+      await message.channel.send({
+        embeds: [
+          thunderstormInvalidUserAmount(
+            message,
+          ),
+        ],
+      });
       return;
     }
     if (Number(filteredMessage[2]) <= 0) {
-      await message.channel.send({ embeds: [thunderstormUserZeroAmountMessage(message)] });
+      await message.channel.send({
+        embeds: [
+          thunderstormUserZeroAmountMessage(
+            message,
+          ),
+        ],
+      });
       return;
     }
-    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-    const onlineMembers = members.filter((member) => member && member.presence && member.presence.status && member.presence.status === "online");
 
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(
@@ -66,6 +80,9 @@ export const discordThunderStorm = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
+
+    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
+    const onlineMembers = members.filter((member) => member && member.presence && member.presence.status && member.presence.status === "online");
 
     const preWithoutBots = await mapMembers(
       message,

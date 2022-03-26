@@ -26,8 +26,6 @@ export const discordSleet = async (
   queue,
 ) => {
   const activity = [];
-  let userActivity;
-  let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -38,7 +36,7 @@ export const discordSleet = async (
     //  return;
     // }
 
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(

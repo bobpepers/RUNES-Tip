@@ -201,7 +201,8 @@ export const claimTooFastFaucetMessage = async (
   const seconds = Math.floor((distance % (1000 * 60)) / 1000);
   const result = `<u><b>Faucet</b></u>
   
-<b><a href="tg://user?id=${userId}">${userToMention}</a></b>, you have to wait ${hours === 1 ? `${hours} hour` : ''} ${hours > 1 ? `${hours} hours,` : ''} ${minutes === 1 ? `${minutes} minute` : ''} ${minutes > 1 ? `${minutes} minutes and` : ''} ${seconds === 1 ? `${seconds} second` : ''} ${seconds > 1 ? `${seconds} seconds` : ''} before claiming the faucet again (the faucet can be claimed every 4 hours).
+<b><a href="tg://user?id=${userId}">${userToMention}</a></b>, you have to wait ${hours === 1 ? `${hours} hour, ` : ''}${hours > 1 ? `${hours} hours, ` : ''}${minutes === 1 ? `${minutes} minute and ` : ''}${minutes > 1 ? `${minutes} minutes and ` : ''}${seconds === 1 ? `${seconds} second ` : ''} ${seconds > 1 ? `${seconds} seconds ` : ''}before claiming the faucet again. 
+(the faucet can be claimed every 4 hours)
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
@@ -314,62 +315,59 @@ export const helpMessage = (
   withdraw,
 ) => {
   const result = `<b>Tipbot Help</b>
-      
-${settings.bot.command.telegram}
-<code>Display this message</code>
-    
-      
-${settings.bot.command.telegram} help
+ 
+<code>${settings.bot.command.telegram}</code>
+Display this message  
+
+<code>${settings.bot.command.telegram} help</code>
 /help
-<code>Display this message</code>
-    
-      
-${settings.bot.command.telegram} price
+Display this message    
+ 
+<code>${settings.bot.command.telegram} price</code>
 /price
-<code>Display current ${settings.coin.ticker} price</code>
-    
-      
-${settings.bot.command.telegram} info
-/info<code>Displays coin info</code>
-    
-    
-${settings.bot.command.telegram} balance
+Display current ${settings.coin.ticker} price
+
+<code>${settings.bot.command.telegram} info</code>
+/info
+Displays coin info
+
+<code>${settings.bot.command.telegram} balance</code>
 /balance
-<code>Display wallet balance</code>
+Display wallet balance
 
-${settings.bot.command.telegram} deposit
+<code>${settings.bot.command.telegram} deposit</code>
 /deposit
-<code>Displays your deposit address</code>
+Displays your deposit address
 
-${settings.bot.command.telegram} faucet
+<code>${settings.bot.command.telegram} faucet</code>
 /faucet
-<code>Claim faucet</code>    
-      
-${settings.bot.command.telegram} tip &lt;@user&gt; &lt;amount&gt;
-<code>Tips the @ mentioned user with the desired amount, e.g.</code>
-example: ${settings.bot.command.telegram} tip @Bagosan 1.00   
+Claim faucet   
 
-${settings.bot.command.discord} &lt;@user&gt; &lt;@user&gt; &lt;@user&gt; &lt;amount|all&gt; [split|each]
-<code>Tips the @ mentioned users with the desired amount</code>
-example: ${settings.bot.command.discord} @test123456 @test123457 1.00 each
-    
-${settings.bot.command.discord} rain &lt;amount|all&gt;
+<code>${settings.bot.command.telegram} tip &lt;@user&gt; &lt;amount&gt;</code>
+Tips the @ mentioned user with the desired amount, e.g.
+example: <code>${settings.bot.command.telegram} tip @Bagosan 1.00</code>   
+
+<code>${settings.bot.command.discord} &lt;@user&gt; &lt;@user&gt; &lt;@user&gt; &lt;amount|all&gt; [split|each]</code>
+Tips the @ mentioned users with the desired amount
+example: <code>${settings.bot.command.discord} @test123456 @test123457 1.00 each</code>
+
+<code>${settings.bot.command.discord} rain &lt;amount|all&gt;</code>
 Rains the desired amount onto all recently online users
-example: ${settings.bot.command.discord} rain 10
+example: <code>${settings.bot.command.discord} rain 10</code>
 
-${settings.bot.command.telegram} flood &lt;amount|all&gt;
-<code>Floods the desired amount onto all users (including offline users)</code>
-example: ${settings.bot.command.telegram} flood 5.00
+<code>${settings.bot.command.telegram} flood &lt;amount|all&gt;</code>
+Floods the desired amount onto all users (including offline users)
+example: <code>${settings.bot.command.telegram} flood 5.00</code>
 
-${settings.bot.command.telegram} sleet &lt;amount&gt;
-<code>Sleets the desired amount onto all active users (default time is 15min), e.g.</code>
-${settings.bot.command.telegram} sleet 1.00
-      
-${settings.bot.command.telegram} withdraw &lt;address&gt; &lt;amount&gt;
-<code>Withdraws the entered amount to a ${settings.coin.ticker} address of your choice, e.g.</code>
-${settings.bot.command.telegram} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20
-<code>Note: Minimal amount to withdraw: ${withdraw.min / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${withdraw.fee / 1e2}% ${settings.coin.ticker} will be automatically deducted from the amount. half of the fee is donated to common faucet pot.</code>
-      
+<code>${settings.bot.command.telegram} sleet &lt;amount&gt;</code>
+Sleets the desired amount onto all active users (default time is 15min), e.g.
+<code>${settings.bot.command.telegram} sleet 1.00</code>
+
+<code>${settings.bot.command.telegram} withdraw &lt;address&gt; &lt;amount&gt;</code>
+Withdraws the entered amount to a ${settings.coin.ticker} address of your choice, e.g.
+<code>${settings.bot.command.telegram} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20</code>
+Note: Minimal amount to withdraw: ${withdraw.min / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${withdraw.fee / 1e2}% ${settings.coin.ticker} will be automatically deducted from the amount. portion of the fee is donated to common faucet pot.
+
 ${settings.coin.name === 'Runebase'
     && `${settings.bot.command.telegram} referral
 /referral

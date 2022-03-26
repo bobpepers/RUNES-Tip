@@ -49,7 +49,7 @@ export const tipRunesToDiscordUser = async (
     ] = await userWalletExist(
       message,
       t,
-      filteredMessage[1].toLowerCase(),
+      'tip',
     );
     if (userActivity) {
       activity.unshift(userActivity);
@@ -68,7 +68,6 @@ export const tipRunesToDiscordUser = async (
         discordId = filteredMessage[parseInt(AmountPosition, 10)].slice(2).slice(0, -1);
       }
 
-      console.log(discordId);
       // eslint-disable-next-line no-await-in-loop
       const userExist = await db.user.findOne({
         where: {

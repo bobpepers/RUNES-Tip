@@ -3,6 +3,7 @@ import db from '../models';
 export const initDatabaseRecords = async (
   discordClient,
   telegramClient,
+  matrixClient,
 ) => {
   // Create Bot user for tagging
   const discordBotUser = await db.user.findOne({

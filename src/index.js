@@ -18,6 +18,12 @@ import passport from 'passport';
 import olm from '@matrix-org/olm';
 import sdk from 'matrix-js-sdk';
 import { LocalStorage } from "node-localstorage";
+import connectRedis from 'connect-redis';
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
+import redis from 'redis';
+import socketIo from 'socket.io';
+import { LocalStorageCryptoStore } from 'matrix-js-sdk/lib/crypto/store/localStorage-crypto-store';
 import { router } from "./router";
 import { dashboardRouter } from "./dashboard/router";
 import { updatePrice } from "./helpers/updatePrice";
@@ -35,13 +41,11 @@ import {
   recoverDiscordReactdrops,
   recoverDiscordTrivia,
 } from './helpers/recover';
+import logger from "./helpers/logger";
 
 global.Olm = olm;
 
-// const { LocalStorage } = require('node-localstorage');
-
 const localStorage = new LocalStorage('./scratch');
-const { LocalStorageCryptoStore } = require('matrix-js-sdk/lib/crypto/store/localStorage-crypto-store');
 
 dotenv.config();
 const settings = getCoinSettings();
@@ -50,11 +54,6 @@ const queue = new PQueue({
   concurrency: 1,
   timeout: 1000000000,
 });
-
-const socketIo = require("socket.io");
-const redis = require('redis');
-
-const cookieParser = require('cookie-parser');
 
 const port = process.env.PORT || 8080;
 
@@ -65,14 +64,11 @@ const io = socketIo(server, {
   path: '/socket.io',
   cookie: false,
 });
-const session = require('express-session');
 
 app.use(compression());
 app.use(morgan('combined'));
 app.use(cors());
 app.set('trust proxy', 1);
-
-const connectRedis = require('connect-redis');
 
 const RedisStore = connectRedis(session);
 const CONF = { db: 3 };
@@ -160,11 +156,10 @@ let matrixClient = sdk.createClient({
 });
 
 (async function () {
-  let matrixLoginCredentials;
   await telegramClient.launch();
   await discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
   try {
-    matrixLoginCredentials = await matrixClient.login("m.login.password", {
+    const matrixLoginCredentials = await matrixClient.login("m.login.password", {
       user: process.env.MATRIX_USER,
       password: process.env.MATRIX_PASS,
     });
@@ -180,9 +175,11 @@ let matrixClient = sdk.createClient({
   } catch (e) {
     console.log(e);
   }
+
   await initDatabaseRecords(
     discordClient,
     telegramClient,
+    matrixClient,
   );
 
   await recoverDiscordReactdrops(
@@ -271,6 +268,7 @@ let matrixClient = sdk.createClient({
   );
 
   server.listen(port);
+  console.log('server listening on:', port);
 }());
 
 updatePrice();
@@ -293,24 +291,12 @@ const scheduleWithdrawal = schedule.scheduleJob('*/8 * * * *', async () => { // 
   }
 });
 
-// Handle olm library process unhandeled rejections
-
-process.on('unhandledRejection', (reason, promise) => {
-  console.log('Unhandled Rejection capture');
-  console.log('Unhandled Rejection at:', reason.stack || reason);
-  console.log('promise');
-  console.log(promise);
+process.on('unhandledRejection', async (err, p) => {
+  logger.error(`Error Application Unhandled Rejection: ${err}`);
+  console.log(err, '\nUnhandled Rejection at Promise\n', p, '\n--------------------------------');
 });
 
-process.on('uncaughtException', (e, origin) => {
-  console.log('Unhandled Exception capture');
-  console.log('uncaughtException: ', e.stack);
-  console.log('origin');
-  console.log(origin);
+process.on('uncaughtException', async (err, p) => {
+  logger.error(`Error Application Uncaught Exception: ${err}`);
+  console.log(err, '\nUnhandled Exception at Promise\n', p, '\n--------------------------------');
 });
-
-process.on('exit', (code) => {
-  console.log(`About to exit with code: ${code}`);
-});
-
-console.log('server listening on:', port);

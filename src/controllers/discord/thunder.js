@@ -27,8 +27,6 @@ export const discordThunder = async (
   queue,
 ) => {
   const activity = [];
-  let userActivity;
-  let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -36,12 +34,7 @@ export const discordThunder = async (
     //  await message.channel.send({ embeds: [NotInDirectMessage(message, 'Thunder')] });
     //  return;
     // }
-    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-    const onlineMembers = members.filter((member) => member.presence
-      && member.presence.status
-      && member.presence.status === "online");
-
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(
@@ -53,6 +46,11 @@ export const discordThunder = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
+
+    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
+    const onlineMembers = members.filter((member) => member.presence
+      && member.presence.status
+      && member.presence.status === "online");
 
     const preWithoutBots = await mapMembers(
       message,

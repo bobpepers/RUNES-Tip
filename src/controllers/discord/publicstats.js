@@ -8,6 +8,7 @@ import {
 } from '../../messages/discord';
 import db from '../../models';
 import logger from "../../helpers/logger";
+import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 
 export const discordPublicStats = async (
   message,
@@ -17,25 +18,18 @@ export const discordPublicStats = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const user = await db.user.findOne({
-      where: {
-        user_id: `discord-${message.author.id}`,
-      },
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-    if (!user) {
-      const activityA = await db.activity.create({
-        type: 'publicstats_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      activity.unshift(activityA);
-      await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Ignore me')] });
-      return;
+    const [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      message,
+      t,
+      'publicstats',
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
     }
+    if (!user) return;
 
     if (user.publicStats) {
       await user.update({
@@ -44,7 +38,13 @@ export const discordPublicStats = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      await message.channel.send({ embeds: [disablePublicStatsMessage(message)] });
+      await message.channel.send({
+        embeds: [
+          disablePublicStatsMessage(
+            message,
+          ),
+        ],
+      });
     } else if (!user.publicStats) {
       await user.update({
         publicStats: true,
@@ -52,7 +52,13 @@ export const discordPublicStats = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      await message.channel.send({ embeds: [enablePublicStatsMeMessage(message)] });
+      await message.channel.send({
+        embeds: [
+          enablePublicStatsMeMessage(
+            message,
+          ),
+        ],
+      });
     }
 
     const preActivity = await db.activity.create({

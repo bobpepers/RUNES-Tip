@@ -48,19 +48,37 @@ export const discordSettings = async (
   const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1); // Upper case first letter
 
   if (!setting.enabled && setting.channelId) {
-    await message.channel.send({ embeds: [featureDisabledChannelMessage(capitalize(name))] }).catch((e) => {
+    await message.channel.send({
+      embeds: [
+        featureDisabledChannelMessage(
+          capitalize(name),
+        ),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
     return false;
   }
   if (!setting.enabled && setting.groupId) {
-    await message.channel.send({ embeds: [featureDisabledServerMessage(capitalize(name))] }).catch((e) => {
+    await message.channel.send({
+      embeds: [
+        featureDisabledServerMessage(
+          capitalize(name),
+        ),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
     return false;
   }
   if (!setting.enabled) {
-    await message.channel.send({ embeds: [featureDisabledGlobalMessage(capitalize(name))] }).catch((e) => {
+    await message.channel.send({
+      embeds: [
+        featureDisabledGlobalMessage(
+          capitalize(name),
+        ),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
     return false;

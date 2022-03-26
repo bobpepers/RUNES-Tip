@@ -11,10 +11,8 @@ import {
   MessageButton,
 } from "discord.js";
 import { AlgebraicCaptcha } from "algebraic-captcha";
-import getCoinSettings from '../../config/settings';
 import {
   reactDropMessage,
-  userNotFoundMessage,
   minimumTimeReactDropMessage,
   invalidTimeMessage,
   ReactdropCaptchaMessage,
@@ -30,8 +28,7 @@ import emojiCompact from "../../config/emoji";
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/client/discord/validateAmount";
 import { waterFaucet } from "../../helpers/waterFaucet";
-
-const settings = getCoinSettings();
+import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 
 function shuffle(array) {
   let currentIndex = array.length;
@@ -573,30 +570,18 @@ export const discordReactDrop = async (
     //  return;
     // }
 
-    user = await db.user.findOne({
-      where: {
-        user_id: `discord-${message.author.id}`,
-      },
-      include: [
-        {
-          model: db.wallet,
-          as: 'wallet',
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-    if (!user) {
-      const failActivity = await db.activity.create({
-        type: 'reactdrop_f',
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      activity.unshift(failActivity);
-      await message.channel.send({ embeds: [userNotFoundMessage(message, 'ReactDrop')] });
-      return;
+    const [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      message,
+      t,
+      filteredMessage[1].toLowerCase(),
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
     }
+    if (!user) return;
 
     const [
       activityValiateAmount,

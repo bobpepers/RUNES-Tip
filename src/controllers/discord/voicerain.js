@@ -28,8 +28,6 @@ export const discordVoiceRain = async (
   queue,
 ) => {
   const activity = [];
-  let userActivity;
-  let user;
 
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -46,6 +44,19 @@ export const discordVoiceRain = async (
       await message.channel.send({ embeds: [notAVoiceChannel(message)] });
       return;
     }
+
+    const [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      message,
+      t,
+      filteredMessage[1].toLowerCase(),
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
+    if (!user) return;
 
     const voiceChannelId = filteredMessage[3].substr(2).slice(0, -1);
 
@@ -68,19 +79,6 @@ export const discordVoiceRain = async (
     }
 
     const onlineMembers = await discordClient.channels.cache.get(voiceChannelId).members;
-
-    [
-      user,
-      userActivity,
-    ] = await userWalletExist(
-      message,
-      t,
-      filteredMessage[1].toLowerCase(),
-    );
-    if (userActivity) {
-      activity.unshift(userActivity);
-    }
-    if (!user) return;
 
     const withoutBots = await mapMembers(
       message,
