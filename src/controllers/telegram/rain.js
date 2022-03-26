@@ -31,12 +31,10 @@ export const telegramRain = async (
   queue,
 ) => {
   const activity = [];
-  let userActivity;
-  let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(
@@ -280,9 +278,11 @@ export const telegramRain = async (
     console.log(err);
     logger.error(`flood error: ${err}`);
     try {
-      await ctx.replyWithHTML(errorMessage(
-        'Flood',
-      ));
+      await ctx.replyWithHTML(
+        await errorMessage(
+          'Flood',
+        ),
+      );
     } catch (err) {
       console.log(err);
     }

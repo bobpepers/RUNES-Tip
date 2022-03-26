@@ -144,6 +144,13 @@ export const updateDiscordLastSeen = async (
     guildId = message.guildId;
   }
 
+  console.log(message);
+
+  console.log(guildId);
+  console.log('guildId');
+  console.log(userInfo);
+  console.log('userInfo');
+
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -179,6 +186,7 @@ export const updateDiscordLastSeen = async (
       if (group) {
         if (user) {
           if (active) {
+            console.log('active record found');
             const updatedActive = await active.update(
               {
                 lastSeen: new Date(Date.now()),
@@ -190,6 +198,7 @@ export const updateDiscordLastSeen = async (
             );
           }
           if (!active) {
+            console.log('no active record found');
             const updatedActive = await db.active.create(
               {
                 groupId: group.id,

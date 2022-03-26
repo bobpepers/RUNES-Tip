@@ -6,8 +6,6 @@ import {
   minimumMessage,
 } from '../../../messages/telegram';
 
-const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
-
 export const validateAmount = async (
   ctx,
   t,
@@ -20,18 +18,34 @@ export const validateAmount = async (
 ) => {
   let activity;
   let amount = 0;
-  const capType = capitalize(type);
 
   if (!preAmount) {
-    activity = await db.activity.create({
+    const noPreAmountActivity = await db.activity.create({
       type: `${type}_f`,
       spenderId: user.id,
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+
+    activity = await db.activity.findOne({
+      where: {
+        id: noPreAmountActivity.id,
+      },
+      include: [
+        {
+          model: db.user,
+          as: 'spender',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
     await ctx.replyWithHTML(
-      await invalidAmountMessage(),
+      await invalidAmountMessage(
+        type,
+      ),
     );
     return [
       activity,
@@ -46,15 +60,34 @@ export const validateAmount = async (
   }
 
   if (amount < Number(setting.min)) {
-    activity = await db.activity.create({
+    const minAmountActivity = await db.activity.create({
       type: `${type}_f`,
       spenderId: user.id,
+      spender_balance: user.wallet.available,
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+
+    activity = await db.activity.findOne({
+      where: {
+        id: minAmountActivity.id,
+      },
+      include: [
+        {
+          model: db.user,
+          as: 'spender',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
     await ctx.replyWithHTML(
-      await minimumMessage(setting, capitalize(type)),
+      await minimumMessage(
+        setting,
+        type,
+      ),
     );
     return [
       activity,
@@ -67,15 +100,33 @@ export const validateAmount = async (
   }
 
   if (amount % 1 !== 0) {
-    activity = await db.activity.create({
+    const invalidAmountActivity = await db.activity.create({
       type: `${type}_f`,
       spenderId: user.id,
+      spender_balance: user.wallet.available,
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+
+    activity = await db.activity.findOne({
+      where: {
+        id: invalidAmountActivity.id,
+      },
+      include: [
+        {
+          model: db.user,
+          as: 'spender',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
     await ctx.replyWithHTML(
-      await invalidAmountMessage(),
+      await invalidAmountMessage(
+        type,
+      ),
     );
     return [
       activity,
@@ -92,7 +143,9 @@ export const validateAmount = async (
       transaction: t,
     });
     await ctx.replyWithHTML(
-      await invalidAmountMessage(),
+      await invalidAmountMessage(
+        type,
+      ),
     );
     return [
       activity,
@@ -101,23 +154,40 @@ export const validateAmount = async (
   }
 
   if (user.wallet.available < amount) {
-    activity = await db.activity.create({
+    const insufActivity = await db.activity.create({
       type: `${type}_i`,
       spenderId: user.id,
+      spender_balance: user.wallet.available,
       amount,
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+
+    activity = await db.activity.findOne({
+      where: {
+        id: insufActivity.id,
+      },
+      include: [
+        {
+          model: db.user,
+          as: 'spender',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
     await ctx.replyWithHTML(
-      await insufficientBalanceMessage(capType),
+      await insufficientBalanceMessage(
+        type,
+      ),
     );
     return [
       activity,
       amount,
     ];
   }
-  console.log(`amount: ${amount}`);
   return [
     activity,
     amount,

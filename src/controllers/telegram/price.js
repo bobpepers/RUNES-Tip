@@ -1,47 +1,93 @@
+import { Transaction } from "sequelize";
 import db from '../../models';
-
+import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
 import getCoinSettings from '../../config/settings';
+import logger from "../../helpers/logger";
+import {
+  priceMessage,
+  errorMessage,
+} from '../../messages/telegram';
 
 const settings = getCoinSettings();
 
-const fetchPriceInfo = async (
+export const telegramPrice = async (
   ctx,
   io,
 ) => {
-  try {
-    const priceRecord = await db.priceInfo.findAll({});
-    let replyString = `<b><u>${settings.coin.ticker} PRICE</u></b>\n`;
-    replyString += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('\n');
-    ctx.replyWithHTML(replyString);
-  } catch (error) {
-    console.log(error);
-  }
-  let activity;
-  const user = await db.user.findOne({
-    where: {
-      user_id: `telegram-${ctx.update.message.from.id}`,
-    },
-  });
+  const activity = [];
+  await db.sequelize.transaction({
+    isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+  }, async (t) => {
+    const [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      ctx,
+      t,
+      'price',
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
+    }
+    if (!user) return;
 
-  if (!user) {
-    return;
-  }
+    const priceRecord = await db.priceInfo.findAll({
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
 
-  activity = await db.activity.create({
-    type: 'price',
-    earnerId: user.id,
-  });
+    const createActivity = await db.activity.create({
+      type: 'price',
+      earnerId: user.id,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
 
-  activity = await db.activity.findOne({
-    where: {
-      id: activity.id,
-    },
-    include: [
-      {
-        model: db.user,
-        as: 'earner',
+    const fetchActivity = await db.activity.findOne({
+      where: {
+        id: createActivity.id,
       },
-    ],
+      include: [
+        {
+          model: db.user,
+          as: 'earner',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    activity.unshift(fetchActivity);
+
+    await ctx.replyWithHTML(
+      await priceMessage(
+        priceRecord,
+      ),
+      // replyString,
+    );
+    t.afterCommit(() => {
+      console.log('done');
+    });
+  }).catch(async (err) => {
+    try {
+      await db.error.create({
+        type: 'price',
+        error: `${err}`,
+      });
+    } catch (e) {
+      logger.error(`Error Telegram: ${e}`);
+    }
+    console.log(err);
+    logger.error(`price error: ${err}`);
+    try {
+      await ctx.replyWithHTML(
+        await errorMessage(
+          'Price',
+        ),
+      );
+    } catch (err) {
+      console.log(err);
+    }
   });
   if (activity.length > 0) {
     io.to('admin').emit('updateActivity', {
@@ -49,5 +95,3 @@ const fetchPriceInfo = async (
     });
   }
 };
-
-export default fetchPriceInfo;

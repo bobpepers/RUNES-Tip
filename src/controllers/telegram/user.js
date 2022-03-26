@@ -4,11 +4,14 @@ import { welcomeMessage } from '../../messages/telegram';
 
 import { getInstance } from "../../services/rclient";
 
-export const createUpdateUser = async (ctx) => {
+export const createUpdateUser = async (
+  ctx,
+) => {
   let userId;
   let username = '';
   let firstname = '';
   let lastname = '';
+  let isNewUser = false;
   if (
     ctx
       && ctx.update
@@ -50,6 +53,7 @@ export const createUpdateUser = async (ctx) => {
   ) {
     return;
   }
+
   if (!userId) {
     return;
   }
@@ -113,55 +117,65 @@ export const createUpdateUser = async (ctx) => {
           transaction: t,
           lock: t.LOCK.UPDATE,
         });
+        isNewUser = true;
       }
-      let address = await db.address.findOne(
-        {
-          where: {
-            walletId: wallet.id,
-          },
-          transaction: t,
-          lock: t.LOCK.UPDATE,
-        },
-      );
-      if (!address) {
-        const newAddress = await getInstance().getNewAddress();
-        const addressAlreadyExist = await db.address.findOne(
+      if (wallet) {
+        let address = await db.address.findOne(
           {
             where: {
-              address: newAddress,
+              walletId: wallet.id,
             },
             transaction: t,
             lock: t.LOCK.UPDATE,
           },
         );
-        if (!addressAlreadyExist) {
-          address = await db.address.create({
-            address: newAddress,
-            walletId: wallet.id,
-            type: 'deposit',
-            confirmed: true,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
+        if (!address) {
+          const newAddress = await getInstance().getNewAddress();
+          const addressAlreadyExist = await db.address.findOne(
+            {
+              where: {
+                address: newAddress,
+              },
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            },
+          );
+          if (!addressAlreadyExist) {
+            address = await db.address.create({
+              address: newAddress,
+              walletId: wallet.id,
+              type: 'deposit',
+              confirmed: true,
+            }, {
+              transaction: t,
+              lock: t.LOCK.UPDATE,
+            });
+          }
+        }
+      }
+    }
+
+    t.afterCommit(async () => {
+      if (isNewUser) {
+        try {
           await ctx.replyWithHTML(
             await welcomeMessage(
               user,
             ),
           );
+        } catch (e) {
+          console.log(e);
         }
       }
-    }
-
-    t.afterCommit(() => {
-      console.log('done');
     });
   }).catch((err) => {
     console.log(err);
   });
 };
 
-export const updateLastSeen = async (ctx) => {
+export const updateLastSeen = async (
+  ctx,
+) => {
   let userId;
   let chatId;
   if (
@@ -279,5 +293,6 @@ export const updateLastSeen = async (ctx) => {
   }).catch((err) => {
     console.log(err);
   });
+
   return updatedUser;
 };

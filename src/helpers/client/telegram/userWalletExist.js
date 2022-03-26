@@ -29,8 +29,7 @@ export const userWalletExist = async (
   ) {
     userId = ctx.update.callback_query.from.id;
   }
-  console.log('ctx userwalletexists');
-  console.log(ctx);
+
   const user = await db.user.findOne({
     where: {
       user_id: `telegram-${userId}`,
@@ -39,6 +38,7 @@ export const userWalletExist = async (
       {
         model: db.wallet,
         as: 'wallet',
+        required: true,
         include: [
           {
             model: db.address,
@@ -58,7 +58,13 @@ export const userWalletExist = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    await ctx.reply(userNotFoundMessage());
+
+    await ctx.replyWithHTML(
+      await userNotFoundMessage(
+        ctx,
+        functionName,
+      ),
+    );
   }
   return [
     user,

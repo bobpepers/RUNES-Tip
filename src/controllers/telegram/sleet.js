@@ -1,9 +1,6 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable import/prefer-default-export */
 import { Transaction, Op } from "sequelize";
-// import axios from 'axios';
-// import { Api } from 'telegram';
-import dotenv from 'dotenv';
 import db from '../../models';
 import {
   groupNotFoundMessage,
@@ -13,10 +10,8 @@ import {
   userListMessage,
   errorMessage,
 } from '../../messages/telegram';
-
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/client/telegram/validateAmount";
-import { mapMembers } from "../../helpers/client/telegram/mapMembers";
 import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
 import { waterFaucet } from "../../helpers/waterFaucet";
 import { getUserToMentionFromDatabaseRecord } from "../../helpers/client/telegram/userToMention";
@@ -33,12 +28,10 @@ export const telegramSleet = async (
   queue,
 ) => {
   const activity = [];
-  let userActivity;
-  let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(
@@ -84,7 +77,9 @@ export const telegramSleet = async (
         transaction: t,
       });
       activity.unshift(groupFailActivity);
-      await ctx.reply(groupNotFoundMessage());
+      await ctx.reply(
+        groupNotFoundMessage(),
+      );
       return;
     }
     let textTime;
@@ -110,8 +105,6 @@ export const telegramSleet = async (
         || cutLastTimeLetter !== 'm'
         || cutLastTimeLetter !== 's')
     ) {
-      console.log('not pass');
-      console.log(user.id);
       const activityA = await db.activity.create({
         type: 'sleet_i',
         spenderId: user.id,
@@ -126,7 +119,6 @@ export const telegramSleet = async (
           'Sleet',
         ),
       );
-      // await message.channel.send({ embeds: [invalidTimeMessage(message, 'Sleet')] });
       return;
     }
 
@@ -156,7 +148,6 @@ export const telegramSleet = async (
       dateObj = await new Date(dateObj);
       lastSeenOptions = { [Op.gte]: dateObj };
     }
-    //
 
     const usersToRain = await db.user.findAll({
       limit: 400,
@@ -174,7 +165,6 @@ export const telegramSleet = async (
         {
           model: db.active,
           as: 'active',
-          // required: false,
           where: {
             [Op.and]: [
               {
@@ -203,7 +193,11 @@ export const telegramSleet = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await ctx.replyWithHTML(notEnoughUsers('Sleet'));
+      await ctx.replyWithHTML(
+        notEnoughUsers(
+          'Sleet',
+        ),
+      );
       return;
     }
     if (usersToRain.length >= 2) {
@@ -387,9 +381,11 @@ export const telegramSleet = async (
     console.log(err);
     logger.error(`sleet error: ${err}`);
     try {
-      await ctx.replyWithHTML(errorMessage(
-        'Sleet',
-      ));
+      await ctx.replyWithHTML(
+        await errorMessage(
+          'Sleet',
+        ),
+      );
     } catch (err) {
       console.log(err);
     }

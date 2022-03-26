@@ -21,7 +21,22 @@ export const executeTipFunction = async (
 ) => {
   let operationName;
   let userBeingTipped;
-  const chatId = Math.abs(ctx.message.chat.id);
+  let chatId;
+  if (
+    ctx
+    && ctx.update
+    && ctx.update.message
+    && ctx.update.message.chat
+  ) {
+    chatId = ctx.update.message.chat.id;
+  } else if (
+    ctx
+    && ctx.message
+    && ctx.message.chat
+  ) {
+    chatId = ctx.message.chat.id;
+  }
+
   if (
     ctx
     && ctx.update
@@ -45,11 +60,13 @@ export const executeTipFunction = async (
   }
   if (amount && amount.toLowerCase() === 'all') {
     try {
-      await ctx.replyWithHTML(confirmAllAmoutMessage(
-        ctx,
-        operationName,
-        userBeingTipped,
-      ));
+      await ctx.replyWithHTML(
+        confirmAllAmoutMessage(
+          ctx,
+          operationName,
+          userBeingTipped,
+        ),
+      );
     } catch (e) {
       console.log(e);
     }
@@ -57,11 +74,27 @@ export const executeTipFunction = async (
     let isRunning = true;
     const listenerFunction = async (event) => {
       const tempBody = event.message.message;
-      if (ctx.update.message.from.id === Number(event.message.fromId.userId)) {
+      if (
+        (
+          event.message
+          && event.message.fromId
+          && ctx.update.message.from.id === Number(event.message.fromId.userId)
+        )
+        || (
+          chatId === ctx.update.message.from.id
+        )
+      ) {
         if (tempBody.toUpperCase() === 'YES'
             || tempBody.toUpperCase() === 'Y') {
           isRunning = false;
-          await telegramApiClient.removeEventHandler(listenerFunction, new NewMessage({ chats: [chatId] }));
+          await telegramApiClient.removeEventHandler(
+            listenerFunction,
+            new NewMessage({
+              chats: [
+                chatId,
+              ],
+            }),
+          );
           await queue.add(async () => {
             const task = await tipFunction(
               telegramClient,
@@ -78,30 +111,56 @@ export const executeTipFunction = async (
         } else if (tempBody.toUpperCase() === 'NO'
             || tempBody.toUpperCase() === 'N') {
           isRunning = false;
-          await telegramApiClient.removeEventHandler(listenerFunction, new NewMessage({ chats: [chatId] }));
+          await telegramApiClient.removeEventHandler(
+            listenerFunction,
+            new NewMessage({
+              chats: [
+                chatId,
+              ],
+            }),
+          );
           try {
-            await ctx.replyWithHTML(canceledAllAmoutMessage(
-              ctx,
-              operationName,
-              userBeingTipped,
-            ));
+            await ctx.replyWithHTML(
+              canceledAllAmoutMessage(
+                ctx,
+                operationName,
+                userBeingTipped,
+              ),
+            );
           } catch (e) {
             console.log(e);
           }
         }
       }
     };
-    await telegramApiClient.addEventHandler(listenerFunction, new NewMessage({ chats: [chatId] }));
+
+    await telegramApiClient.addEventHandler(
+      listenerFunction,
+      new NewMessage({
+        chats: [
+          chatId,
+        ],
+      }),
+    );
 
     const myTimeout = setTimeout(async () => {
       if (isRunning) {
-        await telegramApiClient.removeEventHandler(listenerFunction, new NewMessage({ chats: [chatId] }));
+        await telegramApiClient.removeEventHandler(
+          listenerFunction,
+          new NewMessage({
+            chats: [
+              chatId,
+            ],
+          }),
+        );
         try {
-          await ctx.replyWithHTML(timeOutAllAmoutMessage(
-            ctx,
-            operationName,
-            userBeingTipped,
-          ));
+          await ctx.replyWithHTML(
+            timeOutAllAmoutMessage(
+              ctx,
+              operationName,
+              userBeingTipped,
+            ),
+          );
         } catch (e) {
           console.log(e);
         }

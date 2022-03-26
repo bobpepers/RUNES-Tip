@@ -2,6 +2,7 @@
 // _i = insufficient balance
 // _s = Success
 // _f = fail
+// _t = time (for example: faucet claim too fast)
 //
 module.exports = (sequelize, DataTypes) => {
   const modelDefinition = {

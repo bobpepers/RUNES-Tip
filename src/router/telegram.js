@@ -1,15 +1,17 @@
 import { config } from "dotenv";
+import { Api, TelegramClient } from 'telegram';
+import { StoreSession } from 'telegram/sessions';
 import { fetchHelp } from '../controllers/telegram/help';
 import { fetchInfo } from '../controllers/telegram/info';
 import { telegramFaucetClaim } from '../controllers/telegram/faucet';
-import { fetchWalletBalance } from '../controllers/telegram/balance';
+import { telegramBalance } from '../controllers/telegram/balance';
 import { fetchWalletDepositAddress } from '../controllers/telegram/deposit';
 import { withdrawTelegramCreate } from '../controllers/telegram/withdraw';
 import { tipToTelegramUser } from '../controllers/telegram/tip';
 import { telegramRain } from '../controllers/telegram/rain';
 import { telegramFlood } from '../controllers/telegram/flood';
 import { telegramSleet } from '../controllers/telegram/sleet';
-import fetchPriceInfo from '../controllers/telegram/price';
+import { telegramPrice } from '../controllers/telegram/price';
 
 import { executeTipFunction } from '../helpers/client/telegram/executeTips';
 import { disallowDirectMessage } from '../helpers/client/telegram/disallowDirectMessage';
@@ -23,7 +25,7 @@ import {
 } from '../controllers/telegram/user';
 import {
   fetchReferralCount,
-  createReferral,
+  // createReferral,
   fetchReferralTopTen,
 } from '../controllers/telegram/referral';
 import {
@@ -36,8 +38,6 @@ import getCoinSettings from '../config/settings';
 const settings = getCoinSettings();
 
 config();
-const { Api, TelegramClient } = require('telegram');
-const { StoreSession } = require('telegram/sessions');
 
 const storeSession = new StoreSession("telegram_session");
 
@@ -99,12 +99,11 @@ export const telegramRouter = async (
     );
     await queue.add(async () => {
       const groupTask = await updateGroup(ctx);
-      const task = await fetchPriceInfo(ctx, io);
+      const task = await telegramPrice(ctx, io);
     });
   };
 
   const faucetCallBack = async (ctx) => {
-    console.log('called faucetCallback');
     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
     if (maintenance.maintenance || !maintenance.enabled) return;
     await queue.add(async () => {
@@ -139,7 +138,7 @@ export const telegramRouter = async (
     if (limited) return;
     await queue.add(async () => {
       const groupTask = await updateGroup(ctx);
-      const task = await fetchWalletBalance(
+      const task = await telegramBalance(
         ctx,
         io,
       );
@@ -249,17 +248,17 @@ export const telegramRouter = async (
       const groupTask = await updateGroup(ctx);
       const task = await createUpdateUser(ctx);
     });
-    if (settings.coin.setting === 'Runebase') {
-      if (ctx.update.message.chat.id === Number(runesGroup)) {
-        await queue.add(async () => {
-          const task = await createReferral(
-            ctx,
-            telegramClient,
-            runesGroup,
-          );
-        });
-      }
-    }
+    // if (settings.coin.setting === 'Runebase') {
+    //   if (ctx.update.message.chat.id === Number(runesGroup)) {
+    //     await queue.add(async () => {
+    //       const task = await createReferral(
+    //         ctx,
+    //         telegramClient,
+    //         runesGroup,
+    //       );
+    //     });
+    //   }
+    // }
   });
 
   telegramClient.on('text', async (ctx) => {
@@ -327,7 +326,7 @@ export const telegramRouter = async (
         if (limited) return;
 
         await queue.add(async () => {
-          const task = await fetchPriceInfo(ctx, io);
+          const task = await telegramPrice(ctx, io);
         });
         return;
       }
@@ -377,7 +376,7 @@ export const telegramRouter = async (
         if (limited) return;
 
         await queue.add(async () => {
-          const task = await fetchWalletBalance(
+          const task = await telegramBalance(
             ctx,
             io,
           );
@@ -574,9 +573,6 @@ export const telegramRouter = async (
         return;
       }
 
-      console.log(ctx);
-      console.log(ctx.update.message.entities);
-      console.log(filteredMessageTelegram);
       if (
         filteredMessageTelegram[1]
         && ctx.update

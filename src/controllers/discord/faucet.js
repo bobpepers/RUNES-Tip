@@ -21,19 +21,17 @@ export const discordFaucetClaim = async (
   message,
   io,
 ) => {
-  let user;
-  let userActivity;
   let activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(
       message,
       t,
-      'faucet',
+      'faucettip',
     );
     if (userActivity) {
       activity.unshift(userActivity);
@@ -184,7 +182,13 @@ export const discordFaucetClaim = async (
     }
     console.log(err);
     logger.error(`faucet error: ${err}`);
-    await message.channel.send({ embeds: [discordErrorMessage("Faucet")] }).catch((e) => {
+    await message.channel.send({
+      embeds: [
+        discordErrorMessage(
+          "Faucet",
+        ),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
   });
@@ -193,6 +197,4 @@ export const discordFaucetClaim = async (
       activity,
     });
   }
-
-  return true;
 };

@@ -29,17 +29,15 @@ export const tipToTelegramUser = async (
   queue,
 ) => {
   const activity = [];
-  let user;
   let AmountPosition = 1;
   let AmountPositionEnded = false;
   const usersToTip = [];
   let type = 'split';
-  let userActivity;
 
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(
@@ -348,9 +346,11 @@ export const tipToTelegramUser = async (
     console.log(err);
     logger.error(`tip error: ${err}`);
     try {
-      await ctx.replyWithHTML(errorMessage(
-        'Tip',
-      ));
+      await ctx.replyWithHTML(
+        await errorMessage(
+          'Tip',
+        ),
+      );
     } catch (err) {
       console.log(err);
     }

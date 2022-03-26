@@ -68,8 +68,6 @@ export const mapMembers = async (
       }
     }
     if (!userExist) {
-      // let user;
-      console.log(telegramUser);
       const user = await db.user.create({
         user_id: `telegram-${Number(telegramUser.id)}`,
         username: telegramUser.username,

@@ -59,7 +59,7 @@ const rateLimiterHurricane = new RateLimiterFlexible.default.RateLimiterMemory({
 });
 
 const rateLimiterIgnoreMe = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 5,
+  points: 6,
   duration: 120,
 });
 
@@ -84,7 +84,7 @@ const rateLimiterDeposit = new RateLimiterFlexible.default.RateLimiterMemory({
 });
 
 const rateLimiterStats = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 10,
+  points: 4,
   duration: 120,
 });
 const rateLimiterLeaderboard = new RateLimiterFlexible.default.RateLimiterMemory({

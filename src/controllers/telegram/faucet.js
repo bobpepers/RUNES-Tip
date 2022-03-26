@@ -17,19 +17,17 @@ export const telegramFaucetClaim = async (
   ctx,
   io,
 ) => {
-  let user;
-  let userActivity;
   const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(
       ctx,
       t,
-      'faucet',
+      'faucettip',
     );
     if (userActivity) {
       activity.unshift(userActivity);
@@ -180,9 +178,11 @@ export const telegramFaucetClaim = async (
     console.log(err);
     logger.error(`Faucet error: ${err}`);
     try {
-      await ctx.replyWithHTML(errorMessage(
-        'Faucet',
-      ));
+      await ctx.replyWithHTML(
+        await errorMessage(
+          'Faucet',
+        ),
+      );
     } catch (err) {
       console.log(err);
     }

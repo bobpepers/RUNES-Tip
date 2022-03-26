@@ -13,12 +13,10 @@ export const fetchInfo = async (
   io,
 ) => {
   const activity = [];
-  let user;
-  let userActivity;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(
@@ -88,9 +86,11 @@ export const fetchInfo = async (
     console.log(err);
     logger.error(`info error: ${err}`);
     try {
-      await ctx.replyWithHTML(errorMessage(
-        'Info',
-      ));
+      await ctx.replyWithHTML(
+        await errorMessage(
+          'Info',
+        ),
+      );
     } catch (err) {
       console.log(err);
     }

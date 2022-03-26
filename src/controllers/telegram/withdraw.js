@@ -165,6 +165,7 @@ export const withdrawTelegramCreate = async (
       transaction: t,
       lock: t.LOCK.UPDATE,
     });
+
     const activityCreate = await db.activity.create(
       {
         spenderId: user.id,
@@ -177,6 +178,7 @@ export const withdrawTelegramCreate = async (
         lock: t.LOCK.UPDATE,
       },
     );
+
     activity.unshift(activityCreate);
 
     await ctx.telegram.sendMessage(
@@ -213,9 +215,11 @@ export const withdrawTelegramCreate = async (
     console.log(err);
     logger.error(`withdraw error: ${err}`);
     try {
-      await ctx.replyWithHTML(errorMessage(
-        'Withdraw',
-      ));
+      await ctx.replyWithHTML(
+        await errorMessage(
+          'Withdraw',
+        ),
+      );
     } catch (err) {
       console.log(err);
     }

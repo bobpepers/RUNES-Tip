@@ -15,19 +15,17 @@ export const fetchWalletDepositAddress = async (
   ctx,
   io,
 ) => {
-  let user;
-  let userActivity;
   const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(
       ctx,
       t,
-      'info',
+      'deposit',
     );
     if (userActivity) {
       activity.unshift(userActivity);
@@ -121,7 +119,7 @@ export const fetchWalletDepositAddress = async (
     logger.error(`deposit error: ${err}`);
     try {
       await ctx.replyWithHTML(
-        errorMessage(
+        await errorMessage(
           'Deposit',
         ),
       );

@@ -87,14 +87,16 @@ export const discordRouter = (
 
   discordClient.on("interactionCreate", async (interaction) => {
     if (!interaction.isButton()) return;
-    console.log('interaction started');
     let groupTask;
     let groupTaskId;
     let channelTask;
     let channelTaskId;
     let lastSeenDiscordTask;
     if (!interaction.user.bot) {
-      const maintenance = await isMaintenanceOrDisabled(interaction, 'discord');
+      const maintenance = await isMaintenanceOrDisabled(
+        interaction,
+        'discord',
+      );
       if (maintenance.maintenance || !maintenance.enabled) return;
       const walletExists = await createUpdateDiscordUser(
         discordClient,
@@ -105,7 +107,7 @@ export const discordRouter = (
         groupTask = await updateDiscordGroup(discordClient, interaction);
         channelTask = await updateDiscordChannel(interaction, groupTask);
         lastSeenDiscordTask = await updateDiscordLastSeen(
-          discordClient,
+          interaction,
           interaction.user,
         );
       });
@@ -138,9 +140,6 @@ export const discordRouter = (
         }
       }
     }
-    // await interaction.deferUpdate().catch((e) => {
-    //   console.log(e);
-    // });
   });
 
   discordClient.on("messageCreate", async (message) => {
@@ -163,7 +162,7 @@ export const discordRouter = (
         groupTask = await updateDiscordGroup(discordClient, message);
         channelTask = await updateDiscordChannel(message, groupTask);
         lastSeenDiscordTask = await updateDiscordLastSeen(
-          discordClient,
+          message,
           message.author,
         );
       });

@@ -83,11 +83,24 @@ export const setIgnoreMe = async (message, io) => {
     console.log(err);
     logger.error(`ignoreme error: ${err}`);
     if (err.code && err.code === 50007) {
-      await message.channel.send({ embeds: [cannotSendMessageUser("Ignore me", message)] }).catch((e) => {
+      await message.channel.send({
+        embeds: [
+          cannotSendMessageUser(
+            "Ignore me",
+            message,
+          ),
+        ],
+      }).catch((e) => {
         console.log(e);
       });
     } else {
-      await message.channel.send({ embeds: [discordErrorMessage("Ignore me")] }).catch((e) => {
+      await message.channel.send({
+        embeds: [
+          discordErrorMessage(
+            "Ignore me",
+          ),
+        ],
+      }).catch((e) => {
         console.log(e);
       });
     }

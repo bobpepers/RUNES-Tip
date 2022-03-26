@@ -117,7 +117,14 @@ export const discordSleet = async (
         transaction: t,
       });
       activity.unshift(activityA);
-      await message.channel.send({ embeds: [invalidTimeMessage(message, 'Sleet')] });
+      await message.channel.send({
+        embeds: [
+          invalidTimeMessage(
+            message,
+            'Sleet',
+          ),
+        ],
+      });
       return;
     }
 

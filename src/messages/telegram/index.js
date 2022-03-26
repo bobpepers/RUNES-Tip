@@ -5,21 +5,20 @@ import {
   getUserToMentionFromDatabaseRecord,
   getUserToMentionCtx,
 } from "../../helpers/client/telegram/userToMention";
+import { capitalize } from "../../helpers/utils";
 
 const settings = getCoinSettings();
 
-const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
-
 export const featureDisabledServerMessage = async () => {
   const result = `<u><b>This feature has been disabled for this group</b></u>
-  
+
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
 
 export const featureDisabledGlobalMessage = async () => {
   const result = `<u><b>This feature has been disabled</b></u>
-  
+
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
@@ -30,7 +29,7 @@ export const telegramDepositConfirmedMessage = async (
 ) => {
   const result = `<b><u>Deposit #${trans.id}</u></b>
 
-Deposit Confirmed 
+Deposit Confirmed
 <b>${amount} ${settings.coin.ticker}</b> has been credited to your wallet
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
@@ -74,14 +73,15 @@ export const withdrawalAcceptedMessage = async (
   const fee = ((updatedTrans.feeAmount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
   const total = (((updatedTrans.amount - updatedTrans.feeAmount) / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
   const result = `<b><u>Withdraw #${updatedTrans.id}</u></b>
-  
+
 ${transaction.address.wallet.user.username}'s withdrawal has been accepted
-${settings.coin.explorer}/tx/${updatedTrans.txid}
 
 amount: <b>${amount} ${settings.coin.ticker}</b>
 fee: <b>${fee} ${settings.coin.ticker}</b>
 total: <b>${total} ${settings.coin.ticker}</b>
-  
+
+${settings.coin.explorer}/tx/${updatedTrans.txid}
+
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
@@ -95,7 +95,7 @@ export const telegramWithdrawalConfirmedMessage = async (
     userId,
   ] = await getUserToMentionFromDatabaseRecord(user);
   const result = `<b><u>Withdraw #${trans.id}</u></b>
-  
+
 <b><a href="tg://user?id=${userId}">${userToMention}</a></b>'s withdrawal has been complete
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
@@ -152,13 +152,13 @@ export const reviewMessage = async (
     userId,
   ] = await getUserToMentionFromDatabaseRecord(user);
   const result = `<u><b>Withdrawal #${transaction.id}</b></u>
-  
+
 <b><a href="tg://user?id=${userId}">${userToMention}</a></b>, your withdrawal is being reviewed.
 
 amount: <b>${amount} ${settings.coin.ticker}</b>
 fee: <b>${fee} ${settings.coin.ticker}</b>
 total: <b>${total} ${settings.coin.ticker}</b>
-    
+
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
@@ -180,10 +180,10 @@ export const minimumMessage = async (
   setting,
   title,
 ) => {
-  const result = `<u><b>${title}</b></u>
-  
+  const result = `<u><b>${capitalize(title)}</b></u>
+
 Minimum ${title} is <b>${Number(setting.min) / 1e8} ${settings.coin.ticker}</b>
-  
+
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
@@ -200,8 +200,8 @@ export const claimTooFastFaucetMessage = async (
   const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((distance % (1000 * 60)) / 1000);
   const result = `<u><b>Faucet</b></u>
-  
-<b><a href="tg://user?id=${userId}">${userToMention}</a></b>, you have to wait ${hours === 1 ? `${hours} hour, ` : ''}${hours > 1 ? `${hours} hours, ` : ''}${minutes === 1 ? `${minutes} minute and ` : ''}${minutes > 1 ? `${minutes} minutes and ` : ''}${seconds === 1 ? `${seconds} second ` : ''} ${seconds > 1 ? `${seconds} seconds ` : ''}before claiming the faucet again. 
+
+<b><a href="tg://user?id=${userId}">${userToMention}</a></b>, you have to wait ${hours === 1 ? `${hours} hour, ` : ''}${hours > 1 ? `${hours} hours, ` : ''}${minutes === 1 ? `${minutes} minute and ` : ''}${minutes > 1 ? `${minutes} minutes and ` : ''}${seconds === 1 ? `${seconds} second ` : ''} ${seconds > 1 ? `${seconds} seconds ` : ''}before claiming the faucet again.
 (the faucet can be claimed every 4 hours)
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
@@ -219,9 +219,9 @@ export const faucetClaimedMessage = async (
   ] = await getUserToMentionFromDatabaseRecord(user);
 
   const result = `<u><b>Faucet #${id}</b></u>
-  
+
 <b><a href="tg://user?id=${userId}">${userToMention}</a></b>, you have been tipped ${amount / 1e8} ${settings.coin.ticker} from the faucet.
-  
+
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
@@ -250,9 +250,11 @@ export const notEnoughActiveUsersMessage = () => {
   return result;
 };
 
-export const insufficientBalanceMessage = async (title) => {
-  const result = `<b><u>${title}</u></b>
-  
+export const insufficientBalanceMessage = async (
+  title,
+) => {
+  const result = `<b><u>${capitalize(title)}</u></b>
+
 Insufficient Balance
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
@@ -264,14 +266,26 @@ export const unableToFindUserMessage = () => {
   return result;
 };
 
-export const userNotFoundMessage = () => {
-  const result = `User not found`;
+export const userNotFoundMessage = async (
+  ctx,
+  title,
+) => {
+  const [
+    userToMention,
+    userId,
+  ] = await getUserToMentionCtx(ctx);
+
+  const result = `<b><u>${capitalize(title)}</u></b>
+
+<b><a href="tg://user?id=${userId}">${userToMention}</a></b>'s wallet was not found
+
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
 
 export const nodeIsOfflineMessage = () => {
   const result = `<b><u>Withdraw</u></b>
-  
+
 ${settings.coin.name} node is offline
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
@@ -282,13 +296,17 @@ export const invalidAddressMessage = () => {
   const result = `<b><u>Withdraw</u></b>
 
 Invalid ${settings.coin.name} Address
-  
+
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
 
-export const invalidAmountMessage = () => {
-  const result = `Invalid amount
+export const invalidAmountMessage = (
+  title,
+) => {
+  const result = `<b><u>${capitalize(title)}</u></b>
+
+Invalid amount
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
@@ -304,7 +322,7 @@ export const depositAddressMessage = async (
 
   const result = `<b><u>Deposit Address</u></b>
 
-<a href="tg://user?id=${userId}">${userToMention}</a>'s deposit address: 
+<a href="tg://user?id=${userId}">${userToMention}</a>'s deposit address:
 <b>${user.wallet.addresses[0].address}</b>
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
@@ -315,14 +333,14 @@ export const helpMessage = (
   withdraw,
 ) => {
   const result = `<b>Tipbot Help</b>
- 
+
 <code>${settings.bot.command.telegram}</code>
-Display this message  
+Display this message
 
 <code>${settings.bot.command.telegram} help</code>
 /help
-Display this message    
- 
+Display this message
+
 <code>${settings.bot.command.telegram} price</code>
 /price
 Display current ${settings.coin.ticker} price
@@ -341,11 +359,11 @@ Displays your deposit address
 
 <code>${settings.bot.command.telegram} faucet</code>
 /faucet
-Claim faucet   
+Claim faucet
 
 <code>${settings.bot.command.telegram} tip &lt;@user&gt; &lt;amount&gt;</code>
 Tips the @ mentioned user with the desired amount, e.g.
-example: <code>${settings.bot.command.telegram} tip @Bagosan 1.00</code>   
+example: <code>${settings.bot.command.telegram} tip @Bagosan 1.00</code>
 
 <code>${settings.bot.command.discord} &lt;@user&gt; &lt;@user&gt; &lt;@user&gt; &lt;amount|all&gt; [split|each]</code>
 Tips the @ mentioned users with the desired amount
@@ -368,22 +386,25 @@ Withdraws the entered amount to a ${settings.coin.ticker} address of your choice
 <code>${settings.bot.command.telegram} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20</code>
 Note: Minimal amount to withdraw: ${withdraw.min / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${withdraw.fee / 1e2}% ${settings.coin.ticker} will be automatically deducted from the amount. portion of the fee is donated to common faucet pot.
 
-${settings.coin.name === 'Runebase'
-    && `${settings.bot.command.telegram} referral
-/referral
-<code>Displays your referral count</code>
-<code>Note: We reward members for every 10 new members they add. current reward = 20 ${settings.coin.ticker}</code>
- 
-${settings.bot.command.telegram} referral top
-/top
-<code>Displays referral top 10</code>`}     
-
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
 
   return result;
 };
 
-export const InfoMessage = (blockHeight, priceInfo) => {
+// ${settings.coin.name === 'Runebase'
+//     && `${settings.bot.command.telegram} referral
+// /referral
+// <code>Displays your referral count</code>
+// <code>Note: We reward members for every 10 new members they add. current reward = 20 ${settings.coin.ticker}</code>
+
+// ${settings.bot.command.telegram} referral top
+// /top
+// <code>Displays referral top 10</code>`}
+
+export const InfoMessage = (
+  blockHeight,
+  priceInfo,
+) => {
   const result = `<b><u>Coin Info</u></b>
 ${settings.coin.description}
 
@@ -429,7 +450,7 @@ export const confirmAllAmoutMessage = (
   const result = `<b>@${ctx.update.message.from.username}, are you sure that you want to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}?
 Accepted answers: <u>yes/no/y/n</u>;
 Auto-cancel in 30 seconds.</b>
-  
+
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
@@ -440,7 +461,7 @@ export const timeOutAllAmoutMessage = (
   userBeingTipped,
 ) => {
   const result = `<b>@${ctx.update.message.from.username}, the request to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker} has expired</b>
-  
+
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
@@ -451,7 +472,7 @@ export const canceledAllAmoutMessage = (
   userBeingTipped,
 ) => {
   const result = `<b>@${ctx.update.message.from.username}, you canceled the request to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}</b>
-  
+
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
@@ -500,13 +521,24 @@ export const disallowDirectMessageMessage = async (
   return result;
 };
 
-export const errorMessage = (
+export const priceMessage = async (
+  priceRecord,
+) => {
+  let replyString = `<b><u>${settings.coin.ticker} PRICE</u></b>\n`;
+  replyString += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('\n');
+  const result = `${replyString}
+
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
+  return result;
+};
+
+export const errorMessage = async (
   title,
 ) => {
   const result = `<u><b>${title}</b></u>
 
 <b>Something went wrong.</b>
-  
+
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
@@ -517,7 +549,7 @@ export const notEnoughUsers = (
   const result = `<u><b>${title}</b></u>
 
 <b>Not enough users found.</b>
-  
+
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
@@ -534,7 +566,7 @@ export const invalidTimeMessage = async (
   const result = `<u><b>${title}</b></u>
 
 <a href="tg://user?id=${userId}">${userToMention}</a>, Invalid time.
-  
+
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
@@ -558,9 +590,9 @@ export const tipSingleSuccessMessage = async (
   ] = await getUserToMentionCtx(ctx);
 
   const result = `<u><b>Tip #${id}</b></u>
-  
+
 <a href="tg://user?id=${userId}">${userToMention}</a> tipped <b>${amount / 1e8} ${settings.coin.ticker}</b> to ${listOfUsersRained[0]}
-  
+
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
@@ -577,11 +609,11 @@ export const tipMultipleSuccessMessage = async (
     userId,
   ] = await getUserToMentionCtx(ctx);
   const result = `<u><b>Tip #${id}</b></u>
-  
+
 <a href="tg://user?id=${userId}">${userToMention}</a> tipped <b>${(amount * listOfUsersRained.length) / 1e8} ${settings.coin.ticker}</b> to ${listOfUsersRained.length} users
 
-Type: <b>${capitalize(type)}</b> 
-  
+Type: <b>${capitalize(type)}</b>
+
 💸 <b>${amount / 1e8} ${settings.coin.ticker}</b> each 💸
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;

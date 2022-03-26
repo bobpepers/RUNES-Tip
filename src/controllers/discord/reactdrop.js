@@ -559,7 +559,7 @@ export const discordReactDrop = async (
   faucetSetting,
   queue,
 ) => {
-  let activity = [];
+  const activity = [];
   const useEmojis = [];
   let user;
   await db.sequelize.transaction({
@@ -595,7 +595,7 @@ export const discordReactDrop = async (
       'reactdrop',
     );
     if (activityValiateAmount) {
-      activity = activityValiateAmount;
+      activity.unshift(activityValiateAmount);
       return;
     }
 

@@ -9,17 +9,15 @@ import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
 
 import logger from "../../helpers/logger";
 
-export const fetchWalletBalance = async (
+export const telegramBalance = async (
   ctx,
   io,
 ) => {
   const activity = [];
-  let user;
-  let userActivity;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(
@@ -117,9 +115,11 @@ export const fetchWalletBalance = async (
     console.log(err);
     logger.error(`Balance error: ${err}`);
     try {
-      await ctx.replyWithHTML(errorMessage(
-        'Balance',
-      ));
+      await ctx.replyWithHTML(
+        await errorMessage(
+          'Balance',
+        ),
+      );
     } catch (err) {
       console.log(err);
     }

@@ -23,14 +23,36 @@ export const validateAmount = async (
   let amount = 0;
 
   if (!preAmount) {
-    activity = await db.activity.create({
+    const noPreAmountActivity = await db.activity.create({
       type: `${type}_f`,
       spenderId: user.id,
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    await message.channel.send({ embeds: [invalidAmountMessage(message, capType)] });
+
+    activity = await db.activity.findOne({
+      where: {
+        id: noPreAmountActivity.id,
+      },
+      include: [
+        {
+          model: db.user,
+          as: 'spender',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    await message.channel.send({
+      embeds: [
+        invalidAmountMessage(
+          message,
+          capType,
+        ),
+      ],
+    });
     return [
       activity,
       amount,
@@ -44,14 +66,38 @@ export const validateAmount = async (
   }
 
   if (amount < setting.min) {
-    activity = await db.activity.create({
+    const minAmountActivity = await db.activity.create({
       type: `${type}_f`,
       spenderId: user.id,
+      spender_balance: user.wallet.available,
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    await message.channel.send({ embeds: [minimumMessage(message, setting, capType)] });
+
+    activity = await db.activity.findOne({
+      where: {
+        id: minAmountActivity.id,
+      },
+      include: [
+        {
+          model: db.user,
+          as: 'spender',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    await message.channel.send({
+      embeds: [
+        minimumMessage(
+          message,
+          setting,
+          capType,
+        ),
+      ],
+    });
     return [
       activity,
       amount,
@@ -63,14 +109,37 @@ export const validateAmount = async (
   }
 
   if (amount % 1 !== 0) {
-    activity = await db.activity.create({
+    const invalidAmountActivity = await db.activity.create({
       type: `${type}_f`,
       spenderId: user.id,
+      spender_balance: user.wallet.available,
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    await message.channel.send({ embeds: [invalidAmountMessage(message, capType)] });
+
+    activity = await db.activity.findOne({
+      where: {
+        id: invalidAmountActivity.id,
+      },
+      include: [
+        {
+          model: db.user,
+          as: 'spender',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    await message.channel.send({
+      embeds: [
+        invalidAmountMessage(
+          message,
+          capType,
+        ),
+      ],
+    });
     return [
       activity,
       amount,
@@ -85,7 +154,14 @@ export const validateAmount = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    await message.channel.send({ embeds: [invalidAmountMessage(message, capType)] });
+    await message.channel.send({
+      embeds: [
+        invalidAmountMessage(
+          message,
+          capType,
+        ),
+      ],
+    });
     return [
       activity,
       amount,
@@ -93,21 +169,44 @@ export const validateAmount = async (
   }
 
   if (user.wallet.available < amount) {
-    activity = await db.activity.create({
+    const insufActivity = await db.activity.create({
       type: `${type}_i`,
       spenderId: user.id,
+      spender_balance: user.wallet.available,
       amount,
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    await message.channel.send({ embeds: [insufficientBalanceMessage(message, capType)] });
+
+    activity = await db.activity.findOne({
+      where: {
+        id: insufActivity.id,
+      },
+      include: [
+        {
+          model: db.user,
+          as: 'spender',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    await message.channel.send({
+      embeds: [
+        insufficientBalanceMessage(
+          message,
+          capType,
+        ),
+      ],
+    });
     return [
       activity,
       amount,
     ];
   }
-  console.log(`amount: ${amount}`);
+
   return [
     activity,
     amount,

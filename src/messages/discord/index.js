@@ -1,10 +1,9 @@
 import { MessageEmbed } from "discord.js";
 import getCoinSettings from '../../config/settings';
 import pjson from "../../../package.json";
+import { capitalize } from "../../helpers/utils";
 
 const settings = getCoinSettings();
-
-const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
 
 export const discordUserBannedMessage = (user) => {
   const result = new MessageEmbed()
@@ -476,7 +475,6 @@ export const listTransactionsMessage = (userId, user, transactions) => {
   // const confirmations = '';
   // eslint-disable-next-line no-restricted-syntax
   for (const transaction of transactions) {
-    console.log(transaction);
     myString = myString.concat(`__#${transaction.id} -- ${transaction.type === 'receive' ? 'Deposit' : 'Withdrawal'} -- ${capitalize(transaction.phase)}__
 __date:__ ${transaction.createdAt.toLocaleDateString("en-US")}
 __txId:__ ${transaction.txid}\n\n`);

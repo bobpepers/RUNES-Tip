@@ -9,6 +9,7 @@ import {
 import getCoinSettings from '../../config/settings';
 import db from '../../models';
 import logger from "../../helpers/logger";
+import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
 
 const settings = getCoinSettings();
 
@@ -20,17 +21,18 @@ export const fetchHelp = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const user = await db.user.findOne({
-      where: {
-        user_id: `telegram-${ctx.update.message.from.id}`,
-      },
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-
-    if (!user) {
-      return;
+    const [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      ctx,
+      t,
+      'help',
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
     }
+    if (!user) return;
 
     const withdraw = await db.features.findOne(
       {
@@ -111,9 +113,11 @@ export const fetchHelp = async (
     console.log(err);
     logger.error(`help error: ${err}`);
     try {
-      await ctx.replyWithHTML(errorMessage(
-        'Help',
-      ));
+      await ctx.replyWithHTML(
+        await errorMessage(
+          'Help',
+        ),
+      );
     } catch (err) {
       console.log(err);
     }
