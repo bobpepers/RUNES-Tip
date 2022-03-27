@@ -14,7 +14,7 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 var _models = _interopRequireDefault(require("../models"));
 
 var initDatabaseRecords = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(discordClient, telegramClient) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(discordClient, telegramClient, matrixClient) {
     var discordBotUser, discordBotSetting, telegramBotSetting, matrixBotSetting, autoWithdrawalSetting, faucet, triviaSetting, floodSetting, withdrawSetting, tipSetting, rainSetting, soakSetting, sleetSetting, voicerainSetting, thunderSetting, thunderstormSetting, hurricaneSetting, faucetSetting, reactdropSetting;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
@@ -467,7 +467,7 @@ var initDatabaseRecords = /*#__PURE__*/function () {
     }, _callee);
   }));
 
-  return function initDatabaseRecords(_x, _x2) {
+  return function initDatabaseRecords(_x, _x2, _x3) {
     return _ref.apply(this, arguments);
   };
 }();

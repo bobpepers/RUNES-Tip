@@ -48,27 +48,16 @@ var discordFlood = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var members, onlineMembers, _yield$userWalletExis, _yield$userWalletExis2, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, factivity, updatedBalance, fee, amountPerUser, faucetWatered, floodRecord, cactivity, activityCreate, listOfUsersRained, _iterator, _step, floodee, floodeeWallet, floodtipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, members, onlineMembers, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, factivity, updatedBalance, fee, amountPerUser, faucetWatered, floodRecord, cactivity, activityCreate, listOfUsersRained, _iterator, _step, floodee, floodeeWallet, floodtipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
                         _context.next = 2;
-                        return discordClient.guilds.cache.get(message.guildId).members.fetch({
-                          withPresences: true
-                        });
-
-                      case 2:
-                        members = _context.sent;
-                        onlineMembers = members.filter(function (member) {
-                          console.log(member.presence);
-                          return member;
-                        });
-                        _context.next = 6;
                         return (0, _userWalletExist.userWalletExist)(message, t, filteredMessage[1].toLowerCase());
 
-                      case 6:
+                      case 2:
                         _yield$userWalletExis = _context.sent;
                         _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
                         user = _yield$userWalletExis2[0];
@@ -79,13 +68,24 @@ var discordFlood = /*#__PURE__*/function () {
                         }
 
                         if (user) {
-                          _context.next = 13;
+                          _context.next = 9;
                           break;
                         }
 
                         return _context.abrupt("return");
 
-                      case 13:
+                      case 9:
+                        _context.next = 11;
+                        return discordClient.guilds.cache.get(message.guildId).members.fetch({
+                          withPresences: true
+                        });
+
+                      case 11:
+                        members = _context.sent;
+                        onlineMembers = members.filter(function (member) {
+                          console.log(member.presence);
+                          return member;
+                        });
                         _context.next = 15;
                         return (0, _mapMembers.mapMembers)(message, t, filteredMessage[3], onlineMembers, setting);
 

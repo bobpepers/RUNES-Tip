@@ -17,17 +17,16 @@ var _models = _interopRequireDefault(require("../../../models"));
 
 var _telegram = require("../../../messages/telegram");
 
-var capitalize = function capitalize(s) {
-  return s && s[0].toUpperCase() + s.slice(1);
-};
-
 var validateAmount = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(ctx, t, preAmount, user, setting, type) {
     var tipType,
         usersToTip,
         activity,
         amount,
-        capType,
+        noPreAmountActivity,
+        minAmountActivity,
+        invalidAmountActivity,
+        insufActivity,
         _args = arguments;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
@@ -36,14 +35,13 @@ var validateAmount = /*#__PURE__*/function () {
             tipType = _args.length > 6 && _args[6] !== undefined ? _args[6] : null;
             usersToTip = _args.length > 7 && _args[7] !== undefined ? _args[7] : null;
             amount = 0;
-            capType = capitalize(type);
 
             if (preAmount) {
-              _context.next = 15;
+              _context.next = 17;
               break;
             }
 
-            _context.next = 7;
+            _context.next = 6;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
               spenderId: user.id
@@ -52,21 +50,36 @@ var validateAmount = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 7:
+          case 6:
+            noPreAmountActivity = _context.sent;
+            _context.next = 9;
+            return _models["default"].activity.findOne({
+              where: {
+                id: noPreAmountActivity.id
+              },
+              include: [{
+                model: _models["default"].user,
+                as: 'spender'
+              }],
+              lock: t.LOCK.UPDATE,
+              transaction: t
+            });
+
+          case 9:
             activity = _context.sent;
             _context.t0 = ctx;
-            _context.next = 11;
-            return (0, _telegram.invalidAmountMessage)();
+            _context.next = 13;
+            return (0, _telegram.invalidAmountMessage)(type);
 
-          case 11:
+          case 13:
             _context.t1 = _context.sent;
-            _context.next = 14;
+            _context.next = 16;
             return _context.t0.replyWithHTML.call(_context.t0, _context.t1);
 
-          case 14:
+          case 16:
             return _context.abrupt("return", [activity, amount]);
 
-          case 15:
+          case 17:
             if (preAmount.toLowerCase() === 'all') {
               amount = user.wallet.available;
             } else {
@@ -74,73 +87,106 @@ var validateAmount = /*#__PURE__*/function () {
             }
 
             if (!(amount < Number(setting.min))) {
-              _context.next = 27;
+              _context.next = 32;
               break;
             }
 
-            _context.next = 19;
+            _context.next = 21;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
-              spenderId: user.id
+              spenderId: user.id,
+              spender_balance: user.wallet.available
             }, {
               lock: t.LOCK.UPDATE,
               transaction: t
             });
 
-          case 19:
+          case 21:
+            minAmountActivity = _context.sent;
+            _context.next = 24;
+            return _models["default"].activity.findOne({
+              where: {
+                id: minAmountActivity.id
+              },
+              include: [{
+                model: _models["default"].user,
+                as: 'spender'
+              }],
+              lock: t.LOCK.UPDATE,
+              transaction: t
+            });
+
+          case 24:
             activity = _context.sent;
             _context.t2 = ctx;
-            _context.next = 23;
-            return (0, _telegram.minimumMessage)(setting, capitalize(type));
+            _context.next = 28;
+            return (0, _telegram.minimumMessage)(setting, type);
 
-          case 23:
+          case 28:
             _context.t3 = _context.sent;
-            _context.next = 26;
+            _context.next = 31;
             return _context.t2.replyWithHTML.call(_context.t2, _context.t3);
 
-          case 26:
+          case 31:
             return _context.abrupt("return", [activity, amount]);
 
-          case 27:
-            if (tipType === 'each' && preAmount.toLowerCase() !== 'all') {
+          case 32:
+            if (tipType === 'each' && preAmount.toLowerCase() !== 'all' // Perhaps remove preAmount.toLowerCase() !== 'all and make tip amount invalidate when casting "all" and "each" instead of splitting up all available balance
+            ) {
               amount *= usersToTip.length;
             }
 
             if (!(amount % 1 !== 0)) {
-              _context.next = 39;
+              _context.next = 47;
               break;
             }
 
-            _context.next = 31;
+            _context.next = 36;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
-              spenderId: user.id
+              spenderId: user.id,
+              spender_balance: user.wallet.available
             }, {
               lock: t.LOCK.UPDATE,
               transaction: t
             });
 
-          case 31:
-            activity = _context.sent;
-            _context.t4 = ctx;
-            _context.next = 35;
-            return (0, _telegram.invalidAmountMessage)();
-
-          case 35:
-            _context.t5 = _context.sent;
-            _context.next = 38;
-            return _context.t4.replyWithHTML.call(_context.t4, _context.t5);
-
-          case 38:
-            return _context.abrupt("return", [activity, amount]);
+          case 36:
+            invalidAmountActivity = _context.sent;
+            _context.next = 39;
+            return _models["default"].activity.findOne({
+              where: {
+                id: invalidAmountActivity.id
+              },
+              include: [{
+                model: _models["default"].user,
+                as: 'spender'
+              }],
+              lock: t.LOCK.UPDATE,
+              transaction: t
+            });
 
           case 39:
+            activity = _context.sent;
+            _context.t4 = ctx;
+            _context.next = 43;
+            return (0, _telegram.invalidAmountMessage)(type);
+
+          case 43:
+            _context.t5 = _context.sent;
+            _context.next = 46;
+            return _context.t4.replyWithHTML.call(_context.t4, _context.t5);
+
+          case 46:
+            return _context.abrupt("return", [activity, amount]);
+
+          case 47:
             if (!(amount <= 0)) {
-              _context.next = 50;
+              _context.next = 58;
               break;
             }
 
-            _context.next = 42;
+            _context.next = 50;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
               spenderId: user.id
@@ -149,55 +195,70 @@ var validateAmount = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 42:
+          case 50:
             activity = _context.sent;
             _context.t6 = ctx;
-            _context.next = 46;
-            return (0, _telegram.invalidAmountMessage)();
+            _context.next = 54;
+            return (0, _telegram.invalidAmountMessage)(type);
 
-          case 46:
+          case 54:
             _context.t7 = _context.sent;
-            _context.next = 49;
+            _context.next = 57;
             return _context.t6.replyWithHTML.call(_context.t6, _context.t7);
 
-          case 49:
+          case 57:
             return _context.abrupt("return", [activity, amount]);
 
-          case 50:
+          case 58:
             if (!(user.wallet.available < amount)) {
-              _context.next = 61;
+              _context.next = 72;
               break;
             }
 
-            _context.next = 53;
+            _context.next = 61;
             return _models["default"].activity.create({
               type: "".concat(type, "_i"),
               spenderId: user.id,
+              spender_balance: user.wallet.available,
               amount: amount
             }, {
               lock: t.LOCK.UPDATE,
               transaction: t
             });
 
-          case 53:
+          case 61:
+            insufActivity = _context.sent;
+            _context.next = 64;
+            return _models["default"].activity.findOne({
+              where: {
+                id: insufActivity.id
+              },
+              include: [{
+                model: _models["default"].user,
+                as: 'spender'
+              }],
+              lock: t.LOCK.UPDATE,
+              transaction: t
+            });
+
+          case 64:
             activity = _context.sent;
             _context.t8 = ctx;
-            _context.next = 57;
-            return (0, _telegram.insufficientBalanceMessage)(capType);
+            _context.next = 68;
+            return (0, _telegram.insufficientBalanceMessage)(type);
 
-          case 57:
+          case 68:
             _context.t9 = _context.sent;
-            _context.next = 60;
+            _context.next = 71;
             return _context.t8.replyWithHTML.call(_context.t8, _context.t9);
 
-          case 60:
+          case 71:
             return _context.abrupt("return", [activity, amount]);
 
-          case 61:
-            console.log("amount: ".concat(amount));
+          case 72:
             return _context.abrupt("return", [activity, amount]);
 
-          case 63:
+          case 73:
           case "end":
             return _context.stop();
         }

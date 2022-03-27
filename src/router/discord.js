@@ -177,6 +177,8 @@ export const discordRouter = (
             groupTask,
           ),
         ],
+      }).catch((e) => {
+        console.log(e);
       });
       return;
     }
@@ -188,6 +190,8 @@ export const discordRouter = (
             channelTask,
           ),
         ],
+      }).catch((e) => {
+        console.log(e);
       });
       return;
     }
@@ -199,6 +203,8 @@ export const discordRouter = (
             lastSeenDiscordTask,
           ),
         ],
+      }).catch((e) => {
+        console.log(e);
       });
       return;
     }

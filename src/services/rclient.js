@@ -6,8 +6,8 @@ import { config } from "dotenv";
 import getCoinSettings from '../config/settings';
 
 const settings = getCoinSettings();
-
 config();
+
 let instance;
 
 export function createInstance() {
@@ -21,6 +21,7 @@ export function createInstance() {
     return new KomodoWeb3(`http://${process.env.RPC_USER}:${process.env.RPC_PASS}@localhost:${process.env.RPC_PORT}`);
   }
 }
+
 export function getInstance() {
   if (!instance) {
     instance = createInstance();

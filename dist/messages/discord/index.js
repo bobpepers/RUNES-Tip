@@ -13,6 +13,8 @@ var _settings = _interopRequireDefault(require("../../config/settings"));
 
 var _package = _interopRequireDefault(require("../../../package.json"));
 
+var _utils = require("../../helpers/utils");
+
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -20,10 +22,6 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var settings = (0, _settings["default"])();
-
-var capitalize = function capitalize(s) {
-  return s && s[0].toUpperCase() + s.slice(1);
-};
 
 var discordUserBannedMessage = function discordUserBannedMessage(user) {
   var result = new _discord.MessageEmbed().setColor("#C70039").setTitle("\uD83D\uDEAB     User: ".concat(user.username, " Banned     \uD83D\uDEAB")).setDescription("Reason:\n".concat(user.banMessage)).setTimestamp().setFooter({
@@ -124,7 +122,7 @@ var reactDropMessage = function reactDropMessage(id, distance, author, emoji, am
 exports.reactDropMessage = reactDropMessage;
 
 var AfterTriviaSuccessMessage = function AfterTriviaSuccessMessage(endTrivia, amountEach, initiator) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Trivia #".concat(endTrivia.id)).setDescription(":tada:[Trivia](https://discord.com/channels/".concat(endTrivia.group.groupId.replace("discord-", ""), "/").concat(endTrivia.channel.channelId.replace("discord-", ""), "/").concat(endTrivia.discordMessageId, ") started by <@").concat(initiator, "> has finished!:tada:\n    \n:money_with_wings:").concat(endTrivia.triviatips.length, " ").concat(endTrivia.triviatips.length === 1 ? 'user' : 'users', " will share ").concat(endTrivia.amount / 1e8, " ").concat(settings.coin.ticker, " (").concat(amountEach / 1e8, " each)!:money_with_wings:")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Trivia #".concat(endTrivia.id)).setDescription(":tada:[Trivia](https://discord.com/channels/".concat(endTrivia.group.groupId.replace("discord-", ""), "/").concat(endTrivia.channel.channelId.replace("discord-", ""), "/").concat(endTrivia.discordMessageId, ") started by <@").concat(initiator, "> has finished!:tada:\n\n:money_with_wings:").concat(endTrivia.triviatips.length, " ").concat(endTrivia.triviatips.length === 1 ? 'user' : 'users', " will share ").concat(endTrivia.amount / 1e8, " ").concat(settings.coin.ticker, " (").concat(amountEach / 1e8, " each)!:money_with_wings:")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -134,7 +132,7 @@ var AfterTriviaSuccessMessage = function AfterTriviaSuccessMessage(endTrivia, am
 exports.AfterTriviaSuccessMessage = AfterTriviaSuccessMessage;
 
 var AfterReactDropSuccessMessage = function AfterReactDropSuccessMessage(endReactDrop, amountEach, initiator) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Reactdrop #".concat(endReactDrop.id)).setDescription(":tada:[React airdrop](https://discord.com/channels/".concat(endReactDrop.group.groupId.replace("discord-", ""), "/").concat(endReactDrop.channel.channelId.replace("discord-", ""), "/").concat(endReactDrop.discordMessageId, ") started by <@").concat(initiator, "> has finished!:tada:\n    \n:money_with_wings:").concat(endReactDrop.reactdroptips.length, " user(s) will share ").concat(endReactDrop.amount / 1e8, " ").concat(settings.coin.ticker, " (").concat(amountEach / 1e8, " each)!:money_with_wings:")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Reactdrop #".concat(endReactDrop.id)).setDescription(":tada:[React airdrop](https://discord.com/channels/".concat(endReactDrop.group.groupId.replace("discord-", ""), "/").concat(endReactDrop.channel.channelId.replace("discord-", ""), "/").concat(endReactDrop.discordMessageId, ") started by <@").concat(initiator, "> has finished!:tada:\n\n:money_with_wings:").concat(endReactDrop.reactdroptips.length, " user(s) will share ").concat(endReactDrop.amount / 1e8, " ").concat(settings.coin.ticker, " (").concat(amountEach / 1e8, " each)!:money_with_wings:")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -244,7 +242,7 @@ var discordErrorMessage = function discordErrorMessage(title) {
 exports.discordErrorMessage = discordErrorMessage;
 
 var discordDepositConfirmedMessage = function discordDepositConfirmedMessage(amount, trans) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Deposit #".concat(trans.id)).setDescription("Deposit Confirmed \n".concat(amount, " ").concat(settings.coin.ticker, " has been credited to your wallet")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Deposit #".concat(trans.id)).setDescription("Deposit Confirmed\n".concat(amount, " ").concat(settings.coin.ticker, " has been credited to your wallet")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -288,7 +286,7 @@ var reviewMessage = function reviewMessage(message, transaction) {
   var amount = (transaction.amount / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
   var fee = (transaction.feeAmount / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
   var total = ((transaction.amount - transaction.feeAmount) / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Withdraw #".concat(transaction.id)).setDescription("<@".concat(message.author.id, ">, Your withdrawal is being reviewed\n    \namount: ").concat(amount, "\nfee: ").concat(fee, "\ntotal: ").concat(total)).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Withdraw #".concat(transaction.id)).setDescription("<@".concat(message.author.id, ">, Your withdrawal is being reviewed\n\namount: ").concat(amount, "\nfee: ").concat(fee, "\ntotal: ").concat(total)).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -330,8 +328,7 @@ var listTransactionsMessage = function listTransactionsMessage(userId, user, tra
   try {
     for (_iterator.s(); !(_step = _iterator.n()).done;) {
       var transaction = _step.value;
-      console.log(transaction);
-      myString = myString.concat("__#".concat(transaction.id, " -- ").concat(transaction.type === 'receive' ? 'Deposit' : 'Withdrawal', " -- ").concat(capitalize(transaction.phase), "__\n__date:__ ").concat(transaction.createdAt.toLocaleDateString("en-US"), "\n__txId:__ ").concat(transaction.txid, "\n\n"));
+      myString = myString.concat("__#".concat(transaction.id, " -- ").concat(transaction.type === 'receive' ? 'Deposit' : 'Withdrawal', " -- ").concat((0, _utils.capitalize)(transaction.phase), "__\n__date:__ ").concat(transaction.createdAt.toLocaleDateString("en-US"), "\n__txId:__ ").concat(transaction.txid, "\n\n"));
     }
   } catch (err) {
     _iterator.e(err);
@@ -448,7 +445,7 @@ exports.tipSingleSuccessMessage = tipSingleSuccessMessage;
 
 var tipMultipleSuccessMessage = function tipMultipleSuccessMessage(message, id, listOfUsersRained, amount, type) {
   var userText = listOfUsersRained.join(", ");
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Tip #".concat(id)).setDescription("<@".concat(message.author.id, "> tipped **").concat(amount * listOfUsersRained.length / 1e8, " ").concat(settings.coin.ticker, "** to ").concat(listOfUsersRained.length, " users\n\nType: **").concat(capitalize(type), "**  \n\n\uD83D\uDCB8 **").concat(amount / 1e8, " ").concat(settings.coin.ticker, "** each \uD83D\uDCB8")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Tip #".concat(id)).setDescription("<@".concat(message.author.id, "> tipped **").concat(amount * listOfUsersRained.length / 1e8, " ").concat(settings.coin.ticker, "** to ").concat(listOfUsersRained.length, " users\n\nType: **").concat((0, _utils.capitalize)(type), "**\n\n\uD83D\uDCB8 **").concat(amount / 1e8, " ").concat(settings.coin.ticker, "** each \uD83D\uDCB8")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -518,7 +515,7 @@ var minimumMessage = function minimumMessage(message, setting, type) {
 exports.minimumMessage = minimumMessage;
 
 var timeOutAllAmoutMessageDiscord = function timeOutAllAmoutMessageDiscord(message, operationName, userBeingTipped) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(capitalize(operationName)).setDescription("<@".concat(message.author.id, ">, the request to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker, " has expired")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle((0, _utils.capitalize)(operationName)).setDescription("<@".concat(message.author.id, ">, the request to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker, " has expired")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -528,7 +525,7 @@ var timeOutAllAmoutMessageDiscord = function timeOutAllAmoutMessageDiscord(messa
 exports.timeOutAllAmoutMessageDiscord = timeOutAllAmoutMessageDiscord;
 
 var canceledAllAmoutMessageDiscord = function canceledAllAmoutMessageDiscord(message, operationName, userBeingTipped) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(capitalize(operationName)).setDescription("<@".concat(message.author.id, ">, you canceled the request to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker)).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle((0, _utils.capitalize)(operationName)).setDescription("<@".concat(message.author.id, ">, you canceled the request to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker)).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -538,7 +535,7 @@ var canceledAllAmoutMessageDiscord = function canceledAllAmoutMessageDiscord(mes
 exports.canceledAllAmoutMessageDiscord = canceledAllAmoutMessageDiscord;
 
 var confirmAllAmoutMessageDiscord = function confirmAllAmoutMessageDiscord(message, operationName, userBeingTipped) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(capitalize(operationName)).setDescription("<@".concat(message.author.id, ">, are you sure that you want to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker, "?\nAccepted answers: **yes/no/y/n**; \nAuto-cancel in 30 seconds.")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle((0, _utils.capitalize)(operationName)).setDescription("<@".concat(message.author.id, ">, are you sure that you want to ").concat(operationName, " ").concat(userBeingTipped ? "".concat(userBeingTipped, " ") : "", "all your ").concat(settings.coin.ticker, "?\nAccepted answers: **yes/no/y/n**;\nAuto-cancel in 30 seconds.")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -851,7 +848,7 @@ var warnDirectMessage = function warnDirectMessage(userId, title) {
 exports.warnDirectMessage = warnDirectMessage;
 
 var helpMessageOne = function helpMessageOne(withdraw) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("".concat("".concat(settings.bot.name, " v").concat(_package["default"].version), " Help")).setDescription("`".concat(settings.bot.command.discord, "`\nDisplays this message\n\n`").concat(settings.bot.command.discord, " help`\nDisplays this message\n\n`").concat(settings.bot.command.discord, " info`\nDisplays coin info\n\n`").concat(settings.bot.command.discord, " balance`\nDisplays your balance\n\n`").concat(settings.bot.command.discord, " price`\nDisplays ").concat(settings.coin.ticker, " price\n\n`").concat(settings.bot.command.discord, " stats`\nDisplays your tip statistics\n\n`").concat(settings.bot.command.discord, " deposit`\nDisplays your deposit address\n\n`").concat(settings.bot.command.discord, " fees`\nDisplays fee schedule\n\n`").concat(settings.bot.command.discord, " publicstats`\nEnable/Disable public statistics (determines if you want to be shown on the leaderboards) \ndefault: disabled\n\n`").concat(settings.bot.command.discord, " withdraw <address> <amount|all>`\nWithdraws the entered amount to a ").concat(settings.coin.name, " address of your choice\nexample: `").concat(settings.bot.command.discord, " withdraw ").concat(settings.coin.exampleAddress, " 5.20 `\nNote: Minimal amount to withdraw: ").concat(withdraw.min / 1e8, " ").concat(settings.coin.ticker, ". A withdrawal fee of ").concat(withdraw.fee / 1e2, "% ").concat(settings.coin.ticker, ". half of the withdrawal fee will be automatically deducted from the amount and will be donated to the common faucet pot.\n")); // .setTimestamp()
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("".concat("".concat(settings.bot.name, " v").concat(_package["default"].version), " Help")).setDescription("`".concat(settings.bot.command.discord, "`\nDisplays this message\n\n`").concat(settings.bot.command.discord, " help`\nDisplays this message\n\n`").concat(settings.bot.command.discord, " info`\nDisplays coin info\n\n`").concat(settings.bot.command.discord, " balance`\nDisplays your balance\n\n`").concat(settings.bot.command.discord, " price`\nDisplays ").concat(settings.coin.ticker, " price\n\n`").concat(settings.bot.command.discord, " stats`\nDisplays your tip statistics\n\n`").concat(settings.bot.command.discord, " deposit`\nDisplays your deposit address\n\n`").concat(settings.bot.command.discord, " fees`\nDisplays fee schedule\n\n`").concat(settings.bot.command.discord, " publicstats`\nEnable/Disable public statistics (determines if you want to be shown on the leaderboards)\ndefault: disabled\n\n`").concat(settings.bot.command.discord, " withdraw <address> <amount|all>`\nWithdraws the entered amount to a ").concat(settings.coin.name, " address of your choice\nexample: `").concat(settings.bot.command.discord, " withdraw ").concat(settings.coin.exampleAddress, " 5.20 `\nNote: Minimal amount to withdraw: ").concat(withdraw.min / 1e8, " ").concat(settings.coin.ticker, ". A withdrawal fee of ").concat(withdraw.fee / 1e2, "% ").concat(settings.coin.ticker, ". half of the withdrawal fee will be automatically deducted from the amount and will be donated to the common faucet pot.\n")); // .setTimestamp()
   // .setFooter({
   //  text: `${settings.bot.name} v${pjson.version}`,
   //  iconURL: settings.coin.logo,

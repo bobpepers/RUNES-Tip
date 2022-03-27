@@ -38,6 +38,18 @@ var _matrixJsSdk = _interopRequireDefault(require("matrix-js-sdk"));
 
 var _nodeLocalstorage = require("node-localstorage");
 
+var _connectRedis = _interopRequireDefault(require("connect-redis"));
+
+var _expressSession = _interopRequireDefault(require("express-session"));
+
+var _cookieParser = _interopRequireDefault(require("cookie-parser"));
+
+var _redis = _interopRequireDefault(require("redis"));
+
+var _socket = _interopRequireDefault(require("socket.io"));
+
+var _localStorageCryptoStore = require("matrix-js-sdk/lib/crypto/store/localStorage-crypto-store");
+
 var _router = require("./router");
 
 var _router2 = require("./dashboard/router");
@@ -66,13 +78,11 @@ var _processWithdrawals = require("./services/processWithdrawals");
 
 var _recover = require("./helpers/recover");
 
+var _logger = _interopRequireDefault(require("./helpers/logger"));
+
 /* eslint-disable import/first */
-global.Olm = _olm["default"]; // const { LocalStorage } = require('node-localstorage');
-
+global.Olm = _olm["default"];
 var localStorage = new _nodeLocalstorage.LocalStorage('./scratch');
-
-var _require = require('matrix-js-sdk/lib/crypto/store/localStorage-crypto-store'),
-    LocalStorageCryptoStore = _require.LocalStorageCryptoStore;
 
 _dotenv["default"].config();
 
@@ -81,41 +91,30 @@ var queue = new _pQueue["default"]({
   concurrency: 1,
   timeout: 1000000000
 });
-
-var socketIo = require("socket.io");
-
-var redis = require('redis');
-
-var cookieParser = require('cookie-parser');
-
 var port = process.env.PORT || 8080;
 var app = (0, _express["default"])();
 
 var server = _http["default"].createServer(app);
 
-var io = socketIo(server, {
+var io = (0, _socket["default"])(server, {
   path: '/socket.io',
   cookie: false
 });
-
-var session = require('express-session');
-
 app.use((0, _compression["default"])());
 app.use((0, _morgan["default"])('combined'));
 app.use((0, _cors["default"])());
 app.set('trust proxy', 1);
-
-var connectRedis = require('connect-redis');
-
-var RedisStore = connectRedis(session);
+var RedisStore = (0, _connectRedis["default"])(_expressSession["default"]);
 var CONF = {
   db: 3
 };
-var pub = redis.createClient(CONF);
+
+var pub = _redis["default"].createClient(CONF);
+
 var sessionStore = new RedisStore({
   client: pub
 });
-var sessionMiddleware = session({
+var sessionMiddleware = (0, _expressSession["default"])({
   secret: process.env.SESSION_SECRET,
   key: "connect.sid",
   resave: false,
@@ -129,7 +128,7 @@ var sessionMiddleware = session({
     sameSite: 'strict'
   }
 });
-app.use(cookieParser());
+app.use((0, _cookieParser["default"])());
 app.use(_bodyParser["default"].urlencoded({
   extended: false,
   limit: '5mb'
@@ -221,7 +220,7 @@ var matrixClient = _matrixJsSdk["default"].createClient({
             baseUrl: "https://matrix.org",
             accessToken: matrixLoginCredentials.access_token,
             sessionStore: new _matrixJsSdk["default"].WebStorageSessionStore(localStorage),
-            cryptoStore: new LocalStorageCryptoStore(localStorage),
+            cryptoStore: new _localStorageCryptoStore.LocalStorageCryptoStore(localStorage),
             userId: matrixLoginCredentials.user_id,
             deviceId: matrixLoginCredentials.device_id,
             timelineSupport: true
@@ -236,7 +235,7 @@ var matrixClient = _matrixJsSdk["default"].createClient({
 
         case 14:
           _context2.next = 16;
-          return (0, _initDatabaseRecords.initDatabaseRecords)(discordClient, telegramClient);
+          return (0, _initDatabaseRecords.initDatabaseRecords)(discordClient, telegramClient, matrixClient);
 
         case 16:
           _context2.next = 18;
@@ -323,8 +322,9 @@ var matrixClient = _matrixJsSdk["default"].createClient({
           (0, _router.router)(app, discordClient, telegramClient, matrixClient, io, settings, queue);
           (0, _router2.dashboardRouter)(app, io, discordClient, telegramClient, matrixClient);
           server.listen(port);
+          console.log('server listening on:', port);
 
-        case 52:
+        case 53:
         case "end":
           return _context2.stop();
       }
@@ -364,22 +364,49 @@ var scheduleWithdrawal = _nodeSchedule["default"].scheduleJob('*/8 * * * *', /*#
       }
     }
   }, _callee3);
-}))); // Handle olm library process unhandeled rejections
+})));
 
+process.on('unhandledRejection', /*#__PURE__*/function () {
+  var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(err, p) {
+    return _regenerator["default"].wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            _logger["default"].error("Error Application Unhandled Rejection: ".concat(err));
 
-process.on('unhandledRejection', function (reason, promise) {
-  console.log('Unhandled Rejection capture');
-  console.log('Unhandled Rejection at:', reason.stack || reason);
-  console.log('promise');
-  console.log(promise);
-});
-process.on('uncaughtException', function (e, origin) {
-  console.log('Unhandled Exception capture');
-  console.log('uncaughtException: ', e.stack);
-  console.log('origin');
-  console.log(origin);
-});
-process.on('exit', function (code) {
-  console.log("About to exit with code: ".concat(code));
-});
-console.log('server listening on:', port);
+            console.log(err, '\nUnhandled Rejection at Promise\n', p, '\n--------------------------------');
+
+          case 2:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4);
+  }));
+
+  return function (_x2, _x3) {
+    return _ref4.apply(this, arguments);
+  };
+}());
+process.on('uncaughtException', /*#__PURE__*/function () {
+  var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(err, p) {
+    return _regenerator["default"].wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            _logger["default"].error("Error Application Uncaught Exception: ".concat(err));
+
+            console.log(err, '\nUnhandled Exception at Promise\n', p, '\n--------------------------------');
+
+          case 2:
+          case "end":
+            return _context5.stop();
+        }
+      }
+    }, _callee5);
+  }));
+
+  return function (_x4, _x5) {
+    return _ref5.apply(this, arguments);
+  };
+}());

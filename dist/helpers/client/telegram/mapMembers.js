@@ -61,7 +61,7 @@ var mapMembers = /*#__PURE__*/function () {
 
           case 12:
             if ((_step = _iterator.n()).done) {
-              _context.next = 67;
+              _context.next = 66;
               break;
             }
 
@@ -133,13 +133,11 @@ var mapMembers = /*#__PURE__*/function () {
 
           case 29:
             if (userExist) {
-              _context.next = 65;
+              _context.next = 64;
               break;
             }
 
-            // let user;
-            console.log(telegramUser);
-            _context.next = 33;
+            _context.next = 32;
             return _models["default"].user.create({
               user_id: "telegram-".concat(Number(telegramUser.id)),
               username: telegramUser.username,
@@ -150,9 +148,9 @@ var mapMembers = /*#__PURE__*/function () {
               lock: t.LOCK.UPDATE
             });
 
-          case 33:
+          case 32:
             user = _context.sent;
-            _context.next = 36;
+            _context.next = 35;
             return _models["default"].wallet.findOne({
               where: {
                 userId: user.id
@@ -161,15 +159,15 @@ var mapMembers = /*#__PURE__*/function () {
               lock: t.LOCK.UPDATE
             });
 
-          case 36:
+          case 35:
             wallet = _context.sent;
 
             if (wallet) {
-              _context.next = 41;
+              _context.next = 40;
               break;
             }
 
-            _context.next = 40;
+            _context.next = 39;
             return _models["default"].wallet.create({
               userId: user.id,
               available: 0,
@@ -179,11 +177,11 @@ var mapMembers = /*#__PURE__*/function () {
               lock: t.LOCK.UPDATE
             });
 
-          case 40:
+          case 39:
             wallet = _context.sent;
 
-          case 41:
-            _context.next = 43;
+          case 40:
+            _context.next = 42;
             return _models["default"].address.findOne({
               where: {
                 walletId: wallet.id
@@ -192,20 +190,20 @@ var mapMembers = /*#__PURE__*/function () {
               lock: t.LOCK.UPDATE
             });
 
-          case 43:
+          case 42:
             address = _context.sent;
 
             if (address) {
-              _context.next = 55;
+              _context.next = 54;
               break;
             }
 
-            _context.next = 47;
+            _context.next = 46;
             return (0, _rclient.getInstance)().getNewAddress();
 
-          case 47:
+          case 46:
             newAddress = _context.sent;
-            _context.next = 50;
+            _context.next = 49;
             return _models["default"].address.findOne({
               where: {
                 address: newAddress
@@ -214,15 +212,15 @@ var mapMembers = /*#__PURE__*/function () {
               lock: t.LOCK.UPDATE
             });
 
-          case 50:
+          case 49:
             addressAlreadyExist = _context.sent;
 
             if (addressAlreadyExist) {
-              _context.next = 55;
+              _context.next = 54;
               break;
             }
 
-            _context.next = 54;
+            _context.next = 53;
             return _models["default"].address.create({
               address: newAddress,
               walletId: wallet.id,
@@ -233,11 +231,11 @@ var mapMembers = /*#__PURE__*/function () {
               lock: t.LOCK.UPDATE
             });
 
-          case 54:
+          case 53:
             address = _context.sent;
 
-          case 55:
-            _context.next = 57;
+          case 54:
+            _context.next = 56;
             return _models["default"].user.findOne({
               where: {
                 user_id: "telegram-".concat(Number(telegramUser.id))
@@ -256,63 +254,63 @@ var mapMembers = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 57:
+          case 56:
             userExistNew = _context.sent;
 
             if (!userExistNew) {
-              _context.next = 65;
+              _context.next = 64;
               break;
             }
 
-            _context.next = 61;
+            _context.next = 60;
             return userExistNew.user_id.replace('telegram-', '');
 
-          case 61:
+          case 60:
             _userIdTest = _context.sent;
 
             if (!(_userIdTest !== ctx.update.message.from.id)) {
-              _context.next = 65;
+              _context.next = 64;
               break;
             }
 
-            _context.next = 65;
+            _context.next = 64;
             return withoutBots.push(userExistNew);
 
-          case 65:
+          case 64:
             _context.next = 12;
             break;
 
-          case 67:
-            _context.next = 72;
+          case 66:
+            _context.next = 71;
             break;
 
-          case 69:
-            _context.prev = 69;
+          case 68:
+            _context.prev = 68;
             _context.t0 = _context["catch"](10);
 
             _iterator.e(_context.t0);
 
-          case 72:
-            _context.prev = 72;
+          case 71:
+            _context.prev = 71;
 
             _iterator.f();
 
-            return _context.finish(72);
+            return _context.finish(71);
 
-          case 75:
-            _context.next = 77;
+          case 74:
+            _context.next = 76;
             return _lodash["default"].sortBy(withoutBots, 'createdAt');
 
-          case 77:
+          case 76:
             withoutBotsSorted = _context.sent;
             return _context.abrupt("return", withoutBotsSorted);
 
-          case 79:
+          case 78:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[10, 69, 72, 75]]);
+    }, _callee, null, [[10, 68, 71, 74]]);
   }));
 
   return function mapMembers(_x, _x2, _x3, _x4) {

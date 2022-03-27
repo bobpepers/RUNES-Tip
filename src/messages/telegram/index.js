@@ -283,6 +283,35 @@ export const userNotFoundMessage = async (
   return result;
 };
 
+export const telegramServerBannedMessage = async (
+  server,
+) => {
+  const result = `🚫     <b><u>Server Banned</u></b>     🚫
+
+Reason:
+<b>${server.banMessage}</b>
+
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
+  return result;
+};
+
+export const telegramUserBannedMessage = async (
+  user,
+) => {
+  const [
+    userToMention,
+    userId,
+  ] = await getUserToMentionFromDatabaseRecord(user);
+
+  const result = `🚫     <b><u><a href="tg://user?id=${userId}">${userToMention} Banned</a></u></b>     🚫
+
+Reason:
+<b>${user.banMessage}</b>
+
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
+  return result;
+};
+
 export const nodeIsOfflineMessage = () => {
   const result = `<b><u>Withdraw</u></b>
 
@@ -307,6 +336,24 @@ export const invalidAmountMessage = (
   const result = `<b><u>${capitalize(title)}</u></b>
 
 Invalid amount
+
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
+  return result;
+};
+
+export const telegramLimitSpamMessage = async (
+  ctx,
+  myFunctionName,
+) => {
+  const [
+    userToMention,
+    userId,
+  ] = await getUserToMentionCtx(ctx);
+  const result = `<b><u>${myFunctionName}</u></b>
+
+🚫 Slow down! 🚫
+
+<a href="tg://user?id=${userId}">${userToMention}</a>, you're using this command too fast, wait a while before using it again.
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;

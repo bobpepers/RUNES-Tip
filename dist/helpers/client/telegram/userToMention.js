@@ -56,24 +56,39 @@ var getUserToMentionCtx = /*#__PURE__*/function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            console.log(ctx.update.message.from);
-            userId = ctx.update.message.from.id;
+            if (ctx && ctx.update && ctx.update.message && ctx.update.message.from && ctx.update.message.from.id) {
+              userId = ctx.update.message.from.id;
 
-            if (ctx.update.message.from.username && ctx.update.message.from.username !== '') {
-              userToMention = ctx.update.message.from.username;
-            } else if (ctx.update.message.from.first_name && ctx.update.message.from.last_name && ctx.update.message.from.first_name !== '' && ctx.update.message.from.last_name !== '') {
-              userToMention = "".concat(ctx.update.message.from.first_name, " ").concat(ctx.update.message.from.last_name);
-            } else if (ctx.update.message.from.first_name && ctx.update.message.from.first_name !== '') {
-              userToMention = ctx.update.message.from.first_name;
-            } else if (ctx.update.message.from.last_name && ctx.update.message.from.last_name !== '') {
-              userToMention = ctx.update.message.from.last_name;
-            } else {
-              userToMention = 'unknownUser';
+              if (ctx.update.message.from.username && ctx.update.message.from.username !== '') {
+                userToMention = ctx.update.message.from.username;
+              } else if (ctx.update.message.from.first_name && ctx.update.message.from.last_name && ctx.update.message.from.first_name !== '' && ctx.update.message.from.last_name !== '') {
+                userToMention = "".concat(ctx.update.message.from.first_name, " ").concat(ctx.update.message.from.last_name);
+              } else if (ctx.update.message.from.first_name && ctx.update.message.from.first_name !== '') {
+                userToMention = ctx.update.message.from.first_name;
+              } else if (ctx.update.message.from.last_name && ctx.update.message.from.last_name !== '') {
+                userToMention = ctx.update.message.from.last_name;
+              } else {
+                userToMention = 'unknownUser';
+              }
+            } else if (ctx && ctx.update && ctx.update.callback_query && ctx.update.callback_query.from && ctx.update.callback_query.from.id) {
+              userId = ctx.update.callback_query.from.id;
+
+              if (ctx.update.callback_query.from.username && ctx.update.callback_query.from.username !== '') {
+                userToMention = ctx.update.callback_query.from.username;
+              } else if (ctx.update.callback_query.from.first_name && ctx.update.callback_query.from.last_name && ctx.update.callback_query.from.first_name !== '' && ctx.update.callback_query.from.last_name !== '') {
+                userToMention = "".concat(ctx.update.callback_query.from.first_name, " ").concat(ctx.update.callback_query.from.last_name);
+              } else if (ctx.update.callback_query.from.first_name && ctx.update.callback_query.from.first_name !== '') {
+                userToMention = ctx.update.callback_query.from.first_name;
+              } else if (ctx.update.callback_query.from.last_name && ctx.update.callback_query.from.last_name !== '') {
+                userToMention = ctx.update.callback_query.from.last_name;
+              } else {
+                userToMention = 'unknownUser';
+              }
             }
 
             return _context2.abrupt("return", [userToMention, userId]);
 
-          case 4:
+          case 2:
           case "end":
             return _context2.stop();
         }

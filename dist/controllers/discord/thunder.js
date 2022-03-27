@@ -39,7 +39,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 var discordThunder = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(discordClient, message, filteredMessage, io, groupTask, channelTask, setting, faucetSetting, queue) {
-    var activity, userActivity, user;
+    var activity;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -50,26 +50,16 @@ var discordThunder = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var members, onlineMembers, _yield$userWalletExis, _yield$userWalletExis2, preWithoutBots, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, thunderRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, thunderee, thundereeWallet, thundertipRecord, userIdReceivedRain, tipActivity, _i, _listOfUsersRained, userThunder;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, members, onlineMembers, preWithoutBots, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, thunderRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, thunderee, thundereeWallet, thundertipRecord, userIdReceivedRain, tipActivity, _i, _listOfUsersRained, userThunder;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
                         _context.next = 2;
-                        return discordClient.guilds.cache.get(message.guildId).members.fetch({
-                          withPresences: true
-                        });
-
-                      case 2:
-                        members = _context.sent;
-                        onlineMembers = members.filter(function (member) {
-                          return member.presence && member.presence.status && member.presence.status === "online";
-                        });
-                        _context.next = 6;
                         return (0, _userWalletExist.userWalletExist)(message, t, filteredMessage[1].toLowerCase());
 
-                      case 6:
+                      case 2:
                         _yield$userWalletExis = _context.sent;
                         _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
                         user = _yield$userWalletExis2[0];
@@ -80,13 +70,23 @@ var discordThunder = /*#__PURE__*/function () {
                         }
 
                         if (user) {
-                          _context.next = 13;
+                          _context.next = 9;
                           break;
                         }
 
                         return _context.abrupt("return");
 
-                      case 13:
+                      case 9:
+                        _context.next = 11;
+                        return discordClient.guilds.cache.get(message.guildId).members.fetch({
+                          withPresences: true
+                        });
+
+                      case 11:
+                        members = _context.sent;
+                        onlineMembers = members.filter(function (member) {
+                          return member.presence && member.presence.status && member.presence.status === "online";
+                        });
                         _context.next = 15;
                         return (0, _mapMembers.mapMembers)(message, t, filteredMessage[3], onlineMembers, setting);
 

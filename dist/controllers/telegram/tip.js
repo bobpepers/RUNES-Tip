@@ -41,7 +41,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 var tipToTelegramUser = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(telegramClient, telegramApiClient, ctx, filteredMessage, io, groupTask, setting, faucetSetting, queue) {
-    var activity, user, AmountPosition, AmountPositionEnded, usersToTip, type, userActivity;
+    var activity, AmountPosition, AmountPositionEnded, usersToTip, type;
     return _regenerator["default"].wrap(function _callee3$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
@@ -56,7 +56,7 @@ var tipToTelegramUser = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, _loop, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, updatedBalance, fee, userTipAmount, faucetWatered, tipRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, tipee, tipeeWallet, tiptipRecord, tipActivity, _yield$getUserToMenti, _yield$getUserToMenti2, userToMention, userId, cutStringListUsers, i, _i, _cutStringListUsers, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _loop, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, updatedBalance, fee, userTipAmount, faucetWatered, tipRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, tipee, tipeeWallet, tiptipRecord, tipActivity, _yield$getUserToMenti, _yield$getUserToMenti2, userToMention, userId, cutStringListUsers, i, _i, _cutStringListUsers, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context2) {
                   while (1) {
@@ -92,13 +92,11 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                                   userExist = false;
 
                                   if (!(ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].type === 'text_mention' && !ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].user.is_bot)) {
-                                    _context.next = 9;
+                                    _context.next = 7;
                                     break;
                                   }
 
-                                  console.log('is a text mention');
-                                  console.log(ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].user);
-                                  _context.next = 6;
+                                  _context.next = 4;
                                   return _models["default"].user.findOne({
                                     where: {
                                       user_id: "telegram-".concat(ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].user.id)
@@ -117,20 +115,18 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                                     transaction: t
                                   });
 
-                                case 6:
+                                case 4:
                                   userExist = _context.sent;
-                                  _context.next = 15;
+                                  _context.next = 11;
                                   break;
 
-                                case 9:
+                                case 7:
                                   if (!(ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].type === 'mention')) {
-                                    _context.next = 15;
+                                    _context.next = 11;
                                     break;
                                   }
 
-                                  console.log('is a regular mention');
-                                  console.log(filteredMessage[parseInt(AmountPosition, 10)]);
-                                  _context.next = 14;
+                                  _context.next = 10;
                                   return _models["default"].user.findOne({
                                     where: {
                                       username: "".concat(filteredMessage[parseInt(AmountPosition, 10)].substring(1)),
@@ -150,15 +146,12 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                                     transaction: t
                                   });
 
-                                case 14:
+                                case 10:
                                   userExist = _context.sent;
 
-                                case 15:
+                                case 11:
                                   if (userExist) {
                                     userIdTest = userExist.user_id.replace('telegram-', '');
-                                    console.log(ctx.update.message.from.id);
-                                    console.log('ctx.update.message.from');
-                                    console.log(userIdTest);
 
                                     if (Number(userIdTest) !== ctx.update.message.from.id) {
                                       if (!usersToTip.find(function (o) {
@@ -175,7 +168,7 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                                     AmountPositionEnded = true;
                                   }
 
-                                case 18:
+                                case 14:
                                 case "end":
                                   return _context.stop();
                               }
@@ -209,8 +202,6 @@ var tipToTelegramUser = /*#__PURE__*/function () {
 
                       case 18:
                         if (filteredMessage[AmountPosition + 1] && filteredMessage[AmountPosition + 1].toLowerCase() === 'each') {
-                          console.log('filteredMessage[AmountPosition + 1]');
-                          console.log(filteredMessage[AmountPosition + 1]);
                           type = 'each';
                         }
 
@@ -533,24 +524,30 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                         _logger["default"].error("tip error: ".concat(err));
 
                         _context3.prev = 10;
-                        _context3.next = 13;
-                        return ctx.replyWithHTML((0, _telegram.errorMessage)('Tip'));
+                        _context3.t1 = ctx;
+                        _context3.next = 14;
+                        return (0, _telegram.errorMessage)('Tip');
 
-                      case 13:
-                        _context3.next = 18;
+                      case 14:
+                        _context3.t2 = _context3.sent;
+                        _context3.next = 17;
+                        return _context3.t1.replyWithHTML.call(_context3.t1, _context3.t2);
+
+                      case 17:
+                        _context3.next = 22;
                         break;
 
-                      case 15:
-                        _context3.prev = 15;
-                        _context3.t1 = _context3["catch"](10);
-                        console.log(_context3.t1);
+                      case 19:
+                        _context3.prev = 19;
+                        _context3.t3 = _context3["catch"](10);
+                        console.log(_context3.t3);
 
-                      case 18:
+                      case 22:
                       case "end":
                         return _context3.stop();
                     }
                   }
-                }, _callee2, null, [[0, 5], [10, 15]]);
+                }, _callee2, null, [[0, 5], [10, 19]]);
               }));
 
               return function (_x11) {

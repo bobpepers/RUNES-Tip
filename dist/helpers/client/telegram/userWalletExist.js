@@ -31,9 +31,7 @@ var userWalletExist = /*#__PURE__*/function () {
               userId = ctx.update.callback_query.from.id;
             }
 
-            console.log('ctx userwalletexists');
-            console.log(ctx);
-            _context.next = 6;
+            _context.next = 4;
             return _models["default"].user.findOne({
               where: {
                 user_id: "telegram-".concat(userId)
@@ -41,6 +39,7 @@ var userWalletExist = /*#__PURE__*/function () {
               include: [{
                 model: _models["default"].wallet,
                 as: 'wallet',
+                required: true,
                 include: [{
                   model: _models["default"].address,
                   as: 'addresses',
@@ -51,15 +50,15 @@ var userWalletExist = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 6:
+          case 4:
             user = _context.sent;
 
             if (user) {
-              _context.next = 13;
+              _context.next = 15;
               break;
             }
 
-            _context.next = 10;
+            _context.next = 8;
             return _models["default"].activity.create({
               type: "".concat(functionName, "_f")
             }, {
@@ -67,15 +66,21 @@ var userWalletExist = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 10:
+          case 8:
             activity = _context.sent;
-            _context.next = 13;
-            return ctx.reply((0, _telegram.userNotFoundMessage)());
+            _context.t0 = ctx;
+            _context.next = 12;
+            return (0, _telegram.userNotFoundMessage)(ctx, functionName);
 
-          case 13:
+          case 12:
+            _context.t1 = _context.sent;
+            _context.next = 15;
+            return _context.t0.replyWithHTML.call(_context.t0, _context.t1);
+
+          case 15:
             return _context.abrupt("return", [user, activity]);
 
-          case 14:
+          case 16:
           case "end":
             return _context.stop();
         }

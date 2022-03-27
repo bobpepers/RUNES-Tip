@@ -1,7 +1,6 @@
 import * as RateLimiterFlexible from "rate-limiter-flexible";
-import {
-  discordLimitSpamMessage,
-} from "../messages/discord";
+import { discordLimitSpamMessage } from "../messages/discord";
+import { telegramLimitSpamMessage } from "../messages/telegram";
 
 const errorConsumer = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 2,
@@ -277,7 +276,6 @@ export const myRateLimiter = async (
               console.log(e);
             });
             if (discordChannel) {
-              console.log('found discord channel');
               await discordChannel.send({
                 embeds: [
                   discordLimitSpamMessage(
@@ -289,11 +287,14 @@ export const myRateLimiter = async (
                 console.log(e);
               });
             }
-
-            console.log('after send reply');
           }
           if (platform === 'telegram') {
-            await message.channel.send({ embeds: [discordLimitSpamMessage(message, title)] });
+            await message.replyWithHTML(
+              await telegramLimitSpamMessage(
+                message,
+                title,
+              ),
+            );
           }
           if (platform === 'matrix') {
             await message.channel.send({ embeds: [discordLimitSpamMessage(message, title)] });

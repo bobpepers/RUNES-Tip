@@ -9,6 +9,8 @@ exports.discordPrice = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _sequelize = require("sequelize");
@@ -18,6 +20,8 @@ var _discord = require("../../messages/discord");
 var _models = _interopRequireDefault(require("../../models"));
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
+
+var _userWalletExist = require("../../helpers/client/discord/userWalletExist");
 
 var discordPrice = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(message, io) {
@@ -32,31 +36,34 @@ var discordPrice = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var user, priceInfo, userId, priceRecord, replyString, createActivity, findActivity;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, priceInfo, userId, priceRecord, replyString, createActivity, findActivity;
+
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
                         _context.next = 2;
-                        return _models["default"].user.findOne({
-                          where: {
-                            user_id: "discord-".concat(message.author.id)
-                          },
-                          include: [{
-                            model: _models["default"].wallet,
-                            as: 'wallet',
-                            include: [{
-                              model: _models["default"].address,
-                              as: 'addresses'
-                            }]
-                          }],
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
+                        return (0, _userWalletExist.userWalletExist)(message, t, 'price');
 
                       case 2:
-                        user = _context.sent;
-                        _context.next = 5;
+                        _yield$userWalletExis = _context.sent;
+                        _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
+                        user = _yield$userWalletExis2[0];
+                        userActivity = _yield$userWalletExis2[1];
+
+                        if (userActivity) {
+                          activity.unshift(userActivity);
+                        }
+
+                        if (user) {
+                          _context.next = 9;
+                          break;
+                        }
+
+                        return _context.abrupt("return");
+
+                      case 9:
+                        _context.next = 11;
                         return _models["default"].priceInfo.findOne({
                           where: {
                             currency: 'USD'
@@ -65,28 +72,13 @@ var discordPrice = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 5:
+                      case 11:
                         priceInfo = _context.sent;
-
-                        if (!(!user && !user.wallet)) {
-                          _context.next = 9;
-                          break;
-                        }
-
-                        _context.next = 9;
-                        return message.author.send("Wallet not found");
-
-                      case 9:
-                        if (!(user && user.wallet)) {
-                          _context.next = 29;
-                          break;
-                        }
-
                         userId = user.user_id.replace('discord-', '');
-                        _context.next = 13;
+                        _context.next = 15;
                         return _models["default"].priceInfo.findAll({});
 
-                      case 13:
+                      case 15:
                         priceRecord = _context.sent;
                         replyString = "";
                         replyString += priceRecord.map(function (a) {
@@ -94,39 +86,39 @@ var discordPrice = /*#__PURE__*/function () {
                         }).join('\n');
 
                         if (!(message.channel.type === 'DM')) {
-                          _context.next = 19;
+                          _context.next = 21;
                           break;
                         }
 
-                        _context.next = 19;
+                        _context.next = 21;
                         return message.author.send({
                           embeds: [(0, _discord.priceMessage)(replyString)]
                         });
 
-                      case 19:
+                      case 21:
                         if (!(message.channel.type === 'GUILD_TEXT')) {
-                          _context.next = 22;
+                          _context.next = 24;
                           break;
                         }
 
-                        _context.next = 22;
+                        _context.next = 24;
                         return message.channel.send({
                           embeds: [(0, _discord.priceMessage)(replyString)]
                         });
 
-                      case 22:
-                        _context.next = 24;
+                      case 24:
+                        _context.next = 26;
                         return _models["default"].activity.create({
-                          type: 'price',
+                          type: 'price_s',
                           earnerId: user.id
                         }, {
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 24:
+                      case 26:
                         createActivity = _context.sent;
-                        _context.next = 27;
+                        _context.next = 29;
                         return _models["default"].activity.findOne({
                           where: {
                             id: createActivity.id
@@ -139,16 +131,14 @@ var discordPrice = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 27:
+                      case 29:
                         findActivity = _context.sent;
                         activity.unshift(findActivity);
-
-                      case 29:
                         t.afterCommit(function () {
                           console.log('done price request');
                         });
 
-                      case 30:
+                      case 32:
                       case "end":
                         return _context.stop();
                     }

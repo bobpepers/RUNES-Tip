@@ -57,8 +57,6 @@ export const tipToTelegramUser = async (
         ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].type === 'text_mention'
        && !ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].user.is_bot
       ) {
-        console.log('is a text mention');
-        console.log(ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].user);
         userExist = await db.user.findOne({
           where: {
             user_id: `telegram-${ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].user.id}`,
@@ -81,8 +79,6 @@ export const tipToTelegramUser = async (
           transaction: t,
         });
       } else if (ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].type === 'mention') {
-        console.log('is a regular mention');
-        console.log(filteredMessage[parseInt(AmountPosition, 10)]);
         userExist = await db.user.findOne({
           where: {
             username: `${filteredMessage[parseInt(AmountPosition, 10)].substring(1)}`,
@@ -109,9 +105,6 @@ export const tipToTelegramUser = async (
 
       if (userExist) {
         const userIdTest = userExist.user_id.replace('telegram-', '');
-        console.log(ctx.update.message.from.id);
-        console.log('ctx.update.message.from');
-        console.log(userIdTest);
         if (Number(userIdTest) !== ctx.update.message.from.id) {
           if (!usersToTip.find((o) => o.id === userExist.id)) {
             usersToTip.push(userExist);
@@ -126,13 +119,15 @@ export const tipToTelegramUser = async (
     }
 
     if (usersToTip.length < 1) {
-      await ctx.replyWithHTML(notEnoughUsers('Tip'));
+      await ctx.replyWithHTML(
+        notEnoughUsers(
+          'Tip',
+        ),
+      );
       return;
     }
 
     if (filteredMessage[AmountPosition + 1] && filteredMessage[AmountPosition + 1].toLowerCase() === 'each') {
-      console.log('filteredMessage[AmountPosition + 1]');
-      console.log(filteredMessage[AmountPosition + 1]);
       type = 'each';
     }
 

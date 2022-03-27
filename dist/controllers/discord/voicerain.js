@@ -37,7 +37,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 var discordVoiceRain = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(discordClient, message, filteredMessage, io, groupTask, channelTask, setting, faucetSetting, queue) {
-    var activity, userActivity, user;
+    var activity;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -48,7 +48,7 @@ var discordVoiceRain = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var voiceChannelId, voiceChannel, onlineMembers, _yield$userWalletExis, _yield$userWalletExis2, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, rainRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, rainee, raineeWallet, raintipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, voiceChannelId, voiceChannel, onlineMembers, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, rainRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, rainee, raineeWallet, raintipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -82,43 +82,10 @@ var discordVoiceRain = /*#__PURE__*/function () {
                         return _context.abrupt("return");
 
                       case 8:
-                        voiceChannelId = filteredMessage[3].substr(2).slice(0, -1);
-                        _context.next = 11;
-                        return _models["default"].channel.findOne({
-                          where: {
-                            channelId: "discord-".concat(voiceChannelId),
-                            groupId: groupTask.id
-                          },
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
-
-                      case 11:
-                        voiceChannel = _context.sent;
-
-                        if (voiceChannel) {
-                          _context.next = 16;
-                          break;
-                        }
-
-                        _context.next = 15;
-                        return message.channel.send({
-                          embeds: [(0, _discord.voiceChannelNotFound)(message)]
-                        });
-
-                      case 15:
-                        return _context.abrupt("return");
-
-                      case 16:
-                        _context.next = 18;
-                        return discordClient.channels.cache.get(voiceChannelId).members;
-
-                      case 18:
-                        onlineMembers = _context.sent;
-                        _context.next = 21;
+                        _context.next = 10;
                         return (0, _userWalletExist.userWalletExist)(message, t, filteredMessage[1].toLowerCase());
 
-                      case 21:
+                      case 10:
                         _yield$userWalletExis = _context.sent;
                         _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
                         user = _yield$userWalletExis2[0];
@@ -129,13 +96,46 @@ var discordVoiceRain = /*#__PURE__*/function () {
                         }
 
                         if (user) {
-                          _context.next = 28;
+                          _context.next = 17;
                           break;
                         }
 
                         return _context.abrupt("return");
 
-                      case 28:
+                      case 17:
+                        voiceChannelId = filteredMessage[3].substr(2).slice(0, -1);
+                        _context.next = 20;
+                        return _models["default"].channel.findOne({
+                          where: {
+                            channelId: "discord-".concat(voiceChannelId),
+                            groupId: groupTask.id
+                          },
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 20:
+                        voiceChannel = _context.sent;
+
+                        if (voiceChannel) {
+                          _context.next = 25;
+                          break;
+                        }
+
+                        _context.next = 24;
+                        return message.channel.send({
+                          embeds: [(0, _discord.voiceChannelNotFound)(message)]
+                        });
+
+                      case 24:
+                        return _context.abrupt("return");
+
+                      case 25:
+                        _context.next = 27;
+                        return discordClient.channels.cache.get(voiceChannelId).members;
+
+                      case 27:
+                        onlineMembers = _context.sent;
                         _context.next = 30;
                         return (0, _mapMembers.mapMembers)(message, t, filteredMessage[4], onlineMembers, setting);
 

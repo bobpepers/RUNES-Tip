@@ -33,6 +33,11 @@ import {
   telegramWaterFaucetSettings,
 } from '../controllers/telegram/settings';
 
+import {
+  telegramUserBannedMessage,
+  telegramServerBannedMessage,
+} from '../messages/telegram';
+
 import getCoinSettings from '../config/settings';
 
 const settings = getCoinSettings();
@@ -66,11 +71,14 @@ export const telegramRouter = async (
   await telegramApiClient.connect();
 
   telegramClient.command('help', async (ctx) => {
+    let groupTask;
+    let lastSeen;
     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
     if (maintenance.maintenance || !maintenance.enabled) return;
     await queue.add(async () => {
       await createUpdateUser(ctx);
-      await updateLastSeen(ctx);
+      lastSeen = await updateLastSeen(ctx);
+      groupTask = await updateGroup(ctx);
     });
     const limited = await myRateLimiter(
       telegramClient,
@@ -78,18 +86,46 @@ export const telegramRouter = async (
       'telegram',
       'Help',
     );
+    if (limited) return;
+    if (groupTask && groupTask.banned) {
+      try {
+        await ctx.replyWithHTML(
+          await telegramServerBannedMessage(
+            groupTask,
+          ),
+        );
+      } catch (e) {
+        console.log(e);
+      }
+      return;
+    }
+
+    if (lastSeen && lastSeen.banned) {
+      try {
+        await ctx.replyWithHTML(
+          await telegramUserBannedMessage(
+            lastSeen,
+          ),
+        );
+      } catch (e) {
+        console.log(e);
+      }
+      return;
+    }
     await queue.add(async () => {
-      const groupTask = await updateGroup(ctx);
       const task = await fetchHelp(ctx, io);
     });
   });
 
   const priceCallBack = async (ctx) => {
+    let groupTask;
+    let lastSeen;
     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
     if (maintenance.maintenance || !maintenance.enabled) return;
     await queue.add(async () => {
       await createUpdateUser(ctx);
-      await updateLastSeen(ctx);
+      lastSeen = await updateLastSeen(ctx);
+      groupTask = await updateGroup(ctx);
     });
     const limited = await myRateLimiter(
       telegramClient,
@@ -97,18 +133,46 @@ export const telegramRouter = async (
       'telegram',
       'Price',
     );
+    if (limited) return;
+    if (groupTask && groupTask.banned) {
+      try {
+        await ctx.replyWithHTML(
+          await telegramServerBannedMessage(
+            groupTask,
+          ),
+        );
+      } catch (e) {
+        console.log(e);
+      }
+      return;
+    }
+
+    if (lastSeen && lastSeen.banned) {
+      try {
+        await ctx.replyWithHTML(
+          await telegramUserBannedMessage(
+            lastSeen,
+          ),
+        );
+      } catch (e) {
+        console.log(e);
+      }
+      return;
+    }
     await queue.add(async () => {
-      const groupTask = await updateGroup(ctx);
       const task = await telegramPrice(ctx, io);
     });
   };
 
   const faucetCallBack = async (ctx) => {
+    let groupTask;
+    let lastSeen;
     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
     if (maintenance.maintenance || !maintenance.enabled) return;
     await queue.add(async () => {
       await createUpdateUser(ctx);
-      await updateLastSeen(ctx);
+      lastSeen = await updateLastSeen(ctx);
+      groupTask = await updateGroup(ctx);
     });
     const limited = await myRateLimiter(
       telegramClient,
@@ -116,18 +180,46 @@ export const telegramRouter = async (
       'telegram',
       'Faucet',
     );
+    if (limited) return;
+    if (groupTask && groupTask.banned) {
+      try {
+        await ctx.replyWithHTML(
+          await telegramServerBannedMessage(
+            groupTask,
+          ),
+        );
+      } catch (e) {
+        console.log(e);
+      }
+      return;
+    }
+
+    if (lastSeen && lastSeen.banned) {
+      try {
+        await ctx.replyWithHTML(
+          await telegramUserBannedMessage(
+            lastSeen,
+          ),
+        );
+      } catch (e) {
+        console.log(e);
+      }
+      return;
+    }
     await queue.add(async () => {
-      const groupTask = await updateGroup(ctx);
       const task = await telegramFaucetClaim(ctx, io);
     });
   };
 
   const balanceCallBack = async (ctx) => {
+    let groupTask;
+    let lastSeen;
     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
     if (maintenance.maintenance || !maintenance.enabled) return;
     await queue.add(async () => {
       await createUpdateUser(ctx);
-      await updateLastSeen(ctx);
+      lastSeen = await updateLastSeen(ctx);
+      groupTask = await updateGroup(ctx);
     });
     const limited = await myRateLimiter(
       telegramClient,
@@ -136,8 +228,32 @@ export const telegramRouter = async (
       'Balance',
     );
     if (limited) return;
+    if (groupTask && groupTask.banned) {
+      try {
+        await ctx.replyWithHTML(
+          await telegramServerBannedMessage(
+            groupTask,
+          ),
+        );
+      } catch (e) {
+        console.log(e);
+      }
+      return;
+    }
+
+    if (lastSeen && lastSeen.banned) {
+      try {
+        await ctx.replyWithHTML(
+          await telegramUserBannedMessage(
+            lastSeen,
+          ),
+        );
+      } catch (e) {
+        console.log(e);
+      }
+      return;
+    }
     await queue.add(async () => {
-      const groupTask = await updateGroup(ctx);
       const task = await telegramBalance(
         ctx,
         io,
@@ -146,11 +262,14 @@ export const telegramRouter = async (
   };
 
   const infoCallBack = async (ctx) => {
+    let groupTask;
+    let lastSeen;
     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
     if (maintenance.maintenance || !maintenance.enabled) return;
     await queue.add(async () => {
       await createUpdateUser(ctx);
-      await updateLastSeen(ctx);
+      lastSeen = await updateLastSeen(ctx);
+      groupTask = await updateGroup(ctx);
     });
     const limited = await myRateLimiter(
       telegramClient,
@@ -158,8 +277,33 @@ export const telegramRouter = async (
       'telegram',
       'Info',
     );
+    if (limited) return;
+    if (groupTask && groupTask.banned) {
+      try {
+        await ctx.replyWithHTML(
+          await telegramServerBannedMessage(
+            groupTask,
+          ),
+        );
+      } catch (e) {
+        console.log(e);
+      }
+      return;
+    }
+
+    if (lastSeen && lastSeen.banned) {
+      try {
+        await ctx.replyWithHTML(
+          await telegramUserBannedMessage(
+            lastSeen,
+          ),
+        );
+      } catch (e) {
+        console.log(e);
+      }
+      return;
+    }
     await queue.add(async () => {
-      const groupTask = await updateGroup(ctx);
       const task = await fetchInfo(
         ctx,
         io,
@@ -168,11 +312,14 @@ export const telegramRouter = async (
   };
 
   const depositCallBack = async (ctx) => {
+    let groupTask;
+    let lastSeen;
     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
     if (maintenance.maintenance || !maintenance.enabled) return;
     await queue.add(async () => {
       await createUpdateUser(ctx);
-      await updateLastSeen(ctx);
+      lastSeen = await updateLastSeen(ctx);
+      groupTask = await updateGroup(ctx);
     });
     const limited = await myRateLimiter(
       telegramClient,
@@ -181,8 +328,32 @@ export const telegramRouter = async (
       'Deposit',
     );
     if (limited) return;
+    if (groupTask && groupTask.banned) {
+      try {
+        await ctx.replyWithHTML(
+          await telegramServerBannedMessage(
+            groupTask,
+          ),
+        );
+      } catch (e) {
+        console.log(e);
+      }
+      return;
+    }
+
+    if (lastSeen && lastSeen.banned) {
+      try {
+        await ctx.replyWithHTML(
+          await telegramUserBannedMessage(
+            lastSeen,
+          ),
+        );
+      } catch (e) {
+        console.log(e);
+      }
+      return;
+    }
     await queue.add(async () => {
-      const groupTask = await updateGroup(ctx);
       const task = await fetchWalletDepositAddress(
         ctx,
         io,
@@ -233,7 +404,7 @@ export const telegramRouter = async (
       });
     });
 
-    telegramClient.action('ReferralTop', async (ctx) => {
+    telegramClient.action('top', async (ctx) => {
       const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
       if (maintenance.maintenance || !maintenance.enabled) return;
       await queue.add(async () => {
@@ -279,6 +450,31 @@ export const telegramRouter = async (
       let disallow;
       const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
       if (maintenance.maintenance || !maintenance.enabled) return;
+      if (groupTask && groupTask.banned) {
+        try {
+          await ctx.replyWithHTML(
+            await telegramServerBannedMessage(
+              groupTask,
+            ),
+          );
+        } catch (e) {
+          console.log(e);
+        }
+        return;
+      }
+
+      if (lastSeen && lastSeen.banned) {
+        try {
+          await ctx.replyWithHTML(
+            await telegramUserBannedMessage(
+              lastSeen,
+            ),
+          );
+        } catch (e) {
+          console.log(e);
+        }
+        return;
+      }
       const groupTaskId = groupTask && groupTask.id;
 
       const faucetSetting = await telegramWaterFaucetSettings(
@@ -547,12 +743,12 @@ export const telegramRouter = async (
           telegramClient,
           ctx,
           'telegram',
-          'Rain',
+          'Withdraw',
         );
         if (limited) return;
         const setting = await telegramSettings(
           ctx,
-          'rain',
+          'withdraw',
           groupTaskId,
         );
         if (!setting) return;

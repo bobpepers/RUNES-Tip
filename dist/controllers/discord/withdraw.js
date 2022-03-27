@@ -30,7 +30,7 @@ var _validateWithdrawalAddress = require("../../helpers/blockchain/validateWithd
 /* eslint-disable import/prefer-default-export */
 var withdrawDiscordCreate = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(discordClient, message, filteredMessage, io, groupTask, channelTask, setting) {
-    var user, userActivity, activity;
+    var activity;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -41,7 +41,7 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, userId, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, _yield$validateWithdr, _yield$validateWithdr2, isInvalidAddress, isNodeOffline, failWithdrawalActivity, addressExternal, UserExternalAddressMnMAssociation, wallet, fee, transaction, activityCreate;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, userId, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, _yield$validateWithdr, _yield$validateWithdr2, isInvalidAddress, isNodeOffline, failWithdrawalActivity, addressExternal, UserExternalAddressMnMAssociation, wallet, fee, transaction, activityCreate;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {

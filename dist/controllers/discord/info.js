@@ -9,6 +9,8 @@ exports.discordCoinInfo = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _sequelize = require("sequelize");
@@ -18,6 +20,8 @@ var _discord = require("../../messages/discord");
 var _models = _interopRequireDefault(require("../../models"));
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
+
+var _userWalletExist = require("../../helpers/client/discord/userWalletExist");
 
 /* eslint-disable import/prefer-default-export */
 var discordCoinInfo = /*#__PURE__*/function () {
@@ -33,81 +37,92 @@ var discordCoinInfo = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var blockHeight, priceInfo, user, preActivity, finalActivity;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, blockHeight, priceInfo, preActivity, finalActivity;
+
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
                         _context.next = 2;
+                        return (0, _userWalletExist.userWalletExist)(message, t, 'info');
+
+                      case 2:
+                        _yield$userWalletExis = _context.sent;
+                        _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
+                        user = _yield$userWalletExis2[0];
+                        userActivity = _yield$userWalletExis2[1];
+
+                        if (userActivity) {
+                          activity.unshift(userActivity);
+                        }
+
+                        if (user) {
+                          _context.next = 9;
+                          break;
+                        }
+
+                        return _context.abrupt("return");
+
+                      case 9:
+                        _context.next = 11;
                         return _models["default"].block.findOne({
                           order: [['id', 'DESC']],
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 2:
+                      case 11:
                         blockHeight = _context.sent;
-                        _context.next = 5;
+                        _context.next = 14;
                         return _models["default"].priceInfo.findOne({
                           order: [['id', 'ASC']],
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 5:
+                      case 14:
                         priceInfo = _context.sent;
 
                         if (!(message.channel.type === 'DM')) {
-                          _context.next = 9;
+                          _context.next = 18;
                           break;
                         }
 
-                        _context.next = 9;
+                        _context.next = 18;
                         return message.author.send({
                           embeds: [(0, _discord.coinInfoMessage)(blockHeight.id, priceInfo)]
                         });
 
-                      case 9:
+                      case 18:
                         if (!(message.channel.type === 'GUILD_TEXT')) {
-                          _context.next = 14;
+                          _context.next = 23;
                           break;
                         }
 
-                        _context.next = 12;
+                        _context.next = 21;
                         return message.author.send({
                           embeds: [(0, _discord.coinInfoMessage)(blockHeight.id, priceInfo)]
                         });
 
-                      case 12:
-                        _context.next = 14;
+                      case 21:
+                        _context.next = 23;
                         return message.channel.send({
                           embeds: [(0, _discord.warnDirectMessage)(message.author.id, 'Coin Info')]
                         });
 
-                      case 14:
-                        _context.next = 16;
-                        return _models["default"].user.findOne({
-                          where: {
-                            user_id: "discord-".concat(message.author.id)
-                          },
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
-
-                      case 16:
-                        user = _context.sent;
-                        _context.next = 19;
+                      case 23:
+                        _context.next = 25;
                         return _models["default"].activity.create({
-                          type: 'info',
+                          type: 'info_s',
                           earnerId: user.id
                         }, {
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 19:
+                      case 25:
                         preActivity = _context.sent;
-                        _context.next = 22;
+                        _context.next = 28;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -120,14 +135,14 @@ var discordCoinInfo = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 22:
+                      case 28:
                         finalActivity = _context.sent;
                         activity.unshift(finalActivity);
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 25:
+                      case 31:
                       case "end":
                         return _context.stop();
                     }

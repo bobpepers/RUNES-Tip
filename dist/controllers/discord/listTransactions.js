@@ -9,6 +9,8 @@ exports.fetchDiscordListTransactions = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _sequelize = require("sequelize");
@@ -18,6 +20,8 @@ var _discord = require("../../messages/discord");
 var _models = _interopRequireDefault(require("../../models"));
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
+
+var _userWalletExist = require("../../helpers/client/discord/userWalletExist");
 
 var fetchDiscordListTransactions = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(message, io) {
@@ -32,51 +36,35 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var user, createFailActivity, userId, transactions, createActivity, findActivity;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, userId, transactions, createActivity, findActivity;
+
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
                         _context.next = 2;
-                        return _models["default"].user.findOne({
-                          where: {
-                            user_id: "discord-".concat(message.author.id)
-                          },
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
+                        return (0, _userWalletExist.userWalletExist)(message, t, 'listtransactions');
 
                       case 2:
-                        user = _context.sent;
+                        _yield$userWalletExis = _context.sent;
+                        _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
+                        user = _yield$userWalletExis2[0];
+                        userActivity = _yield$userWalletExis2[1];
+
+                        if (userActivity) {
+                          activity.unshift(userActivity);
+                        }
 
                         if (user) {
-                          _context.next = 10;
+                          _context.next = 9;
                           break;
                         }
 
-                        _context.next = 6;
-                        return _models["default"].activity.create({
-                          type: 'listtransactions_f',
-                          earnerId: user.id
-                        }, {
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
+                        return _context.abrupt("return");
 
-                      case 6:
-                        createFailActivity = _context.sent;
-                        activity.unshift(createFailActivity);
-                        _context.next = 10;
-                        return message.author.send("User not found");
-
-                      case 10:
-                        if (!user) {
-                          _context.next = 30;
-                          break;
-                        }
-
+                      case 9:
                         userId = user.user_id.replace('discord-', '');
-                        _context.next = 14;
+                        _context.next = 12;
                         return _models["default"].transaction.findAll({
                           where: {
                             userId: user.id
@@ -87,9 +75,9 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 14:
+                      case 12:
                         transactions = _context.sent;
-                        _context.next = 17;
+                        _context.next = 15;
                         return _models["default"].activity.create({
                           type: 'listtransactions_s',
                           earnerId: user.id
@@ -98,9 +86,9 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 17:
+                      case 15:
                         createActivity = _context.sent;
-                        _context.next = 20;
+                        _context.next = 18;
                         return _models["default"].activity.findOne({
                           where: {
                             id: createActivity.id
@@ -113,43 +101,43 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 20:
+                      case 18:
                         findActivity = _context.sent;
                         activity.unshift(findActivity);
 
                         if (!(message.channel.type === 'DM')) {
-                          _context.next = 25;
+                          _context.next = 23;
                           break;
                         }
 
-                        _context.next = 25;
+                        _context.next = 23;
                         return message.author.send({
                           embeds: [(0, _discord.listTransactionsMessage)(userId, user, transactions)]
                         });
 
-                      case 25:
+                      case 23:
                         if (!(message.channel.type === 'GUILD_TEXT')) {
-                          _context.next = 30;
+                          _context.next = 28;
                           break;
                         }
 
-                        _context.next = 28;
+                        _context.next = 26;
                         return message.author.send({
                           embeds: [(0, _discord.listTransactionsMessage)(userId, user, transactions)]
                         });
 
-                      case 28:
-                        _context.next = 30;
+                      case 26:
+                        _context.next = 28;
                         return message.channel.send({
                           embeds: [(0, _discord.warnDirectMessage)(userId, 'Balance')]
                         });
 
-                      case 30:
+                      case 28:
                         t.afterCommit(function () {
                           console.log('done list transactions request');
                         });
 
-                      case 31:
+                      case 29:
                       case "end":
                         return _context.stop();
                     }

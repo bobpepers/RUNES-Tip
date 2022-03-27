@@ -70,8 +70,8 @@ var userWalletExist = /*#__PURE__*/function () {
           case 7:
             activity = _context.sent;
             _context.next = 10;
-            return message.channel.send({
-              embeds: [(0, _discord.walletNotFoundMessage)(message, capitalize(functionName))]
+            return message.reply({
+              embeds: [(0, _discord.userNotFoundMessage)(message, capitalize(functionName))]
             });
 
           case 10:

@@ -32,7 +32,7 @@ var settings = (0, _settings["default"])();
 
 var discordFaucetClaim = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(message, io) {
-    var user, userActivity, activity;
+    var activity;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -43,14 +43,14 @@ var discordFaucetClaim = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, faucet, row, fActivity, lastFaucetTip, userId, username, dateFuture, dateNow, distance, activityT, amountToTip, faucetTip, updateFaucet, updateWallet, preActivity, finalActivity;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, faucet, row, fActivity, lastFaucetTip, userId, username, dateFuture, dateNow, distance, activityT, amountToTip, faucetTip, updateFaucet, updateWallet, preActivity, finalActivity;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
                         _context.next = 2;
-                        return (0, _userWalletExist.userWalletExist)(message, t, 'faucet');
+                        return (0, _userWalletExist.userWalletExist)(message, t, 'faucettip');
 
                       case 2:
                         _yield$userWalletExis = _context.sent;
@@ -313,9 +313,7 @@ var discordFaucetClaim = /*#__PURE__*/function () {
               });
             }
 
-            return _context3.abrupt("return", true);
-
-          case 5:
+          case 4:
           case "end":
             return _context3.stop();
         }

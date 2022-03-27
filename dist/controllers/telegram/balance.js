@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.fetchWalletBalance = void 0;
+exports.telegramBalance = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -23,9 +23,9 @@ var _userWalletExist = require("../../helpers/client/telegram/userWalletExist");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
-var fetchWalletBalance = /*#__PURE__*/function () {
+var telegramBalance = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(ctx, io) {
-    var activity, user, userActivity;
+    var activity;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -36,7 +36,7 @@ var fetchWalletBalance = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, createActivity, findActivity, priceInfo;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, createActivity, findActivity, priceInfo;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -199,24 +199,30 @@ var fetchWalletBalance = /*#__PURE__*/function () {
                         _logger["default"].error("Balance error: ".concat(err));
 
                         _context2.prev = 10;
-                        _context2.next = 13;
-                        return ctx.replyWithHTML((0, _telegram.errorMessage)('Balance'));
+                        _context2.t1 = ctx;
+                        _context2.next = 14;
+                        return (0, _telegram.errorMessage)('Balance');
 
-                      case 13:
-                        _context2.next = 18;
+                      case 14:
+                        _context2.t2 = _context2.sent;
+                        _context2.next = 17;
+                        return _context2.t1.replyWithHTML.call(_context2.t1, _context2.t2);
+
+                      case 17:
+                        _context2.next = 22;
                         break;
 
-                      case 15:
-                        _context2.prev = 15;
-                        _context2.t1 = _context2["catch"](10);
-                        console.log(_context2.t1);
+                      case 19:
+                        _context2.prev = 19;
+                        _context2.t3 = _context2["catch"](10);
+                        console.log(_context2.t3);
 
-                      case 18:
+                      case 22:
                       case "end":
                         return _context2.stop();
                     }
                   }
-                }, _callee2, null, [[0, 5], [10, 15]]);
+                }, _callee2, null, [[0, 5], [10, 19]]);
               }));
 
               return function (_x4) {
@@ -239,9 +245,9 @@ var fetchWalletBalance = /*#__PURE__*/function () {
     }, _callee3);
   }));
 
-  return function fetchWalletBalance(_x, _x2) {
+  return function telegramBalance(_x, _x2) {
     return _ref.apply(this, arguments);
   };
 }();
 
-exports.fetchWalletBalance = fetchWalletBalance;
+exports.telegramBalance = telegramBalance;

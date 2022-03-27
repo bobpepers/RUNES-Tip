@@ -5,7 +5,9 @@ import { capitalize } from "../../helpers/utils";
 
 const settings = getCoinSettings();
 
-export const discordUserBannedMessage = (user) => {
+export const discordUserBannedMessage = (
+  user,
+) => {
   const result = new MessageEmbed()
     .setColor("#C70039")
     .setTitle(`🚫     User: ${user.username} Banned     🚫`)
@@ -20,7 +22,9 @@ ${user.banMessage}`)
   return result;
 };
 
-export const discordServerBannedMessage = (server) => {
+export const discordServerBannedMessage = (
+  server,
+) => {
   const result = new MessageEmbed()
     .setColor(`#C70039`)
     .setTitle('🚫     Server Banned     🚫')

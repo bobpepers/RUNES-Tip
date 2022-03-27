@@ -11,6 +11,8 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _telegraf = require("telegraf");
@@ -24,6 +26,8 @@ var _settings = _interopRequireDefault(require("../../config/settings"));
 var _models = _interopRequireDefault(require("../../models"));
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
+
+var _userWalletExist = require("../../helpers/client/telegram/userWalletExist");
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
@@ -44,32 +48,34 @@ var fetchHelp = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var user, withdraw, activityCreateFinish, activityFinish;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, withdraw, activityCreateFinish, activityFinish;
+
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
                         _context.next = 2;
-                        return _models["default"].user.findOne({
-                          where: {
-                            user_id: "telegram-".concat(ctx.update.message.from.id)
-                          },
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
+                        return (0, _userWalletExist.userWalletExist)(ctx, t, 'help');
 
                       case 2:
-                        user = _context.sent;
+                        _yield$userWalletExis = _context.sent;
+                        _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
+                        user = _yield$userWalletExis2[0];
+                        userActivity = _yield$userWalletExis2[1];
+
+                        if (userActivity) {
+                          activity.unshift(userActivity);
+                        }
 
                         if (user) {
-                          _context.next = 5;
+                          _context.next = 9;
                           break;
                         }
 
                         return _context.abrupt("return");
 
-                      case 5:
-                        _context.next = 7;
+                      case 9:
+                        _context.next = 11;
                         return _models["default"].features.findOne({
                           where: {
                             type: 'global',
@@ -79,38 +85,38 @@ var fetchHelp = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 7:
+                      case 11:
                         withdraw = _context.sent;
                         _context.t0 = ctx.telegram;
                         _context.t1 = ctx.update.message.from.id;
-                        _context.next = 12;
+                        _context.next = 16;
                         return (0, _telegram.helpMessage)(withdraw);
 
-                      case 12:
+                      case 16:
                         _context.t2 = _context.sent;
                         _context.t3 = _objectSpread({
                           parse_mode: 'HTML'
-                        }, _telegraf.Markup.inlineKeyboard([[_telegraf.Markup.button.callback('Balance', 'balance'), _telegraf.Markup.button.callback('Price', 'price')], [_telegraf.Markup.button.callback('Info', 'info'), _telegraf.Markup.button.callback('Deposit', 'deposit')], settings.coin.setting === 'Runebase' && [_telegraf.Markup.button.callback('Referral', 'referral'), _telegraf.Markup.button.callback('Referral Top 10', 'referral')]]));
-                        _context.next = 16;
+                        }, _telegraf.Markup.inlineKeyboard([[_telegraf.Markup.button.callback('Balance', 'balance'), _telegraf.Markup.button.callback('Price', 'price')], [_telegraf.Markup.button.callback('Info', 'info'), _telegraf.Markup.button.callback('Deposit', 'deposit')], settings.coin.setting === 'Runebase' ? [_telegraf.Markup.button.callback('Referral', 'referral'), _telegraf.Markup.button.callback('Referral Top 10', 'top')] : []]));
+                        _context.next = 20;
                         return _context.t0.sendMessage.call(_context.t0, _context.t1, _context.t2, _context.t3);
 
-                      case 16:
+                      case 20:
                         if (!(ctx.update.message.chat.type !== 'private')) {
-                          _context.next = 23;
+                          _context.next = 27;
                           break;
                         }
 
                         _context.t4 = ctx;
-                        _context.next = 20;
+                        _context.next = 24;
                         return (0, _telegram.warnDirectMessage)(user);
 
-                      case 20:
+                      case 24:
                         _context.t5 = _context.sent;
-                        _context.next = 23;
+                        _context.next = 27;
                         return _context.t4.replyWithHTML.call(_context.t4, _context.t5);
 
-                      case 23:
-                        _context.next = 25;
+                      case 27:
+                        _context.next = 29;
                         return _models["default"].activity.create({
                           type: 'help',
                           earnerId: user.id
@@ -119,9 +125,9 @@ var fetchHelp = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 25:
+                      case 29:
                         activityCreateFinish = _context.sent;
-                        _context.next = 28;
+                        _context.next = 32;
                         return _models["default"].activity.findOne({
                           where: {
                             id: activityCreateFinish.id
@@ -134,14 +140,14 @@ var fetchHelp = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 28:
+                      case 32:
                         activityFinish = _context.sent;
                         activity.unshift(activityFinish);
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 31:
+                      case 35:
                       case "end":
                         return _context.stop();
                     }
@@ -181,24 +187,30 @@ var fetchHelp = /*#__PURE__*/function () {
                         _logger["default"].error("help error: ".concat(err));
 
                         _context2.prev = 10;
-                        _context2.next = 13;
-                        return ctx.replyWithHTML((0, _telegram.errorMessage)('Help'));
+                        _context2.t1 = ctx;
+                        _context2.next = 14;
+                        return (0, _telegram.errorMessage)('Help');
 
-                      case 13:
-                        _context2.next = 18;
+                      case 14:
+                        _context2.t2 = _context2.sent;
+                        _context2.next = 17;
+                        return _context2.t1.replyWithHTML.call(_context2.t1, _context2.t2);
+
+                      case 17:
+                        _context2.next = 22;
                         break;
 
-                      case 15:
-                        _context2.prev = 15;
-                        _context2.t1 = _context2["catch"](10);
-                        console.log(_context2.t1);
+                      case 19:
+                        _context2.prev = 19;
+                        _context2.t3 = _context2["catch"](10);
+                        console.log(_context2.t3);
 
-                      case 18:
+                      case 22:
                       case "end":
                         return _context2.stop();
                     }
                   }
-                }, _callee2, null, [[0, 5], [10, 15]]);
+                }, _callee2, null, [[0, 5], [10, 19]]);
               }));
 
               return function (_x4) {

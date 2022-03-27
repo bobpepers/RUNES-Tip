@@ -17,6 +17,8 @@ var RateLimiterFlexible = _interopRequireWildcard(require("rate-limiter-flexible
 
 var _discord = require("../messages/discord");
 
+var _telegram = require("../messages/telegram");
+
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -68,7 +70,7 @@ var rateLimiterHurricane = new RateLimiterFlexible["default"].RateLimiterMemory(
   duration: 120
 });
 var rateLimiterIgnoreMe = new RateLimiterFlexible["default"].RateLimiterMemory({
-  points: 5,
+  points: 6,
   duration: 120
 });
 var rateLimiterSleet = new RateLimiterFlexible["default"].RateLimiterMemory({
@@ -88,7 +90,7 @@ var rateLimiterDeposit = new RateLimiterFlexible["default"].RateLimiterMemory({
   duration: 120
 });
 var rateLimiterStats = new RateLimiterFlexible["default"].RateLimiterMemory({
-  points: 10,
+  points: 4,
   duration: 120
 });
 var rateLimiterLeaderboard = new RateLimiterFlexible["default"].RateLimiterMemory({
@@ -462,12 +464,12 @@ var myRateLimiter = /*#__PURE__*/function () {
             notError = _context.sent;
 
             if (!(notError.remainingPoints > 0)) {
-              _context.next = 127;
+              _context.next = 129;
               break;
             }
 
             if (!(platform === 'discord')) {
-              _context.next = 121;
+              _context.next = 119;
               break;
             }
 
@@ -481,68 +483,68 @@ var myRateLimiter = /*#__PURE__*/function () {
             discordChannel = _context.sent;
 
             if (!discordChannel) {
-              _context.next = 120;
+              _context.next = 119;
               break;
             }
 
-            console.log('found discord channel');
-            _context.next = 120;
+            _context.next = 119;
             return discordChannel.send({
               embeds: [(0, _discord.discordLimitSpamMessage)(userId, title)]
             })["catch"](function (e) {
               console.log(e);
             });
 
-          case 120:
-            console.log('after send reply');
-
-          case 121:
+          case 119:
             if (!(platform === 'telegram')) {
-              _context.next = 124;
+              _context.next = 126;
               break;
             }
 
-            _context.next = 124;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, title)]
-            });
+            _context.t1 = message;
+            _context.next = 123;
+            return (0, _telegram.telegramLimitSpamMessage)(message, title);
 
-          case 124:
+          case 123:
+            _context.t2 = _context.sent;
+            _context.next = 126;
+            return _context.t1.replyWithHTML.call(_context.t1, _context.t2);
+
+          case 126:
             if (!(platform === 'matrix')) {
-              _context.next = 127;
+              _context.next = 129;
               break;
             }
 
-            _context.next = 127;
+            _context.next = 129;
             return message.channel.send({
               embeds: [(0, _discord.discordLimitSpamMessage)(message, title)]
             });
 
-          case 127:
+          case 129:
             return _context.abrupt("return", true);
 
-          case 130:
-            _context.prev = 130;
-            _context.t1 = _context["catch"](106);
+          case 132:
+            _context.prev = 132;
+            _context.t3 = _context["catch"](106);
             return _context.abrupt("return", true);
-
-          case 133:
-            _context.next = 140;
-            break;
 
           case 135:
-            _context.prev = 135;
-            _context.t2 = _context["catch"](0);
-            console.log(_context.t2);
+            _context.next = 142;
+            break;
+
+          case 137:
+            _context.prev = 137;
+            _context.t4 = _context["catch"](0);
+            console.log(_context.t4);
             console.log('catching the last error');
             return _context.abrupt("return", true);
 
-          case 140:
+          case 142:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 135], [4, 104], [106, 130]]);
+    }, _callee, null, [[0, 137], [4, 104], [106, 132]]);
   }));
 
   return function myRateLimiter(_x, _x2, _x3, _x4) {

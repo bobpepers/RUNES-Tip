@@ -37,7 +37,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 var discordRain = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(discordClient, message, filteredMessage, io, groupTask, channelTask, setting, faucetSetting, queue) {
-    var activity, userActivity, user;
+    var activity;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -48,31 +48,16 @@ var discordRain = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var members, onlineMembers, _yield$userWalletExis, _yield$userWalletExis2, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, fActivity, updatedBalance, fee, amountPerUser, faucetWatered, rainRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, rainee, raineeWallet, raintipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, members, onlineMembers, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, fActivity, updatedBalance, fee, amountPerUser, faucetWatered, rainRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, rainee, raineeWallet, raintipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
                         _context.next = 2;
-                        return discordClient.guilds.cache.get(message.guildId).members.fetch({
-                          withPresences: true
-                        });
-
-                      case 2:
-                        members = _context.sent;
-                        _context.next = 5;
-                        return members.filter(function (member) {
-                          var memberStatus = member && member.presence && member.presence.status;
-                          return memberStatus === "online";
-                        });
-
-                      case 5:
-                        onlineMembers = _context.sent;
-                        _context.next = 8;
                         return (0, _userWalletExist.userWalletExist)(message, t, filteredMessage[1].toLowerCase());
 
-                      case 8:
+                      case 2:
                         _yield$userWalletExis = _context.sent;
                         _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
                         user = _yield$userWalletExis2[0];
@@ -83,13 +68,28 @@ var discordRain = /*#__PURE__*/function () {
                         }
 
                         if (user) {
-                          _context.next = 15;
+                          _context.next = 9;
                           break;
                         }
 
                         return _context.abrupt("return");
 
-                      case 15:
+                      case 9:
+                        _context.next = 11;
+                        return discordClient.guilds.cache.get(message.guildId).members.fetch({
+                          withPresences: true
+                        });
+
+                      case 11:
+                        members = _context.sent;
+                        _context.next = 14;
+                        return members.filter(function (member) {
+                          var memberStatus = member && member.presence && member.presence.status;
+                          return memberStatus === "online";
+                        });
+
+                      case 14:
+                        onlineMembers = _context.sent;
                         _context.next = 17;
                         return (0, _mapMembers.mapMembers)(message, t, filteredMessage[3], onlineMembers, setting);
 

@@ -13,6 +13,10 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _dotenv = require("dotenv");
 
+var _telegram = require("telegram");
+
+var _sessions = require("telegram/sessions");
+
 var _help = require("../controllers/telegram/help");
 
 var _info = require("../controllers/telegram/info");
@@ -33,7 +37,7 @@ var _flood = require("../controllers/telegram/flood");
 
 var _sleet = require("../controllers/telegram/sleet");
 
-var _price = _interopRequireDefault(require("../controllers/telegram/price"));
+var _price = require("../controllers/telegram/price");
 
 var _executeTips = require("../helpers/client/telegram/executeTips");
 
@@ -51,32 +55,26 @@ var _referral = require("../controllers/telegram/referral");
 
 var _settings = require("../controllers/telegram/settings");
 
+var _telegram2 = require("../messages/telegram");
+
 var _settings2 = _interopRequireDefault(require("../config/settings"));
 
 var settings = (0, _settings2["default"])();
 (0, _dotenv.config)();
-
-var _require = require('telegram'),
-    Api = _require.Api,
-    TelegramClient = _require.TelegramClient;
-
-var _require2 = require('telegram/sessions'),
-    StoreSession = _require2.StoreSession;
-
-var storeSession = new StoreSession("telegram_session");
-var telegramApiClient = new TelegramClient(storeSession, Number(process.env.TELEGRAM_API_ID), process.env.TELEGRAM_API_HASH, {
+var storeSession = new _sessions.StoreSession("telegram_session");
+var telegramApiClient = new _telegram.TelegramClient(storeSession, Number(process.env.TELEGRAM_API_ID), process.env.TELEGRAM_API_HASH, {
   connectionRetries: 5
 });
 var runesGroup = process.env.TELEGRAM_RUNES_GROUP;
 
 var telegramRouter = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee45(telegramClient, queue, io, settings) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee44(telegramClient, queue, io, settings) {
     var priceCallBack, faucetCallBack, balanceCallBack, infoCallBack, depositCallBack;
-    return _regenerator["default"].wrap(function _callee45$(_context45) {
+    return _regenerator["default"].wrap(function _callee44$(_context44) {
       while (1) {
-        switch (_context45.prev = _context45.next) {
+        switch (_context44.prev = _context44.next) {
           case 0:
-            _context45.next = 2;
+            _context44.next = 2;
             return telegramApiClient.start({
               botAuthToken: process.env.TELEGRAM_BOT_TOKEN,
               onError: function onError(err) {
@@ -85,17 +83,17 @@ var telegramRouter = /*#__PURE__*/function () {
             });
 
           case 2:
-            _context45.next = 4;
+            _context44.next = 4;
             return telegramApiClient.session.save();
 
           case 4:
-            _context45.next = 6;
+            _context44.next = 6;
             return telegramApiClient.connect();
 
           case 6:
             telegramClient.command('help', /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(ctx) {
-                var maintenance, limited;
+                var groupTask, lastSeen, maintenance, limited;
                 return _regenerator["default"].wrap(function _callee3$(_context3) {
                   while (1) {
                     switch (_context3.prev = _context3.next) {
@@ -128,6 +126,14 @@ var telegramRouter = /*#__PURE__*/function () {
                                   return (0, _user.updateLastSeen)(ctx);
 
                                 case 4:
+                                  lastSeen = _context.sent;
+                                  _context.next = 7;
+                                  return (0, _group.updateGroup)(ctx);
+
+                                case 7:
+                                  groupTask = _context.sent;
+
+                                case 8:
                                 case "end":
                                   return _context.stop();
                               }
@@ -141,25 +147,85 @@ var telegramRouter = /*#__PURE__*/function () {
 
                       case 9:
                         limited = _context3.sent;
-                        _context3.next = 12;
+
+                        if (!limited) {
+                          _context3.next = 12;
+                          break;
+                        }
+
+                        return _context3.abrupt("return");
+
+                      case 12:
+                        if (!(groupTask && groupTask.banned)) {
+                          _context3.next = 26;
+                          break;
+                        }
+
+                        _context3.prev = 13;
+                        _context3.t0 = ctx;
+                        _context3.next = 17;
+                        return (0, _telegram2.telegramServerBannedMessage)(groupTask);
+
+                      case 17:
+                        _context3.t1 = _context3.sent;
+                        _context3.next = 20;
+                        return _context3.t0.replyWithHTML.call(_context3.t0, _context3.t1);
+
+                      case 20:
+                        _context3.next = 25;
+                        break;
+
+                      case 22:
+                        _context3.prev = 22;
+                        _context3.t2 = _context3["catch"](13);
+                        console.log(_context3.t2);
+
+                      case 25:
+                        return _context3.abrupt("return");
+
+                      case 26:
+                        if (!(lastSeen && lastSeen.banned)) {
+                          _context3.next = 40;
+                          break;
+                        }
+
+                        _context3.prev = 27;
+                        _context3.t3 = ctx;
+                        _context3.next = 31;
+                        return (0, _telegram2.telegramUserBannedMessage)(lastSeen);
+
+                      case 31:
+                        _context3.t4 = _context3.sent;
+                        _context3.next = 34;
+                        return _context3.t3.replyWithHTML.call(_context3.t3, _context3.t4);
+
+                      case 34:
+                        _context3.next = 39;
+                        break;
+
+                      case 36:
+                        _context3.prev = 36;
+                        _context3.t5 = _context3["catch"](27);
+                        console.log(_context3.t5);
+
+                      case 39:
+                        return _context3.abrupt("return");
+
+                      case 40:
+                        _context3.next = 42;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
-                          var groupTask, task;
+                          var task;
                           return _regenerator["default"].wrap(function _callee2$(_context2) {
                             while (1) {
                               switch (_context2.prev = _context2.next) {
                                 case 0:
                                   _context2.next = 2;
-                                  return (0, _group.updateGroup)(ctx);
-
-                                case 2:
-                                  groupTask = _context2.sent;
-                                  _context2.next = 5;
                                   return (0, _help.fetchHelp)(ctx, io);
 
-                                case 5:
+                                case 2:
                                   task = _context2.sent;
 
-                                case 6:
+                                case 3:
                                 case "end":
                                   return _context2.stop();
                               }
@@ -167,12 +233,12 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee2);
                         })));
 
-                      case 12:
+                      case 42:
                       case "end":
                         return _context3.stop();
                     }
                   }
-                }, _callee3);
+                }, _callee3, null, [[13, 22], [27, 36]]);
               }));
 
               return function (_x5) {
@@ -182,7 +248,7 @@ var telegramRouter = /*#__PURE__*/function () {
 
             priceCallBack = /*#__PURE__*/function () {
               var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(ctx) {
-                var maintenance, limited;
+                var groupTask, lastSeen, maintenance, limited;
                 return _regenerator["default"].wrap(function _callee6$(_context6) {
                   while (1) {
                     switch (_context6.prev = _context6.next) {
@@ -215,6 +281,14 @@ var telegramRouter = /*#__PURE__*/function () {
                                   return (0, _user.updateLastSeen)(ctx);
 
                                 case 4:
+                                  lastSeen = _context4.sent;
+                                  _context4.next = 7;
+                                  return (0, _group.updateGroup)(ctx);
+
+                                case 7:
+                                  groupTask = _context4.sent;
+
+                                case 8:
                                 case "end":
                                   return _context4.stop();
                               }
@@ -228,25 +302,85 @@ var telegramRouter = /*#__PURE__*/function () {
 
                       case 9:
                         limited = _context6.sent;
-                        _context6.next = 12;
+
+                        if (!limited) {
+                          _context6.next = 12;
+                          break;
+                        }
+
+                        return _context6.abrupt("return");
+
+                      case 12:
+                        if (!(groupTask && groupTask.banned)) {
+                          _context6.next = 26;
+                          break;
+                        }
+
+                        _context6.prev = 13;
+                        _context6.t0 = ctx;
+                        _context6.next = 17;
+                        return (0, _telegram2.telegramServerBannedMessage)(groupTask);
+
+                      case 17:
+                        _context6.t1 = _context6.sent;
+                        _context6.next = 20;
+                        return _context6.t0.replyWithHTML.call(_context6.t0, _context6.t1);
+
+                      case 20:
+                        _context6.next = 25;
+                        break;
+
+                      case 22:
+                        _context6.prev = 22;
+                        _context6.t2 = _context6["catch"](13);
+                        console.log(_context6.t2);
+
+                      case 25:
+                        return _context6.abrupt("return");
+
+                      case 26:
+                        if (!(lastSeen && lastSeen.banned)) {
+                          _context6.next = 40;
+                          break;
+                        }
+
+                        _context6.prev = 27;
+                        _context6.t3 = ctx;
+                        _context6.next = 31;
+                        return (0, _telegram2.telegramUserBannedMessage)(lastSeen);
+
+                      case 31:
+                        _context6.t4 = _context6.sent;
+                        _context6.next = 34;
+                        return _context6.t3.replyWithHTML.call(_context6.t3, _context6.t4);
+
+                      case 34:
+                        _context6.next = 39;
+                        break;
+
+                      case 36:
+                        _context6.prev = 36;
+                        _context6.t5 = _context6["catch"](27);
+                        console.log(_context6.t5);
+
+                      case 39:
+                        return _context6.abrupt("return");
+
+                      case 40:
+                        _context6.next = 42;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5() {
-                          var groupTask, task;
+                          var task;
                           return _regenerator["default"].wrap(function _callee5$(_context5) {
                             while (1) {
                               switch (_context5.prev = _context5.next) {
                                 case 0:
                                   _context5.next = 2;
-                                  return (0, _group.updateGroup)(ctx);
+                                  return (0, _price.telegramPrice)(ctx, io);
 
                                 case 2:
-                                  groupTask = _context5.sent;
-                                  _context5.next = 5;
-                                  return (0, _price["default"])(ctx, io);
-
-                                case 5:
                                   task = _context5.sent;
 
-                                case 6:
+                                case 3:
                                 case "end":
                                   return _context5.stop();
                               }
@@ -254,12 +388,12 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee5);
                         })));
 
-                      case 12:
+                      case 42:
                       case "end":
                         return _context6.stop();
                     }
                   }
-                }, _callee6);
+                }, _callee6, null, [[13, 22], [27, 36]]);
               }));
 
               return function priceCallBack(_x6) {
@@ -269,27 +403,26 @@ var telegramRouter = /*#__PURE__*/function () {
 
             faucetCallBack = /*#__PURE__*/function () {
               var _ref8 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee9(ctx) {
-                var maintenance, limited;
+                var groupTask, lastSeen, maintenance, limited;
                 return _regenerator["default"].wrap(function _callee9$(_context9) {
                   while (1) {
                     switch (_context9.prev = _context9.next) {
                       case 0:
-                        console.log('called faucetCallback');
-                        _context9.next = 3;
+                        _context9.next = 2;
                         return (0, _isMaintenanceOrDisabled.isMaintenanceOrDisabled)(ctx, 'telegram');
 
-                      case 3:
+                      case 2:
                         maintenance = _context9.sent;
 
                         if (!(maintenance.maintenance || !maintenance.enabled)) {
-                          _context9.next = 6;
+                          _context9.next = 5;
                           break;
                         }
 
                         return _context9.abrupt("return");
 
-                      case 6:
-                        _context9.next = 8;
+                      case 5:
+                        _context9.next = 7;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee7() {
                           return _regenerator["default"].wrap(function _callee7$(_context7) {
                             while (1) {
@@ -303,6 +436,14 @@ var telegramRouter = /*#__PURE__*/function () {
                                   return (0, _user.updateLastSeen)(ctx);
 
                                 case 4:
+                                  lastSeen = _context7.sent;
+                                  _context7.next = 7;
+                                  return (0, _group.updateGroup)(ctx);
+
+                                case 7:
+                                  groupTask = _context7.sent;
+
+                                case 8:
                                 case "end":
                                   return _context7.stop();
                               }
@@ -310,31 +451,91 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee7);
                         })));
 
-                      case 8:
-                        _context9.next = 10;
+                      case 7:
+                        _context9.next = 9;
                         return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Faucet');
 
-                      case 10:
+                      case 9:
                         limited = _context9.sent;
-                        _context9.next = 13;
+
+                        if (!limited) {
+                          _context9.next = 12;
+                          break;
+                        }
+
+                        return _context9.abrupt("return");
+
+                      case 12:
+                        if (!(groupTask && groupTask.banned)) {
+                          _context9.next = 26;
+                          break;
+                        }
+
+                        _context9.prev = 13;
+                        _context9.t0 = ctx;
+                        _context9.next = 17;
+                        return (0, _telegram2.telegramServerBannedMessage)(groupTask);
+
+                      case 17:
+                        _context9.t1 = _context9.sent;
+                        _context9.next = 20;
+                        return _context9.t0.replyWithHTML.call(_context9.t0, _context9.t1);
+
+                      case 20:
+                        _context9.next = 25;
+                        break;
+
+                      case 22:
+                        _context9.prev = 22;
+                        _context9.t2 = _context9["catch"](13);
+                        console.log(_context9.t2);
+
+                      case 25:
+                        return _context9.abrupt("return");
+
+                      case 26:
+                        if (!(lastSeen && lastSeen.banned)) {
+                          _context9.next = 40;
+                          break;
+                        }
+
+                        _context9.prev = 27;
+                        _context9.t3 = ctx;
+                        _context9.next = 31;
+                        return (0, _telegram2.telegramUserBannedMessage)(lastSeen);
+
+                      case 31:
+                        _context9.t4 = _context9.sent;
+                        _context9.next = 34;
+                        return _context9.t3.replyWithHTML.call(_context9.t3, _context9.t4);
+
+                      case 34:
+                        _context9.next = 39;
+                        break;
+
+                      case 36:
+                        _context9.prev = 36;
+                        _context9.t5 = _context9["catch"](27);
+                        console.log(_context9.t5);
+
+                      case 39:
+                        return _context9.abrupt("return");
+
+                      case 40:
+                        _context9.next = 42;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee8() {
-                          var groupTask, task;
+                          var task;
                           return _regenerator["default"].wrap(function _callee8$(_context8) {
                             while (1) {
                               switch (_context8.prev = _context8.next) {
                                 case 0:
                                   _context8.next = 2;
-                                  return (0, _group.updateGroup)(ctx);
-
-                                case 2:
-                                  groupTask = _context8.sent;
-                                  _context8.next = 5;
                                   return (0, _faucet.telegramFaucetClaim)(ctx, io);
 
-                                case 5:
+                                case 2:
                                   task = _context8.sent;
 
-                                case 6:
+                                case 3:
                                 case "end":
                                   return _context8.stop();
                               }
@@ -342,12 +543,12 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee8);
                         })));
 
-                      case 13:
+                      case 42:
                       case "end":
                         return _context9.stop();
                     }
                   }
-                }, _callee9);
+                }, _callee9, null, [[13, 22], [27, 36]]);
               }));
 
               return function faucetCallBack(_x7) {
@@ -357,7 +558,7 @@ var telegramRouter = /*#__PURE__*/function () {
 
             balanceCallBack = /*#__PURE__*/function () {
               var _ref11 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee12(ctx) {
-                var maintenance, limited;
+                var groupTask, lastSeen, maintenance, limited;
                 return _regenerator["default"].wrap(function _callee12$(_context12) {
                   while (1) {
                     switch (_context12.prev = _context12.next) {
@@ -390,6 +591,14 @@ var telegramRouter = /*#__PURE__*/function () {
                                   return (0, _user.updateLastSeen)(ctx);
 
                                 case 4:
+                                  lastSeen = _context10.sent;
+                                  _context10.next = 7;
+                                  return (0, _group.updateGroup)(ctx);
+
+                                case 7:
+                                  groupTask = _context10.sent;
+
+                                case 8:
                                 case "end":
                                   return _context10.stop();
                               }
@@ -412,25 +621,76 @@ var telegramRouter = /*#__PURE__*/function () {
                         return _context12.abrupt("return");
 
                       case 12:
-                        _context12.next = 14;
+                        if (!(groupTask && groupTask.banned)) {
+                          _context12.next = 26;
+                          break;
+                        }
+
+                        _context12.prev = 13;
+                        _context12.t0 = ctx;
+                        _context12.next = 17;
+                        return (0, _telegram2.telegramServerBannedMessage)(groupTask);
+
+                      case 17:
+                        _context12.t1 = _context12.sent;
+                        _context12.next = 20;
+                        return _context12.t0.replyWithHTML.call(_context12.t0, _context12.t1);
+
+                      case 20:
+                        _context12.next = 25;
+                        break;
+
+                      case 22:
+                        _context12.prev = 22;
+                        _context12.t2 = _context12["catch"](13);
+                        console.log(_context12.t2);
+
+                      case 25:
+                        return _context12.abrupt("return");
+
+                      case 26:
+                        if (!(lastSeen && lastSeen.banned)) {
+                          _context12.next = 40;
+                          break;
+                        }
+
+                        _context12.prev = 27;
+                        _context12.t3 = ctx;
+                        _context12.next = 31;
+                        return (0, _telegram2.telegramUserBannedMessage)(lastSeen);
+
+                      case 31:
+                        _context12.t4 = _context12.sent;
+                        _context12.next = 34;
+                        return _context12.t3.replyWithHTML.call(_context12.t3, _context12.t4);
+
+                      case 34:
+                        _context12.next = 39;
+                        break;
+
+                      case 36:
+                        _context12.prev = 36;
+                        _context12.t5 = _context12["catch"](27);
+                        console.log(_context12.t5);
+
+                      case 39:
+                        return _context12.abrupt("return");
+
+                      case 40:
+                        _context12.next = 42;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee11() {
-                          var groupTask, task;
+                          var task;
                           return _regenerator["default"].wrap(function _callee11$(_context11) {
                             while (1) {
                               switch (_context11.prev = _context11.next) {
                                 case 0:
                                   _context11.next = 2;
-                                  return (0, _group.updateGroup)(ctx);
+                                  return (0, _balance.telegramBalance)(ctx, io);
 
                                 case 2:
-                                  groupTask = _context11.sent;
-                                  _context11.next = 5;
-                                  return (0, _balance.fetchWalletBalance)(ctx, io);
-
-                                case 5:
                                   task = _context11.sent;
 
-                                case 6:
+                                case 3:
                                 case "end":
                                   return _context11.stop();
                               }
@@ -438,12 +698,12 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee11);
                         })));
 
-                      case 14:
+                      case 42:
                       case "end":
                         return _context12.stop();
                     }
                   }
-                }, _callee12);
+                }, _callee12, null, [[13, 22], [27, 36]]);
               }));
 
               return function balanceCallBack(_x8) {
@@ -453,7 +713,7 @@ var telegramRouter = /*#__PURE__*/function () {
 
             infoCallBack = /*#__PURE__*/function () {
               var _ref14 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee15(ctx) {
-                var maintenance, limited;
+                var groupTask, lastSeen, maintenance, limited;
                 return _regenerator["default"].wrap(function _callee15$(_context15) {
                   while (1) {
                     switch (_context15.prev = _context15.next) {
@@ -486,6 +746,14 @@ var telegramRouter = /*#__PURE__*/function () {
                                   return (0, _user.updateLastSeen)(ctx);
 
                                 case 4:
+                                  lastSeen = _context13.sent;
+                                  _context13.next = 7;
+                                  return (0, _group.updateGroup)(ctx);
+
+                                case 7:
+                                  groupTask = _context13.sent;
+
+                                case 8:
                                 case "end":
                                   return _context13.stop();
                               }
@@ -499,25 +767,85 @@ var telegramRouter = /*#__PURE__*/function () {
 
                       case 9:
                         limited = _context15.sent;
-                        _context15.next = 12;
+
+                        if (!limited) {
+                          _context15.next = 12;
+                          break;
+                        }
+
+                        return _context15.abrupt("return");
+
+                      case 12:
+                        if (!(groupTask && groupTask.banned)) {
+                          _context15.next = 26;
+                          break;
+                        }
+
+                        _context15.prev = 13;
+                        _context15.t0 = ctx;
+                        _context15.next = 17;
+                        return (0, _telegram2.telegramServerBannedMessage)(groupTask);
+
+                      case 17:
+                        _context15.t1 = _context15.sent;
+                        _context15.next = 20;
+                        return _context15.t0.replyWithHTML.call(_context15.t0, _context15.t1);
+
+                      case 20:
+                        _context15.next = 25;
+                        break;
+
+                      case 22:
+                        _context15.prev = 22;
+                        _context15.t2 = _context15["catch"](13);
+                        console.log(_context15.t2);
+
+                      case 25:
+                        return _context15.abrupt("return");
+
+                      case 26:
+                        if (!(lastSeen && lastSeen.banned)) {
+                          _context15.next = 40;
+                          break;
+                        }
+
+                        _context15.prev = 27;
+                        _context15.t3 = ctx;
+                        _context15.next = 31;
+                        return (0, _telegram2.telegramUserBannedMessage)(lastSeen);
+
+                      case 31:
+                        _context15.t4 = _context15.sent;
+                        _context15.next = 34;
+                        return _context15.t3.replyWithHTML.call(_context15.t3, _context15.t4);
+
+                      case 34:
+                        _context15.next = 39;
+                        break;
+
+                      case 36:
+                        _context15.prev = 36;
+                        _context15.t5 = _context15["catch"](27);
+                        console.log(_context15.t5);
+
+                      case 39:
+                        return _context15.abrupt("return");
+
+                      case 40:
+                        _context15.next = 42;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee14() {
-                          var groupTask, task;
+                          var task;
                           return _regenerator["default"].wrap(function _callee14$(_context14) {
                             while (1) {
                               switch (_context14.prev = _context14.next) {
                                 case 0:
                                   _context14.next = 2;
-                                  return (0, _group.updateGroup)(ctx);
-
-                                case 2:
-                                  groupTask = _context14.sent;
-                                  _context14.next = 5;
                                   return (0, _info.fetchInfo)(ctx, io);
 
-                                case 5:
+                                case 2:
                                   task = _context14.sent;
 
-                                case 6:
+                                case 3:
                                 case "end":
                                   return _context14.stop();
                               }
@@ -525,12 +853,12 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee14);
                         })));
 
-                      case 12:
+                      case 42:
                       case "end":
                         return _context15.stop();
                     }
                   }
-                }, _callee15);
+                }, _callee15, null, [[13, 22], [27, 36]]);
               }));
 
               return function infoCallBack(_x9) {
@@ -540,7 +868,7 @@ var telegramRouter = /*#__PURE__*/function () {
 
             depositCallBack = /*#__PURE__*/function () {
               var _ref17 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee18(ctx) {
-                var maintenance, limited;
+                var groupTask, lastSeen, maintenance, limited;
                 return _regenerator["default"].wrap(function _callee18$(_context18) {
                   while (1) {
                     switch (_context18.prev = _context18.next) {
@@ -573,6 +901,14 @@ var telegramRouter = /*#__PURE__*/function () {
                                   return (0, _user.updateLastSeen)(ctx);
 
                                 case 4:
+                                  lastSeen = _context16.sent;
+                                  _context16.next = 7;
+                                  return (0, _group.updateGroup)(ctx);
+
+                                case 7:
+                                  groupTask = _context16.sent;
+
+                                case 8:
                                 case "end":
                                   return _context16.stop();
                               }
@@ -595,25 +931,76 @@ var telegramRouter = /*#__PURE__*/function () {
                         return _context18.abrupt("return");
 
                       case 12:
-                        _context18.next = 14;
+                        if (!(groupTask && groupTask.banned)) {
+                          _context18.next = 26;
+                          break;
+                        }
+
+                        _context18.prev = 13;
+                        _context18.t0 = ctx;
+                        _context18.next = 17;
+                        return (0, _telegram2.telegramServerBannedMessage)(groupTask);
+
+                      case 17:
+                        _context18.t1 = _context18.sent;
+                        _context18.next = 20;
+                        return _context18.t0.replyWithHTML.call(_context18.t0, _context18.t1);
+
+                      case 20:
+                        _context18.next = 25;
+                        break;
+
+                      case 22:
+                        _context18.prev = 22;
+                        _context18.t2 = _context18["catch"](13);
+                        console.log(_context18.t2);
+
+                      case 25:
+                        return _context18.abrupt("return");
+
+                      case 26:
+                        if (!(lastSeen && lastSeen.banned)) {
+                          _context18.next = 40;
+                          break;
+                        }
+
+                        _context18.prev = 27;
+                        _context18.t3 = ctx;
+                        _context18.next = 31;
+                        return (0, _telegram2.telegramUserBannedMessage)(lastSeen);
+
+                      case 31:
+                        _context18.t4 = _context18.sent;
+                        _context18.next = 34;
+                        return _context18.t3.replyWithHTML.call(_context18.t3, _context18.t4);
+
+                      case 34:
+                        _context18.next = 39;
+                        break;
+
+                      case 36:
+                        _context18.prev = 36;
+                        _context18.t5 = _context18["catch"](27);
+                        console.log(_context18.t5);
+
+                      case 39:
+                        return _context18.abrupt("return");
+
+                      case 40:
+                        _context18.next = 42;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee17() {
-                          var groupTask, task;
+                          var task;
                           return _regenerator["default"].wrap(function _callee17$(_context17) {
                             while (1) {
                               switch (_context17.prev = _context17.next) {
                                 case 0:
                                   _context17.next = 2;
-                                  return (0, _group.updateGroup)(ctx);
-
-                                case 2:
-                                  groupTask = _context17.sent;
-                                  _context17.next = 5;
                                   return (0, _deposit.fetchWalletDepositAddress)(ctx, io);
 
-                                case 5:
+                                case 2:
                                   task = _context17.sent;
 
-                                case 6:
+                                case 3:
                                 case "end":
                                   return _context17.stop();
                               }
@@ -621,12 +1008,12 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee17);
                         })));
 
-                      case 14:
+                      case 42:
                       case "end":
                         return _context18.stop();
                     }
                   }
-                }, _callee18);
+                }, _callee18, null, [[13, 22], [27, 36]]);
               }));
 
               return function depositCallBack(_x10) {
@@ -827,7 +1214,7 @@ var telegramRouter = /*#__PURE__*/function () {
                   return _ref24.apply(this, arguments);
                 };
               }());
-              telegramClient.action('ReferralTop', /*#__PURE__*/function () {
+              telegramClient.action('top', /*#__PURE__*/function () {
                 var _ref26 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee26(ctx) {
                   var maintenance;
                   return _regenerator["default"].wrap(function _callee26$(_context26) {
@@ -889,12 +1276,12 @@ var telegramRouter = /*#__PURE__*/function () {
             }
 
             telegramClient.on('new_chat_members', /*#__PURE__*/function () {
-              var _ref28 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee29(ctx) {
-                return _regenerator["default"].wrap(function _callee29$(_context29) {
+              var _ref28 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee28(ctx) {
+                return _regenerator["default"].wrap(function _callee28$(_context28) {
                   while (1) {
-                    switch (_context29.prev = _context29.next) {
+                    switch (_context28.prev = _context28.next) {
                       case 0:
-                        _context29.next = 2;
+                        _context28.next = 2;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee27() {
                           var groupTask, task;
                           return _regenerator["default"].wrap(function _callee27$(_context27) {
@@ -921,43 +1308,11 @@ var telegramRouter = /*#__PURE__*/function () {
                         })));
 
                       case 2:
-                        if (!(settings.coin.setting === 'Runebase')) {
-                          _context29.next = 6;
-                          break;
-                        }
-
-                        if (!(ctx.update.message.chat.id === Number(runesGroup))) {
-                          _context29.next = 6;
-                          break;
-                        }
-
-                        _context29.next = 6;
-                        return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee28() {
-                          var task;
-                          return _regenerator["default"].wrap(function _callee28$(_context28) {
-                            while (1) {
-                              switch (_context28.prev = _context28.next) {
-                                case 0:
-                                  _context28.next = 2;
-                                  return (0, _referral.createReferral)(ctx, telegramClient, runesGroup);
-
-                                case 2:
-                                  task = _context28.sent;
-
-                                case 3:
-                                case "end":
-                                  return _context28.stop();
-                              }
-                            }
-                          }, _callee28);
-                        })));
-
-                      case 6:
                       case "end":
-                        return _context29.stop();
+                        return _context28.stop();
                     }
                   }
-                }, _callee29);
+                }, _callee28);
               }));
 
               return function (_x15) {
@@ -965,40 +1320,40 @@ var telegramRouter = /*#__PURE__*/function () {
               };
             }());
             telegramClient.on('text', /*#__PURE__*/function () {
-              var _ref31 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee44(ctx) {
+              var _ref30 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee43(ctx) {
                 var lastSeen, groupTask, preFilteredMessageTelegram, filteredMessageTelegram, telegramUserId, telegramUserName, disallow, maintenance, groupTaskId, faucetSetting, limited, _limited, _limited2, _limited3, _limited4, _limited5, _limited6, _limited7, setting, _limited8, _setting, _limited9, _setting2, _limited10, _setting3, _limited11, _setting4;
 
-                return _regenerator["default"].wrap(function _callee44$(_context44) {
+                return _regenerator["default"].wrap(function _callee43$(_context43) {
                   while (1) {
-                    switch (_context44.prev = _context44.next) {
+                    switch (_context43.prev = _context43.next) {
                       case 0:
-                        _context44.next = 2;
-                        return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee30() {
-                          return _regenerator["default"].wrap(function _callee30$(_context30) {
+                        _context43.next = 2;
+                        return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee29() {
+                          return _regenerator["default"].wrap(function _callee29$(_context29) {
                             while (1) {
-                              switch (_context30.prev = _context30.next) {
+                              switch (_context29.prev = _context29.next) {
                                 case 0:
-                                  _context30.next = 2;
+                                  _context29.next = 2;
                                   return (0, _user.createUpdateUser)(ctx);
 
                                 case 2:
-                                  _context30.next = 4;
+                                  _context29.next = 4;
                                   return (0, _group.updateGroup)(ctx);
 
                                 case 4:
-                                  groupTask = _context30.sent;
-                                  _context30.next = 7;
+                                  groupTask = _context29.sent;
+                                  _context29.next = 7;
                                   return (0, _user.updateLastSeen)(ctx);
 
                                 case 7:
-                                  lastSeen = _context30.sent;
+                                  lastSeen = _context29.sent;
 
                                 case 8:
                                 case "end":
-                                  return _context30.stop();
+                                  return _context29.stop();
                               }
                             }
-                          }, _callee30);
+                          }, _callee29);
                         })));
 
                       case 2:
@@ -1010,59 +1365,159 @@ var telegramRouter = /*#__PURE__*/function () {
                         telegramUserName = ctx.update.message.from.username;
 
                         if (!(filteredMessageTelegram[0].toLowerCase() === settings.bot.command.telegram)) {
-                          _context44.next = 176;
+                          _context43.next = 201;
                           break;
                         }
 
-                        _context44.next = 9;
+                        _context43.next = 9;
                         return (0, _isMaintenanceOrDisabled.isMaintenanceOrDisabled)(ctx, 'telegram');
 
                       case 9:
-                        maintenance = _context44.sent;
+                        maintenance = _context43.sent;
 
                         if (!(maintenance.maintenance || !maintenance.enabled)) {
-                          _context44.next = 12;
+                          _context43.next = 12;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
                       case 12:
+                        if (!(groupTask && groupTask.banned)) {
+                          _context43.next = 26;
+                          break;
+                        }
+
+                        _context43.prev = 13;
+                        _context43.t0 = ctx;
+                        _context43.next = 17;
+                        return (0, _telegram2.telegramServerBannedMessage)(groupTask);
+
+                      case 17:
+                        _context43.t1 = _context43.sent;
+                        _context43.next = 20;
+                        return _context43.t0.replyWithHTML.call(_context43.t0, _context43.t1);
+
+                      case 20:
+                        _context43.next = 25;
+                        break;
+
+                      case 22:
+                        _context43.prev = 22;
+                        _context43.t2 = _context43["catch"](13);
+                        console.log(_context43.t2);
+
+                      case 25:
+                        return _context43.abrupt("return");
+
+                      case 26:
+                        if (!(lastSeen && lastSeen.banned)) {
+                          _context43.next = 40;
+                          break;
+                        }
+
+                        _context43.prev = 27;
+                        _context43.t3 = ctx;
+                        _context43.next = 31;
+                        return (0, _telegram2.telegramUserBannedMessage)(lastSeen);
+
+                      case 31:
+                        _context43.t4 = _context43.sent;
+                        _context43.next = 34;
+                        return _context43.t3.replyWithHTML.call(_context43.t3, _context43.t4);
+
+                      case 34:
+                        _context43.next = 39;
+                        break;
+
+                      case 36:
+                        _context43.prev = 36;
+                        _context43.t5 = _context43["catch"](27);
+                        console.log(_context43.t5);
+
+                      case 39:
+                        return _context43.abrupt("return");
+
+                      case 40:
                         groupTaskId = groupTask && groupTask.id;
-                        _context44.next = 15;
+                        _context43.next = 43;
                         return (0, _settings.telegramWaterFaucetSettings)(groupTaskId);
 
-                      case 15:
-                        faucetSetting = _context44.sent;
+                      case 43:
+                        faucetSetting = _context43.sent;
 
                         if (faucetSetting) {
-                          _context44.next = 18;
+                          _context43.next = 46;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
-                      case 18:
+                      case 46:
                         if (filteredMessageTelegram[1]) {
-                          _context44.next = 27;
+                          _context43.next = 55;
                           break;
                         }
 
-                        _context44.next = 21;
+                        _context43.next = 49;
                         return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Help');
 
-                      case 21:
-                        limited = _context44.sent;
+                      case 49:
+                        limited = _context43.sent;
 
                         if (!limited) {
-                          _context44.next = 24;
+                          _context43.next = 52;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
-                      case 24:
-                        _context44.next = 26;
+                      case 52:
+                        _context43.next = 54;
+                        return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee30() {
+                          var task;
+                          return _regenerator["default"].wrap(function _callee30$(_context30) {
+                            while (1) {
+                              switch (_context30.prev = _context30.next) {
+                                case 0:
+                                  _context30.next = 2;
+                                  return (0, _help.fetchHelp)(ctx, io);
+
+                                case 2:
+                                  task = _context30.sent;
+
+                                case 3:
+                                case "end":
+                                  return _context30.stop();
+                              }
+                            }
+                          }, _callee30);
+                        })));
+
+                      case 54:
+                        return _context43.abrupt("return");
+
+                      case 55:
+                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'help')) {
+                          _context43.next = 64;
+                          break;
+                        }
+
+                        _context43.next = 58;
+                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Help');
+
+                      case 58:
+                        _limited = _context43.sent;
+
+                        if (!_limited) {
+                          _context43.next = 61;
+                          break;
+                        }
+
+                        return _context43.abrupt("return");
+
+                      case 61:
+                        _context43.next = 63;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee31() {
                           var task;
                           return _regenerator["default"].wrap(function _callee31$(_context31) {
@@ -1083,30 +1538,30 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee31);
                         })));
 
-                      case 26:
-                        return _context44.abrupt("return");
+                      case 63:
+                        return _context43.abrupt("return");
 
-                      case 27:
-                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'help')) {
-                          _context44.next = 36;
+                      case 64:
+                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'price')) {
+                          _context43.next = 73;
                           break;
                         }
 
-                        _context44.next = 30;
-                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Help');
+                        _context43.next = 67;
+                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Price');
 
-                      case 30:
-                        _limited = _context44.sent;
+                      case 67:
+                        _limited2 = _context43.sent;
 
-                        if (!_limited) {
-                          _context44.next = 33;
+                        if (!_limited2) {
+                          _context43.next = 70;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
-                      case 33:
-                        _context44.next = 35;
+                      case 70:
+                        _context43.next = 72;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee32() {
                           var task;
                           return _regenerator["default"].wrap(function _callee32$(_context32) {
@@ -1114,7 +1569,7 @@ var telegramRouter = /*#__PURE__*/function () {
                               switch (_context32.prev = _context32.next) {
                                 case 0:
                                   _context32.next = 2;
-                                  return (0, _help.fetchHelp)(ctx, io);
+                                  return (0, _price.telegramPrice)(ctx, io);
 
                                 case 2:
                                   task = _context32.sent;
@@ -1127,30 +1582,30 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee32);
                         })));
 
-                      case 35:
-                        return _context44.abrupt("return");
+                      case 72:
+                        return _context43.abrupt("return");
 
-                      case 36:
-                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'price')) {
-                          _context44.next = 45;
+                      case 73:
+                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'info')) {
+                          _context43.next = 82;
                           break;
                         }
 
-                        _context44.next = 39;
-                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Price');
+                        _context43.next = 76;
+                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Info');
 
-                      case 39:
-                        _limited2 = _context44.sent;
+                      case 76:
+                        _limited3 = _context43.sent;
 
-                        if (!_limited2) {
-                          _context44.next = 42;
+                        if (!_limited3) {
+                          _context43.next = 79;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
-                      case 42:
-                        _context44.next = 44;
+                      case 79:
+                        _context43.next = 81;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee33() {
                           var task;
                           return _regenerator["default"].wrap(function _callee33$(_context33) {
@@ -1158,7 +1613,7 @@ var telegramRouter = /*#__PURE__*/function () {
                               switch (_context33.prev = _context33.next) {
                                 case 0:
                                   _context33.next = 2;
-                                  return (0, _price["default"])(ctx, io);
+                                  return (0, _info.fetchInfo)(ctx, io);
 
                                 case 2:
                                   task = _context33.sent;
@@ -1171,30 +1626,30 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee33);
                         })));
 
-                      case 44:
-                        return _context44.abrupt("return");
+                      case 81:
+                        return _context43.abrupt("return");
 
-                      case 45:
-                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'info')) {
-                          _context44.next = 54;
+                      case 82:
+                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'faucet')) {
+                          _context43.next = 91;
                           break;
                         }
 
-                        _context44.next = 48;
-                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Info');
+                        _context43.next = 85;
+                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Faucet');
 
-                      case 48:
-                        _limited3 = _context44.sent;
+                      case 85:
+                        _limited4 = _context43.sent;
 
-                        if (!_limited3) {
-                          _context44.next = 51;
+                        if (!_limited4) {
+                          _context43.next = 88;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
-                      case 51:
-                        _context44.next = 53;
+                      case 88:
+                        _context43.next = 90;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee34() {
                           var task;
                           return _regenerator["default"].wrap(function _callee34$(_context34) {
@@ -1202,7 +1657,7 @@ var telegramRouter = /*#__PURE__*/function () {
                               switch (_context34.prev = _context34.next) {
                                 case 0:
                                   _context34.next = 2;
-                                  return (0, _info.fetchInfo)(ctx, io);
+                                  return (0, _faucet.telegramFaucetClaim)(ctx, io);
 
                                 case 2:
                                   task = _context34.sent;
@@ -1215,30 +1670,30 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee34);
                         })));
 
-                      case 53:
-                        return _context44.abrupt("return");
+                      case 90:
+                        return _context43.abrupt("return");
 
-                      case 54:
-                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'faucet')) {
-                          _context44.next = 63;
+                      case 91:
+                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'balance')) {
+                          _context43.next = 100;
                           break;
                         }
 
-                        _context44.next = 57;
-                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Faucet');
+                        _context43.next = 94;
+                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Balance');
 
-                      case 57:
-                        _limited4 = _context44.sent;
+                      case 94:
+                        _limited5 = _context43.sent;
 
-                        if (!_limited4) {
-                          _context44.next = 60;
+                        if (!_limited5) {
+                          _context43.next = 97;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
-                      case 60:
-                        _context44.next = 62;
+                      case 97:
+                        _context43.next = 99;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee35() {
                           var task;
                           return _regenerator["default"].wrap(function _callee35$(_context35) {
@@ -1246,7 +1701,7 @@ var telegramRouter = /*#__PURE__*/function () {
                               switch (_context35.prev = _context35.next) {
                                 case 0:
                                   _context35.next = 2;
-                                  return (0, _faucet.telegramFaucetClaim)(ctx, io);
+                                  return (0, _balance.telegramBalance)(ctx, io);
 
                                 case 2:
                                   task = _context35.sent;
@@ -1259,30 +1714,30 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee35);
                         })));
 
-                      case 62:
-                        return _context44.abrupt("return");
+                      case 99:
+                        return _context43.abrupt("return");
 
-                      case 63:
-                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'balance')) {
-                          _context44.next = 72;
+                      case 100:
+                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'deposit')) {
+                          _context43.next = 109;
                           break;
                         }
 
-                        _context44.next = 66;
-                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Balance');
+                        _context43.next = 103;
+                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Deposit');
 
-                      case 66:
-                        _limited5 = _context44.sent;
+                      case 103:
+                        _limited6 = _context43.sent;
 
-                        if (!_limited5) {
-                          _context44.next = 69;
+                        if (!_limited6) {
+                          _context43.next = 106;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
-                      case 69:
-                        _context44.next = 71;
+                      case 106:
+                        _context43.next = 108;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee36() {
                           var task;
                           return _regenerator["default"].wrap(function _callee36$(_context36) {
@@ -1290,7 +1745,7 @@ var telegramRouter = /*#__PURE__*/function () {
                               switch (_context36.prev = _context36.next) {
                                 case 0:
                                   _context36.next = 2;
-                                  return (0, _balance.fetchWalletBalance)(ctx, io);
+                                  return (0, _deposit.fetchWalletDepositAddress)(ctx, io);
 
                                 case 2:
                                   task = _context36.sent;
@@ -1303,30 +1758,21 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee36);
                         })));
 
-                      case 71:
-                        return _context44.abrupt("return");
+                      case 108:
+                        return _context43.abrupt("return");
 
-                      case 72:
-                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'deposit')) {
-                          _context44.next = 81;
+                      case 109:
+                        if (!(settings.coin.setting === 'Runebase')) {
+                          _context43.next = 116;
                           break;
                         }
 
-                        _context44.next = 75;
-                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Deposit');
-
-                      case 75:
-                        _limited6 = _context44.sent;
-
-                        if (!_limited6) {
-                          _context44.next = 78;
+                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'referral' && !filteredMessageTelegram[2])) {
+                          _context43.next = 113;
                           break;
                         }
 
-                        return _context44.abrupt("return");
-
-                      case 78:
-                        _context44.next = 80;
+                        _context43.next = 113;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee37() {
                           var task;
                           return _regenerator["default"].wrap(function _callee37$(_context37) {
@@ -1334,7 +1780,7 @@ var telegramRouter = /*#__PURE__*/function () {
                               switch (_context37.prev = _context37.next) {
                                 case 0:
                                   _context37.next = 2;
-                                  return (0, _deposit.fetchWalletDepositAddress)(ctx, io);
+                                  return (0, _referral.fetchReferralCount)(ctx, telegramUserId, telegramUserName);
 
                                 case 2:
                                   task = _context37.sent;
@@ -1347,21 +1793,13 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee37);
                         })));
 
-                      case 80:
-                        return _context44.abrupt("return");
-
-                      case 81:
-                        if (!(settings.coin.setting === 'Runebase')) {
-                          _context44.next = 88;
+                      case 113:
+                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'referral' && filteredMessageTelegram[2] === 'top')) {
+                          _context43.next = 116;
                           break;
                         }
 
-                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'referral' && !filteredMessageTelegram[2])) {
-                          _context44.next = 85;
-                          break;
-                        }
-
-                        _context44.next = 85;
+                        _context43.next = 116;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee38() {
                           var task;
                           return _regenerator["default"].wrap(function _callee38$(_context38) {
@@ -1369,7 +1807,7 @@ var telegramRouter = /*#__PURE__*/function () {
                               switch (_context38.prev = _context38.next) {
                                 case 0:
                                   _context38.next = 2;
-                                  return (0, _referral.fetchReferralCount)(ctx, telegramUserId, telegramUserName);
+                                  return (0, _referral.fetchReferralTopTen)(ctx);
 
                                 case 2:
                                   task = _context38.sent;
@@ -1382,24 +1820,37 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee38);
                         })));
 
-                      case 85:
-                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'referral' && filteredMessageTelegram[2] === 'top')) {
-                          _context44.next = 88;
+                      case 116:
+                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'flood')) {
+                          _context43.next = 134;
                           break;
                         }
 
-                        _context44.next = 88;
+                        _context43.next = 119;
+                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Flood');
+
+                      case 119:
+                        _limited7 = _context43.sent;
+
+                        if (!_limited7) {
+                          _context43.next = 122;
+                          break;
+                        }
+
+                        return _context43.abrupt("return");
+
+                      case 122:
+                        _context43.next = 124;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee39() {
-                          var task;
                           return _regenerator["default"].wrap(function _callee39$(_context39) {
                             while (1) {
                               switch (_context39.prev = _context39.next) {
                                 case 0:
                                   _context39.next = 2;
-                                  return (0, _referral.fetchReferralTopTen)(ctx);
+                                  return (0, _disallowDirectMessage.disallowDirectMessage)(ctx, lastSeen, 'flood', io);
 
                                 case 2:
-                                  task = _context39.sent;
+                                  disallow = _context39.sent;
 
                                 case 3:
                                 case "end":
@@ -1409,34 +1860,63 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee39);
                         })));
 
-                      case 88:
-                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'flood')) {
-                          _context44.next = 106;
+                      case 124:
+                        if (!disallow) {
+                          _context43.next = 126;
                           break;
                         }
 
-                        _context44.next = 91;
-                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Flood');
+                        return _context43.abrupt("return");
 
-                      case 91:
-                        _limited7 = _context44.sent;
+                      case 126:
+                        _context43.next = 128;
+                        return (0, _settings.telegramSettings)(ctx, 'flood', groupTaskId);
 
-                        if (!_limited7) {
-                          _context44.next = 94;
+                      case 128:
+                        setting = _context43.sent;
+
+                        if (setting) {
+                          _context43.next = 131;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
-                      case 94:
-                        _context44.next = 96;
+                      case 131:
+                        _context43.next = 133;
+                        return (0, _executeTips.executeTipFunction)(_flood.telegramFlood, queue, filteredMessageTelegram[2], telegramClient, telegramApiClient, ctx, filteredMessageTelegram, io, groupTask, setting, faucetSetting);
+
+                      case 133:
+                        return _context43.abrupt("return");
+
+                      case 134:
+                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'sleet')) {
+                          _context43.next = 152;
+                          break;
+                        }
+
+                        _context43.next = 137;
+                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Sleet');
+
+                      case 137:
+                        _limited8 = _context43.sent;
+
+                        if (!_limited8) {
+                          _context43.next = 140;
+                          break;
+                        }
+
+                        return _context43.abrupt("return");
+
+                      case 140:
+                        _context43.next = 142;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee40() {
                           return _regenerator["default"].wrap(function _callee40$(_context40) {
                             while (1) {
                               switch (_context40.prev = _context40.next) {
                                 case 0:
                                   _context40.next = 2;
-                                  return (0, _disallowDirectMessage.disallowDirectMessage)(ctx, lastSeen, 'flood', io);
+                                  return (0, _disallowDirectMessage.disallowDirectMessage)(ctx, lastSeen, 'sleet', io);
 
                                 case 2:
                                   disallow = _context40.sent;
@@ -1449,63 +1929,63 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee40);
                         })));
 
-                      case 96:
+                      case 142:
                         if (!disallow) {
-                          _context44.next = 98;
+                          _context43.next = 144;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
-                      case 98:
-                        _context44.next = 100;
-                        return (0, _settings.telegramSettings)(ctx, 'flood', groupTaskId);
+                      case 144:
+                        _context43.next = 146;
+                        return (0, _settings.telegramSettings)(ctx, 'sleet', groupTaskId);
 
-                      case 100:
-                        setting = _context44.sent;
+                      case 146:
+                        _setting = _context43.sent;
 
-                        if (setting) {
-                          _context44.next = 103;
+                        if (_setting) {
+                          _context43.next = 149;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
-                      case 103:
-                        _context44.next = 105;
-                        return (0, _executeTips.executeTipFunction)(_flood.telegramFlood, queue, filteredMessageTelegram[2], telegramClient, telegramApiClient, ctx, filteredMessageTelegram, io, groupTask, setting, faucetSetting);
+                      case 149:
+                        _context43.next = 151;
+                        return (0, _executeTips.executeTipFunction)(_sleet.telegramSleet, queue, filteredMessageTelegram[2], telegramClient, telegramApiClient, ctx, filteredMessageTelegram, io, groupTask, _setting, faucetSetting);
 
-                      case 105:
-                        return _context44.abrupt("return");
+                      case 151:
+                        return _context43.abrupt("return");
 
-                      case 106:
-                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'sleet')) {
-                          _context44.next = 124;
+                      case 152:
+                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'rain')) {
+                          _context43.next = 170;
                           break;
                         }
 
-                        _context44.next = 109;
-                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Sleet');
+                        _context43.next = 155;
+                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Rain');
 
-                      case 109:
-                        _limited8 = _context44.sent;
+                      case 155:
+                        _limited9 = _context43.sent;
 
-                        if (!_limited8) {
-                          _context44.next = 112;
+                        if (!_limited9) {
+                          _context43.next = 158;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
-                      case 112:
-                        _context44.next = 114;
+                      case 158:
+                        _context43.next = 160;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee41() {
                           return _regenerator["default"].wrap(function _callee41$(_context41) {
                             while (1) {
                               switch (_context41.prev = _context41.next) {
                                 case 0:
                                   _context41.next = 2;
-                                  return (0, _disallowDirectMessage.disallowDirectMessage)(ctx, lastSeen, 'sleet', io);
+                                  return (0, _disallowDirectMessage.disallowDirectMessage)(ctx, lastSeen, 'rain', io);
 
                                 case 2:
                                   disallow = _context41.sent;
@@ -1518,63 +1998,103 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee41);
                         })));
 
-                      case 114:
+                      case 160:
                         if (!disallow) {
-                          _context44.next = 116;
+                          _context43.next = 162;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
-                      case 116:
-                        _context44.next = 118;
-                        return (0, _settings.telegramSettings)(ctx, 'sleet', groupTaskId);
+                      case 162:
+                        _context43.next = 164;
+                        return (0, _settings.telegramSettings)(ctx, 'rain', groupTaskId);
 
-                      case 118:
-                        _setting = _context44.sent;
+                      case 164:
+                        _setting2 = _context43.sent;
 
-                        if (_setting) {
-                          _context44.next = 121;
+                        if (_setting2) {
+                          _context43.next = 167;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
-                      case 121:
-                        _context44.next = 123;
-                        return (0, _executeTips.executeTipFunction)(_sleet.telegramSleet, queue, filteredMessageTelegram[2], telegramClient, telegramApiClient, ctx, filteredMessageTelegram, io, groupTask, _setting, faucetSetting);
+                      case 167:
+                        _context43.next = 169;
+                        return (0, _executeTips.executeTipFunction)(_rain.telegramRain, queue, filteredMessageTelegram[2], telegramClient, telegramApiClient, ctx, filteredMessageTelegram, io, groupTask, _setting2, faucetSetting);
 
-                      case 123:
-                        return _context44.abrupt("return");
+                      case 169:
+                        return _context43.abrupt("return");
 
-                      case 124:
-                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'rain')) {
-                          _context44.next = 142;
+                      case 170:
+                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'withdraw')) {
+                          _context43.next = 184;
                           break;
                         }
 
-                        _context44.next = 127;
-                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Rain');
+                        _context43.next = 173;
+                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Withdraw');
 
-                      case 127:
-                        _limited9 = _context44.sent;
+                      case 173:
+                        _limited10 = _context43.sent;
 
-                        if (!_limited9) {
-                          _context44.next = 130;
+                        if (!_limited10) {
+                          _context43.next = 176;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
-                      case 130:
-                        _context44.next = 132;
+                      case 176:
+                        _context43.next = 178;
+                        return (0, _settings.telegramSettings)(ctx, 'withdraw', groupTaskId);
+
+                      case 178:
+                        _setting3 = _context43.sent;
+
+                        if (_setting3) {
+                          _context43.next = 181;
+                          break;
+                        }
+
+                        return _context43.abrupt("return");
+
+                      case 181:
+                        _context43.next = 183;
+                        return (0, _executeTips.executeTipFunction)(_withdraw.withdrawTelegramCreate, queue, filteredMessageTelegram[3], telegramClient, telegramApiClient, ctx, filteredMessageTelegram, io, groupTask, _setting3, faucetSetting);
+
+                      case 183:
+                        return _context43.abrupt("return");
+
+                      case 184:
+                        if (!(filteredMessageTelegram[1] && ctx.update && ctx.update.message && ctx.update.message.entities && ctx.update.message.entities.length > 0)) {
+                          _context43.next = 201;
+                          break;
+                        }
+
+                        _context43.next = 187;
+                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Tip');
+
+                      case 187:
+                        _limited11 = _context43.sent;
+
+                        if (!_limited11) {
+                          _context43.next = 190;
+                          break;
+                        }
+
+                        return _context43.abrupt("return");
+
+                      case 190:
+                        _context43.next = 192;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee42() {
                           return _regenerator["default"].wrap(function _callee42$(_context42) {
                             while (1) {
                               switch (_context42.prev = _context42.next) {
                                 case 0:
                                   _context42.next = 2;
-                                  return (0, _disallowDirectMessage.disallowDirectMessage)(ctx, lastSeen, 'rain', io);
+                                  return (0, _disallowDirectMessage.disallowDirectMessage)(ctx, lastSeen, 'tip', io);
 
                                 case 2:
                                   disallow = _context42.sent;
@@ -1587,164 +2107,51 @@ var telegramRouter = /*#__PURE__*/function () {
                           }, _callee42);
                         })));
 
-                      case 132:
+                      case 192:
                         if (!disallow) {
-                          _context44.next = 134;
+                          _context43.next = 194;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
-                      case 134:
-                        _context44.next = 136;
-                        return (0, _settings.telegramSettings)(ctx, 'rain', groupTaskId);
-
-                      case 136:
-                        _setting2 = _context44.sent;
-
-                        if (_setting2) {
-                          _context44.next = 139;
-                          break;
-                        }
-
-                        return _context44.abrupt("return");
-
-                      case 139:
-                        _context44.next = 141;
-                        return (0, _executeTips.executeTipFunction)(_rain.telegramRain, queue, filteredMessageTelegram[2], telegramClient, telegramApiClient, ctx, filteredMessageTelegram, io, groupTask, _setting2, faucetSetting);
-
-                      case 141:
-                        return _context44.abrupt("return");
-
-                      case 142:
-                        if (!(filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'withdraw')) {
-                          _context44.next = 156;
-                          break;
-                        }
-
-                        _context44.next = 145;
-                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Rain');
-
-                      case 145:
-                        _limited10 = _context44.sent;
-
-                        if (!_limited10) {
-                          _context44.next = 148;
-                          break;
-                        }
-
-                        return _context44.abrupt("return");
-
-                      case 148:
-                        _context44.next = 150;
-                        return (0, _settings.telegramSettings)(ctx, 'rain', groupTaskId);
-
-                      case 150:
-                        _setting3 = _context44.sent;
-
-                        if (_setting3) {
-                          _context44.next = 153;
-                          break;
-                        }
-
-                        return _context44.abrupt("return");
-
-                      case 153:
-                        _context44.next = 155;
-                        return (0, _executeTips.executeTipFunction)(_withdraw.withdrawTelegramCreate, queue, filteredMessageTelegram[3], telegramClient, telegramApiClient, ctx, filteredMessageTelegram, io, groupTask, _setting3, faucetSetting);
-
-                      case 155:
-                        return _context44.abrupt("return");
-
-                      case 156:
-                        console.log(ctx);
-                        console.log(ctx.update.message.entities);
-                        console.log(filteredMessageTelegram);
-
-                        if (!(filteredMessageTelegram[1] && ctx.update && ctx.update.message && ctx.update.message.entities && ctx.update.message.entities.length > 0)) {
-                          _context44.next = 176;
-                          break;
-                        }
-
-                        _context44.next = 162;
-                        return (0, _rateLimit.myRateLimiter)(telegramClient, ctx, 'telegram', 'Tip');
-
-                      case 162:
-                        _limited11 = _context44.sent;
-
-                        if (!_limited11) {
-                          _context44.next = 165;
-                          break;
-                        }
-
-                        return _context44.abrupt("return");
-
-                      case 165:
-                        _context44.next = 167;
-                        return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee43() {
-                          return _regenerator["default"].wrap(function _callee43$(_context43) {
-                            while (1) {
-                              switch (_context43.prev = _context43.next) {
-                                case 0:
-                                  _context43.next = 2;
-                                  return (0, _disallowDirectMessage.disallowDirectMessage)(ctx, lastSeen, 'tip', io);
-
-                                case 2:
-                                  disallow = _context43.sent;
-
-                                case 3:
-                                case "end":
-                                  return _context43.stop();
-                              }
-                            }
-                          }, _callee43);
-                        })));
-
-                      case 167:
-                        if (!disallow) {
-                          _context44.next = 169;
-                          break;
-                        }
-
-                        return _context44.abrupt("return");
-
-                      case 169:
-                        _context44.next = 171;
+                      case 194:
+                        _context43.next = 196;
                         return (0, _settings.telegramSettings)(ctx, 'tip', groupTaskId);
 
-                      case 171:
-                        _setting4 = _context44.sent;
+                      case 196:
+                        _setting4 = _context43.sent;
 
                         if (_setting4) {
-                          _context44.next = 174;
+                          _context43.next = 199;
                           break;
                         }
 
-                        return _context44.abrupt("return");
+                        return _context43.abrupt("return");
 
-                      case 174:
-                        _context44.next = 176;
+                      case 199:
+                        _context43.next = 201;
                         return (0, _executeTips.executeTipFunction)(_tip.tipToTelegramUser, queue, filteredMessageTelegram[ctx.update.message.entities.length + 1], telegramClient, telegramApiClient, ctx, filteredMessageTelegram, io, groupTask, _setting4, faucetSetting);
 
-                      case 176:
+                      case 201:
                       case "end":
-                        return _context44.stop();
+                        return _context43.stop();
                     }
                   }
-                }, _callee44);
+                }, _callee43, null, [[13, 22], [27, 36]]);
               }));
 
               return function (_x16) {
-                return _ref31.apply(this, arguments);
+                return _ref30.apply(this, arguments);
               };
             }());
 
           case 25:
           case "end":
-            return _context45.stop();
+            return _context44.stop();
         }
       }
-    }, _callee45);
+    }, _callee44);
   }));
 
   return function telegramRouter(_x, _x2, _x3, _x4) {

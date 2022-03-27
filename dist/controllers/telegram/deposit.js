@@ -27,7 +27,7 @@ var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
 var fetchWalletDepositAddress = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(ctx, io) {
-    var user, userActivity, activity;
+    var activity;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -38,14 +38,14 @@ var fetchWalletDepositAddress = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, depositQr, depositQrFixed, userId, preActivity, finalActivity;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, depositQr, depositQrFixed, userId, preActivity, finalActivity;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
                         _context.next = 2;
-                        return (0, _userWalletExist.userWalletExist)(ctx, t, 'info');
+                        return (0, _userWalletExist.userWalletExist)(ctx, t, 'deposit');
 
                       case 2:
                         _yield$userWalletExis = _context.sent;
@@ -208,24 +208,30 @@ var fetchWalletDepositAddress = /*#__PURE__*/function () {
                         _logger["default"].error("deposit error: ".concat(err));
 
                         _context2.prev = 10;
-                        _context2.next = 13;
-                        return ctx.replyWithHTML((0, _telegram.errorMessage)('Deposit'));
+                        _context2.t1 = ctx;
+                        _context2.next = 14;
+                        return (0, _telegram.errorMessage)('Deposit');
 
-                      case 13:
-                        _context2.next = 18;
+                      case 14:
+                        _context2.t2 = _context2.sent;
+                        _context2.next = 17;
+                        return _context2.t1.replyWithHTML.call(_context2.t1, _context2.t2);
+
+                      case 17:
+                        _context2.next = 22;
                         break;
 
-                      case 15:
-                        _context2.prev = 15;
-                        _context2.t1 = _context2["catch"](10);
-                        console.log(_context2.t1);
+                      case 19:
+                        _context2.prev = 19;
+                        _context2.t3 = _context2["catch"](10);
+                        console.log(_context2.t3);
 
-                      case 18:
+                      case 22:
                       case "end":
                         return _context2.stop();
                     }
                   }
-                }, _callee2, null, [[0, 5], [10, 15]]);
+                }, _callee2, null, [[0, 5], [10, 19]]);
               }));
 
               return function (_x4) {

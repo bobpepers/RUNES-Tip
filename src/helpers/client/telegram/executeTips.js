@@ -22,6 +22,8 @@ export const executeTipFunction = async (
   let operationName;
   let userBeingTipped;
   let chatId;
+  console.log(ctx);
+  console.log('telegraf ctx');
   if (
     ctx
     && ctx.update
@@ -36,6 +38,8 @@ export const executeTipFunction = async (
   ) {
     chatId = ctx.message.chat.id;
   }
+
+  console.log(chatId);
 
   if (
     ctx
@@ -72,7 +76,12 @@ export const executeTipFunction = async (
     }
 
     let isRunning = true;
-    const listenerFunction = async (event) => {
+    const listenerFunction = async (
+      event,
+    ) => {
+      console.log(event);
+      console.log(ctx);
+      console.log('event');
       const tempBody = event.message.message;
       if (
         (
@@ -142,7 +151,7 @@ export const executeTipFunction = async (
         ],
       }),
     );
-
+    console.log('after event handler');
     const myTimeout = setTimeout(async () => {
       if (isRunning) {
         await telegramApiClient.removeEventHandler(

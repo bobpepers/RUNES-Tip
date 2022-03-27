@@ -59,7 +59,7 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                     switch (_context2.prev = _context2.next) {
                       case 0:
                         _context2.next = 2;
-                        return (0, _userWalletExist.userWalletExist)(message, t, filteredMessage[1].toLowerCase());
+                        return (0, _userWalletExist.userWalletExist)(message, t, 'tip');
 
                       case 2:
                         _yield$userWalletExis = _context2.sent;
@@ -91,11 +91,10 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                                     discordId = filteredMessage[parseInt(AmountPosition, 10)].slice(3).slice(0, -1);
                                   } else if (filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@') && !filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@!')) {
                                     discordId = filteredMessage[parseInt(AmountPosition, 10)].slice(2).slice(0, -1);
-                                  }
+                                  } // eslint-disable-next-line no-await-in-loop
 
-                                  console.log(discordId); // eslint-disable-next-line no-await-in-loop
 
-                                  _context.next = 5;
+                                  _context.next = 4;
                                   return _models["default"].user.findOne({
                                     where: {
                                       user_id: "discord-".concat(discordId)
@@ -114,7 +113,7 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                                     transaction: t
                                   });
 
-                                case 5:
+                                case 4:
                                   userExist = _context.sent;
 
                                   if (userExist) {
@@ -137,7 +136,7 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                                     AmountPositionEnded = true;
                                   }
 
-                                case 9:
+                                case 8:
                                 case "end":
                                   return _context.stop();
                               }

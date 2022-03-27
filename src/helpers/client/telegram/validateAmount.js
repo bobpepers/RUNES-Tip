@@ -95,7 +95,10 @@ export const validateAmount = async (
     ];
   }
 
-  if (tipType === 'each' && preAmount.toLowerCase() !== 'all') {
+  if (
+    tipType === 'each'
+    && preAmount.toLowerCase() !== 'all' // Perhaps remove preAmount.toLowerCase() !== 'all and make tip amount invalidate when casting "all" and "each" instead of splitting up all available balance
+  ) {
     amount *= usersToTip.length;
   }
 

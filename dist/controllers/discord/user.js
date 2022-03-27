@@ -313,7 +313,12 @@ var updateDiscordLastSeen = /*#__PURE__*/function () {
               guildId = message.guildId;
             }
 
-            _context8.next = 3;
+            console.log(message);
+            console.log(guildId);
+            console.log('guildId');
+            console.log(userInfo);
+            console.log('userInfo');
+            _context8.next = 8;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -337,7 +342,7 @@ var updateDiscordLastSeen = /*#__PURE__*/function () {
                         user = _context6.sent;
 
                         if (!guildId) {
-                          _context6.next = 20;
+                          _context6.next = 22;
                           break;
                         }
 
@@ -366,21 +371,22 @@ var updateDiscordLastSeen = /*#__PURE__*/function () {
                         active = _context6.sent;
 
                         if (!group) {
-                          _context6.next = 20;
+                          _context6.next = 22;
                           break;
                         }
 
                         if (!user) {
-                          _context6.next = 20;
+                          _context6.next = 22;
                           break;
                         }
 
                         if (!active) {
-                          _context6.next = 16;
+                          _context6.next = 17;
                           break;
                         }
 
-                        _context6.next = 15;
+                        console.log('active record found');
+                        _context6.next = 16;
                         return active.update({
                           lastSeen: new Date(Date.now())
                         }, {
@@ -388,16 +394,17 @@ var updateDiscordLastSeen = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 15:
+                      case 16:
                         updatedActive = _context6.sent;
 
-                      case 16:
+                      case 17:
                         if (active) {
-                          _context6.next = 20;
+                          _context6.next = 22;
                           break;
                         }
 
-                        _context6.next = 19;
+                        console.log('no active record found');
+                        _context6.next = 21;
                         return _models["default"].active.create({
                           groupId: group.id,
                           userId: user.id,
@@ -407,16 +414,16 @@ var updateDiscordLastSeen = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 19:
+                      case 21:
                         _updatedActive = _context6.sent;
 
-                      case 20:
+                      case 22:
                         if (!user) {
-                          _context6.next = 24;
+                          _context6.next = 26;
                           break;
                         }
 
-                        _context6.next = 23;
+                        _context6.next = 25;
                         return user.update({
                           lastSeen: new Date(Date.now())
                         }, {
@@ -424,15 +431,15 @@ var updateDiscordLastSeen = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 23:
+                      case 25:
                         updatedUser = _context6.sent;
 
-                      case 24:
+                      case 26:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 25:
+                      case 27:
                       case "end":
                         return _context6.stop();
                     }
@@ -482,10 +489,10 @@ var updateDiscordLastSeen = /*#__PURE__*/function () {
               };
             }());
 
-          case 3:
+          case 8:
             return _context8.abrupt("return", updatedUser);
 
-          case 4:
+          case 9:
           case "end":
             return _context8.stop();
         }

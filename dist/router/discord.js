@@ -195,33 +195,31 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               return _context6.abrupt("return");
 
             case 2:
-              console.log('interaction started');
-
               if (interaction.user.bot) {
-                _context6.next = 30;
+                _context6.next = 29;
                 break;
               }
 
-              _context6.next = 6;
+              _context6.next = 5;
               return (0, _isMaintenanceOrDisabled.isMaintenanceOrDisabled)(interaction, 'discord');
 
-            case 6:
+            case 5:
               maintenance = _context6.sent;
 
               if (!(maintenance.maintenance || !maintenance.enabled)) {
-                _context6.next = 9;
+                _context6.next = 8;
                 break;
               }
 
               return _context6.abrupt("return");
 
-            case 9:
-              _context6.next = 11;
+            case 8:
+              _context6.next = 10;
               return (0, _user.createUpdateDiscordUser)(discordClient, interaction.user, queue);
 
-            case 11:
+            case 10:
               walletExists = _context6.sent;
-              _context6.next = 14;
+              _context6.next = 13;
               return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4() {
                 return _regenerator["default"].wrap(function _callee4$(_context4) {
                   while (1) {
@@ -238,7 +236,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
                       case 5:
                         channelTask = _context4.sent;
                         _context4.next = 8;
-                        return (0, _user.updateDiscordLastSeen)(discordClient, interaction.user);
+                        return (0, _user.updateDiscordLastSeen)(interaction, interaction.user);
 
                       case 8:
                         lastSeenDiscordTask = _context4.sent;
@@ -251,46 +249,46 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
                 }, _callee4);
               })));
 
-            case 14:
+            case 13:
               if (!interaction.isButton()) {
-                _context6.next = 30;
+                _context6.next = 29;
                 break;
               }
 
               if (!(interaction.customId === 'claimFaucet')) {
-                _context6.next = 30;
+                _context6.next = 29;
                 break;
               }
 
-              _context6.next = 18;
+              _context6.next = 17;
               return (0, _rateLimit.myRateLimiter)(discordClient, interaction, 'discord', 'Faucet');
 
-            case 18:
+            case 17:
               limited = _context6.sent;
 
               if (!limited) {
-                _context6.next = 21;
+                _context6.next = 20;
                 break;
               }
 
               return _context6.abrupt("return");
 
-            case 21:
-              _context6.next = 23;
+            case 20:
+              _context6.next = 22;
               return (0, _settings.discordSettings)(interaction, 'faucet', groupTaskId, channelTaskId);
 
-            case 23:
+            case 22:
               setting = _context6.sent;
 
               if (setting) {
-                _context6.next = 26;
+                _context6.next = 25;
                 break;
               }
 
               return _context6.abrupt("return");
 
-            case 26:
-              _context6.next = 28;
+            case 25:
+              _context6.next = 27;
               return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5() {
                 var task;
                 return _regenerator["default"].wrap(function _callee5$(_context5) {
@@ -311,13 +309,13 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
                 }, _callee5);
               })));
 
-            case 28:
-              _context6.next = 30;
+            case 27:
+              _context6.next = 29;
               return interaction.deferUpdate()["catch"](function (e) {
                 console.log(e);
               });
 
-            case 30:
+            case 29:
             case "end":
               return _context6.stop();
           }
@@ -378,7 +376,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
                       case 5:
                         channelTask = _context7.sent;
                         _context7.next = 8;
-                        return (0, _user.updateDiscordLastSeen)(discordClient, message.author);
+                        return (0, _user.updateDiscordLastSeen)(message, message.author);
 
                       case 8:
                         lastSeenDiscordTask = _context7.sent;
@@ -412,6 +410,8 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               _context32.next = 18;
               return message.channel.send({
                 embeds: [(0, _discord.discordServerBannedMessage)(groupTask)]
+              })["catch"](function (e) {
+                console.log(e);
               });
 
             case 18:
@@ -426,6 +426,8 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               _context32.next = 22;
               return message.channel.send({
                 embeds: [(0, _discord.discordChannelBannedMessage)(channelTask)]
+              })["catch"](function (e) {
+                console.log(e);
               });
 
             case 22:
@@ -440,6 +442,8 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               _context32.next = 26;
               return message.channel.send({
                 embeds: [(0, _discord.discordUserBannedMessage)(lastSeenDiscordTask)]
+              })["catch"](function (e) {
+                console.log(e);
               });
 
             case 26:
