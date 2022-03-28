@@ -268,6 +268,22 @@ export const unableToFindUserMessage = () => {
   return result;
 };
 
+export const unableToWithdrawToSelfMessage = async (
+  ctx,
+) => {
+  const [
+    userToMention,
+    userId,
+  ] = await getUserToMentionCtx(ctx);
+
+  const result = `<b><u>Withdraw</u></b>
+
+<b><a href="tg://user?id=${userId}">${userToMention}</a></b>, unable to withdraw to your own deposit address
+
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
+  return result;
+};
+
 export const userNotFoundMessage = async (
   ctx,
   title,

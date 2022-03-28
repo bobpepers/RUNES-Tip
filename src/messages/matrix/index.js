@@ -299,6 +299,19 @@ export const canceledAllAmoutMessage = (
   return result;
 };
 
+export const unableToWithdrawToSelfMessage = (
+  message,
+) => {
+  const result = {
+    body: `${message.sender.name}, unable to withdraw to your own deposit address`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, unable to withdraw to your own deposit address</strong></p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
 export const timeOutAllAmoutMessage = (
   message,
   operationName,

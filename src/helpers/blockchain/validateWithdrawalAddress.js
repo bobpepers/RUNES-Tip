@@ -14,7 +14,6 @@ export const validateWithdrawalAddress = async (
   let isInvalidAddress = false;
   let isNodeOffline = false;
 
-  // Check on Crypto node
   if (settings.coin.setting === 'Runebase') {
     try {
       getAddressInfo = await getInstance().validateAddress(address);

@@ -7,11 +7,13 @@ import {
   warnDirectMessage,
   discordErrorMessage,
   cannotSendMessageUser,
+  unableToWithdrawToSelfMessage,
 } from '../../messages/discord';
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/client/discord/validateAmount";
 import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 import { validateWithdrawalAddress } from '../../helpers/blockchain/validateWithdrawalAddress';
+import { disallowWithdrawToSelf } from '../../helpers/blockchain/disallowWithdrawToSelf';
 
 export const withdrawDiscordCreate = async (
   discordClient,
@@ -90,6 +92,29 @@ export const withdrawDiscordCreate = async (
 
     if (failWithdrawalActivity) {
       activity.unshift(failWithdrawalActivity);
+      return;
+    }
+
+    const isMyAddressActivity = await disallowWithdrawToSelf(
+      filteredMessage[2],
+      user,
+      t,
+    );
+
+    if (isMyAddressActivity) {
+      await message.author.send({
+        embeds: [
+          unableToWithdrawToSelfMessage(message),
+        ],
+      });
+      if (message.channel.type !== 'DM') {
+        await message.channel.send({
+          embeds: [
+            warnDirectMessage(userId, 'Withdraw'),
+          ],
+        });
+      }
+      activity.unshift(isMyAddressActivity);
       return;
     }
 

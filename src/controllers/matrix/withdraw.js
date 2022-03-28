@@ -1,18 +1,20 @@
 /* eslint-disable import/prefer-default-export */
 import { Transaction } from "sequelize";
 import db from '../../models';
-import { getInstance } from '../../services/rclient';
 import {
   invalidAddressMessage,
   reviewMessage,
   warnDirectMessage,
   errorMessage,
   nodeOfflineMessage,
+  unableToWithdrawToSelfMessage,
 } from '../../messages/matrix';
 import getCoinSettings from '../../config/settings';
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/client/matrix/validateAmount";
 import { userWalletExist } from "../../helpers/client/matrix/userWalletExist";
+import { validateWithdrawalAddress } from '../../helpers/blockchain/validateWithdrawalAddress';
+import { disallowWithdrawToSelf } from '../../helpers/blockchain/disallowWithdrawToSelf';
 
 const settings = getCoinSettings();
 
@@ -64,52 +66,71 @@ export const withdrawMatrixCreate = async (
       return;
     }
 
-    // Add new currencies here (default fallback Runebase)
-    let isValidAddressInfo = false;
-    if (settings.coin.setting === 'Runebase') {
-      try {
-        isValidAddressInfo = await getInstance().getAddressInfo(filteredMessage[2]);
-      } catch (e) {
-        if (e.response && e.response.status === 500) {
-          await matrixClient.sendEvent(
-            message.sender.roomId,
-            "m.room.message",
-            invalidAddressMessage(
-              message,
-            ),
-          );
-          return;
-        }
-        await matrixClient.sendEvent(
-          message.sender.roomId,
-          "m.room.message",
-          nodeOfflineMessage(),
-        );
-        return;
-      }
-    }
+    const [
+      isInvalidAddress,
+      isNodeOffline,
+      failWithdrawalActivity,
+    ] = await validateWithdrawalAddress(
+      filteredMessage[2],
+      user,
+      t,
+    );
 
-    // Add new currencies here (default fallback Runebase)
-    let isValidAddress = false;
-    if (settings.coin.setting === 'Runebase') {
-      isValidAddress = await getInstance().utils.isRunebaseAddress(filteredMessage[2]);
-    } else if (settings.coin.setting === 'Pirate') {
-      isValidAddress = await getInstance().utils.isPirateAddress(filteredMessage[2]);
-    } else if (settings.coin.setting === 'Komodo') {
-      isValidAddress = await getInstance().utils.isKomodoAddress(filteredMessage[2]);
-    } else {
-      isValidAddress = await getInstance().utils.isRunebaseAddress(filteredMessage[2]);
-    }
-    //
-
-    if (!isValidAddress) {
+    if (isNodeOffline) {
       await matrixClient.sendEvent(
-        message.sender.roomId,
+        userDirectMessageRoomId,
+        "m.room.message",
+        nodeOfflineMessage(),
+      );
+    }
+
+    if (isInvalidAddress) {
+      await matrixClient.sendEvent(
+        userDirectMessageRoomId,
         "m.room.message",
         invalidAddressMessage(
           message,
         ),
       );
+    }
+
+    if (isInvalidAddress || isNodeOffline) {
+      if (message.sender.roomId !== userDirectMessageRoomId) {
+        await matrixClient.sendEvent(
+          message.sender.roomId,
+          "m.room.message",
+          warnDirectMessage(message.sender.name, 'Withdraw'),
+        );
+      }
+    }
+
+    if (failWithdrawalActivity) {
+      activity.unshift(failWithdrawalActivity);
+      return;
+    }
+
+    const isMyAddressActivity = await disallowWithdrawToSelf(
+      filteredMessage[2],
+      user,
+      t,
+    );
+
+    if (isMyAddressActivity) {
+      await matrixClient.sendEvent(
+        userDirectMessageRoomId,
+        "m.room.message",
+        unableToWithdrawToSelfMessage(
+          message,
+        ),
+      );
+      if (message.sender.roomId !== userDirectMessageRoomId) {
+        await matrixClient.sendEvent(
+          message.sender.roomId,
+          "m.room.message",
+          warnDirectMessage(message.sender.name, 'Withdraw'),
+        );
+      }
+      activity.unshift(isMyAddressActivity);
       return;
     }
 

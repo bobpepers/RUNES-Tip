@@ -8,11 +8,13 @@ import {
   warnDirectMessage,
   errorMessage,
   reviewMessage,
+  unableToWithdrawToSelfMessage,
 } from '../../messages/telegram';
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/client/telegram/validateAmount";
 import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
 import { validateWithdrawalAddress } from '../../helpers/blockchain/validateWithdrawalAddress';
+import { disallowWithdrawToSelf } from '../../helpers/blockchain/disallowWithdrawToSelf';
 
 export const withdrawTelegramCreate = async (
   telegramClient,
@@ -101,6 +103,31 @@ export const withdrawTelegramCreate = async (
 
     if (failWithdrawalActivity) {
       activity.unshift(failWithdrawalActivity);
+      return;
+    }
+
+    const isMyAddressActivity = await disallowWithdrawToSelf(
+      filteredMessage[2],
+      user,
+      t,
+    );
+
+    if (isMyAddressActivity) {
+      await ctx.telegram.sendMessage(
+        ctx.update.message.from.id,
+        await unableToWithdrawToSelfMessage(ctx),
+        {
+          parse_mode: 'HTML',
+        },
+      );
+      if (ctx.update.message.chat.type !== 'private') {
+        await ctx.replyWithHTML(
+          await warnDirectMessage(
+            user,
+          ),
+        );
+      }
+      activity.unshift(isMyAddressActivity);
       return;
     }
 

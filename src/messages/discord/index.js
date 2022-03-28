@@ -611,6 +611,20 @@ export const featureDisabledGlobalMessage = (name) => {
   return result;
 };
 
+export const unableToWithdrawToSelfMessage = (message) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Tip')
+    .setDescription(`<@${message.author.id}>, unable to withdraw to your own deposit address`)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
 export const tipFaucetSuccessMessage = (message, amount) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
