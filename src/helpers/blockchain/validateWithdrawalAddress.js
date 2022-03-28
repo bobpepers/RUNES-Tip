@@ -13,45 +13,62 @@ export const validateWithdrawalAddress = async (
   let getAddressInfo;
   let isInvalidAddress = false;
   let isNodeOffline = false;
-  let isValidAddress = false;
-
-  // Regex check
-  if (settings.coin.setting === 'Runebase') {
-    isValidAddress = await getInstance().utils.isRunebaseAddress(address);
-  } else if (settings.coin.setting === 'Pirate') {
-    isValidAddress = await getInstance().utils.isPirateAddress(address);
-  } else if (settings.coin.setting === 'Komodo') {
-    isValidAddress = await getInstance().utils.isKomodoAddress(address);
-  } else {
-    isValidAddress = await getInstance().utils.isRunebaseAddress(address);
-  }
-
-  if (!isValidAddress) {
-    console.log('failed regex address');
-    isInvalidAddress = true;
-  }
 
   // Check on Crypto node
   if (settings.coin.setting === 'Runebase') {
     try {
-      getAddressInfo = await getInstance().getAddressInfo(address);
-    } catch (e) {
-      console.log(e);
-      if (e.response && e.response.status === 500) {
+      getAddressInfo = await getInstance().validateAddress(address);
+      console.log(getAddressInfo);
+      if (getAddressInfo && !getAddressInfo.isvalid) {
         isInvalidAddress = true;
-        // return;
-      } else {
-        isNodeOffline = true;
       }
+      if (getAddressInfo && getAddressInfo.isvalid) {
+        isInvalidAddress = false;
+      }
+    } catch (e) {
+      isNodeOffline = true;
     }
   } else if (settings.coin.setting === 'Pirate') {
-    getAddressInfo = true;
+    try {
+      getAddressInfo = await getInstance().zValidateAddress(address);
+      if (getAddressInfo && !getAddressInfo.isvalid) {
+        isInvalidAddress = true;
+      }
+      if (getAddressInfo && getAddressInfo.isvalid) {
+        isInvalidAddress = false;
+      }
+    } catch (e) {
+      isNodeOffline = true;
+    }
   } else if (settings.coin.setting === 'Komodo') {
-    getAddressInfo = true;
+    try {
+      getAddressInfo = await getInstance().validateAddress(address);
+      console.log(getAddressInfo);
+      if (getAddressInfo && !getAddressInfo.isvalid) {
+        isInvalidAddress = true;
+      }
+      if (getAddressInfo && getAddressInfo.isvalid) {
+        isInvalidAddress = false;
+      }
+    } catch (e) {
+      isNodeOffline = true;
+    }
+  } else {
+    try {
+      getAddressInfo = await getInstance().validateAddress(address);
+      console.log(getAddressInfo);
+      if (getAddressInfo && !getAddressInfo.isvalid) {
+        isInvalidAddress = true;
+      }
+      if (getAddressInfo && getAddressInfo.isvalid) {
+        isInvalidAddress = false;
+      }
+    } catch (e) {
+      isNodeOffline = true;
+    }
   }
 
   if (!getAddressInfo) {
-    console.log('fail node check');
     isInvalidAddress = true;
   }
 
