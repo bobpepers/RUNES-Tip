@@ -361,7 +361,7 @@ export const discordDepositConfirmedMessage = (
     .setColor(settings.bot.color)
     .setTitle(`Deposit #${trans.id}`)
     .setDescription(`Deposit Confirmed
-${amount} ${settings.coin.ticker} has been credited to your wallet`)
+${trans.amount / 1e8} ${settings.coin.ticker} has been credited to your wallet`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
@@ -371,13 +371,13 @@ ${amount} ${settings.coin.ticker} has been credited to your wallet`)
   return result;
 };
 
-export const discordIncomingDepositMessage = (res) => {
+export const discordIncomingDepositMessage = (detail) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle(`Deposit #${res.locals.transaction[0].id}`)
-    .setDescription(`incoming deposit detected for ${res.locals.amount} ${settings.coin.ticker}
+    .setTitle(`Deposit #${detail.transaction[0].id}`)
+    .setDescription(`incoming deposit detected for ${detail.amount} ${settings.coin.ticker}
 Balance will be reflected in your wallet in ~${settings.min.confirmations}+ confirmations
-${settings.coin.explorer}/tx/${res.locals.transaction[0].txid}`)
+${settings.coin.explorer}/tx/${detail.transaction[0].txid}`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,

@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import walletNotifyRunebase from '../helpers/blockchain/runebase/walletNotify';
 import walletNotifyPirate from '../helpers/blockchain/pirate/walletNotify';
 import walletNotifyKomodo from '../helpers/blockchain/komodo/walletNotify';
@@ -76,17 +77,21 @@ export const notifyRouter = (
         if (res.locals.error) {
           console.log(res.locals.error);
         } else if (!res.locals.error
-          && res.locals.transaction
-          && res.locals.userId
-          && res.locals.platform
-          && res.locals.amount
+          && res.locals.detail
+          && res.locals.detail.length > 0
         ) {
-          await incomingDepositMessageHandler(
-            discordClient,
-            telegramClient,
-            matrixClient,
-            res,
-          );
+          console.log(res.locals.detail);
+          console.log('res.local.detail after walletNotify');
+          for await (const detail of res.locals.detail) {
+            if (detail.amount) {
+              await incomingDepositMessageHandler(
+                discordClient,
+                telegramClient,
+                matrixClient,
+                detail,
+              );
+            }
+          }
         }
         res.sendStatus(200);
       },
@@ -100,17 +105,21 @@ export const notifyRouter = (
         if (res.locals.error) {
           console.log(res.locals.error);
         } else if (!res.locals.error
-          && res.locals.transaction
-          && res.locals.userId
-          && res.locals.platform
-          && res.locals.amount
+          && res.locals.detail
+          && res.locals.detail.length > 0
         ) {
-          await incomingDepositMessageHandler(
-            discordClient,
-            telegramClient,
-            matrixClient,
-            res,
-          );
+          for await (const detail of res.locals.detail) {
+            console.log(detail);
+            console.log('detail');
+            if (detail.amount) {
+              await incomingDepositMessageHandler(
+                discordClient,
+                telegramClient,
+                matrixClient,
+                detail,
+              );
+            }
+          }
         }
         res.sendStatus(200);
       },
@@ -124,17 +133,19 @@ export const notifyRouter = (
         if (res.locals.error) {
           console.log(res.locals.error);
         } else if (!res.locals.error
-          && res.locals.transaction
-          && res.locals.userId
-          && res.locals.platform
-          && res.locals.amount
+          && res.locals.detail
+          && res.locals.detail.length > 0
         ) {
-          await incomingDepositMessageHandler(
-            discordClient,
-            telegramClient,
-            matrixClient,
-            res,
-          );
+          for await (const detail of res.locals.detail) {
+            if (detail.amount) {
+              await incomingDepositMessageHandler(
+                discordClient,
+                telegramClient,
+                matrixClient,
+                detail,
+              );
+            }
+          }
         }
         res.sendStatus(200);
       },
@@ -148,17 +159,19 @@ export const notifyRouter = (
         if (res.locals.error) {
           console.log(res.locals.error);
         } else if (!res.locals.error
-          && res.locals.transaction
-          && res.locals.userId
-          && res.locals.platform
-          && res.locals.amount
+          && res.locals.detail
+          && res.locals.detail.length > 0
         ) {
-          await incomingDepositMessageHandler(
-            discordClient,
-            telegramClient,
-            matrixClient,
-            res,
-          );
+          for await (const detail of res.locals.detail) {
+            if (detail.amount) {
+              await incomingDepositMessageHandler(
+                discordClient,
+                telegramClient,
+                matrixClient,
+                detail,
+              );
+            }
+          }
         }
         res.sendStatus(200);
       },

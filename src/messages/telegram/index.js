@@ -30,19 +30,21 @@ export const telegramDepositConfirmedMessage = async (
   const result = `<b><u>Deposit #${trans.id}</u></b>
 
 Deposit Confirmed
-<b>${amount} ${settings.coin.ticker}</b> has been credited to your wallet
+<b>${trans.amount / 1e8} ${settings.coin.ticker}</b> has been credited to your wallet
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
 
-export const telegramIncomingDepositMessage = async (res) => {
-  console.log(res.locals);
-  const result = `<b><u>Deposit #${res.locals.transaction[0].id}</u></b>
+export const telegramIncomingDepositMessage = async (
+  detail,
+) => {
+  console.log(detail);
+  const result = `<b><u>Deposit #${detail.transaction[0].id}</u></b>
 
-incoming deposit detected for <b>${res.locals.amount} ${settings.coin.ticker}</b>
+incoming deposit detected for <b>${detail.amount} ${settings.coin.ticker}</b>
 Balance will be reflected in your wallet in <b>~${settings.min.confirmations}+ confirmations</b>
-${settings.coin.explorer}/tx/${res.locals.transaction[0].txid}
+${settings.coin.explorer}/tx/${detail.transaction[0].txid}
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;

@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import { Transaction } from "sequelize";
 import { config } from "dotenv";
 import db from '../../../models';
@@ -7,68 +8,57 @@ config();
 
 export async function patchPirateDeposits() {
   const transactions = await getInstance().listTransactions(1000);
-  // transactions.forEach(async (trans) => {
-  // eslint-disable-next-line no-restricted-syntax
-  for await (const trans of transactions) {
-    console.log('show transaction');
-    console.log(trans);
-    if (
-      trans.received.length > 0
-      && trans.received[0].address
-      && trans.received[0].address !== process.env.PIRATE_MAIN_ADDRESS
-    ) {
-      // eslint-disable-next-line no-await-in-loop
-      const address = await db.address.findOne({
-        where: {
-          address: trans.received[0].address,
-        },
-        include: [
-          {
-            model: db.wallet,
-            as: 'wallet',
-          },
-        ],
-      });
 
-      if (!address) {
-        console.log(trans.received[0].address);
-        console.log('address not found');
-      }
-      if (address) {
-        // eslint-disable-next-line no-await-in-loop
-        await db.sequelize.transaction({
-          isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-        }, async (t) => {
-          console.log('begin transaction');
-          let category = null;
-          if (trans.received.length > 0) {
-            category = 'receive';
+  for await (const trans of transactions) {
+    if (
+      trans.received
+      && trans.received.length > 0
+    ) {
+      for await (const detail of trans.received) {
+        if (detail.address) {
+          if (detail.address !== process.env.PIRATE_MAIN_ADDRESS) {
+            console.log(trans.received);
+            console.log('trans.received');
+            const address = await db.address.findOne({
+              where: {
+                address: detail.address,
+              },
+              include: [
+                {
+                  model: db.wallet,
+                  as: 'wallet',
+                },
+              ],
+            });
+            if (address) {
+              await db.sequelize.transaction({
+                isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+              }, async (t) => {
+                const newTrans = await db.transaction.findOrCreate({
+                  where: {
+                    txid: trans.txid,
+                    type: 'receive',
+                    userId: address.wallet.userId,
+                  },
+                  defaults: {
+                    txid: trans.txid,
+                    addressId: address.id,
+                    phase: 'confirming',
+                    type: 'receive',
+                    amount: detail.value * 1e8,
+                    userId: address.wallet.userId,
+                  },
+                  transaction: t,
+                  lock: t.LOCK.UPDATE,
+                });
+                t.afterCommit(() => {
+                  console.log('commited');
+                });
+              });
+            }
           }
-          if (trans.sent.length > 0) {
-            category = 'send';
-          }
-          const newTrans = await db.transaction.findOrCreate({
-            where: {
-              txid: trans.txid,
-              type: category,
-            },
-            defaults: {
-              txid: trans.txid,
-              addressId: address.id,
-              phase: 'confirming',
-              type: category,
-              amount: trans.received[0].value * 1e8,
-              userId: address.wallet.userId,
-            },
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
-          t.afterCommit(() => {
-            console.log('commited');
-          });
-        });
+        }
       }
     }
-  // });
   }
 }

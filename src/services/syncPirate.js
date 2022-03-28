@@ -1,12 +1,16 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint no-underscore-dangle: [2, { "allow": ["_eventName", "_address", "_time", "_orderId"] }] */
 import _ from "lodash";
 import { Transaction } from "sequelize";
+import { config } from "dotenv";
 import db from '../models';
 import getCoinSettings from '../config/settings';
 import { getInstance } from "./rclient";
 import { waterFaucet } from "../helpers/waterFaucet";
 
 import { isDepositOrWithdrawalCompleteMessageHandler } from '../helpers/messageHandlers';
+
+config();
 
 const settings = getCoinSettings();
 
@@ -69,137 +73,230 @@ const syncTransactions = async (
 
   // eslint-disable-next-line no-restricted-syntax
   for await (const trans of transactions) {
-    let isWithdrawalComplete = false;
-    let isDepositComplete = false;
-    let userToMessage;
     const transaction = await getInstance().getTransaction(trans.txid);
-    // eslint-disable-next-line no-await-in-loop
-    await db.sequelize.transaction({
-      isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-      // eslint-disable-next-line no-loop-func
-    }, async (t) => {
-      const wallet = await db.wallet.findOne({
-        where: {
-          userId: trans.address.wallet.userId,
-        },
-        transaction: t,
-        lock: t.LOCK.UPDATE,
-      });
+    console.log(transaction);
+    if (
+      transaction.sent
+      && transaction.sent.length > 0
+      && trans.type === 'send'
+    ) {
+      for await (const detail of transaction.sent) {
+        if (
+          detail.address !== process.env.PIRATE_MAIN_ADDRESS
+        ) {
+          let isWithdrawalComplete = false;
+          const isDepositComplete = false;
+          let userToMessage;
+          let updatedTransaction;
+          let updatedWallet;
+          await db.sequelize.transaction({
+            isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+          }, async (t) => {
+            const processTransaction = await db.transaction.findOne({
+              where: {
+                phase: 'confirming',
+                id: trans.id,
+              },
+              include: [{
+                model: db.address,
+                as: 'address',
+                include: [{
+                  model: db.wallet,
+                  as: 'wallet',
+                }],
+              }],
+            });
+            if (processTransaction) {
+              const wallet = await db.wallet.findOne({
+                where: {
+                  userId: processTransaction.address.wallet.userId,
+                },
+                transaction: t,
+                lock: t.LOCK.UPDATE,
+              });
 
-      let updatedTransaction;
-      let updatedWallet;
-      if (transaction.confirmations < Number(settings.min.confirmations)) {
-        updatedTransaction = await trans.update({
-          confirmations: transaction.confirmations,
-        }, {
-          transaction: t,
-          lock: t.LOCK.UPDATE,
-        });
-      }
-      if (transaction.confirmations >= Number(settings.min.confirmations)) {
-        if (transaction.sent.length > 0 && trans.type === 'send') {
-          const prepareLockedAmount = ((transaction.sent[0].value * 1e8) + Number(trans.feeAmount));
-          const removeLockedAmount = Math.abs(prepareLockedAmount);
+              if (transaction.confirmations < Number(settings.min.confirmations)) {
+                updatedTransaction = await processTransaction.update({
+                  confirmations: transaction.confirmations,
+                }, {
+                  transaction: t,
+                  lock: t.LOCK.UPDATE,
+                });
+              }
 
-          updatedWallet = await wallet.update({
-            locked: wallet.locked - removeLockedAmount,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
-          updatedTransaction = await trans.update({
-            confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
-            phase: 'confirmed',
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
-          const createActivity = await db.activity.create({
-            spenderId: updatedWallet.userId,
-            type: 'withdrawComplete',
-            amount: transaction.sent[0].value * 1e8,
-            spender_balance: updatedWallet.available + updatedWallet.locked,
-            transactionId: updatedTransaction.id,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
-          /// Add To faucet
-          const faucetSetting = await db.features.findOne({
-            where: {
-              type: 'global',
-              name: 'faucet',
-            },
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
+              if (transaction.confirmations >= Number(settings.min.confirmations)) {
+                const prepareLockedAmount = ((detail.value * 1e8) + Number(processTransaction.feeAmount));
+                const removeLockedAmount = Math.abs(prepareLockedAmount);
 
-          const faucetWatered = await waterFaucet(
-            t,
-            Number(trans.feeAmount),
-            faucetSetting,
-          );
+                updatedWallet = await wallet.update({
+                  locked: wallet.locked - removeLockedAmount,
+                }, {
+                  transaction: t,
+                  lock: t.LOCK.UPDATE,
+                });
+                updatedTransaction = await processTransaction.update({
+                  confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
+                  phase: 'confirmed',
+                }, {
+                  transaction: t,
+                  lock: t.LOCK.UPDATE,
+                });
+                const createActivity = await db.activity.create({
+                  spenderId: updatedWallet.userId,
+                  type: 'withdrawComplete',
+                  amount: detail.value * 1e8,
+                  spender_balance: updatedWallet.available + updatedWallet.locked,
+                  transactionId: updatedTransaction.id,
+                }, {
+                  transaction: t,
+                  lock: t.LOCK.UPDATE,
+                });
 
-          userToMessage = await db.user.findOne({
-            where: {
-              id: updatedWallet.userId,
-            },
-            transaction: t,
-            lock: t.LOCK.UPDATE,
+                const faucetSetting = await db.features.findOne({
+                  where: {
+                    type: 'global',
+                    name: 'faucet',
+                  },
+                  transaction: t,
+                  lock: t.LOCK.UPDATE,
+                });
+
+                const faucetWatered = await waterFaucet(
+                  t,
+                  Number(processTransaction.feeAmount),
+                  faucetSetting,
+                );
+
+                userToMessage = await db.user.findOne({
+                  where: {
+                    id: updatedWallet.userId,
+                  },
+                  transaction: t,
+                  lock: t.LOCK.UPDATE,
+                });
+                isWithdrawalComplete = true;
+              }
+            }
+
+            t.afterCommit(async () => {
+              await isDepositOrWithdrawalCompleteMessageHandler(
+                isDepositComplete,
+                isWithdrawalComplete,
+                discordClient,
+                telegramClient,
+                matrixClient,
+                userToMessage,
+                trans,
+                detail.value,
+              );
+            });
           });
-          isWithdrawalComplete = true;
         }
-        if (transaction.received.length > 0 && trans.type === 'receive') {
-          console.log('updating balance');
-          updatedWallet = await wallet.update({
-            available: wallet.available + (transaction.received[0].value * 1e8),
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
+      }
+    }
+
+    if (transaction.received
+      && transaction.received.length > 0
+      && trans.type === 'receive'
+    ) {
+      for await (const detail of transaction.received) {
+        if (
+          detail.address !== process.env.PIRATE_MAIN_ADDRESS
+          && detail.address === trans.address.address
+        ) {
+          const isWithdrawalComplete = false;
+          let isDepositComplete = false;
+          let userToMessage;
+          let updatedTransaction;
+          let updatedWallet;
+          await db.sequelize.transaction({
+            isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+          }, async (t) => {
+            const processTransaction = await db.transaction.findOne({
+              where: {
+                phase: 'confirming',
+                id: trans.id,
+              },
+              include: [{
+                model: db.address,
+                as: 'address',
+                include: [{
+                  model: db.wallet,
+                  as: 'wallet',
+                }],
+              }],
+            });
+            if (processTransaction) {
+              const wallet = await db.wallet.findOne({
+                where: {
+                  userId: processTransaction.address.wallet.userId,
+                },
+                transaction: t,
+                lock: t.LOCK.UPDATE,
+              });
+
+              if (transaction.confirmations < Number(settings.min.confirmations)) {
+                updatedTransaction = await processTransaction.update({
+                  confirmations: transaction.confirmations,
+                }, {
+                  transaction: t,
+                  lock: t.LOCK.UPDATE,
+                });
+              }
+              if (transaction.confirmations >= Number(settings.min.confirmations)) {
+                console.log('updating balance');
+                updatedWallet = await wallet.update({
+                  available: wallet.available + (detail.value * 1e8),
+                }, {
+                  transaction: t,
+                  lock: t.LOCK.UPDATE,
+                });
+                updatedTransaction = await processTransaction.update({
+                  confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
+                  phase: 'confirmed',
+                }, {
+                  transaction: t,
+                  lock: t.LOCK.UPDATE,
+                });
+                const createActivity = await db.activity.create({
+                  earnerId: updatedWallet.userId,
+                  type: 'depositComplete',
+                  amount: detail.value * 1e8,
+                  earner_balance: updatedWallet.available + updatedWallet.locked,
+                  transactionId: updatedTransaction.id,
+                }, {
+                  transaction: t,
+                  lock: t.LOCK.UPDATE,
+                });
+                userToMessage = await db.user.findOne({
+                  where: {
+                    id: updatedWallet.userId,
+                  },
+                  transaction: t,
+                  lock: t.LOCK.UPDATE,
+                });
+                isDepositComplete = true;
+              }
+            }
+
+            t.afterCommit(async () => {
+              await isDepositOrWithdrawalCompleteMessageHandler(
+                isDepositComplete,
+                isWithdrawalComplete,
+                discordClient,
+                telegramClient,
+                matrixClient,
+                userToMessage,
+                trans,
+                detail.value,
+              );
+            });
           });
-          updatedTransaction = await trans.update({
-            confirmations: transaction.confirmations > 30000 ? 30000 : transaction.confirmations,
-            phase: 'confirmed',
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
-          const createActivity = await db.activity.create({
-            earnerId: updatedWallet.userId,
-            type: 'depositComplete',
-            amount: transaction.received[0].value * 1e8,
-            earner_balance: updatedWallet.available + updatedWallet.locked,
-            transactionId: updatedTransaction.id,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
-          userToMessage = await db.user.findOne({
-            where: {
-              id: updatedWallet.userId,
-            },
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
-          isDepositComplete = true;
         }
       }
-      t.afterCommit(async () => {
-        await isDepositOrWithdrawalCompleteMessageHandler(
-          isDepositComplete,
-          isWithdrawalComplete,
-          discordClient,
-          telegramClient,
-          matrixClient,
-          userToMessage,
-          trans,
-          transaction.received[0].value,
-        );
-        console.log('done');
-      });
-    });
+    }
   }
-  return true;
+  // return true;
 };
 
 const insertBlock = async (startBlock) => {

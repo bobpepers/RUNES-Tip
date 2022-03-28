@@ -139,40 +139,40 @@ export const incomingDepositMessageHandler = async (
   discordClient,
   telegramClient,
   matrixClient,
-  res,
+  detail,
 ) => {
   try {
-    if (res.locals.platform === 'telegram') {
+    if (detail.platform === 'telegram') {
       await telegramClient.telegram.sendMessage(
-        res.locals.userId,
-        await telegramIncomingDepositMessage(res),
+        detail.userId,
+        await telegramIncomingDepositMessage(detail),
         {
           parse_mode: 'HTML',
         },
       );
     }
-    if (res.locals.platform === 'discord') {
-      const myClient = await discordClient.users.fetch(res.locals.userId, false);
+    if (detail.platform === 'discord') {
+      const myClient = await discordClient.users.fetch(detail.userId, false);
       await myClient.send({
         embeds: [
-          discordIncomingDepositMessage(res),
+          discordIncomingDepositMessage(detail),
         ],
       });
     }
-    if (res.locals.platform === 'matrix') {
+    if (detail.platform === 'matrix') {
       const [
         directUserMessageRoom,
         isCurrentRoomDirectMessage,
         userState,
       ] = await findUserDirectMessageRoom(
         matrixClient,
-        res.locals.userId,
+        detail.userId,
       );
       if (directUserMessageRoom) {
         await matrixClient.sendEvent(
           directUserMessageRoom.roomId,
           "m.room.message",
-          matrixIncomingDepositMessage(res),
+          matrixIncomingDepositMessage(detail),
         );
       }
     }

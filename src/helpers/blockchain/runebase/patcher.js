@@ -1,4 +1,5 @@
-import { Transaction, Op } from "sequelize";
+/* eslint-disable no-restricted-syntax */
+import { Transaction } from "sequelize";
 import db from '../../../models';
 
 import { getInstance } from "../../../services/rclient";
@@ -6,11 +7,9 @@ import { getInstance } from "../../../services/rclient";
 export async function patchRunebaseDeposits() {
   const transactions = await getInstance().listTransactions(1000);
 
-  // eslint-disable-next-line no-restricted-syntax
   for await (const trans of transactions) {
     if (trans.category === 'receive') {
       if (trans.address) {
-        // eslint-disable-next-line no-await-in-loop
         const address = await db.address.findOne({
           where: {
             address: trans.address,
@@ -23,12 +22,7 @@ export async function patchRunebaseDeposits() {
           ],
         });
 
-        if (!address) {
-          console.log(trans.address);
-          console.log('address not found');
-        }
         if (address) {
-          // eslint-disable-next-line no-await-in-loop
           await db.sequelize.transaction({
             isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
           }, async (t) => {
@@ -36,6 +30,7 @@ export async function patchRunebaseDeposits() {
               where: {
                 txid: trans.txid,
                 type: trans.category,
+                userId: address.wallet.userId,
               },
               defaults: {
                 txid: trans.txid,

@@ -15,7 +15,7 @@ module.exports = {
     enabled: {
       telegram: true,
       discord: true,
-      matrix: false,
+      matrix: true,
     },
   },
   coin: {
@@ -24,7 +24,7 @@ module.exports = {
     ticker: "DUST",
     logo: "https://downloads.runebase.io/dust.png",
     website: "n/a",
-    explorer: "n/a",
+    explorer: "http://http://dragonfairy.gives",
     github: "n/a",
     telegram: "n/a",
     discord: "n/a",

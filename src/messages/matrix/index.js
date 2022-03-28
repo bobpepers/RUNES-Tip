@@ -70,7 +70,7 @@ export const warnDirectMessage = (
     body: `${title}
 
 ${username}, i've sent you a direct message.
-    
+
 ${settings.bot.name} v${pjson.version}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
@@ -84,7 +84,7 @@ export const helpMessage = () => {
   const result = {
     is_direct: true,
     body: `Help v${pjson.version}
-    ${settings.bot.command.matrix} 
+    ${settings.bot.command.matrix}
 show this help message
 
 ${settings.bot.command.matrix}  help
@@ -179,18 +179,20 @@ ${settings.bot.name} v${pjson.version}`,
   return result;
 };
 
-export const matrixIncomingDepositMessage = (res) => {
+export const matrixIncomingDepositMessage = (
+  detail,
+) => {
   const result = {
-    body: `Deposit #${res.locals.transaction[0].id}
-incoming deposit detected for ${res.locals.amount} ${settings.coin.ticker}
+    body: `Deposit #${detail.transaction[0].id}
+incoming deposit detected for ${detail.amount} ${settings.coin.ticker}
 Balance will be reflected in your wallet in ~${settings.min.confirmations}+ confirmations
-${settings.coin.explorer}/tx/${res.locals.transaction[0].txid}`,
+${settings.coin.explorer}/tx/${detail.transaction[0].txid}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>Deposit #${res.locals.transaction[0].id}</h5>
-<p>incoming deposit detected for <strong>${res.locals.amount} ${settings.coin.ticker}</strong><br>
+    formatted_body: `<blockquote><h5>Deposit #${detail.transaction[0].id}</h5>
+<p>incoming deposit detected for <strong>${detail.amount} ${settings.coin.ticker}</strong><br>
 Balance will be reflected in your wallet in <strong>~${settings.min.confirmations}+ confirmations</strong><br>
-${settings.coin.explorer}/tx/${res.locals.transaction[0].txid}</p>
+${settings.coin.explorer}/tx/${detail.transaction[0].txid}</p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p>
 </blockquote>`,
   };
@@ -203,12 +205,12 @@ export const matrixDepositConfirmedMessage = (
 ) => {
   const result = {
     body: `Deposit #${trans.id}
-Deposit Confirmed 
+Deposit Confirmed
 ${amount} ${settings.coin.ticker} has been credited to your wallet`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h5>Deposit #${trans.id}</h5>
-<p>Deposit Confirmed<br> 
+<p>Deposit Confirmed<br>
 ${amount} ${settings.coin.ticker} has been credited to your wallet</p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p>
 </blockquote>`,
@@ -270,12 +272,12 @@ export const confirmAllAmoutMessage = (
 ) => {
   const result = {
     body: `${message.sender.name}, are you sure that you want to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}?
-Accepted answers: **yes/no/y/n**; 
+Accepted answers: **yes/no/y/n**;
 Auto-cancel in 30 seconds.`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, are you sure that you want to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}?<br>
-Accepted answers: <u>yes/no/y/n</u>;<br> 
+Accepted answers: <u>yes/no/y/n</u>;<br>
 Auto-cancel in 30 seconds.</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
@@ -396,7 +398,7 @@ export const reviewMessage = (
   const result = {
     body: `Withdraw #${transaction.id}
 ${message.sender.name},  Your withdrawal is being reviewed
-    
+
 amount: ${amount}
 fee: ${fee}
 total: ${total}`,
@@ -405,7 +407,7 @@ total: ${total}`,
     formatted_body: `<blockquote><h5>Withdraw #${transaction.id}</h5>
 <p><strong>
 <a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>,  Your withdrawal is being reviewed<br><br>
-    
+
 amount: ${amount}<br>
 fee: ${fee}<br>
 total: ${total}<br>
@@ -441,7 +443,7 @@ Your withdrawal has been accepted
 amount: ${amount}
 fee: ${fee}
 total: ${total}
-    
+
 ${settings.coin.explorer}/tx/${updatedTrans.txid}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
@@ -451,7 +453,7 @@ Your withdrawal has been accepted<br><br>
 amount: ${amount}<br>
 fee: ${fee}<br>
 total: ${total}<br><br>
-    
+
 ${settings.coin.explorer}/tx/${updatedTrans.txid}
 </strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -661,8 +663,8 @@ export const tipMultipleSuccessMessage = (
     body: `Tip #${id}
 ${message.sender.name} tipped **${(amount * listOfUsersRained.length) / 1e8} ${settings.coin.ticker}** to ${listOfUsersRained.length} users
 
-Type: **${capitalize(type)}**  
-    
+Type: **${capitalize(type)}**
+
 💸 **${amount / 1e8} ${settings.coin.ticker}** each 💸`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
@@ -671,7 +673,7 @@ Type: **${capitalize(type)}**
 <p><strong>${message.sender.name} tipped <u>${(amount * listOfUsersRained.length) / 1e8} ${settings.coin.ticker}</u> to ${listOfUsersRained.length} users
 <br><br>
 Type: <u>${capitalize(type)}</u>
-<br><br>   
+<br><br>
 💸 <u>${amount / 1e8} ${settings.coin.ticker}</u> each 💸</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };

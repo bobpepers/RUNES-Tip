@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 import { Transaction } from "sequelize";
 import { getInstance } from '../../../services/rclient';
 
@@ -15,80 +16,85 @@ const walletNotifyKomodo = async (req, res, next) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    await Promise.all(transaction.details.map(async (detail) => {
-      if (detail.category === 'receive') {
-        const address = await db.address.findOne({
-          where: {
-            address: detail.address,
-          },
-          include: [
-            {
-              model: db.wallet,
-              as: 'wallet',
-              include: [
-                {
-                  model: db.user,
-                  as: 'user',
-                },
-              ],
-            },
-          ],
-          transaction: t,
-          lock: t.LOCK.UPDATE,
-        });
-        if (address) {
-          if (address.wallet.user.user_id.startsWith('discord')) {
-            res.locals.platform = 'discord';
-            res.locals.userId = address.wallet.user.user_id.replace('discord-', '');
-          }
-          if (address.wallet.user.user_id.startsWith('telegram')) {
-            res.locals.platform = 'telegram';
-            res.locals.userId = address.wallet.user.user_id.replace('telegram-', '');
-          }
-          if (address.wallet.user.user_id.startsWith('matrix')) {
-            res.locals.platform = 'matrix';
-            res.locals.userId = address.wallet.user.user_id.replace('matrix-', '');
-          }
-
-          console.log(transaction);
-          res.locals.transaction = await db.transaction.findOrCreate({
+    let i = 0;
+    res.locals.detail = [];
+    if (transaction.details && transaction.details.length > 0) {
+      for await (const detail of transaction.details) {
+        if (detail.category === 'receive') {
+          const address = await db.address.findOne({
             where: {
-              txid: transaction.txid,
-              type: detail.category,
+              address: detail.address,
             },
-            defaults: {
-              txid: txId,
-              addressId: address.id,
-              phase: 'confirming',
-              type: detail.category,
-              amount: detail.amount * 1e8,
-              userId: address.wallet.userId,
-            },
+            include: [
+              {
+                model: db.wallet,
+                as: 'wallet',
+                include: [
+                  {
+                    model: db.user,
+                    as: 'user',
+                  },
+                ],
+              },
+            ],
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
-
-          if (res.locals.transaction[1]) {
-            const activity = await db.activity.findOrCreate({
+          if (address) {
+            res.locals.detail[parseInt(i, 10)] = {};
+            if (address.wallet.user.user_id.startsWith('discord')) {
+              res.locals.detail[parseInt(i, 10)].platform = 'discord';
+              res.locals.detail[parseInt(i, 10)].userId = address.wallet.user.user_id.replace('discord-', '');
+            }
+            if (address.wallet.user.user_id.startsWith('telegram')) {
+              res.locals.detail[parseInt(i, 10)].platform = 'telegram';
+              res.locals.detail[parseInt(i, 10)].userId = address.wallet.user.user_id.replace('telegram-', '');
+            }
+            if (address.wallet.user.user_id.startsWith('matrix')) {
+              res.locals.detail[parseInt(i, 10)].platform = 'matrix';
+              res.locals.detail[parseInt(i, 10)].userId = address.wallet.user.user_id.replace('matrix-', '');
+            }
+            // console.log(transaction);
+            res.locals.detail[parseInt(i, 10)].transaction = await db.transaction.findOrCreate({
               where: {
-                transactionId: res.locals.transaction[0].id,
+                txid: transaction.txid,
+                type: detail.category,
+                userId: address.wallet.userId,
               },
               defaults: {
-                earnerId: address.wallet.userId,
-                type: 'depositAccepted',
+                txid: txId,
+                addressId: address.id,
+                phase: 'confirming',
+                type: detail.category,
                 amount: detail.amount * 1e8,
-                transactionId: res.locals.transaction[0].id,
+                userId: address.wallet.userId,
               },
               transaction: t,
               lock: t.LOCK.UPDATE,
             });
-            res.locals.amount = detail.amount;
-          }
 
-          logger.info(`deposit detected for addressid: ${res.locals.transaction[0].addressId} and txid: ${res.locals.transaction[0].txid}`);
+            if (res.locals.detail[parseInt(i, 10)].transaction[1]) {
+              const activity = await db.activity.findOrCreate({
+                where: {
+                  transactionId: res.locals.detail[parseInt(i, 10)].transaction[0].id,
+                },
+                defaults: {
+                  earnerId: address.wallet.userId,
+                  type: 'depositAccepted',
+                  amount: detail.amount * 1e8,
+                  transactionId: res.locals.detail[parseInt(i, 10)].transaction[0].id,
+                },
+                transaction: t,
+                lock: t.LOCK.UPDATE,
+              });
+              res.locals.detail[parseInt(i, 10)].amount = detail.amount;
+              logger.info(`deposit detected for addressid: ${res.locals.detail[parseInt(i, 10)].transaction[0].addressId} and txid: ${res.locals.detail[parseInt(i, 10)].transaction[0].txid}`);
+            }
+            i += 1;
+          }
         }
       }
-    }));
+    }
 
     t.afterCommit(() => {
       next();
