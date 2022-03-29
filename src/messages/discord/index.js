@@ -1392,8 +1392,7 @@ ${settings.coin.halving.enabled ? `
 \`${settings.bot.command.discord} halving\`
 Displays time left until next halving, etc
 ` : ``}
-${settings.coin.name === 'Pirate' ? `
-\`${settings.bot.command.discord} mining\`
+${settings.coin.name === 'Pirate' ? `\`${settings.bot.command.discord} mining\`
 Displays mining info
 ` : ``}
 \`${settings.bot.command.discord} publicstats\`
