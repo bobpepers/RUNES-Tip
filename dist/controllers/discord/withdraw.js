@@ -27,6 +27,10 @@ var _userWalletExist = require("../../helpers/client/discord/userWalletExist");
 
 var _validateWithdrawalAddress = require("../../helpers/blockchain/validateWithdrawalAddress");
 
+var _disallowWithdrawToSelf = require("../../helpers/withdraw/disallowWithdrawToSelf");
+
+var _createOrUseExternalWithdrawAddress = require("../../helpers/withdraw/createOrUseExternalWithdrawAddress");
+
 /* eslint-disable import/prefer-default-export */
 var withdrawDiscordCreate = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(discordClient, message, filteredMessage, io, groupTask, channelTask, setting) {
@@ -41,7 +45,7 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, userId, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, _yield$validateWithdr, _yield$validateWithdr2, isInvalidAddress, isNodeOffline, failWithdrawalActivity, addressExternal, UserExternalAddressMnMAssociation, wallet, fee, transaction, activityCreate;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, userId, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, _yield$validateWithdr, _yield$validateWithdr2, isInvalidAddress, isNodeOffline, failWithdrawalActivity, isMyAddressActivity, addressExternal, wallet, fee, transaction, activityCreate;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -143,65 +147,42 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
 
                       case 39:
                         _context.next = 41;
-                        return _models["default"].addressExternal.findOne({
-                          where: {
-                            address: filteredMessage[2]
-                          },
-                          transaction: t,
-                          lock: t.LOCK.UPDATE
-                        });
+                        return (0, _disallowWithdrawToSelf.disallowWithdrawToSelf)(filteredMessage[2], user, t);
 
                       case 41:
-                        addressExternal = _context.sent;
+                        isMyAddressActivity = _context.sent;
 
-                        if (addressExternal) {
-                          _context.next = 46;
+                        if (!isMyAddressActivity) {
+                          _context.next = 50;
                           break;
                         }
 
                         _context.next = 45;
-                        return _models["default"].addressExternal.create({
-                          address: filteredMessage[2]
-                        }, {
-                          transaction: t,
-                          lock: t.LOCK.UPDATE
+                        return message.author.send({
+                          embeds: [(0, _discord.unableToWithdrawToSelfMessage)(message)]
                         });
 
                       case 45:
-                        addressExternal = _context.sent;
-
-                      case 46:
-                        _context.next = 48;
-                        return _models["default"].UserAddressExternal.findOne({
-                          where: {
-                            addressExternalId: addressExternal.id,
-                            userId: user.id
-                          },
-                          transaction: t,
-                          lock: t.LOCK.UPDATE
-                        });
-
-                      case 48:
-                        UserExternalAddressMnMAssociation = _context.sent;
-
-                        if (UserExternalAddressMnMAssociation) {
-                          _context.next = 53;
+                        if (!(message.channel.type !== 'DM')) {
+                          _context.next = 48;
                           break;
                         }
 
-                        _context.next = 52;
-                        return _models["default"].UserAddressExternal.create({
-                          addressExternalId: addressExternal.id,
-                          userId: user.id
-                        }, {
-                          transaction: t,
-                          lock: t.LOCK.UPDATE
+                        _context.next = 48;
+                        return message.channel.send({
+                          embeds: [(0, _discord.warnDirectMessage)(userId, 'Withdraw')]
                         });
 
-                      case 52:
-                        UserExternalAddressMnMAssociation = _context.sent;
+                      case 48:
+                        activity.unshift(isMyAddressActivity);
+                        return _context.abrupt("return");
 
-                      case 53:
+                      case 50:
+                        _context.next = 52;
+                        return (0, _createOrUseExternalWithdrawAddress.createOrUseExternalWithdrawAddress)(filteredMessage[2], user, t);
+
+                      case 52:
+                        addressExternal = _context.sent;
                         _context.next = 55;
                         return user.wallet.update({
                           available: user.wallet.available - amount,

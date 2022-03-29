@@ -38,7 +38,6 @@ function _patchRunebaseDeposits() {
 
           case 2:
             transactions = _context3.sent;
-            // eslint-disable-next-line no-restricted-syntax
             _iteratorAbruptCompletion = false;
             _didIteratorError = false;
             _context3.prev = 5;
@@ -51,12 +50,12 @@ function _patchRunebaseDeposits() {
                       trans = _step.value;
 
                       if (!(trans.category === 'receive')) {
-                        _context2.next = 10;
+                        _context2.next = 9;
                         break;
                       }
 
                       if (!trans.address) {
-                        _context2.next = 10;
+                        _context2.next = 9;
                         break;
                       }
 
@@ -75,16 +74,11 @@ function _patchRunebaseDeposits() {
                       address = _context2.sent;
 
                       if (!address) {
-                        console.log(trans.address);
-                        console.log('address not found');
-                      }
-
-                      if (!address) {
-                        _context2.next = 10;
+                        _context2.next = 9;
                         break;
                       }
 
-                      _context2.next = 10;
+                      _context2.next = 9;
                       return _models["default"].sequelize.transaction({
                         isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
                       }, /*#__PURE__*/function () {
@@ -98,7 +92,8 @@ function _patchRunebaseDeposits() {
                                   return _models["default"].transaction.findOrCreate({
                                     where: {
                                       txid: trans.txid,
-                                      type: trans.category
+                                      type: trans.category,
+                                      userId: address.wallet.userId
                                     },
                                     defaults: {
                                       txid: trans.txid,
@@ -131,7 +126,7 @@ function _patchRunebaseDeposits() {
                         };
                       }());
 
-                    case 10:
+                    case 9:
                     case "end":
                       return _context2.stop();
                   }

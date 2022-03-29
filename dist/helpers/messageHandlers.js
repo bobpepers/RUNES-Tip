@@ -190,7 +190,7 @@ var isDepositOrWithdrawalCompleteMessageHandler = /*#__PURE__*/function () {
 exports.isDepositOrWithdrawalCompleteMessageHandler = isDepositOrWithdrawalCompleteMessageHandler;
 
 var incomingDepositMessageHandler = /*#__PURE__*/function () {
-  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(discordClient, telegramClient, matrixClient, res) {
+  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(discordClient, telegramClient, matrixClient, detail) {
     var myClient, _yield$findUserDirect5, _yield$findUserDirect6, directUserMessageRoom, isCurrentRoomDirectMessage, userState;
 
     return _regenerator["default"].wrap(function _callee2$(_context2) {
@@ -199,15 +199,15 @@ var incomingDepositMessageHandler = /*#__PURE__*/function () {
           case 0:
             _context2.prev = 0;
 
-            if (!(res.locals.platform === 'telegram')) {
+            if (!(detail.platform === 'telegram')) {
               _context2.next = 10;
               break;
             }
 
             _context2.t0 = telegramClient.telegram;
-            _context2.t1 = res.locals.userId;
+            _context2.t1 = detail.userId;
             _context2.next = 6;
-            return (0, _telegram.telegramIncomingDepositMessage)(res);
+            return (0, _telegram.telegramIncomingDepositMessage)(detail);
 
           case 6:
             _context2.t2 = _context2.sent;
@@ -218,29 +218,29 @@ var incomingDepositMessageHandler = /*#__PURE__*/function () {
             return _context2.t0.sendMessage.call(_context2.t0, _context2.t1, _context2.t2, _context2.t3);
 
           case 10:
-            if (!(res.locals.platform === 'discord')) {
+            if (!(detail.platform === 'discord')) {
               _context2.next = 16;
               break;
             }
 
             _context2.next = 13;
-            return discordClient.users.fetch(res.locals.userId, false);
+            return discordClient.users.fetch(detail.userId, false);
 
           case 13:
             myClient = _context2.sent;
             _context2.next = 16;
             return myClient.send({
-              embeds: [(0, _discord.discordIncomingDepositMessage)(res)]
+              embeds: [(0, _discord.discordIncomingDepositMessage)(detail)]
             });
 
           case 16:
-            if (!(res.locals.platform === 'matrix')) {
+            if (!(detail.platform === 'matrix')) {
               _context2.next = 27;
               break;
             }
 
             _context2.next = 19;
-            return (0, _directMessageRoom.findUserDirectMessageRoom)(matrixClient, res.locals.userId);
+            return (0, _directMessageRoom.findUserDirectMessageRoom)(matrixClient, detail.userId);
 
           case 19:
             _yield$findUserDirect5 = _context2.sent;
@@ -255,7 +255,7 @@ var incomingDepositMessageHandler = /*#__PURE__*/function () {
             }
 
             _context2.next = 27;
-            return matrixClient.sendEvent(directUserMessageRoom.roomId, "m.room.message", (0, _matrix.matrixIncomingDepositMessage)(res));
+            return matrixClient.sendEvent(directUserMessageRoom.roomId, "m.room.message", (0, _matrix.matrixIncomingDepositMessage)(detail));
 
           case 27:
             _context2.next = 32;

@@ -21,118 +21,150 @@ var settings = (0, _settings["default"])();
 
 var validateWithdrawalAddress = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(address, user, t) {
-    var failWithdrawalActivity, getAddressInfo, isInvalidAddress, isNodeOffline, isValidAddress;
+    var failWithdrawalActivity, getAddressInfo, isInvalidAddress, isNodeOffline;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
             isInvalidAddress = false;
             isNodeOffline = false;
-            isValidAddress = false; // Regex check
 
             if (!(settings.coin.setting === 'Runebase')) {
-              _context.next = 9;
+              _context.next = 17;
               break;
             }
 
+            _context.prev = 3;
             _context.next = 6;
-            return (0, _rclient.getInstance)().utils.isRunebaseAddress(address);
+            return (0, _rclient.getInstance)().validateAddress(address);
 
           case 6:
-            isValidAddress = _context.sent;
-            _context.next = 24;
-            break;
+            getAddressInfo = _context.sent;
+            console.log(getAddressInfo);
 
-          case 9:
-            if (!(settings.coin.setting === 'Pirate')) {
-              _context.next = 15;
-              break;
+            if (getAddressInfo && !getAddressInfo.isvalid) {
+              isInvalidAddress = true;
             }
 
-            _context.next = 12;
-            return (0, _rclient.getInstance)().utils.isPirateAddress(address);
+            if (getAddressInfo && getAddressInfo.isvalid) {
+              isInvalidAddress = false;
+            }
+
+            _context.next = 15;
+            break;
 
           case 12:
-            isValidAddress = _context.sent;
-            _context.next = 24;
-            break;
+            _context.prev = 12;
+            _context.t0 = _context["catch"](3);
+            isNodeOffline = true;
 
           case 15:
-            if (!(settings.coin.setting === 'Komodo')) {
-              _context.next = 21;
+            _context.next = 58;
+            break;
+
+          case 17:
+            if (!(settings.coin.setting === 'Pirate')) {
+              _context.next = 31;
               break;
             }
 
-            _context.next = 18;
-            return (0, _rclient.getInstance)().utils.isKomodoAddress(address);
-
-          case 18:
-            isValidAddress = _context.sent;
-            _context.next = 24;
-            break;
+            _context.prev = 18;
+            _context.next = 21;
+            return (0, _rclient.getInstance)().zValidateAddress(address);
 
           case 21:
-            _context.next = 23;
-            return (0, _rclient.getInstance)().utils.isRunebaseAddress(address);
+            getAddressInfo = _context.sent;
 
-          case 23:
-            isValidAddress = _context.sent;
-
-          case 24:
-            if (!isValidAddress) {
-              console.log('failed regex address');
+            if (getAddressInfo && !getAddressInfo.isvalid) {
               isInvalidAddress = true;
-            } // Check on Crypto node
+            }
 
+            if (getAddressInfo && getAddressInfo.isvalid) {
+              isInvalidAddress = false;
+            }
 
-            if (!(settings.coin.setting === 'Runebase')) {
-              _context.next = 38;
+            _context.next = 29;
+            break;
+
+          case 26:
+            _context.prev = 26;
+            _context.t1 = _context["catch"](18);
+            isNodeOffline = true;
+
+          case 29:
+            _context.next = 58;
+            break;
+
+          case 31:
+            if (!(settings.coin.setting === 'Komodo')) {
+              _context.next = 46;
               break;
             }
 
-            _context.prev = 26;
-            _context.next = 29;
-            return (0, _rclient.getInstance)().getAddressInfo(address);
-
-          case 29:
-            getAddressInfo = _context.sent;
-            _context.next = 36;
-            break;
-
-          case 32:
             _context.prev = 32;
-            _context.t0 = _context["catch"](26);
-            console.log(_context.t0);
+            _context.next = 35;
+            return (0, _rclient.getInstance)().validateAddress(address);
 
-            if (_context.t0.response && _context.t0.response.status === 500) {
-              isInvalidAddress = true; // return;
-            } else {
-              isNodeOffline = true;
+          case 35:
+            getAddressInfo = _context.sent;
+            console.log(getAddressInfo);
+
+            if (getAddressInfo && !getAddressInfo.isvalid) {
+              isInvalidAddress = true;
             }
 
-          case 36:
-            _context.next = 39;
+            if (getAddressInfo && getAddressInfo.isvalid) {
+              isInvalidAddress = false;
+            }
+
+            _context.next = 44;
             break;
 
-          case 38:
-            if (settings.coin.setting === 'Pirate') {
-              getAddressInfo = true;
-            } else if (settings.coin.setting === 'Komodo') {
-              getAddressInfo = true;
+          case 41:
+            _context.prev = 41;
+            _context.t2 = _context["catch"](32);
+            isNodeOffline = true;
+
+          case 44:
+            _context.next = 58;
+            break;
+
+          case 46:
+            _context.prev = 46;
+            _context.next = 49;
+            return (0, _rclient.getInstance)().validateAddress(address);
+
+          case 49:
+            getAddressInfo = _context.sent;
+            console.log(getAddressInfo);
+
+            if (getAddressInfo && !getAddressInfo.isvalid) {
+              isInvalidAddress = true;
             }
 
-          case 39:
+            if (getAddressInfo && getAddressInfo.isvalid) {
+              isInvalidAddress = false;
+            }
+
+            _context.next = 58;
+            break;
+
+          case 55:
+            _context.prev = 55;
+            _context.t3 = _context["catch"](46);
+            isNodeOffline = true;
+
+          case 58:
             if (!getAddressInfo) {
-              console.log('fail node check');
               isInvalidAddress = true;
             }
 
             if (!(isInvalidAddress || isNodeOffline)) {
-              _context.next = 44;
+              _context.next = 63;
               break;
             }
 
-            _context.next = 43;
+            _context.next = 62;
             return _models["default"].activity.create({
               type: "withdraw_f",
               spenderId: user.id
@@ -141,18 +173,18 @@ var validateWithdrawalAddress = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 43:
+          case 62:
             failWithdrawalActivity = _context.sent;
 
-          case 44:
+          case 63:
             return _context.abrupt("return", [isInvalidAddress, isNodeOffline, failWithdrawalActivity]);
 
-          case 45:
+          case 64:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[26, 32]]);
+    }, _callee, null, [[3, 12], [18, 26], [32, 41], [46, 55]]);
   }));
 
   return function validateWithdrawalAddress(_x, _x2, _x3) {

@@ -5,9 +5,11 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.warnDirectMessage = exports.walletNotFoundMessage = exports.voiceChannelNotFound = exports.userNotFoundMessage = exports.unableToFindUserTipMessage = exports.unIngoreMeMessage = exports.triviaReturnInitiatorMessage = exports.triviaMessageDiscord = exports.transactionNotFoundMessage = exports.tipSingleSuccessMessage = exports.tipMultipleSuccessMessage = exports.tipFaucetSuccessMessage = exports.timeOutAllAmoutMessageDiscord = exports.thunderstormUserZeroAmountMessage = exports.thunderstormMaxUserAmountMessage = exports.thunderstormInvalidUserAmount = exports.statsMessage = exports.reviewMessage = exports.reactDropMessage = exports.priceMessage = exports.notEnoughUsersToTip = exports.notEnoughActiveUsersMessage = exports.notAVoiceChannel = exports.noTriviaQuestionFoundMessage = exports.minimumWithdrawalMessage = exports.minimumTimeReactDropMessage = exports.minimumMessage = exports.maxTimeTriviaMessage = exports.maxTimeReactdropMessage = exports.listTransactionsMessage = exports.invalidTimeMessage = exports.invalidPeopleAmountMessage = exports.invalidEmojiMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.ignoreMeMessage = exports.hurricaneUserZeroAmountMessage = exports.hurricaneMaxUserAmountMessage = exports.hurricaneInvalidUserAmount = exports.helpMessageTwo = exports.helpMessageOne = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.featureDisabledChannelMessage = exports.faucetClaimedMessage = exports.enablePublicStatsMeMessage = exports.dryFaucetMessage = exports.discordWithdrawalRejectedMessage = exports.discordWithdrawalConfirmedMessage = exports.discordWithdrawalAcceptedMessage = exports.discordWelcomeMessage = exports.discordUserWithdrawalRejectMessage = exports.discordUserBannedMessage = exports.discordServerBannedMessage = exports.discordLimitSpamMessage = exports.discordIncomingDepositMessage = exports.discordErrorMessage = exports.discordDepositConfirmedMessage = exports.discordChannelBannedMessage = exports.discordBotMaintenanceMessage = exports.discordBotDisabledMessage = exports.disablePublicStatsMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessageDiscord = exports.coinInfoMessage = exports.claimTooFactFaucetMessage = exports.cannotSendMessageUser = exports.canceledAllAmoutMessageDiscord = exports.balanceMessage = exports.ReactdropCaptchaMessage = exports.ReactDropReturnInitiatorMessage = exports.NotInDirectMessage = exports.DiscordFeeMessage = exports.AfterTriviaSuccessMessage = exports.AfterThunderSuccess = exports.AfterSuccessMessage = exports.AfterReactDropSuccessMessage = void 0;
+exports.warnDirectMessage = exports.walletNotFoundMessage = exports.voiceChannelNotFound = exports.userNotFoundMessage = exports.unableToWithdrawToSelfMessage = exports.unableToFindUserTipMessage = exports.unIngoreMeMessage = exports.triviaReturnInitiatorMessage = exports.triviaMessageDiscord = exports.transactionNotFoundMessage = exports.tipSingleSuccessMessage = exports.tipMultipleSuccessMessage = exports.tipFaucetSuccessMessage = exports.timeOutAllAmoutMessageDiscord = exports.thunderstormUserZeroAmountMessage = exports.thunderstormMaxUserAmountMessage = exports.thunderstormInvalidUserAmount = exports.statsMessage = exports.reviewMessage = exports.reactDropMessage = exports.priceMessage = exports.notEnoughUsersToTip = exports.notEnoughActiveUsersMessage = exports.notAVoiceChannel = exports.noTriviaQuestionFoundMessage = exports.miningMessage = exports.minimumWithdrawalMessage = exports.minimumTimeReactDropMessage = exports.minimumMessage = exports.maxTimeTriviaMessage = exports.maxTimeReactdropMessage = exports.listTransactionsMessage = exports.invalidTimeMessage = exports.invalidPeopleAmountMessage = exports.invalidEmojiMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.ignoreMeMessage = exports.hurricaneUserZeroAmountMessage = exports.hurricaneMaxUserAmountMessage = exports.hurricaneInvalidUserAmount = exports.helpMessageTwo = exports.helpMessageOne = exports.halvingMessage = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.featureDisabledChannelMessage = exports.faucetClaimedMessage = exports.enablePublicStatsMeMessage = exports.dryFaucetMessage = exports.discordWithdrawalRejectedMessage = exports.discordWithdrawalConfirmedMessage = exports.discordWithdrawalAcceptedMessage = exports.discordWelcomeMessage = exports.discordUserWithdrawalRejectMessage = exports.discordUserBannedMessage = exports.discordServerBannedMessage = exports.discordLimitSpamMessage = exports.discordIncomingDepositMessage = exports.discordErrorMessage = exports.discordDepositConfirmedMessage = exports.discordChannelBannedMessage = exports.discordBotMaintenanceMessage = exports.discordBotDisabledMessage = exports.disablePublicStatsMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessageDiscord = exports.coinInfoMessage = exports.claimTooFactFaucetMessage = exports.cannotSendMessageUser = exports.canceledAllAmoutMessageDiscord = exports.balanceMessage = exports.ReactdropCaptchaMessage = exports.ReactDropReturnInitiatorMessage = exports.NotInDirectMessage = exports.DiscordFeeMessage = exports.AfterTriviaSuccessMessage = exports.AfterThunderSuccess = exports.AfterSuccessMessage = exports.AfterReactDropSuccessMessage = void 0;
 
 var _discord = require("discord.js");
+
+var _moment = _interopRequireDefault(require("moment"));
 
 var _settings = _interopRequireDefault(require("../../config/settings"));
 
@@ -242,7 +244,7 @@ var discordErrorMessage = function discordErrorMessage(title) {
 exports.discordErrorMessage = discordErrorMessage;
 
 var discordDepositConfirmedMessage = function discordDepositConfirmedMessage(amount, trans) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Deposit #".concat(trans.id)).setDescription("Deposit Confirmed\n".concat(amount, " ").concat(settings.coin.ticker, " has been credited to your wallet")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Deposit #".concat(trans.id)).setDescription("Deposit Confirmed\n".concat(trans.amount / 1e8, " ").concat(settings.coin.ticker, " has been credited to your wallet")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -251,8 +253,8 @@ var discordDepositConfirmedMessage = function discordDepositConfirmedMessage(amo
 
 exports.discordDepositConfirmedMessage = discordDepositConfirmedMessage;
 
-var discordIncomingDepositMessage = function discordIncomingDepositMessage(res) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Deposit #".concat(res.locals.transaction[0].id)).setDescription("incoming deposit detected for ".concat(res.locals.amount, " ").concat(settings.coin.ticker, "\nBalance will be reflected in your wallet in ~").concat(settings.min.confirmations, "+ confirmations\n").concat(settings.coin.explorer, "/tx/").concat(res.locals.transaction[0].txid)).setTimestamp().setFooter({
+var discordIncomingDepositMessage = function discordIncomingDepositMessage(detail) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Deposit #".concat(detail.transaction[0].id)).setDescription("incoming deposit detected for ".concat(detail.amount, " ").concat(settings.coin.ticker, "\nBalance will be reflected in your wallet in ~").concat(settings.min.confirmations, "+ confirmations\n").concat(settings.coin.explorer, "/tx/").concat(detail.transaction[0].txid)).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -422,6 +424,40 @@ var featureDisabledGlobalMessage = function featureDisabledGlobalMessage(name) {
 };
 
 exports.featureDisabledGlobalMessage = featureDisabledGlobalMessage;
+
+var halvingMessage = function halvingMessage(title, currentBlockHeight, nextBlockHalving, CoinsLeftToMineUntilNextHalving, nextHalvingDate, distance) {
+  var seconds = _moment["default"].duration(distance).seconds();
+
+  var minutes = _moment["default"].duration(distance).minutes();
+
+  var hours = _moment["default"].duration(distance).hours();
+
+  var days = _moment["default"].duration(distance).days();
+
+  var weeks = _moment["default"].duration(distance).weeks();
+
+  var months = _moment["default"].duration(distance).months();
+
+  var years = _moment["default"].duration(distance).years();
+
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(title).setDescription("\uD83D\uDCC5 Reward halving happens on or around **".concat(nextHalvingDate, "** at block height **").concat(nextBlockHalving, "**\n\n\uD83D\uDCCF Current block height: **").concat(currentBlockHeight, "**\n\n\u26CF\uFE0F Amount left to mine until halving: **").concat(CoinsLeftToMineUntilNextHalving, " ").concat(settings.coin.ticker, "**\n\n\uD83D\uDD59 Estimated Time left till halving: **").concat(years === 1 ? "".concat(years, " year ") : '').concat(years > 1 ? "".concat(years, " years, ") : '').concat(months === 1 ? "".concat(months, " month ") : '').concat(months > 1 ? "".concat(months, " months, ") : '').concat(weeks === 1 ? "".concat(weeks, " week ") : '').concat(weeks > 1 ? "".concat(weeks, " weeks, ") : '').concat(days === 1 ? "".concat(days, " day ") : '').concat(days > 1 ? "".concat(days, " days, ") : '').concat(hours === 1 ? "".concat(hours, " hour and ") : '').concat(hours > 1 ? "".concat(hours, " hours and ") : '').concat(minutes === 1 ? "".concat(minutes, " minute") : '').concat(minutes > 1 ? "".concat(minutes, " minutes") : '', "**\n\n\uD83D\uDCB0 **Hurry up and fill yer bags!** \uD83D\uDCB0")).setTimestamp().setThumbnail(settings.coin.logo).setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.halvingMessage = halvingMessage;
+
+var unableToWithdrawToSelfMessage = function unableToWithdrawToSelfMessage(message) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Tip').setDescription("<@".concat(message.author.id, ">, unable to withdraw to your own deposit address")).setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.unableToWithdrawToSelfMessage = unableToWithdrawToSelfMessage;
 
 var tipFaucetSuccessMessage = function tipFaucetSuccessMessage(message, amount) {
   var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle('Tip').setDescription("<@".concat(message.author.id, "> tipped ").concat(amount / 1e8, " ").concat(settings.coin.ticker, " to Faucet")).setTimestamp().setFooter({
@@ -837,6 +873,16 @@ var triviaReturnInitiatorMessage = function triviaReturnInitiatorMessage() {
 
 exports.triviaReturnInitiatorMessage = triviaReturnInitiatorMessage;
 
+var miningMessage = function miningMessage(title, currentBlockReward, niceHashRateCost, networkMSOL, expectBlocksPerDay, rentalCostBTC, rentalCostKMD, pirateKomodoPrice, pirateBitcoinPrice, difficultyInG) {
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(title).setDescription("\uD83D\uDCBB **Renting:** 1 MSol/s\n**Nicehash rate:** ".concat(niceHashRateCost, " per 1 GSol/s\n**Rental Cost:** ").concat(rentalCostBTC, " BTC or ").concat(rentalCostKMD, " KMD\n\n**Current net hash:** ").concat(networkMSOL, " MSol/s\n**Block reward:** ").concat(currentBlockReward, " ").concat(settings.coin.ticker, " / block\n\n**Blocks to expect per day:** ").concat(expectBlocksPerDay.toFixed(4), "\n**Coins to expect per day:** ").concat((expectBlocksPerDay * currentBlockReward).toFixed(8), "\n\n**Per coin cost BTC:** ").concat(pirateBitcoinPrice, " BTC\n**Per coin cost KMD:** ").concat(pirateKomodoPrice, " KMD\n\n\uD83D\uDCAA **Difficulty:** ").concat(difficultyInG, " G")).setThumbnail(settings.coin.logo).setTimestamp().setFooter({
+    text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
+    iconURL: settings.coin.logo
+  });
+  return result;
+};
+
+exports.miningMessage = miningMessage;
+
 var warnDirectMessage = function warnDirectMessage(userId, title) {
   var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle(title).setDescription("<@".concat(userId, ">, I've sent you a direct message.")).setThumbnail(settings.coin.logo).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
@@ -848,7 +894,7 @@ var warnDirectMessage = function warnDirectMessage(userId, title) {
 exports.warnDirectMessage = warnDirectMessage;
 
 var helpMessageOne = function helpMessageOne(withdraw) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("".concat("".concat(settings.bot.name, " v").concat(_package["default"].version), " Help")).setDescription("`".concat(settings.bot.command.discord, "`\nDisplays this message\n\n`").concat(settings.bot.command.discord, " help`\nDisplays this message\n\n`").concat(settings.bot.command.discord, " info`\nDisplays coin info\n\n`").concat(settings.bot.command.discord, " balance`\nDisplays your balance\n\n`").concat(settings.bot.command.discord, " price`\nDisplays ").concat(settings.coin.ticker, " price\n\n`").concat(settings.bot.command.discord, " stats`\nDisplays your tip statistics\n\n`").concat(settings.bot.command.discord, " deposit`\nDisplays your deposit address\n\n`").concat(settings.bot.command.discord, " fees`\nDisplays fee schedule\n\n`").concat(settings.bot.command.discord, " publicstats`\nEnable/Disable public statistics (determines if you want to be shown on the leaderboards)\ndefault: disabled\n\n`").concat(settings.bot.command.discord, " withdraw <address> <amount|all>`\nWithdraws the entered amount to a ").concat(settings.coin.name, " address of your choice\nexample: `").concat(settings.bot.command.discord, " withdraw ").concat(settings.coin.exampleAddress, " 5.20 `\nNote: Minimal amount to withdraw: ").concat(withdraw.min / 1e8, " ").concat(settings.coin.ticker, ". A withdrawal fee of ").concat(withdraw.fee / 1e2, "% ").concat(settings.coin.ticker, ". half of the withdrawal fee will be automatically deducted from the amount and will be donated to the common faucet pot.\n")); // .setTimestamp()
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("".concat("".concat(settings.bot.name, " v").concat(_package["default"].version), " Help")).setDescription("`".concat(settings.bot.command.discord, "`\nDisplays this message\n\n`").concat(settings.bot.command.discord, " help`\nDisplays this message\n\n`").concat(settings.bot.command.discord, " info`\nDisplays coin info\n\n`").concat(settings.bot.command.discord, " balance`\nDisplays your balance\n\n`").concat(settings.bot.command.discord, " price`\nDisplays ").concat(settings.coin.ticker, " price\n\n`").concat(settings.bot.command.discord, " stats`\nDisplays your tip statistics\n\n`").concat(settings.bot.command.discord, " deposit`\nDisplays your deposit address\n\n`").concat(settings.bot.command.discord, " fees`\nDisplays fee schedule\n").concat(settings.coin.halving.enabled ? "\n`".concat(settings.bot.command.discord, " halving`\nDisplays time left until next halving, etc\n") : "", "\n").concat(settings.coin.name === 'Pirate' ? "\n`".concat(settings.bot.command.discord, " mining`\nDisplays mining info\n") : "", "\n`").concat(settings.bot.command.discord, " publicstats`\nEnable/Disable public statistics (determines if you want to be shown on the leaderboards)\ndefault: disabled\n\n`").concat(settings.bot.command.discord, " withdraw <address> <amount|all>`\nWithdraws the entered amount to a ").concat(settings.coin.name, " address of your choice\nexample: `").concat(settings.bot.command.discord, " withdraw ").concat(settings.coin.exampleAddress, " 5.20 `\nNote: Minimal amount to withdraw: ").concat(withdraw.min / 1e8, " ").concat(settings.coin.ticker, ". A withdrawal fee of ").concat(withdraw.fee / 1e2, "% ").concat(settings.coin.ticker, ". half of the withdrawal fee will be automatically deducted from the amount and will be donated to the common faucet pot.\n")); // .setTimestamp()
   // .setFooter({
   //  text: `${settings.bot.name} v${pjson.version}`,
   //  iconURL: settings.coin.logo,

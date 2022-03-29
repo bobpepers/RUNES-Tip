@@ -33,7 +33,15 @@ module.exports = {
     discord: "https://discord.gg/V62f77NV6e",
     description: "Pirate Chain (ARRR) is a 100% private send cryptocurrency. It uses a privacy protocol that cannot be compromised by other users activity on the network. Most privacy coins are riddled with holes created by optional privacy. Pirate Chain uses ZK-Snarks to shield 100% of the peer to peer transactions on the blockchain making for highly anonymous and private transactions.",
     exchanges: ["https://tradeogre.com/exchange/BTC-ARRR", "https://trade.kucoin.com/trade/ARRR-USDT", "https://www.gate.io/trade/ARRR_USDT"],
-    exampleAddress: 'zs1e3zh7a00wz4ej2lacpl2fvnrl680hkk766nt7z4ujl6rlj04n59ex7hjlnknvhwdc7vxzn0kcvt'
+    exampleAddress: 'zs1e3zh7a00wz4ej2lacpl2fvnrl680hkk766nt7z4ujl6rlj04n59ex7hjlnknvhwdc7vxzn0kcvt',
+    halving: {
+      enabled: true,
+      every: 388885,
+      // amount of blocks for each halving
+      initialBlockReward: 256,
+      // initial amount of coins rewarded
+      blockTime: 60
+    }
   },
   faucet: 1,
   // (50 = 0,5% / 100 = 1% / ...) percentage of total per claim

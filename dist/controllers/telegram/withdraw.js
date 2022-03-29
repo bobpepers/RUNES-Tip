@@ -27,6 +27,10 @@ var _userWalletExist = require("../../helpers/client/telegram/userWalletExist");
 
 var _validateWithdrawalAddress = require("../../helpers/blockchain/validateWithdrawalAddress");
 
+var _disallowWithdrawToSelf = require("../../helpers/withdraw/disallowWithdrawToSelf");
+
+var _createOrUseExternalWithdrawAddress = require("../../helpers/withdraw/createOrUseExternalWithdrawAddress");
+
 /* eslint-disable no-await-in-loop */
 
 /* eslint-disable import/prefer-default-export */
@@ -43,7 +47,7 @@ var withdrawTelegramCreate = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, _yield$validateWithdr, _yield$validateWithdr2, isInvalidAddress, isNodeOffline, failWithdrawalActivity, addressExternal, UserExternalAddressMnMAssociation, wallet, fee, transaction, activityCreate;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, _yield$validateWithdr, _yield$validateWithdr2, isInvalidAddress, isNodeOffline, failWithdrawalActivity, isMyAddressActivity, addressExternal, wallet, fee, transaction, activityCreate;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -166,66 +170,55 @@ var withdrawTelegramCreate = /*#__PURE__*/function () {
 
                       case 54:
                         _context.next = 56;
-                        return _models["default"].addressExternal.findOne({
-                          where: {
-                            address: filteredMessage[2]
-                          },
-                          transaction: t,
-                          lock: t.LOCK.UPDATE
-                        });
+                        return (0, _disallowWithdrawToSelf.disallowWithdrawToSelf)(filteredMessage[2], user, t);
 
                       case 56:
-                        addressExternal = _context.sent;
+                        isMyAddressActivity = _context.sent;
 
-                        if (addressExternal) {
-                          _context.next = 61;
+                        if (!isMyAddressActivity) {
+                          _context.next = 75;
                           break;
                         }
 
-                        _context.next = 60;
-                        return _models["default"].addressExternal.create({
-                          address: filteredMessage[2]
-                        }, {
-                          transaction: t,
-                          lock: t.LOCK.UPDATE
-                        });
+                        _context.t10 = ctx.telegram;
+                        _context.t11 = ctx.update.message.from.id;
+                        _context.next = 62;
+                        return (0, _telegram.unableToWithdrawToSelfMessage)(ctx);
 
-                      case 60:
-                        addressExternal = _context.sent;
+                      case 62:
+                        _context.t12 = _context.sent;
+                        _context.t13 = {
+                          parse_mode: 'HTML'
+                        };
+                        _context.next = 66;
+                        return _context.t10.sendMessage.call(_context.t10, _context.t11, _context.t12, _context.t13);
 
-                      case 61:
-                        _context.next = 63;
-                        return _models["default"].UserAddressExternal.findOne({
-                          where: {
-                            addressExternalId: addressExternal.id,
-                            userId: user.id
-                          },
-                          transaction: t,
-                          lock: t.LOCK.UPDATE
-                        });
-
-                      case 63:
-                        UserExternalAddressMnMAssociation = _context.sent;
-
-                        if (UserExternalAddressMnMAssociation) {
-                          _context.next = 68;
+                      case 66:
+                        if (!(ctx.update.message.chat.type !== 'private')) {
+                          _context.next = 73;
                           break;
                         }
 
-                        _context.next = 67;
-                        return _models["default"].UserAddressExternal.create({
-                          addressExternalId: addressExternal.id,
-                          userId: user.id
-                        }, {
-                          transaction: t,
-                          lock: t.LOCK.UPDATE
-                        });
-
-                      case 67:
-                        UserExternalAddressMnMAssociation = _context.sent;
-
-                      case 68:
+                        _context.t14 = ctx;
                         _context.next = 70;
+                        return (0, _telegram.warnDirectMessage)(user);
+
+                      case 70:
+                        _context.t15 = _context.sent;
+                        _context.next = 73;
+                        return _context.t14.replyWithHTML.call(_context.t14, _context.t15);
+
+                      case 73:
+                        activity.unshift(isMyAddressActivity);
+                        return _context.abrupt("return");
+
+                      case 75:
+                        _context.next = 77;
+                        return (0, _createOrUseExternalWithdrawAddress.createOrUseExternalWithdrawAddress)(filteredMessage[2], user, t);
+
+                      case 77:
+                        addressExternal = _context.sent;
+                        _context.next = 80;
                         return user.wallet.update({
                           available: user.wallet.available - amount,
                           locked: user.wallet.locked + amount
@@ -234,10 +227,10 @@ var withdrawTelegramCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 70:
+                      case 80:
                         wallet = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
-                        _context.next = 74;
+                        _context.next = 84;
                         return _models["default"].transaction.create({
                           addressId: wallet.addresses[0].id,
                           addressExternalId: addressExternal.id,
@@ -252,9 +245,9 @@ var withdrawTelegramCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 74:
+                      case 84:
                         transaction = _context.sent;
-                        _context.next = 77;
+                        _context.next = 87;
                         return _models["default"].activity.create({
                           spenderId: user.id,
                           type: 'withdrawRequested',
@@ -265,43 +258,43 @@ var withdrawTelegramCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 77:
+                      case 87:
                         activityCreate = _context.sent;
                         activity.unshift(activityCreate);
-                        _context.t10 = ctx.telegram;
-                        _context.t11 = ctx.update.message.from.id;
-                        _context.next = 83;
+                        _context.t16 = ctx.telegram;
+                        _context.t17 = ctx.update.message.from.id;
+                        _context.next = 93;
                         return (0, _telegram.reviewMessage)(user, transaction);
 
-                      case 83:
-                        _context.t12 = _context.sent;
-                        _context.t13 = {
+                      case 93:
+                        _context.t18 = _context.sent;
+                        _context.t19 = {
                           parse_mode: 'HTML'
                         };
-                        _context.next = 87;
-                        return _context.t10.sendMessage.call(_context.t10, _context.t11, _context.t12, _context.t13);
+                        _context.next = 97;
+                        return _context.t16.sendMessage.call(_context.t16, _context.t17, _context.t18, _context.t19);
 
-                      case 87:
+                      case 97:
                         if (!(ctx.update.message.chat.type !== 'private')) {
-                          _context.next = 94;
+                          _context.next = 104;
                           break;
                         }
 
-                        _context.t14 = ctx;
-                        _context.next = 91;
+                        _context.t20 = ctx;
+                        _context.next = 101;
                         return (0, _telegram.warnDirectMessage)(user);
 
-                      case 91:
-                        _context.t15 = _context.sent;
-                        _context.next = 94;
-                        return _context.t14.replyWithHTML.call(_context.t14, _context.t15);
+                      case 101:
+                        _context.t21 = _context.sent;
+                        _context.next = 104;
+                        return _context.t20.replyWithHTML.call(_context.t20, _context.t21);
 
-                      case 94:
+                      case 104:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 95:
+                      case 105:
                       case "end":
                         return _context.stop();
                     }
