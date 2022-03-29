@@ -63,7 +63,8 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
                         return _context.abrupt("return");
 
                       case 9:
-                        _context.next = 11;
+                        console.log('123');
+                        _context.next = 12;
                         return _models["default"].priceInfo.findOne({
                           where: {
                             currency: 'USD'
@@ -72,39 +73,39 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 11:
+                      case 12:
                         priceInfo = _context.sent;
                         userId = user.user_id.replace('discord-', '');
 
                         if (!(message.channel.type === 'DM')) {
-                          _context.next = 16;
+                          _context.next = 17;
                           break;
                         }
 
-                        _context.next = 16;
+                        _context.next = 17;
                         return message.author.send({
                           embeds: [(0, _discord.balanceMessage)(userId, user, priceInfo)]
                         });
 
-                      case 16:
+                      case 17:
                         if (!(message.channel.type === 'GUILD_TEXT')) {
-                          _context.next = 21;
+                          _context.next = 22;
                           break;
                         }
 
-                        _context.next = 19;
+                        _context.next = 20;
                         return message.author.send({
                           embeds: [(0, _discord.balanceMessage)(userId, user, priceInfo)]
                         });
 
-                      case 19:
-                        _context.next = 21;
+                      case 20:
+                        _context.next = 22;
                         return message.channel.send({
                           embeds: [(0, _discord.warnDirectMessage)(userId, 'Balance')]
                         });
 
-                      case 21:
-                        _context.next = 23;
+                      case 22:
+                        _context.next = 24;
                         return _models["default"].activity.create({
                           type: 'balance_s',
                           earnerId: user.id,
@@ -114,9 +115,9 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 23:
+                      case 24:
                         createActivity = _context.sent;
-                        _context.next = 26;
+                        _context.next = 27;
                         return _models["default"].activity.findOne({
                           where: {
                             id: createActivity.id
@@ -129,14 +130,14 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 26:
+                      case 27:
                         findActivity = _context.sent;
                         activity.unshift(findActivity);
                         t.afterCommit(function () {
                           console.log('done balance request');
                         });
 
-                      case 29:
+                      case 30:
                       case "end":
                         return _context.stop();
                     }
