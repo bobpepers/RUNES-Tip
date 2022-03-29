@@ -76,6 +76,14 @@ class Pirate {
     return this.provider.rawCall('getpeerinfo');
   }
 
+  /**
+   * Returns data about each connected network node as a json array of objects.
+   * @return {Promise} Node info object or Error
+   */
+  getMiningInfo() {
+    return this.provider.rawCall('getmininginfo');
+  }
+
   /** ******** UTIL ********* */
   /**
    * Validates if a valid Pirate address.

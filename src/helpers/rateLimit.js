@@ -121,6 +121,16 @@ const rateLimiterFees = new RateLimiterFlexible.default.RateLimiterMemory({
   duration: 30,
 });
 
+const rateLimiterHalving = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 2,
+  duration: 30,
+});
+
+const rateLimiterMining = new RateLimiterFlexible.default.RateLimiterMemory({
+  points: 2,
+  duration: 30,
+});
+
 const rateLimiterVoiceRain = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 180,
   duration: 120,
@@ -169,6 +179,14 @@ export const myRateLimiter = async (
       userId = message.author.id;
     }
     try {
+      if (title.toLowerCase() === 'mining') {
+        await rateLimiterMining.consume(userId, 1);
+        return false;
+      }
+      if (title.toLowerCase() === 'halving') {
+        await rateLimiterHalving.consume(userId, 1);
+        return false;
+      }
       if (title.toLowerCase() === 'listtransactions') {
         await rateLimiterListTransactions.consume(userId, 1);
         return false;
@@ -306,8 +324,6 @@ export const myRateLimiter = async (
       }
     }
   } catch (lastErrorCatch) {
-    console.log(lastErrorCatch);
-    console.log('catching the last error');
     return true;
   }
 };

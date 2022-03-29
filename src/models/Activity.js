@@ -109,6 +109,10 @@ module.exports = (sequelize, DataTypes) => {
         'info_f',
         'price_s',
         'price_f',
+        'halving_s',
+        'halving_f',
+        'mining_s',
+        'mining_f',
       ],
     },
     amount: {

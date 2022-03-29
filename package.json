@@ -66,7 +66,8 @@
     "express": "^4.17.3",
     "express-session": "^1.17.2",
     "lodash": "^4.17.21",
-    "matrix-js-sdk": "^16.0.0",
+    "matrix-js-sdk": "^16.0.1",
+    "moment": "^2.29.1",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
     "node-localstorage": "^2.2.1",
@@ -85,8 +86,7 @@
     "svg-captcha": "^1.4.0",
     "svg-png-converter": "^0.0.9",
     "telegraf": "^4.7.0",
-    "telegram": "^2.5.22",
-    "utf8": "^3.0.0",
+    "telegram": "^2.5.42",
     "winston": "^3.6.0"
   }
 }

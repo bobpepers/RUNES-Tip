@@ -1,4 +1,5 @@
 import { MessageEmbed } from "discord.js";
+import moment from 'moment';
 import getCoinSettings from '../../config/settings';
 import pjson from "../../../package.json";
 import { capitalize } from "../../helpers/utils";
@@ -603,6 +604,44 @@ export const featureDisabledGlobalMessage = (name) => {
     .setTitle(name)
     .setDescription(`This Feature has been disabled`)
     .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
+export const halvingMessage = (
+  title,
+  currentBlockHeight,
+  nextBlockHalving,
+  CoinsLeftToMineUntilNextHalving,
+  nextHalvingDate,
+  distance,
+) => {
+  const seconds = moment.duration(distance).seconds();
+  const minutes = moment.duration(distance).minutes();
+  const hours = moment.duration(distance).hours();
+  const days = moment.duration(distance).days();
+  const weeks = moment.duration(distance).weeks();
+  const months = moment.duration(distance).months();
+  const years = moment.duration(distance).years();
+
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(title)
+    .setDescription(`📅 Reward halving happens on or around **${nextHalvingDate}** at block height **${nextBlockHalving}**
+
+📏 Current block height: **${currentBlockHeight}**
+
+⛏️ Amount left to mine until halving: **${CoinsLeftToMineUntilNextHalving} ${settings.coin.ticker}**
+
+🕙 Estimated Time left till halving: **${years === 1 ? `${years} year ` : ''}${years > 1 ? `${years} years, ` : ''}${months === 1 ? `${months} month ` : ''}${months > 1 ? `${months} months, ` : ''}${weeks === 1 ? `${weeks} week ` : ''}${weeks > 1 ? `${weeks} weeks, ` : ''}${days === 1 ? `${days} day ` : ''}${days > 1 ? `${days} days, ` : ''}${hours === 1 ? `${hours} hour and ` : ''}${hours > 1 ? `${hours} hours and ` : ''}${minutes === 1 ? `${minutes} minute` : ''}${minutes > 1 ? `${minutes} minutes` : ''}**
+
+💰 **Hurry up and fill yer bags!** 💰`)
+    .setTimestamp()
+    .setThumbnail(settings.coin.logo)
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
       iconURL: settings.coin.logo,
@@ -1268,6 +1307,45 @@ export const triviaReturnInitiatorMessage = () => {
   return result;
 };
 
+export const miningMessage = (
+  title,
+  currentBlockReward,
+  niceHashRateCost,
+  networkMSOL,
+  expectBlocksPerDay,
+  rentalCostBTC,
+  rentalCostKMD,
+  pirateKomodoPrice,
+  pirateBitcoinPrice,
+  difficultyInG,
+) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle(title)
+    .setDescription(`💻 **Renting:** 1 MSol/s
+**Nicehash rate:** ${niceHashRateCost} per 1 GSol/s
+**Rental Cost:** ${rentalCostBTC} BTC or ${rentalCostKMD} KMD
+
+**Current net hash:** ${networkMSOL} MSol/s
+**Block reward:** ${currentBlockReward} ${settings.coin.ticker} / block
+
+**Blocks to expect per day:** ${(expectBlocksPerDay).toFixed(4)}
+**Coins to expect per day:** ${(expectBlocksPerDay * currentBlockReward).toFixed(8)}
+
+**Per coin cost BTC:** ${pirateBitcoinPrice} BTC
+**Per coin cost KMD:** ${pirateKomodoPrice} KMD
+
+💪 **Difficulty:** ${difficultyInG} G`)
+    .setThumbnail(settings.coin.logo)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
 export const warnDirectMessage = (userId, title) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
@@ -1310,7 +1388,14 @@ Displays your deposit address
 
 \`${settings.bot.command.discord} fees\`
 Displays fee schedule
-
+${settings.coin.halving.enabled ? `
+\`${settings.bot.command.discord} halving\`
+Displays time left until next halving, etc
+` : ``}
+${settings.coin.name === 'Pirate' ? `
+\`${settings.bot.command.discord} mining\`
+Displays mining info
+` : ``}
 \`${settings.bot.command.discord} publicstats\`
 Enable/Disable public statistics (determines if you want to be shown on the leaderboards)
 default: disabled

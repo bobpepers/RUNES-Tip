@@ -35,6 +35,12 @@ module.exports = {
       "https://www.gate.io/trade/ARRR_USDT",
     ],
     exampleAddress: 'zs1e3zh7a00wz4ej2lacpl2fvnrl680hkk766nt7z4ujl6rlj04n59ex7hjlnknvhwdc7vxzn0kcvt',
+    halving: {
+      enabled: true,
+      every: 388885, // amount of blocks for each halving
+      initialBlockReward: 256, // initial amount of coins rewarded
+      blockTime: 60,
+    },
   },
   faucet: 1, // (50 = 0,5% / 100 = 1% / ...) percentage of total per claim
   min: {

@@ -13,7 +13,8 @@ import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/client/discord/validateAmount";
 import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 import { validateWithdrawalAddress } from '../../helpers/blockchain/validateWithdrawalAddress';
-import { disallowWithdrawToSelf } from '../../helpers/blockchain/disallowWithdrawToSelf';
+import { disallowWithdrawToSelf } from '../../helpers/withdraw/disallowWithdrawToSelf';
+import { createOrUseExternalWithdrawAddress } from '../../helpers/withdraw/createOrUseExternalWithdrawAddress';
 
 export const withdrawDiscordCreate = async (
   discordClient,
@@ -118,44 +119,11 @@ export const withdrawDiscordCreate = async (
       return;
     }
 
-    let addressExternal;
-    let UserExternalAddressMnMAssociation;
-
-    addressExternal = await db.addressExternal.findOne({
-      where: {
-        address: filteredMessage[2],
-      },
-      transaction: t,
-      lock: t.LOCK.UPDATE,
-    });
-
-    if (!addressExternal) {
-      addressExternal = await db.addressExternal.create({
-        address: filteredMessage[2],
-      }, {
-        transaction: t,
-        lock: t.LOCK.UPDATE,
-      });
-    }
-
-    UserExternalAddressMnMAssociation = await db.UserAddressExternal.findOne({
-      where: {
-        addressExternalId: addressExternal.id,
-        userId: user.id,
-      },
-      transaction: t,
-      lock: t.LOCK.UPDATE,
-    });
-
-    if (!UserExternalAddressMnMAssociation) {
-      UserExternalAddressMnMAssociation = await db.UserAddressExternal.create({
-        addressExternalId: addressExternal.id,
-        userId: user.id,
-      }, {
-        transaction: t,
-        lock: t.LOCK.UPDATE,
-      });
-    }
+    const addressExternal = await createOrUseExternalWithdrawAddress(
+      filteredMessage[2],
+      user,
+      t,
+    );
 
     const wallet = await user.wallet.update({
       available: user.wallet.available - amount,

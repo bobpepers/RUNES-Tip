@@ -44,6 +44,12 @@ module.exports = {
       "https://stakecenter.co/client/exchange/RDD/RUNES",
     ],
     exampleAddress: 'ReU2nhYXamYRd2VBk4auwresov6jwLEuSg',
+    halving: {
+      enabled: false,
+      every: 0, // amount of blocks for each halving
+      initialBlockReward: 0, // initial amount of coins rewarded
+      blockTime: 120,
+    },
   },
   faucet: 1, // (50 = 0,5% / 100 = 1% / ...) percentage of total per claim
   min: {

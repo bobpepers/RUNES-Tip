@@ -24,6 +24,8 @@ import { discordTrivia } from '../controllers/discord/trivia';
 import { discordReactDrop } from '../controllers/discord/reactdrop';
 import { discordStats } from '../controllers/discord/stats';
 import { discordPublicStats } from '../controllers/discord/publicstats';
+import { discordHalving } from '../controllers/discord/halving';
+import { discordMining } from '../controllers/discord/mining';
 import { discordLeaderboard } from '../controllers/discord/leaderboard';
 import { tipCoinsToDiscordFaucet, tipRunesToDiscordUser } from '../controllers/discord/tip';
 import { createUpdateDiscordUser, updateDiscordLastSeen } from '../controllers/discord/user';
@@ -39,6 +41,9 @@ import {
   discordServerBannedMessage,
   discordChannelBannedMessage,
 } from '../messages/discord';
+import getCoinSettings from '../config/settings';
+
+const settings = getCoinSettings();
 
 config();
 
@@ -279,6 +284,44 @@ export const discordRouter = (
           channelTask,
         );
       });
+    }
+
+    if (settings.coin.halving.enabled) {
+      if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'halving') {
+        const limited = await myRateLimiter(
+          discordClient,
+          message,
+          'discord',
+          'Halving',
+        );
+        if (limited) return;
+        await queue.add(async () => {
+          const task = await discordHalving(
+            message,
+            settings.coin.halving,
+            io,
+          );
+        });
+      }
+    }
+
+    if (settings.coin.name === 'Pirate') {
+      if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'mining') {
+        const limited = await myRateLimiter(
+          discordClient,
+          message,
+          'discord',
+          'Mining',
+        );
+        if (limited) return;
+        await queue.add(async () => {
+          const task = await discordMining(
+            message,
+            settings.coin.halving,
+            io,
+          );
+        });
+      }
     }
 
     if (filteredMessageDiscord[1] && filteredMessageDiscord[1].toLowerCase() === 'leaderboard') {

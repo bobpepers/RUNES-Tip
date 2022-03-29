@@ -33,6 +33,12 @@ module.exports = {
       "none",
     ],
     exampleAddress: 'ReU2nhYXamYRd2VBk4auwresov6jwLEuSg',
+    halving: {
+      enabled: false,
+      every: 0, // amount of blocks for each halving
+      initialBlockReward: 0, // initial amount of coins rewarded
+      blockTime: 0, // blocktime in seconds
+    },
   },
   faucet: 1, // (50 = 0,5% / 100 = 1% / ...) percentage of total per claim
   min: {
