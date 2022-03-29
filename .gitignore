@@ -1,7 +1,5 @@
 /node_modules
 /.idea
-/src/config/index.js
-/dist/config/index.js
 .DS_Store
 npm-debug.log
 .env
