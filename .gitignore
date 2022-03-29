@@ -14,7 +14,6 @@ logs/error.log
 /logs/app.log
 /logs/error.log
 logs/app.log
-/src/config/settings.js
 .env.development.runebase
 .env.development.pirate
 .env.production.runebase
