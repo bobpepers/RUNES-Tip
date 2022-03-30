@@ -7,7 +7,7 @@ import { getInstance } from "../../../services/rclient";
 config();
 
 export async function patchPirateDeposits() {
-  const transactions = await getInstance().listTransactions(1);
+  const transactions = await getInstance().listTransactions(1000);
 
   for await (const trans of transactions) {
     if (
