@@ -36,7 +36,7 @@ var discordPrice = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, priceInfo, userId, priceRecord, replyString, createActivity, findActivity;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, priceRecord, replyString, createActivity, findActivity;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -64,50 +64,38 @@ var discordPrice = /*#__PURE__*/function () {
 
                       case 9:
                         _context.next = 11;
-                        return _models["default"].priceInfo.findOne({
-                          where: {
-                            currency: 'USD'
-                          },
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
+                        return _models["default"].currency.findAll({});
 
                       case 11:
-                        priceInfo = _context.sent;
-                        userId = user.user_id.replace('discord-', '');
-                        _context.next = 15;
-                        return _models["default"].priceInfo.findAll({});
-
-                      case 15:
                         priceRecord = _context.sent;
                         replyString = "";
                         replyString += priceRecord.map(function (a) {
-                          return "".concat(a.currency, ": ").concat(a.price);
+                          return "".concat(a.iso, ": ").concat(a.price);
                         }).join('\n');
 
                         if (!(message.channel.type === 'DM')) {
-                          _context.next = 21;
+                          _context.next = 17;
                           break;
                         }
 
-                        _context.next = 21;
+                        _context.next = 17;
                         return message.author.send({
                           embeds: [(0, _discord.priceMessage)(replyString)]
                         });
 
-                      case 21:
+                      case 17:
                         if (!(message.channel.type === 'GUILD_TEXT')) {
-                          _context.next = 24;
+                          _context.next = 20;
                           break;
                         }
 
-                        _context.next = 24;
+                        _context.next = 20;
                         return message.channel.send({
                           embeds: [(0, _discord.priceMessage)(replyString)]
                         });
 
-                      case 24:
-                        _context.next = 26;
+                      case 20:
+                        _context.next = 22;
                         return _models["default"].activity.create({
                           type: 'price_s',
                           earnerId: user.id
@@ -116,9 +104,9 @@ var discordPrice = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 26:
+                      case 22:
                         createActivity = _context.sent;
-                        _context.next = 29;
+                        _context.next = 25;
                         return _models["default"].activity.findOne({
                           where: {
                             id: createActivity.id
@@ -131,14 +119,14 @@ var discordPrice = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 29:
+                      case 25:
                         findActivity = _context.sent;
                         activity.unshift(findActivity);
                         t.afterCommit(function () {
                           console.log('done price request');
                         });
 
-                      case 32:
+                      case 28:
                       case "end":
                         return _context.stop();
                     }

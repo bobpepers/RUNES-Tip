@@ -72,17 +72,17 @@ var matrixPrice = /*#__PURE__*/function () {
                         }
 
                         _context.next = 9;
-                        return _models["default"].priceInfo.findAll({});
+                        return _models["default"].currency.findAll({});
 
                       case 9:
                         priceRecord = _context.sent;
                         replyString = "";
                         replyString += priceRecord.map(function (a) {
-                          return "".concat(a.currency, ": ").concat(a.price);
+                          return "".concat(a.iso, ": ").concat(a.price);
                         }).join('\n');
                         replyStringHtml = "";
                         replyStringHtml += priceRecord.map(function (a) {
-                          return "".concat(a.currency, ": ").concat(a.price);
+                          return "".concat(a.iso, ": ").concat(a.price);
                         }).join('<br>');
                         _context.next = 16;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.priceMessage)(replyString, replyStringHtml));

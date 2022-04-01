@@ -8,7 +8,6 @@ export async function patchKomodoDeposits() {
   const transactions = await getInstance().listTransactions(1000);
 
   for await (const trans of transactions) {
-    console.log(trans);
     if (trans.category === 'receive') {
       if (trans.address) {
         const address = await db.address.findOne({
@@ -27,8 +26,6 @@ export async function patchKomodoDeposits() {
           await db.sequelize.transaction({
             isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
           }, async (t) => {
-            console.log(trans);
-            console.log(address);
             const newTrans = await db.transaction.findOrCreate({
               where: {
                 txid: trans.txid,

@@ -104,9 +104,9 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
             }
 
             _context.next = 3;
-            return _models["default"].priceInfo.findOne({
+            return _models["default"].currency.findOne({
               where: {
-                currency: 'USD'
+                iso: 'USD'
               }
             });
 
@@ -336,37 +336,23 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
   }());
   discordClient.on("messageCreate", /*#__PURE__*/function () {
     var _ref7 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee34(message) {
-      var groupTask, groupTaskId, channelTask, channelTaskId, lastSeenDiscordTask, disallow, maintenance, walletExists, faucetSetting, preFilteredMessageDiscord, filteredMessageDiscord, limited, _limited, _limited2, _limited3, _limited4, _limited5, _limited6, _limited7, _limited8, _limited9, _limited10, _limited11, _limited12, _limited13, setting, _limited14, _limited15, _setting, _limited16, _setting2, AmountPosition, AmountPositionEnded, _limited17, _setting3, _limited18, _setting4, _limited19, _setting5, _limited20, _setting6, _limited21, _setting7, _limited22, _setting8, _limited23, _setting9, _limited24, _setting10, _limited25, _setting11, _limited26, _setting12;
+      var groupTask, groupTaskId, channelTask, channelTaskId, lastSeenDiscordTask, disallow, walletExists, maintenance, faucetSetting, preFilteredMessageDiscord, filteredMessageDiscord, limited, _limited, _limited2, _limited3, _limited4, _limited5, _limited6, _limited7, _limited8, _limited9, _limited10, _limited11, _limited12, _limited13, setting, _limited14, _limited15, _setting, _limited16, _setting2, AmountPosition, AmountPositionEnded, _limited17, _setting3, _limited18, _setting4, _limited19, _setting5, _limited20, _setting6, _limited21, _setting7, _limited22, _setting8, _limited23, _setting9, _limited24, _setting10, _limited25, _setting11, _limited26, _setting12;
 
       return _regenerator["default"].wrap(function _callee34$(_context34) {
         while (1) {
           switch (_context34.prev = _context34.next) {
             case 0:
               if (message.author.bot) {
-                _context34.next = 13;
+                _context34.next = 8;
                 break;
               }
 
               _context34.next = 3;
-              return (0, _isMaintenanceOrDisabled.isMaintenanceOrDisabled)(message, 'discord');
-
-            case 3:
-              maintenance = _context34.sent;
-
-              if (!(maintenance.maintenance || !maintenance.enabled)) {
-                _context34.next = 6;
-                break;
-              }
-
-              return _context34.abrupt("return");
-
-            case 6:
-              _context34.next = 8;
               return (0, _user.createUpdateDiscordUser)(discordClient, message.author, queue);
 
-            case 8:
+            case 3:
               walletExists = _context34.sent;
-              _context34.next = 11;
+              _context34.next = 6;
               return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee7() {
                 return _regenerator["default"].wrap(function _callee7$(_context7) {
                   while (1) {
@@ -396,12 +382,26 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
                 }, _callee7);
               })));
 
-            case 11:
+            case 6:
               groupTaskId = groupTask && groupTask.id;
               channelTaskId = channelTask && channelTask.id;
 
-            case 13:
+            case 8:
               if (!(!message.content.startsWith(settings.bot.command.discord) || message.author.bot)) {
+                _context34.next = 10;
+                break;
+              }
+
+              return _context34.abrupt("return");
+
+            case 10:
+              _context34.next = 12;
+              return (0, _isMaintenanceOrDisabled.isMaintenanceOrDisabled)(message, 'discord');
+
+            case 12:
+              maintenance = _context34.sent;
+
+              if (!(maintenance.maintenance || !maintenance.enabled)) {
                 _context34.next = 15;
                 break;
               }

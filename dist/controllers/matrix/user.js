@@ -113,7 +113,7 @@ var createUpdateMatrixUser = /*#__PURE__*/function () {
                                   wallet = _context2.sent;
 
                                   if (wallet) {
-                                    _context2.next = 20;
+                                    _context2.next = 21;
                                     break;
                                   }
 
@@ -129,10 +129,11 @@ var createUpdateMatrixUser = /*#__PURE__*/function () {
 
                                 case 18:
                                   wallet = _context2.sent;
+                                  newUserDetected = true;
                                   console.log("created wallet");
 
-                                case 20:
-                                  _context2.next = 22;
+                                case 21:
+                                  _context2.next = 23;
                                   return _models["default"].address.findOne({
                                     where: {
                                       walletId: wallet.id
@@ -141,7 +142,7 @@ var createUpdateMatrixUser = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 22:
+                                case 23:
                                   address = _context2.sent;
 
                                   if (address) {
@@ -149,12 +150,12 @@ var createUpdateMatrixUser = /*#__PURE__*/function () {
                                     break;
                                   }
 
-                                  _context2.next = 26;
+                                  _context2.next = 27;
                                   return (0, _rclient.getInstance)().getNewAddress();
 
-                                case 26:
+                                case 27:
                                   newAddress = _context2.sent;
-                                  _context2.next = 29;
+                                  _context2.next = 30;
                                   return _models["default"].address.findOne({
                                     where: {
                                       address: newAddress
@@ -163,16 +164,16 @@ var createUpdateMatrixUser = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 29:
+                                case 30:
                                   addressAlreadyExist = _context2.sent;
                                   console.log('created address');
 
                                   if (addressAlreadyExist) {
-                                    _context2.next = 36;
+                                    _context2.next = 37;
                                     break;
                                   }
 
-                                  _context2.next = 34;
+                                  _context2.next = 35;
                                   return _models["default"].address.create({
                                     address: newAddress,
                                     walletId: wallet.id,
@@ -183,12 +184,9 @@ var createUpdateMatrixUser = /*#__PURE__*/function () {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 34:
+                                case 35:
                                   address = _context2.sent;
                                   console.log("added address");
-
-                                case 36:
-                                  newUserDetected = true;
 
                                 case 37:
                                   t.afterCommit( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee() {

@@ -883,7 +883,7 @@ var priceMessage = /*#__PURE__*/function () {
           case 0:
             replyString = "<b><u>".concat(settings.coin.ticker, " PRICE</u></b>\n");
             replyString += priceRecord.map(function (a) {
-              return "".concat(a.currency, ": ").concat(a.price);
+              return "".concat(a.iso, ": ").concat(a.price);
             }).join('\n');
             result = "".concat(replyString, "\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context25.abrupt("return", result);

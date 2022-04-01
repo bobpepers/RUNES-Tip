@@ -54,7 +54,9 @@ var _router = require("./router");
 
 var _router2 = require("./dashboard/router");
 
-var _updatePrice = require("./helpers/updatePrice");
+var _updatePrice = require("./helpers/price/updatePrice");
+
+var _updateConversionRates = require("./helpers/price/updateConversionRates");
 
 var _initDatabaseRecords = require("./helpers/initDatabaseRecords");
 
@@ -331,10 +333,23 @@ var matrixClient = _matrixJsSdk["default"].createClient({
     }
   }, _callee2, null, [[4, 11]]);
 }))();
+
+var scheduleUpdateConversionRatesFiat = _nodeSchedule["default"].scheduleJob('0 */8 * * *', function () {
+  // Update Fiat conversion rates every 8 hours
+  (0, _updateConversionRates.updateConversionRatesFiat)();
+});
+
+(0, _updateConversionRates.updateConversionRatesCrypto)();
+
+var scheduleUpdateConversionRatesCrypto = _nodeSchedule["default"].scheduleJob('*/10 * * * *', function () {
+  // Update price every 10 minutes
+  (0, _updateConversionRates.updateConversionRatesCrypto)();
+});
+
 (0, _updatePrice.updatePrice)();
 
-var schedulePriceUpdate = _nodeSchedule["default"].scheduleJob('*/20 * * * *', function () {
-  // Update price every 20 minutes
+var schedulePriceUpdate = _nodeSchedule["default"].scheduleJob('*/5 * * * *', function () {
+  // Update price every 5 minutes
   (0, _updatePrice.updatePrice)();
 });
 

@@ -15,7 +15,6 @@ export const initDatabaseRecords = async (
       currency_name: "USD",
       iso: 'USD',
       type: 'FIAT',
-
     },
   });
 

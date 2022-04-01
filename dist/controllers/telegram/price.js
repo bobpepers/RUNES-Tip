@@ -68,7 +68,7 @@ var telegramPrice = /*#__PURE__*/function () {
 
                       case 9:
                         _context.next = 11;
-                        return _models["default"].priceInfo.findAll({
+                        return _models["default"].currency.findAll({
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });

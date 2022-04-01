@@ -49,23 +49,7 @@ var _settings = require("../controllers/matrix/settings");
 
 var _matrix = require("../messages/matrix");
 
-var _rain = require("../controllers/discord/rain");
-
-var _info = require("../controllers/discord/info");
-
-var _soak = require("../controllers/discord/soak");
-
-var _thunder = require("../controllers/discord/thunder");
-
-var _thunderstorm = require("../controllers/discord/thunderstorm");
-
-var _hurricane = require("../controllers/discord/hurricane");
-
-var _faucet = require("../controllers/discord/faucet");
-
 var _rateLimit = require("../helpers/rateLimit");
-
-var _reactdrop = require("../controllers/discord/reactdrop");
 
 var _models = _interopRequireDefault(require("../models"));
 

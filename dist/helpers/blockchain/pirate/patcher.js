@@ -38,7 +38,7 @@ function _patchPirateDeposits() {
         switch (_context4.prev = _context4.next) {
           case 0:
             _context4.next = 2;
-            return (0, _rclient.getInstance)().listTransactions(1000);
+            return (0, _rclient.getInstance)().listTransactions(500);
 
           case 2:
             transactions = _context4.sent;
@@ -71,18 +71,16 @@ function _patchPirateDeposits() {
                                 detail = _step2.value;
 
                                 if (!detail.address) {
-                                  _context2.next = 11;
+                                  _context2.next = 9;
                                   break;
                                 }
 
                                 if (!(detail.address !== process.env.PIRATE_MAIN_ADDRESS)) {
-                                  _context2.next = 11;
+                                  _context2.next = 9;
                                   break;
                                 }
 
-                                console.log(trans.received);
-                                console.log('trans.received');
-                                _context2.next = 7;
+                                _context2.next = 5;
                                 return _models["default"].address.findOne({
                                   where: {
                                     address: detail.address
@@ -93,15 +91,15 @@ function _patchPirateDeposits() {
                                   }]
                                 });
 
-                              case 7:
+                              case 5:
                                 address = _context2.sent;
 
                                 if (!address) {
-                                  _context2.next = 11;
+                                  _context2.next = 9;
                                   break;
                                 }
 
-                                _context2.next = 11;
+                                _context2.next = 9;
                                 return _models["default"].sequelize.transaction({
                                   isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
                                 }, /*#__PURE__*/function () {
@@ -149,7 +147,7 @@ function _patchPirateDeposits() {
                                   };
                                 }());
 
-                              case 11:
+                              case 9:
                               case "end":
                                 return _context2.stop();
                             }

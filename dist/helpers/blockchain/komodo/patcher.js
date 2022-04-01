@@ -48,19 +48,18 @@ function _patchKomodoDeposits() {
                   switch (_context2.prev = _context2.next) {
                     case 0:
                       trans = _step.value;
-                      console.log(trans);
 
                       if (!(trans.category === 'receive')) {
-                        _context2.next = 10;
+                        _context2.next = 9;
                         break;
                       }
 
                       if (!trans.address) {
-                        _context2.next = 10;
+                        _context2.next = 9;
                         break;
                       }
 
-                      _context2.next = 6;
+                      _context2.next = 5;
                       return _models["default"].address.findOne({
                         where: {
                           address: trans.address
@@ -71,15 +70,15 @@ function _patchKomodoDeposits() {
                         }]
                       });
 
-                    case 6:
+                    case 5:
                       address = _context2.sent;
 
                       if (!address) {
-                        _context2.next = 10;
+                        _context2.next = 9;
                         break;
                       }
 
-                      _context2.next = 10;
+                      _context2.next = 9;
                       return _models["default"].sequelize.transaction({
                         isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
                       }, /*#__PURE__*/function () {
@@ -89,9 +88,7 @@ function _patchKomodoDeposits() {
                             while (1) {
                               switch (_context.prev = _context.next) {
                                 case 0:
-                                  console.log(trans);
-                                  console.log(address);
-                                  _context.next = 4;
+                                  _context.next = 2;
                                   return _models["default"].transaction.findOrCreate({
                                     where: {
                                       txid: trans.txid,
@@ -110,13 +107,13 @@ function _patchKomodoDeposits() {
                                     lock: t.LOCK.UPDATE
                                   });
 
-                                case 4:
+                                case 2:
                                   newTrans = _context.sent;
                                   t.afterCommit(function () {
                                     console.log('commited');
                                   });
 
-                                case 6:
+                                case 4:
                                 case "end":
                                   return _context.stop();
                               }
@@ -129,7 +126,7 @@ function _patchKomodoDeposits() {
                         };
                       }());
 
-                    case 10:
+                    case 9:
                     case "end":
                       return _context2.stop();
                   }

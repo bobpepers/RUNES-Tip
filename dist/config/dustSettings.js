@@ -27,7 +27,7 @@ module.exports = {
     ticker: "DUST",
     logo: "https://downloads.runebase.io/dust.png",
     website: "n/a",
-    explorer: "http://http://dragonfairy.gives",
+    explorer: "http://dragonfairy.gives",
     github: "n/a",
     telegram: "n/a",
     discord: "n/a",

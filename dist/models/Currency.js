@@ -15,6 +15,22 @@ module.exports = function (sequelize, DataTypes) {
     iso: {
       type: DataTypes.STRING,
       allowNull: true
+    },
+    conversionRate: {
+      type: DataTypes.STRING,
+      defaultValue: '1',
+      allowNull: true
+    },
+    type: {
+      type: DataTypes.ENUM,
+      defaultValue: 'fiat',
+      allowNull: false,
+      values: ['fiat', 'cryptocurrency']
+    },
+    price: {
+      type: DataTypes.STRING,
+      defaultValue: '0',
+      allowNull: true
     }
   }; // 2: The model options.
 
