@@ -54,9 +54,9 @@ export const telegramBalance = async (
     });
     activity.unshift(findActivity);
 
-    const priceInfo = await db.priceInfo.findOne({
+    const priceInfo = await db.currency.findOne({
       where: {
-        currency: 'USD',
+        iso: 'USD',
       },
       lock: t.LOCK.UPDATE,
       transaction: t,

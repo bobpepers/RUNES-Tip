@@ -65,9 +65,9 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
                       case 9:
                         console.log('123');
                         _context.next = 12;
-                        return _models["default"].priceInfo.findOne({
+                        return _models["default"].currency.findOne({
                           where: {
-                            currency: 'USD'
+                            iso: 'USD'
                           },
                           lock: t.LOCK.UPDATE,
                           transaction: t

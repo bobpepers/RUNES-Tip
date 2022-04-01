@@ -57,9 +57,9 @@ var matrixBalance = /*#__PURE__*/function () {
                       case 2:
                         user = _context.sent;
                         _context.next = 5;
-                        return _models["default"].priceInfo.findOne({
+                        return _models["default"].currency.findOne({
                           where: {
-                            currency: 'USD'
+                            iso: 'USD'
                           },
                           lock: t.LOCK.UPDATE,
                           transaction: t

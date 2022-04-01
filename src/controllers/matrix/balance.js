@@ -36,9 +36,9 @@ export const matrixBalance = async (
       transaction: t,
     });
 
-    const priceInfo = await db.priceInfo.findOne({
+    const priceInfo = await db.currency.findOne({
       where: {
-        currency: 'USD',
+        iso: 'USD',
       },
       lock: t.LOCK.UPDATE,
       transaction: t,
@@ -58,13 +58,21 @@ export const matrixBalance = async (
         await matrixClient.sendEvent(
           userDirectMessageRoomId,
           "m.room.message",
-          balanceMessage(userId, user, priceInfo),
+          balanceMessage(
+            userId,
+            user,
+            priceInfo,
+          ),
         );
       } else {
         await matrixClient.sendEvent(
           userDirectMessageRoomId,
           "m.room.message",
-          balanceMessage(userId, user, priceInfo),
+          balanceMessage(
+            userId,
+            user,
+            priceInfo,
+          ),
         );
         await matrixClient.sendEvent(
           message.sender.roomId,

@@ -31,9 +31,9 @@ export const fetchDiscordWalletBalance = async (
     if (!user) return;
     console.log('123');
 
-    const priceInfo = await db.priceInfo.findOne({
+    const priceInfo = await db.currency.findOne({
       where: {
-        currency: 'USD',
+        iso: 'USD',
       },
       lock: t.LOCK.UPDATE,
       transaction: t,
