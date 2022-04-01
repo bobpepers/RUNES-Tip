@@ -74,7 +74,7 @@ var fetchInfo = /*#__PURE__*/function () {
                       case 11:
                         blockHeight = _context.sent;
                         _context.next = 14;
-                        return _models["default"].priceInfo.findOne({
+                        return _models["default"].currency.findOne({
                           order: [['id', 'ASC']],
                           lock: t.LOCK.UPDATE,
                           transaction: t
