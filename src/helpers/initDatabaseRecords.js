@@ -5,6 +5,20 @@ export const initDatabaseRecords = async (
   telegramClient,
   matrixClient,
 ) => {
+  // ADD USD RECORD PRICEINFO
+  const createUSDCurrencytRecord = await db.currency.findOrCreate({
+    where: {
+      id: 1,
+    },
+    defaults: {
+      id: 1,
+      currency_name: "USD",
+      iso: 'USD',
+      type: 'FIAT',
+
+    },
+  });
+
   // Create Bot user for tagging
   const discordBotUser = await db.user.findOne({
     where: {

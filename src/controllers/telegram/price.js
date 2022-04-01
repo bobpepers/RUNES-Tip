@@ -31,7 +31,7 @@ export const telegramPrice = async (
     }
     if (!user) return;
 
-    const priceRecord = await db.priceInfo.findAll({
+    const priceRecord = await db.currency.findAll({
       lock: t.LOCK.UPDATE,
       transaction: t,
     });

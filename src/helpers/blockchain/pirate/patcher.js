@@ -7,7 +7,7 @@ import { getInstance } from "../../../services/rclient";
 config();
 
 export async function patchPirateDeposits() {
-  const transactions = await getInstance().listTransactions(1000);
+  const transactions = await getInstance().listTransactions(500);
 
   for await (const trans of transactions) {
     if (
@@ -17,8 +17,6 @@ export async function patchPirateDeposits() {
       for await (const detail of trans.received) {
         if (detail.address) {
           if (detail.address !== process.env.PIRATE_MAIN_ADDRESS) {
-            console.log(trans.received);
-            console.log('trans.received');
             const address = await db.address.findOne({
               where: {
                 address: detail.address,

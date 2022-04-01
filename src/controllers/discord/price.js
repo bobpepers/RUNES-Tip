@@ -28,19 +28,11 @@ export const discordPrice = async (
     }
     if (!user) return;
 
-    const priceInfo = await db.priceInfo.findOne({
-      where: {
-        currency: 'USD',
-      },
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
+    // const userId = user.user_id.replace('discord-', '');
 
-    const userId = user.user_id.replace('discord-', '');
-
-    const priceRecord = await db.priceInfo.findAll({});
+    const priceRecord = await db.currency.findAll({});
     let replyString = ``;
-    replyString += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('\n');
+    replyString += priceRecord.map((a) => `${a.iso}: ${a.price}`).join('\n');
     if (message.channel.type === 'DM') {
       await message.author.send({
         embeds: [
@@ -96,7 +88,11 @@ export const discordPrice = async (
       logger.error(`Error Discord: ${e}`);
     }
     logger.error(`Error Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Price")] }).catch((e) => {
+    message.channel.send({
+      embeds: [
+        discordErrorMessage("Price"),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
   });

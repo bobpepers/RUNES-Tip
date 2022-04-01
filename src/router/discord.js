@@ -56,9 +56,9 @@ export const discordRouter = (
   let counter = 0;
   const interval = setInterval(async () => {
     if (counter % 2 === 0) {
-      const priceInfo = await db.priceInfo.findOne({
+      const priceInfo = await db.currency.findOne({
         where: {
-          currency: 'USD',
+          iso: 'USD',
         },
       });
       discordClient.user.setPresence({
@@ -156,8 +156,6 @@ export const discordRouter = (
     // let faucetSetting;
     let disallow;
     if (!message.author.bot) {
-      const maintenance = await isMaintenanceOrDisabled(message, 'discord');
-      if (maintenance.maintenance || !maintenance.enabled) return;
       const walletExists = await createUpdateDiscordUser(
         discordClient,
         message.author,
@@ -175,6 +173,8 @@ export const discordRouter = (
       channelTaskId = channelTask && channelTask.id;
     }
     if (!message.content.startsWith(settings.bot.command.discord) || message.author.bot) return;
+    const maintenance = await isMaintenanceOrDisabled(message, 'discord');
+    if (maintenance.maintenance || !maintenance.enabled) return;
     if (groupTask && groupTask.banned) {
       await message.channel.send({
         embeds: [

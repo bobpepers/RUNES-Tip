@@ -38,23 +38,8 @@ import {
   matrixRoomBannedMessage,
 } from '../messages/matrix';
 
-import { discordRain } from '../controllers/discord/rain';
-
-import { discordCoinInfo } from '../controllers/discord/info';
-
-import { discordSoak } from '../controllers/discord/soak';
-
-import { discordThunder } from '../controllers/discord/thunder';
-
-import { discordThunderStorm } from '../controllers/discord/thunderstorm';
-
-import { discordHurricane } from '../controllers/discord/hurricane';
-
-import { discordFaucetClaim } from '../controllers/discord/faucet';
-
 import { myRateLimiter } from '../helpers/rateLimit';
 
-import { discordReactDrop } from '../controllers/discord/reactdrop';
 import db from '../models';
 
 config();

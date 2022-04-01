@@ -46,6 +46,14 @@ import {
 } from './controllers/features';
 
 import {
+  fetchPriceCurrencies,
+  addPriceCurrency,
+  removePriceCurrency,
+  updatePriceCurrency,
+  updatePriceCurrencyPrices,
+} from './controllers/priceCurrencies';
+
+import {
   resetPassword,
   verifyResetPassword,
   resetPasswordNew,
@@ -257,6 +265,126 @@ export const dashboardRouter = (
       if (res.locals.server) {
         res.json({
           server: res.locals.server,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/pricecurrencies',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    ensuretfa,
+    fetchPriceCurrencies,
+    (req, res) => {
+      if (res.locals.currencies) {
+        res.json({
+          currencies: res.locals.currencies,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+  app.post(
+    '/api/pricecurrencies/remove',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    ensuretfa,
+    removePriceCurrency,
+    (req, res) => {
+      if (res.locals.error) {
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      } else if (res.locals.currency) {
+        res.json({
+          currency: res.locals.currency,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/pricecurrencies/update',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    ensuretfa,
+    updatePriceCurrency,
+    (req, res) => {
+      if (res.locals.error) {
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      } else if (res.locals.currency) {
+        res.json({
+          currency: res.locals.currency,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/pricecurrencies/add',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    ensuretfa,
+    addPriceCurrency,
+    (req, res) => {
+      if (res.locals.error) {
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      } else if (res.locals.currency) {
+        res.json({
+          currency: res.locals.currency,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/pricecurrencies/updateprice',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    ensuretfa,
+    updatePriceCurrencyPrices,
+    (req, res) => {
+      if (res.locals.error) {
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      } else if (res.locals.currency) {
+        res.json({
+          currency: true,
         });
       } else {
         res.status(401).send({

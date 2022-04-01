@@ -26,7 +26,8 @@ import socketIo from 'socket.io';
 import { LocalStorageCryptoStore } from 'matrix-js-sdk/lib/crypto/store/localStorage-crypto-store';
 import { router } from "./router";
 import { dashboardRouter } from "./dashboard/router";
-import { updatePrice } from "./helpers/updatePrice";
+import { updatePrice } from "./helpers/price/updatePrice";
+import { updateConversionRatesFiat, updateConversionRatesCrypto } from "./helpers/price/updateConversionRates";
 import { initDatabaseRecords } from "./helpers/initDatabaseRecords";
 import db from "./models";
 import getCoinSettings from './config/settings';
@@ -271,8 +272,17 @@ let matrixClient = sdk.createClient({
   console.log('server listening on:', port);
 }());
 
+const scheduleUpdateConversionRatesFiat = schedule.scheduleJob('0 */8 * * *', () => { // Update Fiat conversion rates every 8 hours
+  updateConversionRatesFiat();
+});
+
+updateConversionRatesCrypto();
+const scheduleUpdateConversionRatesCrypto = schedule.scheduleJob('*/10 * * * *', () => { // Update price every 10 minutes
+  updateConversionRatesCrypto();
+});
+
 updatePrice();
-const schedulePriceUpdate = schedule.scheduleJob('*/20 * * * *', () => { // Update price every 20 minutes
+const schedulePriceUpdate = schedule.scheduleJob('*/5 * * * *', () => { // Update price every 5 minutes
   updatePrice();
 });
 

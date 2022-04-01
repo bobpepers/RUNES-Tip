@@ -69,6 +69,7 @@ export const createUpdateMatrixUser = async (
             transaction: t,
             lock: t.LOCK.UPDATE,
           });
+          newUserDetected = true;
           console.log("created wallet");
         }
         let address = await db.address.findOne(
@@ -104,7 +105,6 @@ export const createUpdateMatrixUser = async (
             });
             console.log("added address");
           }
-          newUserDetected = true;
         }
       }
 

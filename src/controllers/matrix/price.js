@@ -48,11 +48,11 @@ export const matrixPrice = async (
     }
 
     if (user && user.wallet) {
-      const priceRecord = await db.priceInfo.findAll({});
+      const priceRecord = await db.currency.findAll({});
       let replyString = ``;
-      replyString += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('\n');
+      replyString += priceRecord.map((a) => `${a.iso}: ${a.price}`).join('\n');
       let replyStringHtml = ``;
-      replyStringHtml += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('<br>');
+      replyStringHtml += priceRecord.map((a) => `${a.iso}: ${a.price}`).join('<br>');
 
       await matrixClient.sendEvent(
         message.sender.roomId,

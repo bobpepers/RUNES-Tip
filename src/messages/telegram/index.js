@@ -590,7 +590,7 @@ export const priceMessage = async (
   priceRecord,
 ) => {
   let replyString = `<b><u>${settings.coin.ticker} PRICE</u></b>\n`;
-  replyString += priceRecord.map((a) => `${a.currency}: ${a.price}`).join('\n');
+  replyString += priceRecord.map((a) => `${a.iso}: ${a.price}`).join('\n');
   const result = `${replyString}
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
