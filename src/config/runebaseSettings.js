@@ -35,7 +35,6 @@ module.exports = {
       "https://bololex.com/trading/?symbol=RUNES-DOGE",
       "https://bololex.com/trading/?symbol=RUNES-ETH",
       "https://bololex.com/trading/?symbol=RUNES-BOLO",
-      "https://v2.altmarkets.io/trading/runesdoge",
       "https://txbit.io/Trade/RUNES/BTC",
       "https://txbit.io/Trade/RUNES/ETH",
       "https://stakecenter.co/client/exchange/BTC/RUNES",
