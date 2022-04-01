@@ -37,7 +37,7 @@ export const discordCoinInfo = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    const priceInfo = await db.priceInfo.findOne({
+    const priceInfo = await db.currency.findOne({
       order: [['id', 'ASC']],
       lock: t.LOCK.UPDATE,
       transaction: t,

@@ -1,6 +1,6 @@
 {
   "name": "runes-tip",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Tipbot for coins with bitcoin codebase",
   "scripts": {
     "dev": "nodemon --exec babel-node --max-old-space-size=8192 src/index.js",
@@ -86,7 +86,7 @@
     "svg-captcha": "^1.4.0",
     "svg-png-converter": "^0.0.9",
     "telegraf": "^4.7.0",
-    "telegram": "^2.5.42",
+    "telegram": "^2.5.52",
     "winston": "^3.6.0"
   }
 }

@@ -2,7 +2,7 @@ module.exports = {
   startSyncBlock: 460912,
   bot: {
     name: "DustTipBot",
-    color: "#0099ff",
+    color: "#C71585",
     url: {
       telegram: "",
       discord: "https://discord.com/oauth2/authorize?client_id=924779779499110443&scope=bot&permissions=523328",
