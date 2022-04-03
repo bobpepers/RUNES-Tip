@@ -87,7 +87,7 @@ export const helpMessage = () => {
     ${settings.bot.command.matrix}
 show this help message
 
-${settings.bot.command.matrix}  help
+${settings.bot.command.matrix} help
 show this help message
 
 ${settings.bot.command.matrix} balance
@@ -99,15 +99,26 @@ Displays your deposit address
 ${settings.bot.command.matrix} withdraw <address> <amount|all>
 Withdraws the entered amount to a ${settings.coin.name} address of your choice
 
-${settings.bot.command.discord} flood [amount|all]
+${settings.bot.command.matrix} <@user> <amount|all>
+Tips the @ mentioned user with the desired amount
+example: ${settings.bot.command.matrix} @test123456#7890 1.00
+
+${settings.bot.command.matrix} <@user> <@user> <@user> <amount|all> [split|each]
+Tips the @ mentioned users with the desired amount
+example: ${settings.bot.command.matrix} @test123456#7890 @test123457#7890 1.00 each
+
+${settings.bot.command.matrix} flood [amount|all]
 Floods the desired amount onto all users (including offline users)
-example: ${settings.bot.command.discord} flood 5.00
+example: ${settings.bot.command.matrix} flood 5.00
 
-${settings.bot.command.discord} sleet <amount|all> [<time>]
+${settings.bot.command.matrix} sleet <amount|all> [<time>]
 Makes a sleet storm with the desired amount onto all users that have been active in the room in the last 15 minutes (optionally, within specified time)
-example: \`${settings.bot.command.discord} sleet 5.00\`, \`${settings.bot.command.discord} sleet 5.00 @supporters
+example: \`${settings.bot.command.matrix} sleet 5.00\`, \`${settings.bot.command.matrix} sleet 5.00 @supporters
 
-${settings.bot.command.discord} ignoreme
+${settings.bot.command.matrix} fees
+Displays fee schedule
+
+${settings.bot.command.matrix} ignoreme
 Turns @mentioning you during mass operations on/off
 
 ${settings.bot.name} v${pjson.version}`,
@@ -130,15 +141,26 @@ ${settings.bot.name} v${pjson.version}`,
 <code>${settings.bot.command.matrix} withdraw &lt;address&gt; &lt;amount|all&gt;</code>
 <p>Withdraws the entered amount to a ${settings.coin.name} address of your choice</p>
 
-<code>${settings.bot.command.discord} flood &lt;amount|all&gt;</code>
+<code>${settings.bot.command.matrix} &lt;@user&gt; &lt;amount|all&gt;</code>
+<p>Tips the @ mentioned user with the desired amount<br>
+example: ${settings.bot.command.matrix} @test123456#7890 1.00</p>
+
+<code>${settings.bot.command.matrix} &lt;@user&gt; &lt;@user&gt; &lt;@user&gt; &lt;amount|all&gt; [split|each]</code>
+<p>Tips the @ mentioned users with the desired amount<br>
+example: ${settings.bot.command.matrix} @test123456#7890 @test123457#7890 1.00 each</p>
+
+<code>${settings.bot.command.matrix} flood &lt;amount|all&gt;</code>
 <p>Floods the desired amount onto all users (including offline users)<br>
-example: ${settings.bot.command.discord} flood 5.00</p>
+example: ${settings.bot.command.matrix} flood 5.00</p>
 
-<code>${settings.bot.command.discord} sleet &lt;amount|all&gt; [&lt;time&gt;]</code>
+<code>${settings.bot.command.matrix} sleet &lt;amount|all&gt; [&lt;time&gt;]</code>
 <p>Makes a sleet storm with the desired amount onto all users that have been active in the room in the last 15 minutes (optionally, within specified time)<br>
-example: \`${settings.bot.command.discord} sleet 5.00\`, \`${settings.bot.command.discord} sleet 5.00 @supporters</p>
+example: ${settings.bot.command.matrix} sleet 5.00, ${settings.bot.command.matrix} sleet 5.00 @supporters</p>
 
-<code>${settings.bot.command.discord} ignoreme</code>
+<code>${settings.bot.command.matrix} fees</code>
+<p>Displays fee schedule</p>
+
+<code>${settings.bot.command.matrix} ignoreme</code>
 <p>Turns @mentioning you during mass operations on/off</p>
 
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
