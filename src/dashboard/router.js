@@ -109,14 +109,17 @@ import {
 
 // import storeIp from './helpers/storeIp';
 
-// const requireAuth = passport.authenticate('jwt', { session: true, failWithError: true });
-const requireSignin = passport.authenticate('local', { session: true, failWithError: true });
+const requireSignin = passport.authenticate('local', {
+  session: true,
+  failWithError: true,
+});
 
 const IsAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
-    console.log('isauthenticated');
+    console.log('isauthenticated passed');
     next();
   } else {
+    console.log('isAuthenticated not passed');
     res.status(401).send({
       error: 'Unauthorized',
     });
@@ -692,6 +695,8 @@ export const dashboardRouter = (
     (req, res) => {
       console.log('after fetchblocknumber');
       if (res.locals.blockNumberNode && res.locals.blockNumberDb) {
+        console.log('res.locals.blockNumberNode');
+        console.log(res.locals.blockNumberNode);
         res.json({
           blockNumber: {
             node: res.locals.blockNumberNode,
@@ -1048,12 +1053,13 @@ export const dashboardRouter = (
         res.status(401).send({
           error: 'LOGIN_ERROR',
         });
+      } else {
+        res.json({
+          username: req.user.username,
+        });
       }
       // console.log('Login Successful');
       // console.log(req.user.username);
-      res.json({
-        username: req.user.username,
-      });
     },
   );
 

@@ -13,7 +13,7 @@ import morgan from "morgan";
 import cors from "cors";
 import compression from "compression";
 import schedule from "node-schedule";
-import dotenv from 'dotenv';
+import { config } from "dotenv";
 import passport from 'passport';
 import olm from '@matrix-org/olm';
 import sdk from 'matrix-js-sdk';
@@ -21,7 +21,7 @@ import { LocalStorage } from "node-localstorage";
 import connectRedis from 'connect-redis';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
-import redis from 'redis';
+import { createClient as createRedisClient } from 'redis';
 import socketIo from 'socket.io';
 import { LocalStorageCryptoStore } from 'matrix-js-sdk/lib/crypto/store/localStorage-crypto-store';
 import { router } from "./router";
@@ -45,118 +45,115 @@ import {
 import logger from "./helpers/logger";
 
 global.Olm = olm;
-
-const localStorage = new LocalStorage('./scratch');
-
-dotenv.config();
-const settings = getCoinSettings();
-
-const queue = new PQueue({
-  concurrency: 1,
-  timeout: 1000000000,
-});
-
-const port = process.env.PORT || 8080;
-
-const app = express();
-
-const server = http.createServer(app);
-const io = socketIo(server, {
-  path: '/socket.io',
-  cookie: false,
-});
-
-app.use(compression());
-app.use(morgan('combined'));
-app.use(cors());
-app.set('trust proxy', 1);
-
-const RedisStore = connectRedis(session);
-const CONF = { db: 3 };
-const pub = redis.createClient(CONF);
-
-const sessionStore = new RedisStore({
-  client: pub,
-});
-
-const sessionMiddleware = session({
-  secret: process.env.SESSION_SECRET,
-  key: "connect.sid",
-  resave: false,
-  proxy: true,
-  saveUninitialized: false,
-  ephemeral: false,
-  store: sessionStore,
-  cookie: {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'strict',
-  },
-});
-
-app.use(cookieParser());
-app.use(bodyParser.urlencoded({
-  extended: false,
-  limit: '5mb',
-}));
-app.use(bodyParser.json());
-
-app.use(sessionMiddleware);
-app.use(passport.initialize());
-app.use(passport.session());
-const wrap = (middleware) => (socket, next) => middleware(socket.request, {}, next);
-
-io.use(wrap(sessionMiddleware));
-io.use(wrap(passport.initialize()));
-io.use(wrap(passport.session()));
-
-const sockets = {};
-
-io.on("connection", async (socket) => {
-  const userId = socket.request.session.passport ? socket.request.session.passport.user : '';
-  if (
-    socket.request.user
-    && (socket.request.user.role === 4
-      || socket.request.user.role === 8)
-  ) {
-    socket.join('admin');
-    sockets[parseInt(userId, 10)] = socket;
-  }
-  // console.log(Object.keys(sockets).length);
-  socket.on("disconnect", () => {
-    delete sockets[parseInt(userId, 10)];
-  });
-});
-
-const discordClient = new Client({
-  intents: [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.GUILD_PRESENCES,
-    Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.DIRECT_MESSAGES,
-    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-    Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
-    Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-    Intents.FLAGS.GUILD_VOICE_STATES,
-  ],
-  partials: [
-    'MESSAGE',
-    'CHANNEL',
-    'REACTION',
-  ],
-  // makeCache: Options.cacheWithLimits({
-  //  GuildEmoji: 5000, // This is default
-  // }),
-});
-
-const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
-
-let matrixClient = sdk.createClient({
-  baseUrl: `https://matrix.org`,
-});
+config();
 
 (async function () {
+  const localStorage = new LocalStorage('./scratch');
+  const settings = getCoinSettings();
+  const queue = new PQueue({
+    concurrency: 1,
+    timeout: 1000000000,
+  });
+  const port = process.env.PORT || 8080;
+  const app = express();
+
+  const server = http.createServer(app);
+  const io = socketIo(server, {
+    path: '/socket.io',
+    cookie: false,
+  });
+
+  app.use(compression());
+  app.use(morgan('combined'));
+  app.use(cors());
+  app.set('trust proxy', 1);
+
+  const RedisStore = connectRedis(session);
+
+  const redisClient = createRedisClient({
+    database: 3,
+    legacyMode: true,
+  });
+
+  await redisClient.connect();
+
+  const sessionMiddleware = session({
+    secret: process.env.SESSION_SECRET,
+    key: "connect.sid",
+    resave: false,
+    proxy: true,
+    saveUninitialized: false,
+    ephemeral: false,
+    store: new RedisStore({ client: redisClient }),
+    cookie: {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict',
+    },
+  });
+
+  app.use(cookieParser());
+  app.use(bodyParser.urlencoded({
+    extended: false,
+    limit: '5mb',
+  }));
+  app.use(bodyParser.json());
+
+  app.use(sessionMiddleware);
+  app.use(passport.initialize());
+  app.use(passport.session());
+  const wrap = (middleware) => (socket, next) => middleware(socket.request, {}, next);
+
+  io.use(wrap(sessionMiddleware));
+  io.use(wrap(passport.initialize()));
+  io.use(wrap(passport.session()));
+
+  const sockets = {};
+
+  io.on("connection", async (socket) => {
+    const userId = socket.request.session.passport ? socket.request.session.passport.user : '';
+    if (
+      socket.request.user
+    && (socket.request.user.role === 4
+      || socket.request.user.role === 8)
+    ) {
+      socket.join('admin');
+      sockets[parseInt(userId, 10)] = socket;
+    }
+    // console.log(Object.keys(sockets).length);
+    socket.on("disconnect", () => {
+      delete sockets[parseInt(userId, 10)];
+    });
+  });
+
+  const discordClient = new Client({
+    intents: [
+      Intents.FLAGS.GUILDS,
+      Intents.FLAGS.GUILD_MEMBERS,
+      Intents.FLAGS.GUILD_PRESENCES,
+      Intents.FLAGS.GUILD_MESSAGES,
+      Intents.FLAGS.DIRECT_MESSAGES,
+      Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+      Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+      Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+      Intents.FLAGS.GUILD_VOICE_STATES,
+    ],
+    partials: [
+      'MESSAGE',
+      'CHANNEL',
+      'REACTION',
+    ],
+    // makeCache: Options.cacheWithLimits({
+    //  GuildEmoji: 5000, // This is default
+    // }),
+  });
+
+  const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+
+  let matrixClient = sdk.createClient({
+    baseUrl: `https://matrix.org`,
+  });
+
   await telegramClient.launch();
   await discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
   try {
@@ -268,38 +265,38 @@ let matrixClient = sdk.createClient({
     matrixClient,
   );
 
+  const scheduleUpdateConversionRatesFiat = schedule.scheduleJob('0 */8 * * *', () => { // Update Fiat conversion rates every 8 hours
+    updateConversionRatesFiat();
+  });
+
+  updateConversionRatesCrypto();
+  const scheduleUpdateConversionRatesCrypto = schedule.scheduleJob('*/10 * * * *', () => { // Update price every 10 minutes
+    updateConversionRatesCrypto();
+  });
+
+  updatePrice();
+  const schedulePriceUpdate = schedule.scheduleJob('*/5 * * * *', () => { // Update price every 5 minutes
+    updatePrice();
+  });
+
+  const scheduleWithdrawal = schedule.scheduleJob('*/8 * * * *', async () => { // Process a withdrawal every 8 minutes
+    const autoWithdrawalSetting = await db.features.findOne({
+      where: {
+        name: 'autoWithdrawal',
+      },
+    });
+    if (autoWithdrawalSetting.enabled) {
+      processWithdrawals(
+        telegramClient,
+        discordClient,
+        matrixClient,
+      );
+    }
+  });
+
   server.listen(port);
   console.log('server listening on:', port);
 }());
-
-const scheduleUpdateConversionRatesFiat = schedule.scheduleJob('0 */8 * * *', () => { // Update Fiat conversion rates every 8 hours
-  updateConversionRatesFiat();
-});
-
-updateConversionRatesCrypto();
-const scheduleUpdateConversionRatesCrypto = schedule.scheduleJob('*/10 * * * *', () => { // Update price every 10 minutes
-  updateConversionRatesCrypto();
-});
-
-updatePrice();
-const schedulePriceUpdate = schedule.scheduleJob('*/5 * * * *', () => { // Update price every 5 minutes
-  updatePrice();
-});
-
-const scheduleWithdrawal = schedule.scheduleJob('*/8 * * * *', async () => { // Process a withdrawal every 8 minutes
-  const autoWithdrawalSetting = await db.features.findOne({
-    where: {
-      name: 'autoWithdrawal',
-    },
-  });
-  if (autoWithdrawalSetting.enabled) {
-    processWithdrawals(
-      telegramClient,
-      discordClient,
-      matrixClient,
-    );
-  }
-});
 
 process.on('unhandledRejection', async (err, p) => {
   logger.error(`Error Application Unhandled Rejection: ${err}`);
