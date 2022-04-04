@@ -247,8 +247,10 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
                       case 8:
                         lastSeenDiscordTask = _context4.sent;
+                        groupTaskId = groupTask && groupTask.id;
+                        channelTaskId = channelTask && channelTask.id;
 
-                      case 9:
+                      case 11:
                       case "end":
                         return _context4.stop();
                     }

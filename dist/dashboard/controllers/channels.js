@@ -86,8 +86,6 @@ var fetchChannels = /*#__PURE__*/function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            // console.log('fetcChannels_____________________________');
-            // console.log(req.body);
             channelOptions = {};
 
             if (req.body.id !== '') {

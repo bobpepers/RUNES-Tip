@@ -3,8 +3,6 @@ import {
 } from 'sequelize';
 import db from '../../models';
 
-// const crypto = require('crypto');
-
 /**
  *
  * Is IP Banned?

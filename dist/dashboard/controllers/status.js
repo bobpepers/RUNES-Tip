@@ -11,14 +11,7 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var crypto = require('crypto');
-
-var _require = require('../../services/rclient'),
-    getInstance = _require.getInstance;
-/**
- * insert Ip
- */
-
+var _rclient = require("../../services/rclient");
 
 var fetchNodeStatus = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
@@ -28,12 +21,12 @@ var fetchNodeStatus = /*#__PURE__*/function () {
         switch (_context.prev = _context.next) {
           case 0:
             _context.next = 2;
-            return getInstance().isConnected();
+            return (0, _rclient.getInstance)().isConnected();
 
           case 2:
             connected = _context.sent;
             _context.next = 5;
-            return getInstance().getPeerInfo();
+            return (0, _rclient.getInstance)().getPeerInfo();
 
           case 5:
             peers = _context.sent;

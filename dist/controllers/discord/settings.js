@@ -15,13 +15,14 @@ var _discord = require("../../messages/discord");
 
 var _models = _interopRequireDefault(require("../../models"));
 
+var _utils = require("../../helpers/utils");
+
 /* eslint-disable import/prefer-default-export */
 var discordSettings = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(message, name) {
     var groupId,
         channelId,
         setting,
-        capitalize,
         _args = arguments;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
@@ -92,62 +93,57 @@ var discordSettings = /*#__PURE__*/function () {
             return _context.abrupt("return", false);
 
           case 17:
-            capitalize = function capitalize(s) {
-              return s && s[0].toUpperCase() + s.slice(1);
-            }; // Upper case first letter
-
-
             if (!(!setting.enabled && setting.channelId)) {
-              _context.next = 22;
+              _context.next = 21;
               break;
             }
 
-            _context.next = 21;
+            _context.next = 20;
             return message.channel.send({
-              embeds: [(0, _discord.featureDisabledChannelMessage)(capitalize(name))]
+              embeds: [(0, _discord.featureDisabledChannelMessage)((0, _utils.capitalize)(name))]
             })["catch"](function (e) {
               console.log(e);
             });
+
+          case 20:
+            return _context.abrupt("return", false);
 
           case 21:
-            return _context.abrupt("return", false);
-
-          case 22:
             if (!(!setting.enabled && setting.groupId)) {
-              _context.next = 26;
+              _context.next = 25;
               break;
             }
 
-            _context.next = 25;
+            _context.next = 24;
             return message.channel.send({
-              embeds: [(0, _discord.featureDisabledServerMessage)(capitalize(name))]
+              embeds: [(0, _discord.featureDisabledServerMessage)((0, _utils.capitalize)(name))]
             })["catch"](function (e) {
               console.log(e);
             });
+
+          case 24:
+            return _context.abrupt("return", false);
 
           case 25:
-            return _context.abrupt("return", false);
-
-          case 26:
             if (setting.enabled) {
-              _context.next = 30;
+              _context.next = 29;
               break;
             }
 
-            _context.next = 29;
+            _context.next = 28;
             return message.channel.send({
-              embeds: [(0, _discord.featureDisabledGlobalMessage)(capitalize(name))]
+              embeds: [(0, _discord.featureDisabledGlobalMessage)((0, _utils.capitalize)(name))]
             })["catch"](function (e) {
               console.log(e);
             });
 
-          case 29:
+          case 28:
             return _context.abrupt("return", false);
 
-          case 30:
+          case 29:
             return _context.abrupt("return", setting);
 
-          case 31:
+          case 30:
           case "end":
             return _context.stop();
         }

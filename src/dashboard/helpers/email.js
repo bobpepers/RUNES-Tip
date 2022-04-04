@@ -1,7 +1,8 @@
 /* eslint-disable prefer-template */
 import nodemailer from 'nodemailer';
+import { config } from "dotenv";
 
-require('dotenv').config();
+config();
 
 const transporter = nodemailer.createTransport({
   host: process.env.MAIL_HOST,

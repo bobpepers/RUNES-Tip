@@ -443,7 +443,6 @@ var fetchWithdrawals = /*#__PURE__*/function () {
       while (1) {
         switch (_context6.prev = _context6.next) {
           case 0:
-            console.log(req.body);
             transactionOptions = {
               type: 'send'
             };
@@ -486,15 +485,15 @@ var fetchWithdrawals = /*#__PURE__*/function () {
                 }]
               }]
             };
-            _context6.next = 11;
+            _context6.next = 10;
             return _models["default"].transaction.findAll(options);
 
-          case 11:
+          case 10:
             res.locals.withdrawals = _context6.sent;
             console.log(res.locals.withdrawals);
             next();
 
-          case 14:
+          case 13:
           case "end":
             return _context6.stop();
         }

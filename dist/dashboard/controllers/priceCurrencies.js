@@ -11,15 +11,13 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _bignumber = _interopRequireDefault(require("bignumber.js"));
-
 var _models = _interopRequireDefault(require("../../models"));
 
 var _updatePrice = require("../../helpers/price/updatePrice");
 
 var _updateConversionRates = require("../../helpers/price/updateConversionRates");
 
-// import { parseDomain } from "parse-domain";
+// import BigNumber from "bignumber.js";
 var updatePriceCurrency = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
     var currency, updatedCurrency;

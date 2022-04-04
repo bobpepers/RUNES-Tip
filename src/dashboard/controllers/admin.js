@@ -7,8 +7,6 @@ import {
 import db from '../../models';
 import { getInstance } from '../../services/rclient';
 
-// require('dotenv').config();
-
 export const fetchAdminLiability = async (
   req,
   res,

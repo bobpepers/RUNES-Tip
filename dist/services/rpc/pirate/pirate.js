@@ -15,13 +15,10 @@ var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/creat
 // const _ = require('lodash');
 var HttpProvider = require('../httpprovider');
 
-var Utils = require('./utils');
-
 var Pirate = /*#__PURE__*/function () {
   function Pirate(url) {
     (0, _classCallCheck2["default"])(this, Pirate);
     this.provider = new HttpProvider(url);
-    this.utils = Utils;
   }
   /** ******** MISC ********* */
 

@@ -1,8 +1,8 @@
-require('dotenv').config();
+import { config } from "dotenv";
+import { Recaptcha } from 'recaptcha-v2';
+import Bluebird from 'bluebird';
 
-const Bluebird = require('bluebird');
-const { Recaptcha } = require('recaptcha-v2');
-
+config();
 /**
    * Verify ReCaptcha
    * @param {Object} recaptchaData
@@ -32,7 +32,11 @@ const verifyRecaptcha = (recaptchaData) => {
    * @param {Object} recaptchaData
    * @returns {Promise}
    */
-exports.verifyMyCaptcha = (req, res, next) => {
+export const verifyMyCaptcha = (
+  req,
+  res,
+  next,
+) => {
   const { captchaResponse } = req.body;
   if (!captchaResponse) {
     return res.status(422).send({

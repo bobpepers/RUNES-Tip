@@ -17,7 +17,6 @@ var _sequelize = require("sequelize");
 
 var _models = _interopRequireDefault(require("../../models"));
 
-// import { parseDomain } from "parse-domain";
 var fetchDashboardUsers = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
     var userOptions, options;

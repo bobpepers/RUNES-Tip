@@ -1,8 +1,6 @@
 "use strict";
 
-var Pirate = require('./pirate');
-
-var Utils = require('./utils'); // dont override global variable
+var Pirate = require('./pirate'); // dont override global variable
 
 
 if (typeof window !== 'undefined' && typeof window.Pirate === 'undefined') {
@@ -10,6 +8,5 @@ if (typeof window !== 'undefined' && typeof window.Pirate === 'undefined') {
 }
 
 module.exports = {
-  Pirate: Pirate,
-  Utils: Utils
+  Pirate: Pirate
 };

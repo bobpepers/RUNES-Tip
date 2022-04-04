@@ -95,8 +95,6 @@ var fetchLiability = /*#__PURE__*/function () {
 
           case 28:
             faucet = _context.sent;
-            console.log(faucet);
-            console.log('faucet');
             faucetAmount = faucet.amount ? faucet.amount : 0;
             available = sumAvailable[0].dataValues.total_available ? sumAvailable[0].dataValues.total_available : 0;
             locked = sumLocked[0].dataValues.total_locked ? sumLocked[0].dataValues.total_locked : 0;
@@ -106,22 +104,22 @@ var fetchLiability = /*#__PURE__*/function () {
             runningTrivia = sumRunningTrivia[0].dataValues.total_amount ? sumRunningTrivia[0].dataValues.total_amount : 0;
             res.locals.liability = Number(available) + Number(locked) + Number(unconfirmedDeposits) - Number(unconfirmledWithdrawals) + Number(runningTrivia) + Number(runningReactdrops) + Number(faucetAmount);
             next();
-            _context.next = 47;
+            _context.next = 45;
             break;
 
-          case 42:
-            _context.prev = 42;
+          case 40:
+            _context.prev = 40;
             _context.t0 = _context["catch"](7);
             console.log(_context.t0);
             res.locals.error = _context.t0;
             next();
 
-          case 47:
+          case 45:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[7, 42]]);
+    }, _callee, null, [[7, 40]]);
   }));
 
   return function fetchLiability(_x, _x2, _x3) {

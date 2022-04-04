@@ -13,8 +13,7 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _settings = _interopRequireDefault(require("../../config/settings"));
 
-var _require = require('../../services/rclient'),
-    getInstance = _require.getInstance;
+var _rclient = require("../../services/rclient");
 
 var settings = (0, _settings["default"])();
 
@@ -33,7 +32,7 @@ var fetchBalance = /*#__PURE__*/function () {
             }
 
             _context.next = 4;
-            return getInstance().getWalletInfo();
+            return (0, _rclient.getInstance)().getWalletInfo();
 
           case 4:
             response = _context.sent;
@@ -48,7 +47,7 @@ var fetchBalance = /*#__PURE__*/function () {
             }
 
             _context.next = 11;
-            return getInstance().zGetBalances();
+            return (0, _rclient.getInstance)().zGetBalances();
 
           case 11:
             response = _context.sent;
@@ -61,14 +60,13 @@ var fetchBalance = /*#__PURE__*/function () {
 
           case 15:
             _context.next = 17;
-            return getInstance().getWalletInfo();
+            return (0, _rclient.getInstance)().getWalletInfo();
 
           case 17:
             response = _context.sent;
             res.locals.balance = response.balance;
 
           case 19:
-            // console.log(req.body);
             next();
             _context.next = 27;
             break;

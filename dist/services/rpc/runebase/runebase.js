@@ -12,19 +12,12 @@ var _classCallCheck2 = _interopRequireDefault(require("@babel/runtime/helpers/cl
 
 var _createClass2 = _interopRequireDefault(require("@babel/runtime/helpers/createClass"));
 
-var _require = require('lodash'),
-    isString = _require.isString,
-    isFinite = _require.isFinite;
-
 var HttpProvider = require('../httpprovider');
-
-var Utils = require('./utils');
 
 var Runebase = /*#__PURE__*/function () {
   function Runebase(url) {
     (0, _classCallCheck2["default"])(this, Runebase);
     this.provider = new HttpProvider(url);
-    this.utils = Utils;
   }
   /** ******** MISC ********* */
 
@@ -151,17 +144,6 @@ var Runebase = /*#__PURE__*/function () {
     key: "validateAddress",
     value: function validateAddress(address) {
       return this.provider.rawCall('validateaddress', [address]);
-    }
-    /**
-     * Gets the account name associated with the Runebase address.
-     * @param {string} address The runebase address for account lookup.
-     * @return {Promise} Account name or Error.
-     */
-
-  }, {
-    key: "getAddressInfo",
-    value: function getAddressInfo(address) {
-      return this.provider.rawCall('getaddressinfo', [address]);
     }
     /**
      * Gets a new Runebase address for receiving payments.

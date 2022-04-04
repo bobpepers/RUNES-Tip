@@ -6,7 +6,6 @@ import db from '../../models';
 
 // import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 // import { sendVerificationEmail } from '../helpers/email';
-// require('dotenv').config();
 
 config();
 

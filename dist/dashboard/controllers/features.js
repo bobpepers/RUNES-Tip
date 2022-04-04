@@ -29,52 +29,79 @@ var updateFeature = /*#__PURE__*/function () {
             console.log(fee);
             console.log('fee'); // Validate Fee
 
-            if (maxSampleSize % 1 !== 0) {
-              res.locals.error = "invalid number";
-              next();
+            if (!(maxSampleSize % 1 !== 0)) {
+              _context.next = 8;
+              break;
             }
 
-            if (maxSampleSize > 8000) {
-              res.locals.error = "Max Sample Size is 8000";
-              next();
+            res.locals.error = "invalid number";
+            return _context.abrupt("return", next());
+
+          case 8:
+            if (!(maxSampleSize > 8000)) {
+              _context.next = 11;
+              break;
             }
 
-            if (fee % 1 !== 0) {
-              res.locals.error = "invalid number";
-              next();
+            res.locals.error = "Max Sample Size is 8000";
+            return _context.abrupt("return", next());
+
+          case 11:
+            if (!(fee % 1 !== 0)) {
+              _context.next = 14;
+              break;
             }
 
-            if (fee < 0) {
-              res.locals.error = "minimum fee is 0.00%";
-              next();
+            res.locals.error = "invalid number";
+            return _context.abrupt("return", next());
+
+          case 14:
+            if (!(fee < 0)) {
+              _context.next = 17;
+              break;
             }
 
-            if (fee > 5000) {
-              res.locals.error = "maximum fee is 50%";
-              next();
-            } // validate Amount
+            res.locals.error = "minimum fee is 0.00%";
+            return _context.abrupt("return", next());
 
-
-            if (amount % 1 !== 0) {
-              res.locals.error = "invalid number";
-              next();
+          case 17:
+            if (!(fee > 5000)) {
+              _context.next = 20;
+              break;
             }
 
-            if (amount < 1e4) {
-              res.locals.error = "minimum amount is ".concat(1e4 / 1e8);
-              next();
+            res.locals.error = "maximum fee is 50%";
+            return _context.abrupt("return", next());
+
+          case 20:
+            if (!(amount % 1 !== 0)) {
+              _context.next = 23;
+              break;
             }
 
-            _context.next = 14;
+            res.locals.error = "invalid number";
+            return _context.abrupt("return", next());
+
+          case 23:
+            if (!(amount < 1e4)) {
+              _context.next = 26;
+              break;
+            }
+
+            res.locals.error = "minimum amount is ".concat(1e4 / 1e8);
+            return _context.abrupt("return", next());
+
+          case 26:
+            _context.next = 28;
             return _models["default"].features.findOne({
               where: {
                 id: req.body.id
               }
             });
 
-          case 14:
+          case 28:
             feature = _context.sent;
-            _context.next = 17;
+            _context.next = 31;
             return feature.update({
               min: amount,
               fee: fee,
@@ -83,9 +110,9 @@ var updateFeature = /*#__PURE__*/function () {
               enabled: req.body.enabled
             });
 
-          case 17:
+          case 31:
             updatedFeature = _context.sent;
-            _context.next = 20;
+            _context.next = 34;
             return _models["default"].features.findOne({
               where: {
                 id: updatedFeature.id
@@ -105,11 +132,11 @@ var updateFeature = /*#__PURE__*/function () {
               }]
             });
 
-          case 20:
+          case 34:
             res.locals.feature = _context.sent;
             next();
 
-          case 22:
+          case 36:
           case "end":
             return _context.stop();
         }
@@ -216,60 +243,122 @@ var addFeature = /*#__PURE__*/function () {
               type: 'local'
             };
 
-            if (!req.body.feature) {
-              res.locals.error = 'Feature is required';
-              next();
+            if (req.body.feature) {
+              _context4.next = 4;
+              break;
             }
 
-            if (!req.body.server) {
-              res.locals.error = 'Server is required';
-              next();
+            res.locals.error = 'Feature is required';
+            return _context4.abrupt("return", next());
+
+          case 4:
+            if (req.body.server) {
+              _context4.next = 7;
+              break;
             }
 
-            if (!req.body.min) {
-              res.locals.error = 'Minimum is required';
-              next();
+            res.locals.error = 'Server is required';
+            return _context4.abrupt("return", next());
+
+          case 7:
+            if (req.body.min) {
+              _context4.next = 10;
+              break;
             }
 
-            if (!req.body.fee) {
-              res.locals.error = 'Fee is required';
-              next();
+            res.locals.error = 'Minimum is required';
+            return _context4.abrupt("return", next());
+
+          case 10:
+            if (req.body.fee) {
+              _context4.next = 13;
+              break;
             }
 
-            if (!req.body.enabled) {
-              res.locals.error = 'Enable is required';
-              next();
+            res.locals.error = 'Fee is required';
+            return _context4.abrupt("return", next());
+
+          case 13:
+            if (req.body.enabled) {
+              _context4.next = 16;
+              break;
             }
 
+            res.locals.error = 'Enable is required';
+            return _context4.abrupt("return", next());
+
+          case 16:
             amount = new _bignumber["default"](req.body.min).times(1e8).toNumber();
             fee = new _bignumber["default"](req.body.fee).times(1e2).toNumber(); // Validate Fee
 
-            if (fee % 1 !== 0) {
-              res.locals.error = "invalid number";
-              next();
+            if (!(fee % 1 !== 0)) {
+              _context4.next = 21;
+              break;
             }
 
-            if (fee < 1) {
-              res.locals.error = "minimum fee is 0.01%";
-              next();
+            res.locals.error = "invalid number";
+            return _context4.abrupt("return", next());
+
+          case 21:
+            if (!(fee < 1)) {
+              _context4.next = 24;
+              break;
             }
 
-            if (fee > 200) {
-              res.locals.error = "maximum fee is 2%";
-              next();
-            } // Validate Amount
+            res.locals.error = "minimum fee is 0.01%";
+            return _context4.abrupt("return", next());
 
-
-            if (amount % 1 !== 0) {
-              res.locals.error = "invalid number";
-              next();
+          case 24:
+            if (!(req.body.feature === 'faucet')) {
+              _context4.next = 30;
+              break;
             }
 
-            if (amount < 1e4) {
-              res.locals.error = "minimum amount is ".concat(1e4 / 1e8);
-              next();
+            if (!(fee > 2500)) {
+              _context4.next = 28;
+              break;
             }
 
+            res.locals.error = "maximum fee for faucet is 25%";
+            return _context4.abrupt("return", next());
+
+          case 28:
+            _context4.next = 34;
+            break;
+
+          case 30:
+            if (!(req.body.feature !== 'faucet')) {
+              _context4.next = 34;
+              break;
+            }
+
+            if (!(fee > 200)) {
+              _context4.next = 34;
+              break;
+            }
+
+            res.locals.error = "maximum fee is 2%";
+            return _context4.abrupt("return", next());
+
+          case 34:
+            if (!(amount % 1 !== 0)) {
+              _context4.next = 37;
+              break;
+            }
+
+            res.locals.error = "invalid number";
+            return _context4.abrupt("return", next());
+
+          case 37:
+            if (!(amount < 1e4)) {
+              _context4.next = 40;
+              break;
+            }
+
+            res.locals.error = "minimum amount is ".concat(1e4 / 1e8);
+            return _context4.abrupt("return", next());
+
+          case 40:
             if (req.body.feature) {
               featureOptions.name = req.body.feature;
             }
@@ -286,23 +375,27 @@ var addFeature = /*#__PURE__*/function () {
               where: featureOptions,
               order: [['id', 'DESC']]
             };
-            _context4.next = 19;
+            _context4.next = 46;
             return _models["default"].features.findOne(options);
 
-          case 19:
+          case 46:
             feature = _context4.sent;
 
-            if (feature) {
-              res.locals.error = "Already Exists";
-              next();
-            }
-
-            if (feature) {
-              _context4.next = 29;
+            if (!feature) {
+              _context4.next = 50;
               break;
             }
 
-            _context4.next = 24;
+            res.locals.error = "Already Exists";
+            return _context4.abrupt("return", next());
+
+          case 50:
+            if (feature) {
+              _context4.next = 58;
+              break;
+            }
+
+            _context4.next = 53;
             return _models["default"].features.create({
               type: 'local',
               name: req.body.feature,
@@ -314,9 +407,9 @@ var addFeature = /*#__PURE__*/function () {
               enabled: req.body.enabled === 'enable'
             });
 
-          case 24:
+          case 53:
             newFeature = _context4.sent;
-            _context4.next = 27;
+            _context4.next = 56;
             return _models["default"].features.findOne({
               where: {
                 id: newFeature.id
@@ -336,15 +429,14 @@ var addFeature = /*#__PURE__*/function () {
               }]
             });
 
-          case 27:
+          case 56:
             res.locals.feature = _context4.sent;
-            // console.log(res.locals.feature);
-            next();
+            return _context4.abrupt("return", next());
 
-          case 29:
-            next();
+          case 58:
+            return _context4.abrupt("return", next());
 
-          case 30:
+          case 59:
           case "end":
             return _context4.stop();
         }

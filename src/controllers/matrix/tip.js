@@ -29,12 +29,10 @@ export const tipRunesToMatrixUser = async (
   isCurrentRoomDirectMessage,
 ) => {
   const activity = [];
-  let user;
   let AmountPosition = 1;
   let AmountPositionEnded = false;
   const usersToTip = [];
   let type = 'split';
-  let userActivity;
 
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -51,7 +49,7 @@ export const tipRunesToMatrixUser = async (
       return;
     }
 
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(
@@ -74,7 +72,7 @@ export const tipRunesToMatrixUser = async (
         const link = linkRx.exec(filteredMessage[parseInt(AmountPosition, 10)]);
         matrixId = link[1].split("/").pop();
       }
-
+      console.log('matrixId');
       console.log(matrixId);
       // eslint-disable-next-line no-await-in-loop
       const userExist = await db.user.findOne({
@@ -90,7 +88,7 @@ export const tipRunesToMatrixUser = async (
               {
                 model: db.address,
                 as: 'addresses',
-                required: true,
+                required: false,
               },
             ],
           },
@@ -98,6 +96,8 @@ export const tipRunesToMatrixUser = async (
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
+      console.log(userExist);
+      console.log('userExist');
       if (userExist) {
         const userIdTest = userExist.user_id.replace('matrix-', '');
         if (userIdTest !== message.sender.userId) {
@@ -111,6 +111,9 @@ export const tipRunesToMatrixUser = async (
         AmountPositionEnded = true;
       }
     }
+
+    console.log('userToTip');
+    console.log(usersToTip);
 
     if (usersToTip.length < 1) {
       await matrixClient.sendEvent(

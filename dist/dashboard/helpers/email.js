@@ -10,8 +10,10 @@ exports.sendVerificationEmail = sendVerificationEmail;
 
 var _nodemailer = _interopRequireDefault(require("nodemailer"));
 
+var _dotenv = require("dotenv");
+
 /* eslint-disable prefer-template */
-require('dotenv').config();
+(0, _dotenv.config)();
 
 var transporter = _nodemailer["default"].createTransport({
   host: process.env.MAIL_HOST,

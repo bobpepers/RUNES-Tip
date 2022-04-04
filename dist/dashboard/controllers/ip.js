@@ -15,13 +15,10 @@ var _sequelize = require("sequelize");
 
 var _models = _interopRequireDefault(require("../../models"));
 
-var crypto = require('crypto');
 /**
  *
  * Is IP Banned?
  */
-
-
 var isIpBanned = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
     var ip, banned;

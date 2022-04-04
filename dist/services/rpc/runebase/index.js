@@ -1,8 +1,6 @@
 "use strict";
 
-var Runebase = require('./runebase');
-
-var Utils = require('./utils'); // dont override global variable
+var Runebase = require('./runebase'); // dont override global variable
 
 
 if (typeof window !== 'undefined' && typeof window.Runebase === 'undefined') {
@@ -10,6 +8,5 @@ if (typeof window !== 'undefined' && typeof window.Runebase === 'undefined') {
 }
 
 module.exports = {
-  Runebase: Runebase,
-  Utils: Utils
+  Runebase: Runebase
 };

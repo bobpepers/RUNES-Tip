@@ -28,7 +28,7 @@ var _compression = _interopRequireDefault(require("compression"));
 
 var _nodeSchedule = _interopRequireDefault(require("node-schedule"));
 
-var _dotenv = _interopRequireDefault(require("dotenv"));
+var _dotenv = require("dotenv");
 
 var _passport = _interopRequireDefault(require("passport"));
 
@@ -44,7 +44,7 @@ var _expressSession = _interopRequireDefault(require("express-session"));
 
 var _cookieParser = _interopRequireDefault(require("cookie-parser"));
 
-var _redis = _interopRequireDefault(require("redis"));
+var _redis = require("redis");
 
 var _socket = _interopRequireDefault(require("socket.io"));
 
@@ -84,140 +84,135 @@ var _logger = _interopRequireDefault(require("./helpers/logger"));
 
 /* eslint-disable import/first */
 global.Olm = _olm["default"];
-var localStorage = new _nodeLocalstorage.LocalStorage('./scratch');
+(0, _dotenv.config)();
+(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
+  var localStorage, settings, queue, port, app, server, io, RedisStore, redisClient, sessionMiddleware, wrap, sockets, discordClient, telegramClient, matrixClient, matrixLoginCredentials, schedulePatchDeposits, _schedulePatchDeposits, _schedulePatchDeposits2, _schedulePatchDeposits3, scheduleUpdateConversionRatesFiat, scheduleUpdateConversionRatesCrypto, schedulePriceUpdate, scheduleWithdrawal;
 
-_dotenv["default"].config();
-
-var settings = (0, _settings["default"])();
-var queue = new _pQueue["default"]({
-  concurrency: 1,
-  timeout: 1000000000
-});
-var port = process.env.PORT || 8080;
-var app = (0, _express["default"])();
-
-var server = _http["default"].createServer(app);
-
-var io = (0, _socket["default"])(server, {
-  path: '/socket.io',
-  cookie: false
-});
-app.use((0, _compression["default"])());
-app.use((0, _morgan["default"])('combined'));
-app.use((0, _cors["default"])());
-app.set('trust proxy', 1);
-var RedisStore = (0, _connectRedis["default"])(_expressSession["default"]);
-var CONF = {
-  db: 3
-};
-
-var pub = _redis["default"].createClient(CONF);
-
-var sessionStore = new RedisStore({
-  client: pub
-});
-var sessionMiddleware = (0, _expressSession["default"])({
-  secret: process.env.SESSION_SECRET,
-  key: "connect.sid",
-  resave: false,
-  proxy: true,
-  saveUninitialized: false,
-  ephemeral: false,
-  store: sessionStore,
-  cookie: {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'strict'
-  }
-});
-app.use((0, _cookieParser["default"])());
-app.use(_bodyParser["default"].urlencoded({
-  extended: false,
-  limit: '5mb'
-}));
-app.use(_bodyParser["default"].json());
-app.use(sessionMiddleware);
-app.use(_passport["default"].initialize());
-app.use(_passport["default"].session());
-
-var wrap = function wrap(middleware) {
-  return function (socket, next) {
-    return middleware(socket.request, {}, next);
-  };
-};
-
-io.use(wrap(sessionMiddleware));
-io.use(wrap(_passport["default"].initialize()));
-io.use(wrap(_passport["default"].session()));
-var sockets = {};
-io.on("connection", /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(socket) {
-    var userId;
-    return _regenerator["default"].wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            userId = socket.request.session.passport ? socket.request.session.passport.user : '';
-
-            if (socket.request.user && (socket.request.user.role === 4 || socket.request.user.role === 8)) {
-              socket.join('admin');
-              sockets[parseInt(userId, 10)] = socket;
-            } // console.log(Object.keys(sockets).length);
-
-
-            socket.on("disconnect", function () {
-              delete sockets[parseInt(userId, 10)];
-            });
-
-          case 3:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee);
-  }));
-
-  return function (_x) {
-    return _ref.apply(this, arguments);
-  };
-}());
-var discordClient = new _discord.Client({
-  intents: [_discord.Intents.FLAGS.GUILDS, _discord.Intents.FLAGS.GUILD_MEMBERS, _discord.Intents.FLAGS.GUILD_PRESENCES, _discord.Intents.FLAGS.GUILD_MESSAGES, _discord.Intents.FLAGS.DIRECT_MESSAGES, _discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, _discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, _discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, _discord.Intents.FLAGS.GUILD_VOICE_STATES],
-  partials: ['MESSAGE', 'CHANNEL', 'REACTION'] // makeCache: Options.cacheWithLimits({
-  //  GuildEmoji: 5000, // This is default
-  // }),
-
-});
-var telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN);
-
-var matrixClient = _matrixJsSdk["default"].createClient({
-  baseUrl: "https://matrix.org"
-});
-
-(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
-  var matrixLoginCredentials, schedulePatchDeposits, _schedulePatchDeposits, _schedulePatchDeposits2, _schedulePatchDeposits3;
-
-  return _regenerator["default"].wrap(function _callee2$(_context2) {
+  return _regenerator["default"].wrap(function _callee3$(_context3) {
     while (1) {
-      switch (_context2.prev = _context2.next) {
+      switch (_context3.prev = _context3.next) {
         case 0:
-          _context2.next = 2;
+          localStorage = new _nodeLocalstorage.LocalStorage('./scratch');
+          settings = (0, _settings["default"])();
+          queue = new _pQueue["default"]({
+            concurrency: 1,
+            timeout: 1000000000
+          });
+          port = process.env.PORT || 8080;
+          app = (0, _express["default"])();
+          server = _http["default"].createServer(app);
+          io = (0, _socket["default"])(server, {
+            path: '/socket.io',
+            cookie: false
+          });
+          app.use((0, _compression["default"])());
+          app.use((0, _morgan["default"])('combined'));
+          app.use((0, _cors["default"])());
+          app.set('trust proxy', 1);
+          RedisStore = (0, _connectRedis["default"])(_expressSession["default"]);
+          redisClient = (0, _redis.createClient)({
+            database: 3,
+            legacyMode: true
+          });
+          _context3.next = 15;
+          return redisClient.connect();
+
+        case 15:
+          sessionMiddleware = (0, _expressSession["default"])({
+            secret: process.env.SESSION_SECRET,
+            key: "connect.sid",
+            resave: false,
+            proxy: true,
+            saveUninitialized: false,
+            ephemeral: false,
+            store: new RedisStore({
+              client: redisClient
+            }),
+            cookie: {
+              httpOnly: true,
+              secure: true,
+              sameSite: 'strict'
+            }
+          });
+          app.use((0, _cookieParser["default"])());
+          app.use(_bodyParser["default"].urlencoded({
+            extended: false,
+            limit: '5mb'
+          }));
+          app.use(_bodyParser["default"].json());
+          app.use(sessionMiddleware);
+          app.use(_passport["default"].initialize());
+          app.use(_passport["default"].session());
+
+          wrap = function wrap(middleware) {
+            return function (socket, next) {
+              return middleware(socket.request, {}, next);
+            };
+          };
+
+          io.use(wrap(sessionMiddleware));
+          io.use(wrap(_passport["default"].initialize()));
+          io.use(wrap(_passport["default"].session()));
+          sockets = {};
+          io.on("connection", /*#__PURE__*/function () {
+            var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(socket) {
+              var userId;
+              return _regenerator["default"].wrap(function _callee$(_context) {
+                while (1) {
+                  switch (_context.prev = _context.next) {
+                    case 0:
+                      userId = socket.request.session.passport ? socket.request.session.passport.user : '';
+
+                      if (socket.request.user && (socket.request.user.role === 4 || socket.request.user.role === 8)) {
+                        socket.join('admin');
+                        sockets[parseInt(userId, 10)] = socket;
+                      } // console.log(Object.keys(sockets).length);
+
+
+                      socket.on("disconnect", function () {
+                        delete sockets[parseInt(userId, 10)];
+                      });
+
+                    case 3:
+                    case "end":
+                      return _context.stop();
+                  }
+                }
+              }, _callee);
+            }));
+
+            return function (_x) {
+              return _ref2.apply(this, arguments);
+            };
+          }());
+          discordClient = new _discord.Client({
+            intents: [_discord.Intents.FLAGS.GUILDS, _discord.Intents.FLAGS.GUILD_MEMBERS, _discord.Intents.FLAGS.GUILD_PRESENCES, _discord.Intents.FLAGS.GUILD_MESSAGES, _discord.Intents.FLAGS.DIRECT_MESSAGES, _discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, _discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, _discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, _discord.Intents.FLAGS.GUILD_VOICE_STATES],
+            partials: ['MESSAGE', 'CHANNEL', 'REACTION'] // makeCache: Options.cacheWithLimits({
+            //  GuildEmoji: 5000, // This is default
+            // }),
+
+          });
+          telegramClient = new _telegraf.Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+          matrixClient = _matrixJsSdk["default"].createClient({
+            baseUrl: "https://matrix.org"
+          });
+          _context3.next = 33;
           return telegramClient.launch();
 
-        case 2:
-          _context2.next = 4;
+        case 33:
+          _context3.next = 35;
           return discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
 
-        case 4:
-          _context2.prev = 4;
-          _context2.next = 7;
+        case 35:
+          _context3.prev = 35;
+          _context3.next = 38;
           return matrixClient.login("m.login.password", {
             user: process.env.MATRIX_USER,
             password: process.env.MATRIX_PASS
           });
 
-        case 7:
-          matrixLoginCredentials = _context2.sent;
+        case 38:
+          matrixLoginCredentials = _context3.sent;
           matrixClient = _matrixJsSdk["default"].createClient({
             baseUrl: "https://matrix.org",
             accessToken: matrixLoginCredentials.access_token,
@@ -227,160 +222,153 @@ var matrixClient = _matrixJsSdk["default"].createClient({
             deviceId: matrixLoginCredentials.device_id,
             timelineSupport: true
           });
-          _context2.next = 14;
+          _context3.next = 45;
           break;
 
-        case 11:
-          _context2.prev = 11;
-          _context2.t0 = _context2["catch"](4);
-          console.log(_context2.t0);
+        case 42:
+          _context3.prev = 42;
+          _context3.t0 = _context3["catch"](35);
+          console.log(_context3.t0);
 
-        case 14:
-          _context2.next = 16;
+        case 45:
+          _context3.next = 47;
           return (0, _initDatabaseRecords.initDatabaseRecords)(discordClient, telegramClient, matrixClient);
 
-        case 16:
-          _context2.next = 18;
+        case 47:
+          _context3.next = 49;
           return (0, _recover.recoverDiscordReactdrops)(discordClient, io, queue);
 
-        case 18:
-          _context2.next = 20;
+        case 49:
+          _context3.next = 51;
           return (0, _recover.recoverDiscordTrivia)(discordClient, io, queue);
 
-        case 20:
+        case 51:
           if (!(settings.coin.setting === 'Runebase')) {
-            _context2.next = 28;
+            _context3.next = 59;
             break;
           }
 
-          _context2.next = 23;
+          _context3.next = 54;
           return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, matrixClient, queue);
 
-        case 23:
-          _context2.next = 25;
+        case 54:
+          _context3.next = 56;
           return (0, _patcher.patchRunebaseDeposits)();
 
-        case 25:
+        case 56:
           schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher.patchRunebaseDeposits)();
           });
-          _context2.next = 49;
+          _context3.next = 80;
           break;
 
-        case 28:
+        case 59:
           if (!(settings.coin.setting === 'Pirate')) {
-            _context2.next = 36;
+            _context3.next = 67;
             break;
           }
 
-          _context2.next = 31;
+          _context3.next = 62;
           return (0, _syncPirate.startPirateSync)(discordClient, telegramClient, matrixClient, queue);
 
-        case 31:
-          _context2.next = 33;
+        case 62:
+          _context3.next = 64;
           return (0, _patcher2.patchPirateDeposits)();
 
-        case 33:
+        case 64:
           _schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher2.patchPirateDeposits)();
           });
-          _context2.next = 49;
+          _context3.next = 80;
           break;
 
-        case 36:
+        case 67:
           if (!(settings.coin.setting === 'Komodo')) {
-            _context2.next = 44;
+            _context3.next = 75;
             break;
           }
 
-          _context2.next = 39;
+          _context3.next = 70;
           return (0, _syncKomodo.startKomodoSync)(discordClient, telegramClient, matrixClient, queue);
 
-        case 39:
-          _context2.next = 41;
+        case 70:
+          _context3.next = 72;
           return (0, _patcher3.patchKomodoDeposits)();
 
-        case 41:
+        case 72:
           _schedulePatchDeposits2 = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher3.patchKomodoDeposits)();
           });
-          _context2.next = 49;
+          _context3.next = 80;
           break;
 
-        case 44:
-          _context2.next = 46;
+        case 75:
+          _context3.next = 77;
           return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, matrixClient, queue);
 
-        case 46:
-          _context2.next = 48;
+        case 77:
+          _context3.next = 79;
           return (0, _patcher.patchRunebaseDeposits)();
 
-        case 48:
+        case 79:
           _schedulePatchDeposits3 = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher.patchRunebaseDeposits)();
           });
 
-        case 49:
+        case 80:
           (0, _router.router)(app, discordClient, telegramClient, matrixClient, io, settings, queue);
           (0, _router2.dashboardRouter)(app, io, discordClient, telegramClient, matrixClient);
+          scheduleUpdateConversionRatesFiat = _nodeSchedule["default"].scheduleJob('0 */8 * * *', function () {
+            // Update Fiat conversion rates every 8 hours
+            (0, _updateConversionRates.updateConversionRatesFiat)();
+          });
+          (0, _updateConversionRates.updateConversionRatesCrypto)();
+          scheduleUpdateConversionRatesCrypto = _nodeSchedule["default"].scheduleJob('*/10 * * * *', function () {
+            // Update price every 10 minutes
+            (0, _updateConversionRates.updateConversionRatesCrypto)();
+          });
+          (0, _updatePrice.updatePrice)();
+          schedulePriceUpdate = _nodeSchedule["default"].scheduleJob('*/5 * * * *', function () {
+            // Update price every 5 minutes
+            (0, _updatePrice.updatePrice)();
+          });
+          scheduleWithdrawal = _nodeSchedule["default"].scheduleJob('*/8 * * * *', /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
+            var autoWithdrawalSetting;
+            return _regenerator["default"].wrap(function _callee2$(_context2) {
+              while (1) {
+                switch (_context2.prev = _context2.next) {
+                  case 0:
+                    _context2.next = 2;
+                    return _models["default"].features.findOne({
+                      where: {
+                        name: 'autoWithdrawal'
+                      }
+                    });
+
+                  case 2:
+                    autoWithdrawalSetting = _context2.sent;
+
+                    if (autoWithdrawalSetting.enabled) {
+                      (0, _processWithdrawals.processWithdrawals)(telegramClient, discordClient, matrixClient);
+                    }
+
+                  case 4:
+                  case "end":
+                    return _context2.stop();
+                }
+              }
+            }, _callee2);
+          })));
           server.listen(port);
           console.log('server listening on:', port);
 
-        case 53:
-        case "end":
-          return _context2.stop();
-      }
-    }
-  }, _callee2, null, [[4, 11]]);
-}))();
-
-var scheduleUpdateConversionRatesFiat = _nodeSchedule["default"].scheduleJob('0 */8 * * *', function () {
-  // Update Fiat conversion rates every 8 hours
-  (0, _updateConversionRates.updateConversionRatesFiat)();
-});
-
-(0, _updateConversionRates.updateConversionRatesCrypto)();
-
-var scheduleUpdateConversionRatesCrypto = _nodeSchedule["default"].scheduleJob('*/10 * * * *', function () {
-  // Update price every 10 minutes
-  (0, _updateConversionRates.updateConversionRatesCrypto)();
-});
-
-(0, _updatePrice.updatePrice)();
-
-var schedulePriceUpdate = _nodeSchedule["default"].scheduleJob('*/5 * * * *', function () {
-  // Update price every 5 minutes
-  (0, _updatePrice.updatePrice)();
-});
-
-var scheduleWithdrawal = _nodeSchedule["default"].scheduleJob('*/8 * * * *', /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
-  var autoWithdrawalSetting;
-  return _regenerator["default"].wrap(function _callee3$(_context3) {
-    while (1) {
-      switch (_context3.prev = _context3.next) {
-        case 0:
-          _context3.next = 2;
-          return _models["default"].features.findOne({
-            where: {
-              name: 'autoWithdrawal'
-            }
-          });
-
-        case 2:
-          autoWithdrawalSetting = _context3.sent;
-
-          if (autoWithdrawalSetting.enabled) {
-            (0, _processWithdrawals.processWithdrawals)(telegramClient, discordClient, matrixClient);
-          }
-
-        case 4:
+        case 90:
         case "end":
           return _context3.stop();
       }
     }
-  }, _callee3);
-})));
-
+  }, _callee3, null, [[35, 42]]);
+}))();
 process.on('unhandledRejection', /*#__PURE__*/function () {
   var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(err, p) {
     return _regenerator["default"].wrap(function _callee4$(_context4) {

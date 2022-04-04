@@ -13,6 +13,8 @@ var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/de
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _sequelize = require("sequelize");
+
 var _models = _interopRequireDefault(require("../../models"));
 
 var _patcher = require("../../helpers/blockchain/pirate/patcher");
@@ -25,9 +27,6 @@ var _settings = _interopRequireDefault(require("../../config/settings"));
 
 // import { parseDomain } from "parse-domain";
 var settings = (0, _settings["default"])();
-
-var _require = require('sequelize'),
-    Op = _require.Op;
 
 var patchDeposits = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
@@ -109,23 +108,23 @@ var fetchDeposits = /*#__PURE__*/function () {
             userOptions = {};
 
             if (req.body.id !== '') {
-              transactionOptions.id = (0, _defineProperty2["default"])({}, Op.like, "%".concat(Number(req.body.id), "%"));
+              transactionOptions.id = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(Number(req.body.id), "%"));
             }
 
             if (req.body.txId !== '') {
-              transactionOptions.txid = (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.txId, "%"));
+              transactionOptions.txid = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.txId, "%"));
             }
 
             if (req.body.from !== '') {
-              transactionOptions.to_from = (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.from, "%"));
+              transactionOptions.to_from = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.from, "%"));
             }
 
             if (req.body.userId !== '') {
-              userOptions.user_id = (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.userId, "%"));
+              userOptions.user_id = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.userId, "%"));
             }
 
             if (req.body.username !== '') {
-              userOptions.username = (0, _defineProperty2["default"])({}, Op.like, "%".concat(req.body.username, "%"));
+              userOptions.username = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.username, "%"));
             }
 
             options = {

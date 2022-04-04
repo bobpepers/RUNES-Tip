@@ -24,7 +24,6 @@ var _generate = require("../helpers/generate");
 var _timingSafeEqual = _interopRequireDefault(require("../helpers/timingSafeEqual"));
 
 /**
- *
  * Is Dashboard User Banned?
  */
 var isDashboardUserBanned = /*#__PURE__*/function () {
@@ -57,7 +56,6 @@ var isDashboardUserBanned = /*#__PURE__*/function () {
   };
 }();
 /**
- *
  * Sign in
  */
 
@@ -201,41 +199,39 @@ exports.signin = signin;
 
 var destroySession = /*#__PURE__*/function () {
   var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(req, res, next) {
-    var activity;
     return _regenerator["default"].wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            _context4.next = 2;
-            return _models["default"].activity.create({
-              earnerId: req.user.id,
-              type: 'logout',
-              ipId: res.locals.ip[0].id
-            });
-
-          case 2:
-            activity = _context4.sent;
-            _context4.next = 5;
-            return _models["default"].activity.findOne({
-              where: {
-                id: activity.id
-              },
-              attributes: ['createdAt', 'type'],
-              include: [{
-                model: _models["default"].user,
-                as: 'earner',
-                required: false,
-                attributes: ['username']
-              }]
-            });
-
-          case 5:
-            res.locals.activity = _context4.sent;
+            // const activity = await db.activity.create(
+            //   {
+            //     earnerId: req.user.id,
+            //     type: 'logout',
+            //     ipId: res.locals.ip[0].id,
+            //   },
+            // );
+            // res.locals.activity = await db.activity.findOne({
+            //   where: {
+            //     id: activity.id,
+            //   },
+            //   attributes: [
+            //     'createdAt',
+            //     'type',
+            //   ],
+            //   include: [
+            //     {
+            //       model: db.user,
+            //       as: 'earner',
+            //       required: false,
+            //       attributes: ['username'],
+            //     },
+            //   ],
+            // });
             req.logOut();
             req.session.destroy();
             next();
 
-          case 9:
+          case 3:
           case "end":
             return _context4.stop();
         }

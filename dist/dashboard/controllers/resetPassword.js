@@ -15,6 +15,8 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _bcryptNodejs = _interopRequireDefault(require("bcrypt-nodejs"));
 
+var _sequelize = require("sequelize");
+
 var _email = require("../helpers/email");
 
 var _generate = require("../helpers/generate");
@@ -24,15 +26,10 @@ var _timingSafeEqual = _interopRequireDefault(require("../helpers/timingSafeEqua
 var _models = _interopRequireDefault(require("../../models"));
 
 // import { tokenForUser } from '../helpers/token';
-var _require = require('sequelize'),
-    Sequelize = _require.Sequelize,
-    Transaction = _require.Transaction,
-    Op = _require.Op;
+
 /**
  * Reset password
  */
-
-
 var resetPassword = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
     var email, user, verificationToken, updatedUser;
@@ -46,7 +43,7 @@ var resetPassword = /*#__PURE__*/function () {
             email = req.body.email;
             _context.next = 6;
             return _models["default"].dashboardUser.findOne({
-              where: (0, _defineProperty2["default"])({}, Op.or, [{
+              where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
                 email: email
               }])
             });
@@ -127,7 +124,7 @@ var verifyResetPassword = /*#__PURE__*/function () {
             _req$body = req.body, email = _req$body.email, token = _req$body.token;
             _context2.next = 4;
             return _models["default"].dashboardUser.findOne({
-              where: (0, _defineProperty2["default"])({}, Op.or, [{
+              where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
                 email: email
               }])
             });
@@ -220,7 +217,7 @@ var resetPasswordNew = /*#__PURE__*/function () {
             _req$body2 = req.body, email = _req$body2.email, newpassword = _req$body2.newpassword, token = _req$body2.token;
             _context3.next = 4;
             return _models["default"].dashboardUser.findOne({
-              where: (0, _defineProperty2["default"])({}, Op.or, [{
+              where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
                 email: email
               }])
             });

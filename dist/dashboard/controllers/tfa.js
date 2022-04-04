@@ -2,6 +2,8 @@
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
+var _typeof = require("@babel/runtime/helpers/typeof");
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -11,13 +13,21 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var OTPAuth = _interopRequireWildcard(require("otpauth"));
+
 var _models = _interopRequireDefault(require("../../models"));
 
-var speakeasy = require('speakeasy');
+var _settings = _interopRequireDefault(require("../../config/settings"));
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+var settings = (0, _settings["default"])();
 
 var disabletfa = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
-    var user, verified;
+    var user, totp, verified, updatedUser;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -31,31 +41,42 @@ var disabletfa = /*#__PURE__*/function () {
 
           case 2:
             user = _context.sent;
-            verified = speakeasy.totp.verify({
-              secret: user.tfa_secret,
-              encoding: 'base32',
-              token: req.body.tfa
+            totp = new OTPAuth.TOTP({
+              issuer: settings.coin.name,
+              label: settings.bot.name,
+              algorithm: 'SHA1',
+              digits: 6,
+              period: 30,
+              secret: user.tfa_secret // or "OTPAuth.Secret.fromBase32(user.tfa_secret)"
+
+            });
+            verified = totp.validate({
+              token: req.body.tfa,
+              window: 1
             });
 
-            if (!(verified && user && user.tfa === true)) {
-              _context.next = 7;
+            if (!(verified === 0 && user && user.tfa === true)) {
+              _context.next = 12;
               break;
             }
 
-            _context.next = 7;
+            _context.next = 8;
             return user.update({
               tfa: false,
               tfa_secret: ''
-            }).then(function (result) {
-              res.json({
-                data: result.tfa
-              });
             });
 
-          case 7:
-            next();
-
           case 8:
+            updatedUser = _context.sent;
+            res.locals.tfa = updatedUser.tfa;
+            res.locals.success = true;
+            return _context.abrupt("return", next());
+
+          case 12:
+            res.locals.error = 'Wrong TFA Number';
+            return _context.abrupt("return", next());
+
+          case 14:
           case "end":
             return _context.stop();
         }
@@ -72,17 +93,23 @@ exports.disabletfa = disabletfa;
 
 var enabletfa = /*#__PURE__*/function () {
   var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(req, res, next) {
-    var verified, user;
+    var totp, verified, user, updatedUser;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            // Use verify() to check the token against the secret
-            console.log(req);
-            verified = speakeasy.totp.verify({
-              secret: req.body.secret,
-              encoding: 'base32',
-              token: req.body.tfa
+            totp = new OTPAuth.TOTP({
+              issuer: settings.coin.name,
+              label: settings.bot.name,
+              algorithm: 'SHA1',
+              digits: 6,
+              period: 30,
+              secret: req.body.secret // or "OTPAuth.Secret.fromBase32(user.tfa_secret)"
+
+            });
+            verified = totp.validate({
+              token: req.body.tfa,
+              window: 1
             });
             _context2.next = 4;
             return _models["default"].dashboardUser.findOne({
@@ -94,37 +121,44 @@ var enabletfa = /*#__PURE__*/function () {
           case 4:
             user = _context2.sent;
 
-            if (!verified && user) {
-              console.log('invalid token or secret');
-              res.status(400).send(new Error('Invalid token or secret'));
+            if (!(verified !== 0 && user)) {
+              _context2.next = 8;
+              break;
             }
 
-            if (verified && !user) {
-              res.status(400).send(new Error('User does not exist'));
-            }
+            res.locals.error = 'Invalid token or secret';
+            return _context2.abrupt("return", next());
 
-            if (!(verified && user && user.tfa === false)) {
+          case 8:
+            if (!(verified === 0 && !user)) {
               _context2.next = 11;
               break;
             }
 
-            _context2.next = 10;
+            res.locals.error = 'User does not exist';
+            return _context2.abrupt("return", next());
+
+          case 11:
+            if (!(verified === 0 && user && user.tfa === false)) {
+              _context2.next = 17;
+              break;
+            }
+
+            _context2.next = 14;
             return user.update({
               tfa: true,
               tfa_secret: req.body.secret
-            }).then(function (result) {
-              res.json({
-                data: result.tfa
-              });
             });
 
-          case 10:
-            console.log('insert into db');
+          case 14:
+            updatedUser = _context2.sent;
+            res.locals.tfa = updatedUser.tfa;
+            return _context2.abrupt("return", next());
 
-          case 11:
+          case 17:
             next();
 
-          case 12:
+          case 18:
           case "end":
             return _context2.stop();
         }
@@ -140,10 +174,7 @@ var enabletfa = /*#__PURE__*/function () {
 exports.enabletfa = enabletfa;
 
 var ensuretfa = function ensuretfa(req, res, next) {
-  console.log(req.session.tfa);
-
   if (req.session.tfa === true) {
-    console.log('ensuretfa');
     res.json({
       success: true,
       tfaLocked: true
@@ -151,7 +182,6 @@ var ensuretfa = function ensuretfa(req, res, next) {
   }
 
   if (req.session.tfa === false) {
-    console.log('we can pass');
     next();
   }
 };
@@ -159,8 +189,7 @@ var ensuretfa = function ensuretfa(req, res, next) {
 exports.ensuretfa = ensuretfa;
 
 var istfa = function istfa(req, res, next) {
-  console.log(req.session.tfa);
-
+  // console.log(req.session.tfa);
   if (req.session.tfa === true) {
     console.log('TFA IS LOCKED');
     res.json({
@@ -181,26 +210,30 @@ var istfa = function istfa(req, res, next) {
 exports.istfa = istfa;
 
 var unlocktfa = function unlocktfa(req, res, next) {
-  var verified = speakeasy.totp.verify({
-    secret: req.user.tfa_secret,
-    encoding: 'base32',
-    token: req.body.tfa
-  });
-  console.log(verified);
+  var totp = new OTPAuth.TOTP({
+    issuer: settings.coin.name,
+    label: settings.bot.name,
+    algorithm: 'SHA1',
+    digits: 6,
+    period: 30,
+    secret: req.user.tfa_secret // or "OTPAuth.Secret.fromBase32(user.tfa_secret)"
 
-  if (verified) {
+  });
+  var verified = totp.validate({
+    token: req.body.tfa,
+    window: 1
+  });
+
+  if (verified === 0) {
     req.session.tfa = false;
     console.log(req.session);
-    console.log('great');
-    res.json({
-      success: true,
-      tfaLocked: false
-    });
+    res.locals.success = true;
+    return next();
   }
 
   if (!verified) {
-    console.log('not verifided');
-    res.status(400).send(new Error('Unable to verify'));
+    res.locals.error = 'Wrong TFA Number';
+    return next();
   }
 };
 

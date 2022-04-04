@@ -62,7 +62,6 @@ var _tfa = require("./controllers/tfa");
 var _user = require("./controllers/user");
 
 // import storeIp from './helpers/storeIp';
-// const requireAuth = passport.authenticate('jwt', { session: true, failWithError: true });
 var requireSignin = _passport["default"].authenticate('local', {
   session: true,
   failWithError: true
@@ -70,9 +69,10 @@ var requireSignin = _passport["default"].authenticate('local', {
 
 var IsAuthenticated = function IsAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
-    console.log('isauthenticated');
+    console.log('isauthenticated passed');
     next();
   } else {
+    console.log('isAuthenticated not passed');
     res.status(401).send({
       error: 'Unauthorized'
     });
@@ -406,6 +406,8 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
     console.log('after fetchblocknumber');
 
     if (res.locals.blockNumberNode && res.locals.blockNumberDb) {
+      console.log('res.locals.blockNumberNode');
+      console.log(res.locals.blockNumberNode);
       res.json({
         blockNumber: {
           node: res.locals.blockNumberNode,
@@ -624,13 +626,13 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       res.status(401).send({
         error: 'LOGIN_ERROR'
       });
+    } else {
+      res.json({
+        username: req.user.username
+      });
     } // console.log('Login Successful');
     // console.log(req.user.username);
 
-
-    res.json({
-      username: req.user.username
-    });
   });
   app.post('/api/reset-password', _recaptcha.verifyMyCaptcha, _resetPassword.resetPassword, function (req, res) {
     console.log(res.locals.error);
@@ -680,15 +682,52 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
   });
   app.post('/api/2fa/enable', IsAuthenticated, _auth.isDashboardUserBanned, // storeIp,
   _tfa.ensuretfa, // updateLastSeen,
-  _tfa.enabletfa);
+  _tfa.enabletfa, function (req, res) {
+    if (res.locals.error) {
+      res.status(401).send({
+        error: res.locals.error
+      });
+    }
+
+    if (res.locals.tfa) {
+      res.json({
+        data: res.locals.tfa
+      });
+    }
+  });
   app.post('/api/2fa/disable', IsAuthenticated, // storeIp,
   _tfa.ensuretfa, // updateLastSeen,
-  _tfa.disabletfa);
+  _tfa.disabletfa, function (req, res) {
+    if (res.locals.error) {
+      res.status(401).send({
+        error: res.locals.error
+      });
+    }
+
+    if (res.locals.success) {
+      res.json({
+        data: res.locals.tfa
+      });
+    }
+  });
   app.post('/api/2fa/unlock', IsAuthenticated, _auth.isDashboardUserBanned, // storeIp,
-  _tfa.unlocktfa);
+  _tfa.unlocktfa, function (req, res) {
+    if (res.locals.error) {
+      res.status(401).send({
+        error: res.locals.error
+      });
+    }
+
+    if (res.locals.success) {
+      res.json({
+        success: true,
+        tfaLocked: false
+      });
+    }
+  });
   app.get('/api/logout', _ip.insertIp, // storeIp,
   _auth.destroySession, function (req, res) {
-    io.emit('Activity', res.locals.activity);
+    // io.emit('Activity', res.locals.activity);
     res.redirect("/");
   });
 };

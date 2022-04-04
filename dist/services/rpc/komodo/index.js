@@ -1,8 +1,6 @@
 "use strict";
 
-var Komodo = require('./komodo');
-
-var Utils = require('./utils'); // dont override global variable
+var Komodo = require('./komodo'); // dont override global variable
 
 
 if (typeof window !== 'undefined' && typeof window.Komodo === 'undefined') {
@@ -10,6 +8,5 @@ if (typeof window !== 'undefined' && typeof window.Komodo === 'undefined') {
 }
 
 module.exports = {
-  Komodo: Komodo,
-  Utils: Utils
+  Komodo: Komodo
 };

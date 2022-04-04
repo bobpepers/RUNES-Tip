@@ -1,26 +1,33 @@
 "use strict";
 
-require('dotenv').config();
+var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
 
-var Bluebird = require('bluebird');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.verifyMyCaptcha = void 0;
 
-var _require = require('recaptcha-v2'),
-    Recaptcha = _require.Recaptcha;
+var _dotenv = require("dotenv");
+
+var _recaptchaV = require("recaptcha-v2");
+
+var _bluebird = _interopRequireDefault(require("bluebird"));
+
+(0, _dotenv.config)();
 /**
    * Verify ReCaptcha
    * @param {Object} recaptchaData
    * @returns {Promise}
    */
 
-
 var verifyRecaptcha = function verifyRecaptcha(recaptchaData) {
   if (process.env.RECAPTCHA_SKIP_ENABLED === 'true') {
     // For development purpose only, you need to add SKIP_ENABLED in .env
-    return Bluebird.resolve();
+    return _bluebird["default"].resolve();
   }
 
-  return new Bluebird(function (resolve, reject) {
-    var recaptcha = new Recaptcha(process.env.RECAPTCHA_SITE_KEY, process.env.RECAPTCHA_SECRET_KEY, recaptchaData);
+  return new _bluebird["default"](function (resolve, reject) {
+    var recaptcha = new _recaptchaV.Recaptcha(process.env.RECAPTCHA_SITE_KEY, process.env.RECAPTCHA_SECRET_KEY, recaptchaData);
     recaptcha.verify(function (success) {
       if (success) {
         console.log('successful');
@@ -39,7 +46,7 @@ var verifyRecaptcha = function verifyRecaptcha(recaptchaData) {
    */
 
 
-exports.verifyMyCaptcha = function (req, res, next) {
+var verifyMyCaptcha = function verifyMyCaptcha(req, res, next) {
   var captchaResponse = req.body.captchaResponse;
 
   if (!captchaResponse) {
@@ -64,3 +71,5 @@ exports.verifyMyCaptcha = function (req, res, next) {
     console.log(error);
   });
 };
+
+exports.verifyMyCaptcha = verifyMyCaptcha;

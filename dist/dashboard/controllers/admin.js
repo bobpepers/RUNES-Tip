@@ -19,24 +19,7 @@ var _sequelize = require("sequelize");
 
 var _models = _interopRequireDefault(require("../../models"));
 
-var _require = require('../../services/rclient'),
-    getInstance = _require.getInstance;
-
-require('dotenv').config();
-
-var transporter = _nodemailer["default"].createTransport({
-  host: process.env.MAIL_HOST,
-  port: process.env.MAIL_PORT,
-  secure: false,
-  // use SSL
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS
-  },
-  tls: {
-    requireTLS: true
-  }
-});
+var _rclient = require("../../services/rclient");
 
 var fetchAdminLiability = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
@@ -128,7 +111,7 @@ var fetchAdminNodeBalance = /*#__PURE__*/function () {
           case 0:
             _context2.prev = 0;
             _context2.next = 3;
-            return getInstance().getWalletInfo();
+            return (0, _rclient.getInstance)().getWalletInfo();
 
           case 3:
             response = _context2.sent;
