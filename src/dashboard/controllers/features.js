@@ -15,33 +15,33 @@ export const updateFeature = async (
   // Validate Fee
   if (maxSampleSize % 1 !== 0) {
     res.locals.error = "invalid number";
-    next();
+    return next();
   }
   if (maxSampleSize > 8000) {
     res.locals.error = "Max Sample Size is 8000";
-    next();
+    return next();
   }
   if (fee % 1 !== 0) {
     res.locals.error = "invalid number";
-    next();
+    return next();
   }
   if (fee < 0) {
     res.locals.error = "minimum fee is 0.00%";
-    next();
+    return next();
   }
   if (fee > 5000) {
     res.locals.error = "maximum fee is 50%";
-    next();
+    return next();
   }
 
   // validate Amount
   if (amount % 1 !== 0) {
     res.locals.error = "invalid number";
-    next();
+    return next();
   }
   if (amount < 1e4) {
     res.locals.error = `minimum amount is ${1e4 / 1e8}`;
-    next();
+    return next();
   }
   const feature = await db.features.findOne({
     where: {
@@ -137,47 +137,55 @@ export const addFeature = async (
   };
   if (!req.body.feature) {
     res.locals.error = 'Feature is required';
-    next();
+    return next();
   }
   if (!req.body.server) {
     res.locals.error = 'Server is required';
-    next();
+    return next();
   }
   if (!req.body.min) {
     res.locals.error = 'Minimum is required';
-    next();
+    return next();
   }
   if (!req.body.fee) {
     res.locals.error = 'Fee is required';
-    next();
+    return next();
   }
   if (!req.body.enabled) {
     res.locals.error = 'Enable is required';
-    next();
+    return next();
   }
   const amount = new BigNumber(req.body.min).times(1e8).toNumber();
   const fee = new BigNumber(req.body.fee).times(1e2).toNumber();
   // Validate Fee
   if (fee % 1 !== 0) {
     res.locals.error = "invalid number";
-    next();
+    return next();
   }
   if (fee < 1) {
     res.locals.error = "minimum fee is 0.01%";
-    next();
+    return next();
   }
-  if (fee > 200) {
-    res.locals.error = "maximum fee is 2%";
-    next();
+  if (req.body.feature === 'faucet') {
+    if (fee > 2500) {
+      res.locals.error = "maximum fee for faucet is 25%";
+      return next();
+    }
+  } else if (req.body.feature !== 'faucet') {
+    if (fee > 200) {
+      res.locals.error = "maximum fee is 2%";
+      return next();
+    }
   }
+
   // Validate Amount
   if (amount % 1 !== 0) {
     res.locals.error = "invalid number";
-    next();
+    return next();
   }
   if (amount < 1e4) {
     res.locals.error = `minimum amount is ${1e4 / 1e8}`;
-    next();
+    return next();
   }
 
   if (req.body.feature) {
@@ -201,7 +209,7 @@ export const addFeature = async (
 
   if (feature) {
     res.locals.error = "Already Exists";
-    next();
+    return next();
   }
 
   if (!feature) {
@@ -238,8 +246,7 @@ export const addFeature = async (
       ],
     });
     // console.log(res.locals.feature);
-    next();
+    return next();
   }
-
-  next();
+  return next();
 };

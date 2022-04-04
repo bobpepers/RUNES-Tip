@@ -5,6 +5,7 @@ import {
   featureDisabledGlobalMessage,
 } from '../../messages/discord';
 import db from '../../models';
+import { capitalize } from '../../helpers/utils';
 
 export const discordSettings = async (
   message,
@@ -45,7 +46,6 @@ export const discordSettings = async (
     });
     return false;
   }
-  const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1); // Upper case first letter
 
   if (!setting.enabled && setting.channelId) {
     await message.channel.send({
@@ -83,7 +83,6 @@ export const discordSettings = async (
     });
     return false;
   }
-  // console.log(setting);
   return setting;
 };
 

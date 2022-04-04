@@ -115,6 +115,8 @@ export const discordRouter = (
           interaction,
           interaction.user,
         );
+        groupTaskId = groupTask && groupTask.id;
+        channelTaskId = channelTask && channelTask.id;
       });
       if (interaction.isButton()) {
         if (interaction.customId === 'claimFaucet') {
