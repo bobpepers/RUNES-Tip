@@ -1,11 +1,9 @@
 // const _ = require('lodash');
 const HttpProvider = require('../httpprovider');
-const Utils = require('./utils');
 
 class Komodo {
   constructor(url) {
     this.provider = new HttpProvider(url);
-    this.utils = Utils;
   }
 
   /** ******** MISC ********* */

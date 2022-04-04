@@ -3,7 +3,7 @@ import {
 } from 'sequelize';
 import db from '../../models';
 
-const crypto = require('crypto');
+// const crypto = require('crypto');
 
 /**
  *

@@ -35,7 +35,9 @@ const verifyRecaptcha = (recaptchaData) => {
 exports.verifyMyCaptcha = (req, res, next) => {
   const { captchaResponse } = req.body;
   if (!captchaResponse) {
-    return res.status(422).send({ error: "CAPTCHA_REQUIRED" });
+    return res.status(422).send({
+      error: "CAPTCHA_REQUIRED",
+    });
   }
   const recaptchaData = {
     remoteip: req.connection.remoteAddress,

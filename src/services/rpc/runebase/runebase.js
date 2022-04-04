@@ -1,11 +1,8 @@
-const { isString, isFinite } = require('lodash');
 const HttpProvider = require('../httpprovider');
-const Utils = require('./utils');
 
 class Runebase {
   constructor(url) {
     this.provider = new HttpProvider(url);
-    this.utils = Utils;
   }
 
   /** ******** MISC ********* */
@@ -84,15 +81,6 @@ class Runebase {
    */
   validateAddress(address) {
     return this.provider.rawCall('validateaddress', [address]);
-  }
-
-  /**
-   * Gets the account name associated with the Runebase address.
-   * @param {string} address The runebase address for account lookup.
-   * @return {Promise} Account name or Error.
-   */
-  getAddressInfo(address) {
-    return this.provider.rawCall('getaddressinfo', [address]);
   }
 
   /**

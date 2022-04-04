@@ -1,5 +1,4 @@
 const Pirate = require('./pirate');
-const Utils = require('./utils');
 
 // dont override global variable
 if (typeof window !== 'undefined' && typeof window.Pirate === 'undefined') {
@@ -8,5 +7,4 @@ if (typeof window !== 'undefined' && typeof window.Pirate === 'undefined') {
 
 module.exports = {
   Pirate,
-  Utils,
 };

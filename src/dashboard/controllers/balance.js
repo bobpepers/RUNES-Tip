@@ -1,6 +1,5 @@
 import getCoinSettings from '../../config/settings';
-
-const { getInstance } = require('../../services/rclient');
+import { getInstance } from '../../services/rclient';
 
 const settings = getCoinSettings();
 

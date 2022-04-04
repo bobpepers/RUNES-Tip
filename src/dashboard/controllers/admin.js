@@ -5,8 +5,7 @@ import {
   Op,
 } from 'sequelize';
 import db from '../../models';
-
-const { getInstance } = require('../../services/rclient');
+import { getInstance } from '../../services/rclient';
 
 require('dotenv').config();
 
