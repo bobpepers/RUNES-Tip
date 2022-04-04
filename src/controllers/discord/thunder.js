@@ -30,10 +30,6 @@ export const discordThunder = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    // if (!groupTask || !channelTask) {
-    //  await message.channel.send({ embeds: [NotInDirectMessage(message, 'Thunder')] });
-    //  return;
-    // }
     const [
       user,
       userActivity,

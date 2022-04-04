@@ -25,8 +25,6 @@ export const discordFlood = async (
   faucetSetting,
   queue,
 ) => {
-  let user;
-  let userActivity;
   const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -36,7 +34,7 @@ export const discordFlood = async (
     //  return;
     // }
 
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(

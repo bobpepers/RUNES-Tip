@@ -38,11 +38,6 @@ export const tipRunesToDiscordUser = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    // if (!groupTask || !channelTask) {
-    //  await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] });
-    //  return;
-    // }
-
     [
       user,
       userActivity,

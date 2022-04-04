@@ -29,11 +29,6 @@ export const discordRain = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    // if (!groupTask || !channelTask) {
-    //  await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
-    //  return;
-    // }
-
     const [
       user,
       userActivity,

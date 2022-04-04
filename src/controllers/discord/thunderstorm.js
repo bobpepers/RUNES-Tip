@@ -33,10 +33,6 @@ export const discordThunderStorm = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    // if (!groupTask || !channelTask) {
-    //  await message.channel.send({ embeds: [NotInDirectMessage(message, 'Thunderstorm')] });
-    //  return;
-    // }
     if (Number(filteredMessage[2]) > 50) {
       await message.channel.send({
         embeds: [
