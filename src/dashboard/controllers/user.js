@@ -1,7 +1,11 @@
 import { Transaction } from 'sequelize';
 import db from '../../models';
 
-export const fetchUser = async (req, res, next) => {
+export const fetchUser = async (
+  req,
+  res,
+  next,
+) => {
   res.locals.user = await db.dashboardUser.findOne({
     where: {
       id: req.user.id,
@@ -23,7 +27,11 @@ export const fetchUser = async (req, res, next) => {
   next();
 };
 
-export const updateLastSeen = async (req, res, next) => {
+export const updateLastSeen = async (
+  req,
+  res,
+  next,
+) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {

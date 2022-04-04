@@ -1,8 +1,11 @@
-// import { parseDomain } from "parse-domain";
 import { Op } from 'sequelize';
 import db from '../../models';
 
-export const fetchDashboardUsers = async (req, res, next) => {
+export const fetchDashboardUsers = async (
+  req,
+  res,
+  next,
+) => {
   const userOptions = {};
   if (req.body.id !== '') {
     userOptions.id = { [Op.like]: `%${Number(req.body.id)}%` };

@@ -1,7 +1,11 @@
 import { Op } from 'sequelize';
 import db from '../../models';
 
-export const fetchActivity = async (req, res, next) => {
+export const fetchActivity = async (
+  req,
+  res,
+  next,
+) => {
   console.log(req.body);
   const activityOptions = {};
   let spenderOptions = {};

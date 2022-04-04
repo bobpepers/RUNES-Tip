@@ -1,4 +1,3 @@
-// import { parseDomain } from "parse-domain";
 // import BigNumber from "bignumber.js";
 import db from '../../models';
 import { updatePrice } from "../../helpers/price/updatePrice";

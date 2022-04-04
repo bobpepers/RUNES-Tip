@@ -1,8 +1,11 @@
-// import { parseDomain } from "parse-domain";
 import { Op } from 'sequelize';
 import db from '../../models';
 
-export const banServer = async (req, res, next) => {
+export const banServer = async (
+  req,
+  res,
+  next,
+) => {
   console.log('ban server');
   try {
     const group = await db.group.findOne({

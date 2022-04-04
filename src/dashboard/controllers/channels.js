@@ -1,6 +1,10 @@
 import db from '../../models';
 
-export const banChannel = async (req, res, next) => {
+export const banChannel = async (
+  req,
+  res,
+  next,
+) => {
   try {
     const channel = await db.channel.findOne({
       where: {
@@ -31,9 +35,11 @@ export const banChannel = async (req, res, next) => {
   next();
 };
 
-export const fetchChannels = async (req, res, next) => {
-  // console.log('fetcChannels_____________________________');
-  // console.log(req.body);
+export const fetchChannels = async (
+  req,
+  res,
+  next,
+) => {
   const channelOptions = {};
   if (req.body.id !== '') {
     channelOptions.id = Number(req.body.id);

@@ -1,4 +1,5 @@
 // import { parseDomain } from "parse-domain";
+import { Op } from 'sequelize';
 import db from '../../models';
 import { patchPirateDeposits } from "../../helpers/blockchain/pirate/patcher";
 import { patchRunebaseDeposits } from "../../helpers/blockchain/runebase/patcher";
@@ -6,8 +7,6 @@ import { patchKomodoDeposits } from "../../helpers/blockchain/komodo/patcher";
 import getCoinSettings from '../../config/settings';
 
 const settings = getCoinSettings();
-
-const { Op } = require('sequelize');
 
 export const patchDeposits = async (
   req,

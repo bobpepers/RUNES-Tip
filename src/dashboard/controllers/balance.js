@@ -3,7 +3,11 @@ import { getInstance } from '../../services/rclient';
 
 const settings = getCoinSettings();
 
-export const fetchBalance = async (req, res, next) => {
+export const fetchBalance = async (
+  req,
+  res,
+  next,
+) => {
   try {
     let response;
     if (settings.coin.setting === 'Runebase') {
@@ -16,8 +20,6 @@ export const fetchBalance = async (req, res, next) => {
       response = await getInstance().getWalletInfo();
       res.locals.balance = response.balance;
     }
-
-    // console.log(req.body);
     next();
   } catch (error) {
     console.log(error);

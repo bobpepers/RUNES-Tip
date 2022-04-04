@@ -1,10 +1,10 @@
-const crypto = require('crypto');
-const { getInstance } = require('../../services/rclient');
+import { getInstance } from '../../services/rclient';
 
-/**
- * insert Ip
- */
-export const fetchNodeStatus = async (req, res, next) => {
+export const fetchNodeStatus = async (
+  req,
+  res,
+  next,
+) => {
   const connected = await getInstance().isConnected();
   const peers = await getInstance().getPeerInfo();
   if (connected) {

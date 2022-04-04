@@ -1,9 +1,14 @@
 import {
-  Sequelize, Op,
+  Sequelize,
+  Op,
 } from 'sequelize';
 import db from '../../models';
 
-export const fetchLiability = async (req, res, next) => {
+export const fetchLiability = async (
+  req,
+  res,
+  next,
+) => {
   let available = 0;
   let locked = 0;
   let runningReactdrops = 0;
@@ -84,8 +89,6 @@ export const fetchLiability = async (req, res, next) => {
     });
 
     const faucet = await db.faucet.findOne();
-    console.log(faucet);
-    console.log('faucet');
 
     faucetAmount = faucet.amount ? faucet.amount : 0;
     available = sumAvailable[0].dataValues.total_available ? sumAvailable[0].dataValues.total_available : 0;

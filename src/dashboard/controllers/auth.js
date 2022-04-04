@@ -8,10 +8,13 @@ import { generateVerificationToken } from '../helpers/generate';
 import timingSafeEqual from '../helpers/timingSafeEqual';
 
 /**
- *
  * Is Dashboard User Banned?
  */
-export const isDashboardUserBanned = async (req, res, next) => {
+export const isDashboardUserBanned = async (
+  req,
+  res,
+  next,
+) => {
   if (req.user.banned) {
     console.log('user is banned');
     req.logOut();
@@ -25,10 +28,13 @@ export const isDashboardUserBanned = async (req, res, next) => {
 };
 
 /**
- *
  * Sign in
  */
-export const signin = async (req, res, next) => {
+export const signin = async (
+  req,
+  res,
+  next,
+) => {
   const ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   if (req.authErr === 'USER_NOT_EXIST') {
     return next('USER_NOT_EXIST', false);
@@ -109,31 +115,35 @@ export const signin = async (req, res, next) => {
   }
 };
 
-export const destroySession = async (req, res, next) => {
-  const activity = await db.activity.create(
-    {
-      earnerId: req.user.id,
-      type: 'logout',
-      ipId: res.locals.ip[0].id,
-    },
-  );
-  res.locals.activity = await db.activity.findOne({
-    where: {
-      id: activity.id,
-    },
-    attributes: [
-      'createdAt',
-      'type',
-    ],
-    include: [
-      {
-        model: db.user,
-        as: 'earner',
-        required: false,
-        attributes: ['username'],
-      },
-    ],
-  });
+export const destroySession = async (
+  req,
+  res,
+  next,
+) => {
+  // const activity = await db.activity.create(
+  //   {
+  //     earnerId: req.user.id,
+  //     type: 'logout',
+  //     ipId: res.locals.ip[0].id,
+  //   },
+  // );
+  // res.locals.activity = await db.activity.findOne({
+  //   where: {
+  //     id: activity.id,
+  //   },
+  //   attributes: [
+  //     'createdAt',
+  //     'type',
+  //   ],
+  //   include: [
+  //     {
+  //       model: db.user,
+  //       as: 'earner',
+  //       required: false,
+  //       attributes: ['username'],
+  //     },
+  //   ],
+  // });
   req.logOut();
   req.session.destroy();
   next();
@@ -213,7 +223,11 @@ export const signup = async (req, res, next) => {
 /**
  * Resend verification code
  */
-export const resendVerification = async (req, res, next) => {
+export const resendVerification = async (
+  req,
+  res,
+  next,
+) => {
   console.log('resend verification');
   const { email } = req.body;
   db.dashboardUser.findOne({
@@ -248,7 +262,11 @@ export const resendVerification = async (req, res, next) => {
 /**
  * Verify email
  */
-export const verifyEmail = (req, res, next) => {
+export const verifyEmail = (
+  req,
+  res,
+  next,
+) => {
   const { email, token } = req.body;
 
   db.dashboardUser.findOne({

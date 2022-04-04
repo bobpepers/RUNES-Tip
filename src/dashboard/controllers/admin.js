@@ -7,20 +7,7 @@ import {
 import db from '../../models';
 import { getInstance } from '../../services/rclient';
 
-require('dotenv').config();
-
-const transporter = nodemailer.createTransport({
-  host: process.env.MAIL_HOST,
-  port: process.env.MAIL_PORT,
-  secure: false, // use SSL
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-  tls: {
-    requireTLS: true,
-  },
-});
+// require('dotenv').config();
 
 export const fetchAdminLiability = async (
   req,

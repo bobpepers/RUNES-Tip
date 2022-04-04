@@ -1,16 +1,14 @@
 import bcrypt from 'bcrypt-nodejs';
+import {
+  Sequelize,
+  Transaction,
+  Op,
+} from 'sequelize';
 import { sendResetPassword } from '../helpers/email';
 // import { tokenForUser } from '../helpers/token';
 import { generateVerificationToken } from '../helpers/generate';
 import timingSafeEqual from '../helpers/timingSafeEqual';
-
 import db from '../../models';
-
-const {
-  Sequelize,
-  Transaction,
-  Op,
-} = require('sequelize');
 
 /**
  * Reset password

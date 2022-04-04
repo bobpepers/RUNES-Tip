@@ -137,7 +137,11 @@ export const acceptWithdrawal = async (
   });
 };
 
-export const declineWithdrawal = async (req, res, next) => {
+export const declineWithdrawal = async (
+  req,
+  res,
+  next,
+) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -256,8 +260,11 @@ export const declineWithdrawal = async (req, res, next) => {
   next();
 };
 
-export const fetchWithdrawals = async (req, res, next) => {
-  console.log(req.body);
+export const fetchWithdrawals = async (
+  req,
+  res,
+  next,
+) => {
   const transactionOptions = {
     type: 'send',
   };

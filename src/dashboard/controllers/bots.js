@@ -1,6 +1,10 @@
 import db from '../../models';
 
-export const updateBotSettings = async (req, res, next) => {
+export const updateBotSettings = async (
+  req,
+  res,
+  next,
+) => {
   const settings = await db.bots.findOne({
     where: {
       id: req.body.id,
@@ -18,7 +22,11 @@ export const updateBotSettings = async (req, res, next) => {
   next();
 };
 
-export const fetchBotSettings = async (req, res, next) => {
+export const fetchBotSettings = async (
+  req,
+  res,
+  next,
+) => {
   res.locals.settings = await db.bots.findAll();
   next();
 };

@@ -1,7 +1,11 @@
 import { Op } from 'sequelize';
 import db from '../../models';
 
-export const banUser = async (req, res, next) => {
+export const banUser = async (
+  req,
+  res,
+  next,
+) => {
   try {
     const user = await db.user.findOne({
       where: {

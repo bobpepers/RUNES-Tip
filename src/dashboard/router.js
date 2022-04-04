@@ -1127,6 +1127,18 @@ export const dashboardRouter = (
     ensuretfa,
     // updateLastSeen,
     enabletfa,
+    (req, res) => {
+      if (res.locals.error) {
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      }
+      if (res.locals.tfa) {
+        res.json({
+          data: res.locals.tfa,
+        });
+      }
+    },
   );
 
   app.post(
@@ -1136,6 +1148,18 @@ export const dashboardRouter = (
     ensuretfa,
     // updateLastSeen,
     disabletfa,
+    (req, res) => {
+      if (res.locals.error) {
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      }
+      if (res.locals.success) {
+        res.json({
+          data: res.locals.tfa,
+        });
+      }
+    },
   );
 
   app.post(
@@ -1144,6 +1168,19 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     // storeIp,
     unlocktfa,
+    (req, res) => {
+      if (res.locals.error) {
+        res.status(401).send({
+          error: res.locals.error,
+        });
+      }
+      if (res.locals.success) {
+        res.json({
+          success: true,
+          tfaLocked: false,
+        });
+      }
+    },
   );
 
   app.get(
@@ -1152,7 +1189,7 @@ export const dashboardRouter = (
     // storeIp,
     destroySession,
     (req, res) => {
-      io.emit('Activity', res.locals.activity);
+      // io.emit('Activity', res.locals.activity);
       res.redirect("/");
     },
   );

@@ -1,36 +1,68 @@
+import * as OTPAuth from 'otpauth';
 import db from '../../models';
+import getCoinSettings from '../../config/settings';
 
-const speakeasy = require('speakeasy');
+const settings = getCoinSettings();
 
-export const disabletfa = async (req, res, next) => {
+export const disabletfa = async (
+  req,
+  res,
+  next,
+) => {
   const user = await db.dashboardUser.findOne({
     where: {
       id: req.user.id,
     },
   });
-  const verified = speakeasy.totp.verify({
-    secret: user.tfa_secret,
-    encoding: 'base32',
-    token: req.body.tfa,
+
+  const totp = new OTPAuth.TOTP({
+    issuer: settings.coin.name,
+    label: settings.bot.name,
+    algorithm: 'SHA1',
+    digits: 6,
+    period: 30,
+    secret: user.tfa_secret, // or "OTPAuth.Secret.fromBase32(user.tfa_secret)"
   });
-  if (verified && user && user.tfa === true) {
-    await user.update({
+
+  const verified = totp.validate({
+    token: req.body.tfa,
+    window: 1,
+  });
+
+  if (
+    verified === 0
+    && user
+    && user.tfa === true
+  ) {
+    const updatedUser = await user.update({
       tfa: false,
       tfa_secret: '',
-    }).then((result) => {
-      res.json({ data: result.tfa });
     });
+    res.locals.tfa = updatedUser.tfa;
+    res.locals.success = true;
+    return next();
   }
-  next();
+  res.locals.error = 'Wrong TFA Number';
+  return next();
 };
 
-export const enabletfa = async (req, res, next) => {
-  // Use verify() to check the token against the secret
-  console.log(req);
-  const verified = speakeasy.totp.verify({
-    secret: req.body.secret,
-    encoding: 'base32',
+export const enabletfa = async (
+  req,
+  res,
+  next,
+) => {
+  const totp = new OTPAuth.TOTP({
+    issuer: settings.coin.name,
+    label: settings.bot.name,
+    algorithm: 'SHA1',
+    digits: 6,
+    period: 30,
+    secret: req.body.secret, // or "OTPAuth.Secret.fromBase32(user.tfa_secret)"
+  });
+
+  const verified = totp.validate({
     token: req.body.tfa,
+    window: 1,
   });
 
   const user = await db.dashboardUser.findOne({
@@ -38,42 +70,58 @@ export const enabletfa = async (req, res, next) => {
       id: req.user.id,
     },
   });
-  if (!verified && user) {
-    console.log('invalid token or secret');
-    res.status(400).send(new Error('Invalid token or secret'));
+
+  if (
+    verified !== 0
+    && user
+  ) {
+    res.locals.error = 'Invalid token or secret';
+    return next();
   }
-  if (verified && !user) {
-    res.status(400).send(new Error('User does not exist'));
+  if (
+    verified === 0
+    && !user
+  ) {
+    res.locals.error = 'User does not exist';
+    return next();
   }
-  if (verified && user && user.tfa === false) {
-    await user.update({
+  if (
+    verified === 0
+    && user
+    && user.tfa === false
+  ) {
+    const updatedUser = await user.update({
       tfa: true,
       tfa_secret: req.body.secret,
-    }).then((result) => {
-      res.json({ data: result.tfa });
     });
-    console.log('insert into db');
+    res.locals.tfa = updatedUser.tfa;
+    return next();
   }
   next();
 };
 
-export const ensuretfa = (req, res, next) => {
-  console.log(req.session.tfa);
+export const ensuretfa = (
+  req,
+  res,
+  next,
+) => {
   if (req.session.tfa === true) {
-    console.log('ensuretfa');
     res.json({
       success: true,
       tfaLocked: true,
     });
   }
   if (req.session.tfa === false) {
-    console.log('we can pass');
     next();
   }
 };
 
-export const istfa = (req, res, next) => {
-  console.log(req.session.tfa);
+export const istfa = (
+  req,
+  res,
+  next,
+) => {
+  // console.log(req.session.tfa);
   if (req.session.tfa === true) {
     console.log('TFA IS LOCKED');
     res.json({
@@ -90,26 +138,34 @@ export const istfa = (req, res, next) => {
   }
 };
 
-export const unlocktfa = (req, res, next) => {
-  const verified = speakeasy.totp.verify({
-    secret: req.user.tfa_secret,
-    encoding: 'base32',
-    token: req.body.tfa,
+export const unlocktfa = (
+  req,
+  res,
+  next,
+) => {
+  const totp = new OTPAuth.TOTP({
+    issuer: settings.coin.name,
+    label: settings.bot.name,
+    algorithm: 'SHA1',
+    digits: 6,
+    period: 30,
+    secret: req.user.tfa_secret, // or "OTPAuth.Secret.fromBase32(user.tfa_secret)"
   });
 
-  console.log(verified);
-  if (verified) {
+  const verified = totp.validate({
+    token: req.body.tfa,
+    window: 1,
+  });
+
+  if (verified === 0) {
     req.session.tfa = false;
     console.log(req.session);
-    console.log('great');
-    res.json({
-      success: true,
-      tfaLocked: false,
-    });
+    res.locals.success = true;
+    return next();
   }
 
   if (!verified) {
-    console.log('not verifided');
-    res.status(400).send(new Error('Unable to verify'));
+    res.locals.error = 'Wrong TFA Number';
+    return next();
   }
 };

@@ -1,24 +1,25 @@
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
-// import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-
+import { Op } from 'sequelize';
+import { config } from "dotenv";
 import db from '../../models';
 
+// import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 // import { sendVerificationEmail } from '../helpers/email';
+// require('dotenv').config();
 
-require('dotenv').config();
-const { Op } = require("sequelize");
+config();
 
 const localOptions = {
   passReqToCallback: true,
   usernameField: 'email',
 };
 
-passport.serializeUser((user, done) => { // In serialize user you decide what to store in the session. Here I'm storing the user id only.
+passport.serializeUser(async (user, done) => { // In serialize user you decide what to store in the session. Here I'm storing the user id only.
   done(null, user.id);
 });
 
-passport.deserializeUser((id, done) => { // Here you retrieve all the info of the user from the session storage using the user id stored in the session earlier using serialize user.
+passport.deserializeUser(async (id, done) => { // Here you retrieve all the info of the user from the session storage using the user id stored in the session earlier using serialize user.
   db.dashboardUser.findOne({
     where: {
       [Op.or]: [
@@ -32,9 +33,12 @@ passport.deserializeUser((id, done) => { // Here you retrieve all the info of th
   });
 });
 
-const localLogin = new LocalStrategy(localOptions, (req, email, password, done) => {
-  console.log(email);
-  console.log(password);
+const localLogin = new LocalStrategy(localOptions, async (
+  req,
+  email,
+  password,
+  done,
+) => {
   db.dashboardUser.findOne({
     where: {
       [Op.or]: [
