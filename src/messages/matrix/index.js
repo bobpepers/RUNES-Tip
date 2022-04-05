@@ -184,6 +184,9 @@ show this help message
 ${settings.bot.command.matrix} help
 show this help message
 
+${settings.bot.command.matrix} info
+Displays coin info
+
 ${settings.bot.command.matrix} balance
 Displays balance
 
@@ -225,6 +228,9 @@ ${settings.bot.name} v${pjson.version}`,
 
 <code>${settings.bot.command.matrix} help</code>
 <p>show this message</p>
+
+<code>${settings.bot.command.matrix} info</code>
+<p>Displays coin info</p>
 
 <code>${settings.bot.command.matrix} balance</code>
 <p>Displays balance</p>
