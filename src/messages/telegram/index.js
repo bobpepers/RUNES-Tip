@@ -88,6 +88,23 @@ ${settings.coin.explorer}/tx/${updatedTrans.txid}
   return result;
 };
 
+export const telegramFeeMessage = async (
+  fee,
+) => {
+  let feeString = '';
+  // eslint-disable-next-line no-restricted-syntax
+  for (const key in fee) {
+    if (Object.prototype.hasOwnProperty.call(fee, key)) {
+      feeString += `${key}: ${fee[String(key)].fee / 1e2}% (${fee[String(key)].type})\n`;
+    }
+  }
+  const result = `<b><u>Fee Schedule</u></b>
+
+${feeString}
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
+  return result;
+};
+
 export const telegramWithdrawalConfirmedMessage = async (
   user,
   trans,
@@ -425,6 +442,9 @@ Displays your deposit address
 <code>${settings.bot.command.telegram} faucet</code>
 /faucet
 Claim faucet
+
+<code>${settings.bot.command.telegram} fees</code>
+Displays fee schedule
 
 <code>${settings.bot.command.telegram} tip &lt;@user&gt; &lt;amount&gt;</code>
 Tips the @ mentioned user with the desired amount, e.g.

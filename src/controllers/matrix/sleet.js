@@ -30,8 +30,6 @@ export const matrixSleet = async (
   isCurrentRoomDirectMessage,
 ) => {
   const activity = [];
-  let userActivity;
-  let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -46,7 +44,7 @@ export const matrixSleet = async (
       );
       return;
     }
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(

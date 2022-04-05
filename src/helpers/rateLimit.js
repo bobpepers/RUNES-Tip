@@ -1,6 +1,7 @@
 import * as RateLimiterFlexible from "rate-limiter-flexible";
 import { discordLimitSpamMessage } from "../messages/discord";
 import { telegramLimitSpamMessage } from "../messages/telegram";
+import { matrixLimitSpamMessage } from "../messages/matrix";
 
 const errorConsumer = new RateLimiterFlexible.default.RateLimiterMemory({
   points: 2,
@@ -23,7 +24,7 @@ const rateLimiterWithdraw = new RateLimiterFlexible.default.RateLimiterMemory({
 });
 
 const rateLimiterHelp = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 20,
+  points: 8,
   duration: 120,
 });
 
@@ -68,7 +69,7 @@ const rateLimiterSleet = new RateLimiterFlexible.default.RateLimiterMemory({
 });
 
 const rateLimiterBalance = new RateLimiterFlexible.default.RateLimiterMemory({
-  points: 50,
+  points: 20,
   duration: 120,
 });
 
@@ -176,8 +177,9 @@ export const myRateLimiter = async (
       }
     }
     if (platform === 'matrix') {
-      userId = message.author.id;
+      userId = message.sender.userId;
     }
+    if (!userId) return true;
     try {
       if (title.toLowerCase() === 'mining') {
         await rateLimiterMining.consume(userId, 1);
@@ -315,7 +317,15 @@ export const myRateLimiter = async (
             );
           }
           if (platform === 'matrix') {
-            await message.channel.send({ embeds: [discordLimitSpamMessage(message, title)] });
+            await client.sendEvent(
+              message.sender.roomId,
+              "m.room.message",
+              matrixLimitSpamMessage(
+                message.sender.name,
+                title,
+              ),
+            );
+            // await message.channel.send({ embeds: [discordLimitSpamMessage(message, title)] });
           }
         }
         return true;

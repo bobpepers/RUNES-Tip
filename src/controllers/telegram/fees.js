@@ -1,17 +1,17 @@
 import { Transaction } from "sequelize";
 import {
-  feeMessage,
+  telegramFeeMessage,
   errorMessage,
-  walletNotFoundMessage,
-} from '../../messages/matrix';
+} from '../../messages/telegram';
 import db from '../../models';
 import logger from "../../helpers/logger";
-import { userWalletExist } from "../../helpers/client/matrix/userWalletExist";
+import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
 
 export const findFee = async (
   name,
-  groupId,
   t,
+  groupId,
+  channelId,
 ) => {
   let fee;
 
@@ -20,10 +20,22 @@ export const findFee = async (
       type: 'local',
       name,
       groupId,
+      channelId,
     },
     lock: t.LOCK.UPDATE,
     transaction: t,
   });
+  if (!fee) {
+    fee = await db.features.findOne({
+      where: {
+        type: 'local',
+        name,
+        groupId,
+      },
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+  }
   if (!fee) {
     fee = await db.features.findOne({
       where: {
@@ -37,12 +49,11 @@ export const findFee = async (
   return fee;
 };
 
-export const matrixFeeSchedule = async (
-  matrixClient,
-  message,
-  filteredMessage,
+export const telegramFeeSchedule = async (
+  ctx,
   io,
   guildId = null,
+  channelId = null,
 ) => {
   const fee = {};
   const activity = [];
@@ -53,93 +64,96 @@ export const matrixFeeSchedule = async (
       user,
       userActivity,
     ] = await userWalletExist(
-      matrixClient,
-      message,
+      ctx,
       t,
       'fees',
     );
     if (userActivity) {
       activity.unshift(userActivity);
-      await matrixClient.sendEvent(
-        message.sender.roomId,
-        "m.room.message",
-        walletNotFoundMessage(
-          message,
-          'Fees',
-        ),
-      );
     }
     if (!user) return;
 
     fee.tip = await findFee(
       'tip',
-      guildId,
       t,
+      guildId,
+      channelId,
     );
 
     // fee.reactdrop = await findFee(
     //  'reactdrop',
+    //  t,
     //  guildId,
-    // t,
+    //  channelId,
     // );
 
     // fee.trivia = await findFee(
     //  'trivia',
+    //  t,
     //  guildId,
-    // t,
+    //  channelId,
     // );
 
     // fee.soak = await findFee(
     //  'soak',
+    //  t,
     //  guildId,
-    // t,
+    //  channelId,
     // );
 
-    // fee.rain = await findFee(
-    //  'rain',
-    //  guildId,
-    // t,
-    // );
+    fee.rain = await findFee(
+      'rain',
+      t,
+      guildId,
+      channelId,
+    );
 
     // fee.voicerain = await findFee(
     //  'voicerain',
+    //  t,
     //  guildId,
-    // t,
+    //  channelId,
     // );
 
     // fee.thunder = await findFee(
     //  'thunder',
+    //  t,
     //  guildId,
-    // t,
+    //  channelId,
     // );
 
     // fee.thunderstorm = await findFee(
     //  'thunderstorm',
+    //  t,
     //  guildId,
-    // t,
+    //  channelId,
     // );
 
     // fee.hurricane = await findFee(
     //  'hurricane',
+    //  t,
     //  guildId,
-    // t,
+    //  channelId,
     // );
 
     fee.flood = await findFee(
       'flood',
-      guildId,
       t,
+      guildId,
+      channelId,
     );
     fee.sleet = await findFee(
       'sleet',
-      guildId,
       t,
+      guildId,
+      channelId,
     );
 
     fee.withdraw = await findFee(
       'withdraw',
-      guildId,
       t,
+      guildId,
+      channelId,
     );
 
     const preActivity = await db.activity.create({
@@ -164,35 +178,26 @@ export const matrixFeeSchedule = async (
     });
     activity.unshift(finalActivity);
 
-    await matrixClient.sendEvent(
-      message.sender.roomId,
-      "m.room.message",
-      feeMessage(
-        message,
+    await ctx.replyWithHTML(
+      await telegramFeeMessage(
         fee,
       ),
     );
-
-    t.afterCommit(() => {
-      console.log('done');
-    });
   }).catch(async (err) => {
     try {
       await db.error.create({
-        type: 'fee',
+        type: 'fees',
         error: `${err}`,
       });
     } catch (e) {
-      logger.error(`Error Matrix: ${e}`);
+      logger.error(`Error Telegram: ${e}`);
     }
     console.log(err);
-    logger.error(`fee error: ${err}`);
+    logger.error(`fees error: ${err}`);
     try {
-      await matrixClient.sendEvent(
-        message.sender.roomId,
-        "m.room.message",
-        errorMessage(
-          'Fee',
+      await ctx.replyWithHTML(
+        await errorMessage(
+          'Fees',
         ),
       );
     } catch (err) {

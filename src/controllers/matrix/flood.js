@@ -26,10 +26,6 @@ export const matrixFlood = async (
   userDirectMessageRoomId,
   isCurrentRoomDirectMessage,
 ) => {
-  let user;
-  let userActivity;
-  let currentRoom;
-  let members;
   const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -46,16 +42,7 @@ export const matrixFlood = async (
       return;
     }
 
-    currentRoom = await matrixClient.getRoom(message.sender.roomId);
-    members = await currentRoom.getMembers();
-
-    const onlineMembers = members.filter((member) => {
-      console.log(member);
-      console.log(member.presence);
-      return member;
-    });
-
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(
@@ -68,6 +55,15 @@ export const matrixFlood = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
+
+    const currentRoom = await matrixClient.getRoom(message.sender.roomId);
+    const members = await currentRoom.getMembers();
+
+    const onlineMembers = members.filter((member) => {
+      console.log(member);
+      console.log(member.presence);
+      return member;
+    });
 
     const withoutBots = await mapMembers(
       matrixClient,

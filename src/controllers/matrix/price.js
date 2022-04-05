@@ -6,6 +6,7 @@ import {
 } from '../../messages/matrix';
 import db from '../../models';
 import logger from "../../helpers/logger";
+import { userWalletExist } from "../../helpers/client/matrix/userWalletExist";
 
 export const matrixPrice = async (
   matrixClient,
@@ -16,76 +17,65 @@ export const matrixPrice = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const user = await db.user.findOne({
-      where: {
-        user_id: `matrix-${message.sender.userId}`,
-      },
-      include: [
-        {
-          model: db.wallet,
-          as: 'wallet',
-          include: [
-            {
-              model: db.address,
-              as: 'addresses',
-            },
-          ],
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-
-    if (!user && !user.wallet) {
+    const [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      matrixClient,
+      message,
+      t,
+      'price',
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
       await matrixClient.sendEvent(
         message.sender.roomId,
         "m.room.message",
         walletNotFoundMessage(
           message,
-          'Tip',
+          'Price',
         ),
       );
     }
+    if (!user) return;
 
-    if (user && user.wallet) {
-      const priceRecord = await db.currency.findAll({});
-      let replyString = ``;
-      replyString += priceRecord.map((a) => `${a.iso}: ${a.price}`).join('\n');
-      let replyStringHtml = ``;
-      replyStringHtml += priceRecord.map((a) => `${a.iso}: ${a.price}`).join('<br>');
+    const priceRecord = await db.currency.findAll({});
+    let replyString = ``;
+    replyString += priceRecord.map((a) => `${a.iso}: ${a.price}`).join('\n');
+    let replyStringHtml = ``;
+    replyStringHtml += priceRecord.map((a) => `${a.iso}: ${a.price}`).join('<br>');
 
-      await matrixClient.sendEvent(
-        message.sender.roomId,
-        "m.room.message",
-        priceMessage(
-          replyString,
-          replyStringHtml,
-        ),
-      );
+    await matrixClient.sendEvent(
+      message.sender.roomId,
+      "m.room.message",
+      priceMessage(
+        replyString,
+        replyStringHtml,
+      ),
+    );
 
-      const createActivity = await db.activity.create({
-        type: 'price_s',
-        earnerId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
+    const createActivity = await db.activity.create({
+      type: 'price_s',
+      earnerId: user.id,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
 
-      const findActivity = await db.activity.findOne({
-        where: {
-          id: createActivity.id,
+    const findActivity = await db.activity.findOne({
+      where: {
+        id: createActivity.id,
+      },
+      include: [
+        {
+          model: db.user,
+          as: 'earner',
         },
-        include: [
-          {
-            model: db.user,
-            as: 'earner',
-          },
-        ],
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      activity.unshift(findActivity);
-    }
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    activity.unshift(findActivity);
 
     t.afterCommit(() => {
       console.log('done price request');

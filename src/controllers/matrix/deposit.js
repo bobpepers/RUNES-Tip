@@ -4,43 +4,43 @@ import db from '../../models';
 import {
   warnDirectMessage,
   depositAddressMessage,
+  walletNotFoundMessage,
 } from '../../messages/matrix';
 import logger from "../../helpers/logger";
+import { userWalletExist } from "../../helpers/client/matrix/userWalletExist";
 
 export const matrixWalletDepositAddress = async (
   matrixClient,
   message,
   userDirectMessageRoomId,
+  isCurrentRoomDirectMessage,
   io,
 ) => {
   const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const user = await db.user.findOne({
-      where: {
-        user_id: `matrix-${message.sender.userId}`,
-      },
-      include: [
-        {
-          model: db.wallet,
-          as: 'wallet',
-          include: [
-            {
-              model: db.address,
-              as: 'addresses',
-            },
-          ],
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-
-    if (!user && !user.wallet && !user.wallet.addresses) {
-      // await message.author.send("Deposit Address not found");
-      return;
+    const [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      matrixClient,
+      message,
+      t,
+      'deposit',
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        walletNotFoundMessage(
+          message,
+          'Deposit',
+        ),
+      );
     }
+    if (!user) return;
 
     if (user && user.wallet && user.wallet.addresses) {
       const depositQr = await QRCode.toDataURL(user.wallet.addresses[0].address);
@@ -50,7 +50,7 @@ export const matrixWalletDepositAddress = async (
       const uploadResponse = await matrixClient.uploadContent(Buffer.from(depositQrFixed, 'base64'), { rawResponse: false, type: 'image/png' });
       const matrixUrl = uploadResponse.content_uri;
 
-      if (message.sender.roomId === userDirectMessageRoomId) {
+      if (isCurrentRoomDirectMessage) {
         await matrixClient.sendEvent(
           userDirectMessageRoomId,
           "m.room.message",

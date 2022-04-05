@@ -4,20 +4,45 @@ import {
   errorMessage,
   warnDirectMessage,
   helpMessage,
+  walletNotFoundMessage,
 } from '../../messages/matrix';
 import db from '../../models';
 import logger from "../../helpers/logger";
+import { userWalletExist } from "../../helpers/client/matrix/userWalletExist";
 
 export const matrixHelp = async (
   matrixClient,
   message,
   userDirectMessageRoomId,
+  isCurrentRoomDirectMessage,
   io,
 ) => {
   const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
+    const [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      matrixClient,
+      message,
+      t,
+      'help',
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        walletNotFoundMessage(
+          message,
+          'Help',
+        ),
+      );
+    }
+    if (!user) return;
+
     const withdraw = await db.features.findOne(
       {
         where: {
@@ -29,7 +54,7 @@ export const matrixHelp = async (
       },
     );
 
-    if (message.sender.roomId === userDirectMessageRoomId) {
+    if (isCurrentRoomDirectMessage) {
       await matrixClient.sendEvent(
         userDirectMessageRoomId,
         "m.room.message",
@@ -46,18 +71,6 @@ export const matrixHelp = async (
         "m.room.message",
         warnDirectMessage(message.sender.name, 'Help'),
       );
-    }
-
-    const user = await db.user.findOne({
-      where: {
-        user_id: `matrix-${message.sender.userId}`,
-      },
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-
-    if (!user) {
-      return;
     }
 
     const preActivity = await db.activity.create({

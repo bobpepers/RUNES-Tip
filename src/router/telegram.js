@@ -12,6 +12,7 @@ import { telegramRain } from '../controllers/telegram/rain';
 import { telegramFlood } from '../controllers/telegram/flood';
 import { telegramSleet } from '../controllers/telegram/sleet';
 import { telegramPrice } from '../controllers/telegram/price';
+import { telegramFeeSchedule } from '../controllers/telegram/fees';
 
 import { executeTipFunction } from '../helpers/client/telegram/executeTips';
 import { disallowDirectMessage } from '../helpers/client/telegram/disallowDirectMessage';
@@ -523,6 +524,25 @@ export const telegramRouter = async (
 
         await queue.add(async () => {
           const task = await telegramPrice(ctx, io);
+        });
+        return;
+      }
+
+      if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'fees') {
+        const limited = await myRateLimiter(
+          telegramClient,
+          ctx,
+          'telegram',
+          'Fees',
+        );
+        if (limited) return;
+
+        await queue.add(async () => {
+          const task = await telegramFeeSchedule(
+            ctx,
+            io,
+            groupTaskId,
+          );
         });
         return;
       }

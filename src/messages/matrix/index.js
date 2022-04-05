@@ -19,6 +19,27 @@ ${settings.bot.name} v${pjson.version}`,
   return result;
 };
 
+export const matrixLimitSpamMessage = (
+  username,
+  title,
+) => {
+  const result = {
+    body: `${title}
+
+🚫 Slow down! 🚫
+${username}, you're using this command too fast, wait a while before using it again.
+
+${settings.bot.name} v${pjson.version}`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>${title}</strong></p>
+<p>🚫 Slow down! 🚫<br>
+${username}, you're using this command too fast, wait a while before using it again.</p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
 export const matrixBotMaintenanceMessage = () => {
   const result = {
     body: `Matrix tipbot maintenance
@@ -57,6 +78,79 @@ ${settings.bot.name} v${pjson.version}`,
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>${username}, i invited you to a direct message room.</strong></p>
 <p><strong>Please accept the invite to allow full functionality of this bot.</strong></p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
+export const coinInfoMessage = (
+  blockHeight,
+  priceInfo,
+) => {
+  const result = {
+    body: `Coin Info
+
+Description
+${settings.coin.description}
+
+Coin Name
+${settings.coin.name}
+
+Coin Ticker
+${settings.coin.ticker}
+
+Current block height
+${blockHeight}
+
+Website
+${settings.coin.website}
+
+Github
+${settings.coin.github}
+
+Block Explorer
+${settings.coin.explorer}
+
+Discord Server
+${settings.coin.discord}
+
+Telegram Group
+${settings.coin.telegram}
+
+Exchanges
+${settings.coin.exchanges.join('\n')}
+
+Current price
+$${priceInfo.price} (source: coinpaprika)
+
+${settings.bot.name} v${pjson.version}`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>Coin Info</strong></p>
+<p>
+<strong>Description</strong><br>
+${settings.coin.description}<br><br>
+<strong>Coin Name</strong><br>
+${settings.coin.name}<br><br>
+<strong>Coin Ticker</strong><br>
+${settings.coin.ticker}<br><br>
+<strong>Current block height</strong><br>
+${blockHeight}<br><br>
+<strong>Website</strong><br>
+${settings.coin.website}<br><br>
+<strong>Github</strong><br>
+${settings.coin.github}<br><br>
+<strong>Block Explorer</strong><br>
+${settings.coin.explorer}<br><br>
+<strong>Discord Server</strong><br>
+${settings.coin.discord}<br><br>
+<strong>Telegram Group</strong><br>
+${settings.coin.telegram}<br><br>
+<strong>Exchanges</strong><br>
+${settings.coin.exchanges.join('<br>')}<br><br>
+<strong>Current price</strong><br>
+$${priceInfo.price} (source: coinpaprika)
+</p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;

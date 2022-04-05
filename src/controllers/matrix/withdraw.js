@@ -31,13 +31,11 @@ export const withdrawMatrixCreate = async (
   userDirectMessageRoomId,
   isCurrentRoomDirectMessage,
 ) => {
-  let user;
   const activity = [];
-  let userActivity;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    [
+    const [
       user,
       userActivity,
     ] = await userWalletExist(
@@ -96,7 +94,7 @@ export const withdrawMatrixCreate = async (
     }
 
     if (isInvalidAddress || isNodeOffline) {
-      if (message.sender.roomId !== userDirectMessageRoomId) {
+      if (!isCurrentRoomDirectMessage) {
         await matrixClient.sendEvent(
           message.sender.roomId,
           "m.room.message",
@@ -124,7 +122,7 @@ export const withdrawMatrixCreate = async (
           message,
         ),
       );
-      if (message.sender.roomId !== userDirectMessageRoomId) {
+      if (!isCurrentRoomDirectMessage) {
         await matrixClient.sendEvent(
           message.sender.roomId,
           "m.room.message",
@@ -178,7 +176,7 @@ export const withdrawMatrixCreate = async (
     activity.unshift(activityCreate);
     // const userId = user.user_id.replace('matrix-', '');
 
-    if (message.sender.roomId === userDirectMessageRoomId) {
+    if (isCurrentRoomDirectMessage) {
       await matrixClient.sendEvent(
         userDirectMessageRoomId,
         "m.room.message",
@@ -199,7 +197,10 @@ export const withdrawMatrixCreate = async (
       await matrixClient.sendEvent(
         message.sender.roomId,
         "m.room.message",
-        warnDirectMessage(message.sender.name, 'Withdraw'),
+        warnDirectMessage(
+          message.sender.name,
+          'Withdraw',
+        ),
       );
     }
     t.afterCommit(() => {

@@ -4,9 +4,11 @@ import {
   ignoreMeMessage,
   unIngoreMeMessage,
   errorMessage,
+  walletNotFoundMessage,
 } from '../../messages/matrix';
 import db from '../../models';
 import logger from "../../helpers/logger";
+import { userWalletExist } from "../../helpers/client/matrix/userWalletExist";
 
 export const setIgnoreMe = async (
   matrixClient,
@@ -17,25 +19,28 @@ export const setIgnoreMe = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    const user = await db.user.findOne({
-      where: {
-        user_id: `matrix-${message.sender.userId}`,
-      },
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-    if (!user) {
-      const activityA = await db.activity.create({
-        type: 'ignoreme_f',
-        spenderId: user.id,
-      }, {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      });
-      activity.unshift(activityA);
-      // await message.channel.send({ embeds: [walletNotFoundMessage(message, 'Ignore me')] });
-      return;
+    const [
+      user,
+      userActivity,
+    ] = await userWalletExist(
+      matrixClient,
+      message,
+      t,
+      'ignoreme',
+    );
+    if (userActivity) {
+      activity.unshift(userActivity);
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        walletNotFoundMessage(
+          message,
+          'Ignore me',
+        ),
+      );
     }
+    if (!user) return;
+
     if (user.ignoreMe) {
       await user.update({
         ignoreMe: false,

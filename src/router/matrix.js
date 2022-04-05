@@ -14,7 +14,8 @@ import { matrixSleet } from '../controllers/matrix/sleet';
 import { setIgnoreMe } from '../controllers/matrix/ignore';
 import { tipRunesToMatrixUser } from '../controllers/matrix/tip';
 import { matrixPrice } from '../controllers/matrix/price';
-import { fetchFeeSchedule } from '../controllers/matrix/fees';
+import { matrixFeeSchedule } from '../controllers/matrix/fees';
+import { matrixCoinInfo } from '../controllers/matrix/info';
 
 import {
   findUserDirectMessageRoom,
@@ -271,23 +272,53 @@ export const matrixRouter = async (
         console.log(userDirectMessageRoomId);
 
         if (filteredMessage[1] === undefined) {
-          // const limited = await limitHelp(message);
-          // if (limited) return;
+          const limited = await myRateLimiter(
+            matrixClient,
+            message,
+            'matrix',
+            'Help',
+          );
+          if (limited) return;
           await queue.add(async () => {
             const task = await matrixHelp(
               matrixClient,
               message,
               userDirectMessageRoomId,
+              isCurrentRoomDirectMessage,
               io,
             );
           });
         }
 
         if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'help') {
-          // const limited = await limitHelp(message);
-          // if (limited) return;
+          const limited = await myRateLimiter(
+            matrixClient,
+            message,
+            'matrix',
+            'Help',
+          );
+          if (limited) return;
           await queue.add(async () => {
             const task = await matrixHelp(
+              matrixClient,
+              message,
+              userDirectMessageRoomId,
+              isCurrentRoomDirectMessage,
+              io,
+            );
+          });
+        }
+
+        if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'info') {
+          const limited = await myRateLimiter(
+            matrixClient,
+            message,
+            'matrix',
+            'Info',
+          );
+          if (limited) return;
+          await queue.add(async () => {
+            const task = await matrixCoinInfo(
               matrixClient,
               message,
               userDirectMessageRoomId,
@@ -297,21 +328,32 @@ export const matrixRouter = async (
         }
 
         if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'balance') {
-          // const limited = await limitHelp(message);
-          // if (limited) return;
+          const limited = await myRateLimiter(
+            matrixClient,
+            message,
+            'matrix',
+            'Balance',
+          );
+          if (limited) return;
           await queue.add(async () => {
             const task = await matrixBalance(
               matrixClient,
               message,
               userDirectMessageRoomId,
+              isCurrentRoomDirectMessage,
               io,
             );
           });
         }
 
         if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'ignoreme') {
-          // const limited = await limitHelp(message);
-          // if (limited) return;
+          const limited = await myRateLimiter(
+            matrixClient,
+            message,
+            'matrix',
+            'IgnoreMe',
+          );
+          if (limited) return;
           await queue.add(async () => {
             const task = await setIgnoreMe(
               matrixClient,
@@ -322,21 +364,32 @@ export const matrixRouter = async (
         }
 
         if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'deposit') {
-          // const limited = await limitHelp(message);
-          // if (limited) return;
+          const limited = await myRateLimiter(
+            matrixClient,
+            message,
+            'matrix',
+            'Deposit',
+          );
+          if (limited) return;
           await queue.add(async () => {
             const task = await matrixWalletDepositAddress(
               matrixClient,
               message,
               userDirectMessageRoomId,
+              isCurrentRoomDirectMessage,
               io,
             );
           });
         }
 
         if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'price') {
-          // const limited = await limitPrice(message);
-          // if (limited) return;
+          const limited = await myRateLimiter(
+            matrixClient,
+            message,
+            'matrix',
+            'Price',
+          );
+          if (limited) return;
           await queue.add(async () => {
             const task = await matrixPrice(
               matrixClient,
@@ -347,10 +400,15 @@ export const matrixRouter = async (
         }
 
         if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'fees') {
-          // const limited = await limitHelp(message);
-          // if (limited) return;
+          const limited = await myRateLimiter(
+            matrixClient,
+            message,
+            'matrix',
+            'Fees',
+          );
+          if (limited) return;
           await queue.add(async () => {
-            const task = await fetchFeeSchedule(
+            const task = await matrixFeeSchedule(
               matrixClient,
               message,
               filteredMessage,
@@ -361,6 +419,14 @@ export const matrixRouter = async (
         }
 
         if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'withdraw') {
+          const limited = await myRateLimiter(
+            matrixClient,
+            message,
+            'matrix',
+            'Withdraw',
+          );
+          if (limited) return;
+
           const setting = await matrixSettings(
             matrixClient,
             message,
@@ -369,9 +435,6 @@ export const matrixRouter = async (
             channelTaskId,
           );
           if (!setting) return;
-          console.log(settings);
-          // const limited = await limitWithdraw(message);
-          // if (limited) return;
 
           await executeTipFunction(
             withdrawMatrixCreate,
@@ -390,6 +453,14 @@ export const matrixRouter = async (
         }
 
         if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'flood') {
+          const limited = await myRateLimiter(
+            matrixClient,
+            message,
+            'matrix',
+            'Flood',
+          );
+          if (limited) return;
+
           const setting = await matrixSettings(
             matrixClient,
             message,
@@ -398,9 +469,6 @@ export const matrixRouter = async (
             channelTaskId,
           );
           if (!setting) return;
-          console.log(settings);
-          // const limited = await limitWithdraw(message);
-          // if (limited) return;
 
           await executeTipFunction(
             matrixFlood,
@@ -419,6 +487,14 @@ export const matrixRouter = async (
         }
 
         if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'sleet') {
+          const limited = await myRateLimiter(
+            matrixClient,
+            message,
+            'matrix',
+            'Sleet',
+          );
+          if (limited) return;
+
           const setting = await matrixSettings(
             matrixClient,
             message,
@@ -427,9 +503,6 @@ export const matrixRouter = async (
             channelTaskId,
           );
           if (!setting) return;
-          console.log(settings);
-          // const limited = await limitWithdraw(message);
-          // if (limited) return;
 
           await executeTipFunction(
             matrixSleet,
@@ -452,6 +525,14 @@ export const matrixRouter = async (
           && filteredMessageWithTags[1]
           && filteredMessageWithTags[1].startsWith('<a')
         ) {
+          const limited = await myRateLimiter(
+            matrixClient,
+            message,
+            'matrix',
+            'Tip',
+          );
+          if (limited) return;
+
           const setting = await matrixSettings(
             matrixClient,
             message,
@@ -460,8 +541,6 @@ export const matrixRouter = async (
             channelTaskId,
           );
           if (!setting) return;
-          // const limited = await limitTip(message);
-          // if (limited) return;
 
           let AmountPosition = 1;
           let AmountPositionEnded = false;
