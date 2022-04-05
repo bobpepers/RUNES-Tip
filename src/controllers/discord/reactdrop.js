@@ -1,6 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable import/prefer-default-export */
-import { svg2png } from 'svg-png-converter';
+import sharp from 'sharp';
 import _ from 'lodash';
 import svgCaptcha from "svg-captcha";
 import { Transaction } from "sequelize";
@@ -100,16 +100,12 @@ export const listenReactDrop = async (
               color: true,
             });
           }
-          // console.log(captcha);
-          captchaPng = await svg2png({
-            input: `${captcha.data}`.trim(),
-            encoding: 'dataURL',
-            format: 'png',
-            width: 150,
-            height: 50,
-            multiplier: 3,
-            quality: 1,
-          });
+
+          captchaPng = await sharp(Buffer.from(`${captcha.data}`.trim()))
+            .resize(450, 150)
+            .png()
+            .toBuffer();
+
           findReactTip = await db.reactdroptip.create({
             status: 'waiting',
             captchaType: 'svg',
@@ -140,15 +136,11 @@ export const listenReactDrop = async (
             captcha = await preCaptcha.generateCaptcha();
           }
 
-          captchaPng = await svg2png({
-            input: `${captcha.image}`.trim(),
-            encoding: 'dataURL',
-            format: 'png',
-            width: 150,
-            height: 50,
-            multiplier: 3,
-            quality: 1,
-          });
+          captchaPng = await sharp(Buffer.from(`${captcha.image}`.trim()))
+            .resize(450, 150)
+            .png()
+            .toBuffer();
+
           findReactTip = await db.reactdroptip.create({
             status: 'waiting',
             captchaType: 'algebraic',
@@ -173,10 +165,14 @@ export const listenReactDrop = async (
           });
           await findReactTip.update({ status: 'failed' });
         } else {
-          const captchaPngFixed = captchaPng.replace('data:image/png;base64,', '');
+          const captchaPngFixed = captchaPng;
+          // const captchaPngFixed = captchaPng.toString('base64');
+          // const captchaPngFixed = captchaPng.toString('base64').replace('data:image/png;base64,', '');
+          console.log(captchaPngFixed);
           const awaitCaptchaMessage = await collector.send({
             embeds: [ReactdropCaptchaMessage(collector.id)],
-            files: [new MessageAttachment(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')],
+            files: [new MessageAttachment(captchaPngFixed, 'captcha.png')],
+            // files: [new MessageAttachment(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')],
           }).catch((e) => {
             console.log('failed to send captcha');
             console.log(e);
