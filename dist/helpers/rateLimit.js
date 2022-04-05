@@ -19,6 +19,8 @@ var _discord = require("../messages/discord");
 
 var _telegram = require("../messages/telegram");
 
+var _matrix = require("../messages/matrix");
+
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function _getRequireWildcardCache(nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -42,7 +44,7 @@ var rateLimiterWithdraw = new RateLimiterFlexible["default"].RateLimiterMemory({
   duration: 120
 });
 var rateLimiterHelp = new RateLimiterFlexible["default"].RateLimiterMemory({
-  points: 20,
+  points: 8,
   duration: 120
 });
 var rateLimiterPrice = new RateLimiterFlexible["default"].RateLimiterMemory({
@@ -78,7 +80,7 @@ var rateLimiterSleet = new RateLimiterFlexible["default"].RateLimiterMemory({
   duration: 120
 });
 var rateLimiterBalance = new RateLimiterFlexible["default"].RateLimiterMemory({
-  points: 50,
+  points: 20,
   duration: 120
 });
 var rateLimiterFaucet = new RateLimiterFlexible["default"].RateLimiterMemory({
@@ -166,415 +168,421 @@ var myRateLimiter = /*#__PURE__*/function () {
             }
 
             if (platform === 'matrix') {
-              userId = message.author.id;
+              userId = message.sender.userId;
             }
 
-            _context.prev = 4;
+            if (userId) {
+              _context.next = 6;
+              break;
+            }
+
+            return _context.abrupt("return", true);
+
+          case 6:
+            _context.prev = 6;
 
             if (!(title.toLowerCase() === 'mining')) {
-              _context.next = 9;
+              _context.next = 11;
               break;
             }
 
-            _context.next = 8;
+            _context.next = 10;
             return rateLimiterMining.consume(userId, 1);
 
-          case 8:
+          case 10:
             return _context.abrupt("return", false);
 
-          case 9:
+          case 11:
             if (!(title.toLowerCase() === 'halving')) {
-              _context.next = 13;
+              _context.next = 15;
               break;
             }
 
-            _context.next = 12;
+            _context.next = 14;
             return rateLimiterHalving.consume(userId, 1);
 
-          case 12:
+          case 14:
             return _context.abrupt("return", false);
 
-          case 13:
+          case 15:
             if (!(title.toLowerCase() === 'listtransactions')) {
-              _context.next = 17;
+              _context.next = 19;
               break;
             }
 
-            _context.next = 16;
+            _context.next = 18;
             return rateLimiterListTransactions.consume(userId, 1);
 
-          case 16:
+          case 18:
             return _context.abrupt("return", false);
 
-          case 17:
+          case 19:
             if (!(title.toLowerCase() === 'trivia')) {
-              _context.next = 21;
+              _context.next = 23;
               break;
             }
 
-            _context.next = 20;
+            _context.next = 22;
             return rateLimiterTrivia.consume(userId, 1);
 
-          case 20:
+          case 22:
             return _context.abrupt("return", false);
 
-          case 21:
+          case 23:
             if (!(title.toLowerCase() === 'thunder')) {
-              _context.next = 25;
+              _context.next = 27;
               break;
             }
 
-            _context.next = 24;
+            _context.next = 26;
             return rateLimiterThunder.consume(userId, 1);
 
-          case 24:
+          case 26:
             return _context.abrupt("return", false);
 
-          case 25:
+          case 27:
             if (!(title.toLowerCase() === 'thunderstorm')) {
-              _context.next = 29;
+              _context.next = 31;
               break;
             }
 
-            _context.next = 28;
+            _context.next = 30;
             return rateLimiterThunderstorm.consume(userId, 1);
 
-          case 28:
+          case 30:
             return _context.abrupt("return", false);
 
-          case 29:
+          case 31:
             if (!(title.toLowerCase() === 'stats')) {
-              _context.next = 33;
+              _context.next = 35;
               break;
             }
 
-            _context.next = 32;
+            _context.next = 34;
             return rateLimiterStats.consume(userId, 1);
 
-          case 32:
+          case 34:
             return _context.abrupt("return", false);
 
-          case 33:
+          case 35:
             if (!(title.toLowerCase() === 'leaderboard')) {
-              _context.next = 37;
+              _context.next = 39;
               break;
             }
 
-            _context.next = 36;
+            _context.next = 38;
             return rateLimiterLeaderboard.consume(userId, 1);
 
-          case 36:
+          case 38:
             return _context.abrupt("return", false);
 
-          case 37:
+          case 39:
             if (!(title.toLowerCase() === 'publicstats')) {
-              _context.next = 41;
+              _context.next = 43;
               break;
             }
 
-            _context.next = 40;
+            _context.next = 42;
             return rateLimiterPublicStats.consume(userId, 1);
 
-          case 40:
+          case 42:
             return _context.abrupt("return", false);
 
-          case 41:
+          case 43:
             if (!(title.toLowerCase() === 'faucet')) {
-              _context.next = 45;
+              _context.next = 47;
               break;
             }
 
-            _context.next = 44;
+            _context.next = 46;
             return rateLimiterFaucet.consume(userId, 1);
 
-          case 44:
+          case 46:
             return _context.abrupt("return", false);
 
-          case 45:
+          case 47:
             if (!(title.toLowerCase() === 'deposit')) {
-              _context.next = 49;
+              _context.next = 51;
               break;
             }
 
-            _context.next = 48;
+            _context.next = 50;
             return rateLimiterDeposit.consume(userId, 1);
 
-          case 48:
+          case 50:
             return _context.abrupt("return", false);
 
-          case 49:
+          case 51:
             if (!(title.toLowerCase() === 'balance')) {
-              _context.next = 53;
+              _context.next = 55;
               break;
             }
 
-            _context.next = 52;
+            _context.next = 54;
             return rateLimiterBalance.consume(userId, 1);
 
-          case 52:
+          case 54:
             return _context.abrupt("return", false);
 
-          case 53:
+          case 55:
             if (!(title.toLowerCase() === 'price')) {
-              _context.next = 57;
+              _context.next = 59;
               break;
             }
 
-            _context.next = 56;
+            _context.next = 58;
             return rateLimiterPrice.consume(userId, 1);
 
-          case 56:
+          case 58:
             return _context.abrupt("return", false);
 
-          case 57:
+          case 59:
             if (!(title.toLowerCase() === 'tip')) {
-              _context.next = 61;
+              _context.next = 63;
               break;
             }
 
-            _context.next = 60;
+            _context.next = 62;
             return rateLimiterTip.consume(userId, 1);
 
-          case 60:
+          case 62:
             return _context.abrupt("return", false);
 
-          case 61:
+          case 63:
             if (!(title.toLowerCase() === 'withdraw')) {
-              _context.next = 65;
+              _context.next = 67;
               break;
             }
 
-            _context.next = 64;
+            _context.next = 66;
             return rateLimiterWithdraw.consume(userId, 1);
 
-          case 64:
+          case 66:
             return _context.abrupt("return", false);
 
-          case 65:
+          case 67:
             if (!(title.toLowerCase() === 'help')) {
-              _context.next = 69;
+              _context.next = 71;
               break;
             }
 
-            _context.next = 68;
+            _context.next = 70;
             return rateLimiterHelp.consume(userId, 1);
 
-          case 68:
+          case 70:
             return _context.abrupt("return", false);
 
-          case 69:
+          case 71:
             if (!(title.toLowerCase() === 'info')) {
-              _context.next = 73;
+              _context.next = 75;
               break;
             }
 
-            _context.next = 72;
+            _context.next = 74;
             return rateLimiterInfo.consume(userId, 1);
 
-          case 72:
+          case 74:
             return _context.abrupt("return", false);
 
-          case 73:
+          case 75:
             if (!(title.toLowerCase() === 'rain')) {
-              _context.next = 77;
+              _context.next = 79;
               break;
             }
 
-            _context.next = 76;
+            _context.next = 78;
             return rateLimiterRain.consume(userId, 1);
 
-          case 76:
+          case 78:
             return _context.abrupt("return", false);
 
-          case 77:
+          case 79:
             if (!(title.toLowerCase() === 'soak')) {
-              _context.next = 81;
+              _context.next = 83;
               break;
             }
 
-            _context.next = 80;
+            _context.next = 82;
             return rateLimiterSoak.consume(userId, 1);
 
-          case 80:
+          case 82:
             return _context.abrupt("return", false);
 
-          case 81:
+          case 83:
             if (!(title.toLowerCase() === 'flood')) {
-              _context.next = 85;
+              _context.next = 87;
               break;
             }
 
-            _context.next = 84;
+            _context.next = 86;
             return rateLimiterFlood.consume(userId, 1);
 
-          case 84:
+          case 86:
             return _context.abrupt("return", false);
 
-          case 85:
+          case 87:
             if (!(title.toLowerCase() === 'hurricane')) {
-              _context.next = 89;
+              _context.next = 91;
               break;
             }
 
-            _context.next = 88;
+            _context.next = 90;
             return rateLimiterHurricane.consume(userId, 1);
 
-          case 88:
+          case 90:
             return _context.abrupt("return", false);
 
-          case 89:
+          case 91:
             if (!(title.toLowerCase() === 'ignoreme')) {
-              _context.next = 93;
+              _context.next = 95;
               break;
             }
 
-            _context.next = 92;
+            _context.next = 94;
             return rateLimiterIgnoreMe.consume(userId, 1);
 
-          case 92:
+          case 94:
             return _context.abrupt("return", false);
 
-          case 93:
+          case 95:
             if (!(title.toLowerCase() === 'sleet')) {
-              _context.next = 97;
+              _context.next = 99;
               break;
             }
 
-            _context.next = 96;
+            _context.next = 98;
             return rateLimiterSleet.consume(userId, 1);
 
-          case 96:
+          case 98:
             return _context.abrupt("return", false);
 
-          case 97:
+          case 99:
             if (!(title.toLowerCase() === 'reactdrop')) {
-              _context.next = 101;
+              _context.next = 103;
               break;
             }
 
-            _context.next = 100;
+            _context.next = 102;
             return rateLimiterReactdrop.consume(userId, 1);
 
-          case 100:
+          case 102:
             return _context.abrupt("return", false);
 
-          case 101:
+          case 103:
             if (!(title.toLowerCase() === 'fees')) {
-              _context.next = 105;
+              _context.next = 107;
               break;
             }
 
-            _context.next = 104;
+            _context.next = 106;
             return rateLimiterFees.consume(userId, 1);
 
-          case 104:
+          case 106:
             return _context.abrupt("return", false);
 
-          case 105:
+          case 107:
             if (!(title.toLowerCase() === 'voicerain')) {
-              _context.next = 109;
+              _context.next = 111;
               break;
             }
 
-            _context.next = 108;
+            _context.next = 110;
             return rateLimiterVoiceRain.consume(userId, 1);
 
-          case 108:
+          case 110:
             return _context.abrupt("return", false);
 
-          case 109:
+          case 111:
             throw new Error("no Rate limiter could be reached");
 
-          case 112:
-            _context.prev = 112;
-            _context.t0 = _context["catch"](4);
+          case 114:
             _context.prev = 114;
-            _context.next = 117;
+            _context.t0 = _context["catch"](6);
+            _context.prev = 116;
+            _context.next = 119;
             return errorConsumer.consume(userId, 1);
 
-          case 117:
+          case 119:
             notError = _context.sent;
 
             if (!(notError.remainingPoints > 0)) {
-              _context.next = 137;
+              _context.next = 139;
               break;
             }
 
             if (!(platform === 'discord')) {
-              _context.next = 127;
+              _context.next = 129;
               break;
             }
 
             console.log('send error message ratelimiter');
-            _context.next = 123;
+            _context.next = 125;
             return client.channels.fetch(discordChannelId)["catch"](function (e) {
               console.log(e);
             });
 
-          case 123:
+          case 125:
             discordChannel = _context.sent;
 
             if (!discordChannel) {
-              _context.next = 127;
+              _context.next = 129;
               break;
             }
 
-            _context.next = 127;
+            _context.next = 129;
             return discordChannel.send({
               embeds: [(0, _discord.discordLimitSpamMessage)(userId, title)]
             })["catch"](function (e) {
               console.log(e);
             });
 
-          case 127:
+          case 129:
             if (!(platform === 'telegram')) {
-              _context.next = 134;
+              _context.next = 136;
               break;
             }
 
             _context.t1 = message;
-            _context.next = 131;
+            _context.next = 133;
             return (0, _telegram.telegramLimitSpamMessage)(message, title);
 
-          case 131:
+          case 133:
             _context.t2 = _context.sent;
-            _context.next = 134;
+            _context.next = 136;
             return _context.t1.replyWithHTML.call(_context.t1, _context.t2);
 
-          case 134:
+          case 136:
             if (!(platform === 'matrix')) {
-              _context.next = 137;
+              _context.next = 139;
               break;
             }
 
-            _context.next = 137;
-            return message.channel.send({
-              embeds: [(0, _discord.discordLimitSpamMessage)(message, title)]
-            });
+            _context.next = 139;
+            return client.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.matrixLimitSpamMessage)(message.sender.name, title));
 
-          case 137:
+          case 139:
             return _context.abrupt("return", true);
 
-          case 140:
-            _context.prev = 140;
-            _context.t3 = _context["catch"](114);
+          case 142:
+            _context.prev = 142;
+            _context.t3 = _context["catch"](116);
             return _context.abrupt("return", true);
-
-          case 143:
-            _context.next = 148;
-            break;
 
           case 145:
-            _context.prev = 145;
+            _context.next = 150;
+            break;
+
+          case 147:
+            _context.prev = 147;
             _context.t4 = _context["catch"](0);
             return _context.abrupt("return", true);
 
-          case 148:
+          case 150:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 145], [4, 112], [114, 140]]);
+    }, _callee, null, [[0, 147], [6, 114], [116, 142]]);
   }));
 
   return function myRateLimiter(_x, _x2, _x3, _x4) {

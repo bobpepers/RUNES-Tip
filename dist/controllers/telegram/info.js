@@ -84,7 +84,7 @@ var fetchInfo = /*#__PURE__*/function () {
                         priceInfo = _context.sent;
                         _context.next = 17;
                         return _models["default"].activity.create({
-                          type: 'info',
+                          type: 'info_s',
                           earnerId: user.id
                         }, {
                           lock: t.LOCK.UPDATE,

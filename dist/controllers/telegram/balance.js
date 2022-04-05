@@ -65,7 +65,7 @@ var telegramBalance = /*#__PURE__*/function () {
                       case 9:
                         _context.next = 11;
                         return _models["default"].activity.create({
-                          type: 'balance',
+                          type: 'balance_s',
                           earnerId: user.id,
                           earner_balance: user.wallet.available + user.wallet.locked
                         }, {

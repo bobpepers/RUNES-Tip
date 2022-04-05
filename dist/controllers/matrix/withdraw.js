@@ -38,7 +38,7 @@ var settings = (0, _settings["default"])();
 
 var withdrawMatrixCreate = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, queue, userDirectMessageRoomId, isCurrentRoomDirectMessage) {
-    var user, activity, userActivity;
+    var activity;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -49,7 +49,7 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, _yield$validateWithdr, _yield$validateWithdr2, isInvalidAddress, isNodeOffline, failWithdrawalActivity, isMyAddressActivity, addressExternal, wallet, fee, transaction, activityCreate;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, _yield$validateWithdr, _yield$validateWithdr2, isInvalidAddress, isNodeOffline, failWithdrawalActivity, isMyAddressActivity, addressExternal, wallet, fee, transaction, activityCreate;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -127,7 +127,7 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                           break;
                         }
 
-                        if (!(message.sender.roomId !== userDirectMessageRoomId)) {
+                        if (isCurrentRoomDirectMessage) {
                           _context.next = 35;
                           break;
                         }
@@ -160,7 +160,7 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.unableToWithdrawToSelfMessage)(message));
 
                       case 44:
-                        if (!(message.sender.roomId !== userDirectMessageRoomId)) {
+                        if (isCurrentRoomDirectMessage) {
                           _context.next = 47;
                           break;
                         }
@@ -222,7 +222,7 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                         activityCreate = _context.sent;
                         activity.unshift(activityCreate); // const userId = user.user_id.replace('matrix-', '');
 
-                        if (!(message.sender.roomId === userDirectMessageRoomId)) {
+                        if (!isCurrentRoomDirectMessage) {
                           _context.next = 68;
                           break;
                         }

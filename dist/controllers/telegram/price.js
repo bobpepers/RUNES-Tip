@@ -77,7 +77,7 @@ var telegramPrice = /*#__PURE__*/function () {
                         priceRecord = _context.sent;
                         _context.next = 14;
                         return _models["default"].activity.create({
-                          type: 'price',
+                          type: 'price_s',
                           earnerId: user.id
                         }, {
                           lock: t.LOCK.UPDATE,

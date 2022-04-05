@@ -9,6 +9,8 @@ exports.matrixWalletDepositAddress = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _sequelize = require("sequelize");
@@ -21,8 +23,10 @@ var _matrix = require("../../messages/matrix");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
+var _userWalletExist = require("../../helpers/client/matrix/userWalletExist");
+
 var matrixWalletDepositAddress = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(matrixClient, message, userDirectMessageRoomId, io) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(matrixClient, message, userDirectMessageRoomId, isCurrentRoomDirectMessage, io) {
     var activity;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
@@ -34,67 +38,67 @@ var matrixWalletDepositAddress = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var user, depositQr, depositQrFixed, userId, uploadResponse, matrixUrl, preActivity, finalActivity;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, depositQr, depositQrFixed, userId, uploadResponse, matrixUrl, preActivity, finalActivity;
+
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
                         _context.next = 2;
-                        return _models["default"].user.findOne({
-                          where: {
-                            user_id: "matrix-".concat(message.sender.userId)
-                          },
-                          include: [{
-                            model: _models["default"].wallet,
-                            as: 'wallet',
-                            include: [{
-                              model: _models["default"].address,
-                              as: 'addresses'
-                            }]
-                          }],
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
+                        return (0, _userWalletExist.userWalletExist)(matrixClient, message, t, 'deposit');
 
                       case 2:
-                        user = _context.sent;
+                        _yield$userWalletExis = _context.sent;
+                        _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
+                        user = _yield$userWalletExis2[0];
+                        userActivity = _yield$userWalletExis2[1];
 
-                        if (!(!user && !user.wallet && !user.wallet.addresses)) {
-                          _context.next = 5;
+                        if (!userActivity) {
+                          _context.next = 10;
+                          break;
+                        }
+
+                        activity.unshift(userActivity);
+                        _context.next = 10;
+                        return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.walletNotFoundMessage)(message, 'Deposit'));
+
+                      case 10:
+                        if (user) {
+                          _context.next = 12;
                           break;
                         }
 
                         return _context.abrupt("return");
 
-                      case 5:
+                      case 12:
                         if (!(user && user.wallet && user.wallet.addresses)) {
-                          _context.next = 35;
+                          _context.next = 42;
                           break;
                         }
 
-                        _context.next = 8;
+                        _context.next = 15;
                         return _qrcode["default"].toDataURL(user.wallet.addresses[0].address);
 
-                      case 8:
+                      case 15:
                         depositQr = _context.sent;
                         depositQrFixed = depositQr.replace('data:image/png;base64,', '');
                         userId = user.user_id.replace('matrix-', '');
-                        _context.next = 13;
+                        _context.next = 20;
                         return matrixClient.uploadContent(Buffer.from(depositQrFixed, 'base64'), {
                           rawResponse: false,
                           type: 'image/png'
                         });
 
-                      case 13:
+                      case 20:
                         uploadResponse = _context.sent;
                         matrixUrl = uploadResponse.content_uri;
 
-                        if (!(message.sender.roomId === userDirectMessageRoomId)) {
-                          _context.next = 22;
+                        if (!isCurrentRoomDirectMessage) {
+                          _context.next = 29;
                           break;
                         }
 
-                        _context.next = 18;
+                        _context.next = 25;
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", {
                           msgtype: "m.image",
                           url: matrixUrl,
@@ -102,16 +106,16 @@ var matrixWalletDepositAddress = /*#__PURE__*/function () {
                           body: "".concat(user.wallet.addresses[0].address)
                         });
 
-                      case 18:
-                        _context.next = 20;
+                      case 25:
+                        _context.next = 27;
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.depositAddressMessage)(user));
 
-                      case 20:
-                        _context.next = 28;
+                      case 27:
+                        _context.next = 35;
                         break;
 
-                      case 22:
-                        _context.next = 24;
+                      case 29:
+                        _context.next = 31;
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", {
                           msgtype: "m.image",
                           url: matrixUrl,
@@ -119,27 +123,27 @@ var matrixWalletDepositAddress = /*#__PURE__*/function () {
                           body: "".concat(user.wallet.addresses[0].address)
                         });
 
-                      case 24:
-                        _context.next = 26;
+                      case 31:
+                        _context.next = 33;
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.depositAddressMessage)(user));
 
-                      case 26:
-                        _context.next = 28;
+                      case 33:
+                        _context.next = 35;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.warnDirectMessage)(message.sender.name, 'Deposit'));
 
-                      case 28:
-                        _context.next = 30;
+                      case 35:
+                        _context.next = 37;
                         return _models["default"].activity.create({
-                          type: 'deposit',
+                          type: 'deposit_s',
                           earnerId: user.id
                         }, {
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 30:
+                      case 37:
                         preActivity = _context.sent;
-                        _context.next = 33;
+                        _context.next = 40;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -152,16 +156,16 @@ var matrixWalletDepositAddress = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 33:
+                      case 40:
                         finalActivity = _context.sent;
                         activity.unshift(finalActivity);
 
-                      case 35:
+                      case 42:
                         t.afterCommit(function () {
                           console.log("Success Deposit Address Request");
                         });
 
-                      case 36:
+                      case 43:
                       case "end":
                         return _context.stop();
                     }
@@ -169,7 +173,7 @@ var matrixWalletDepositAddress = /*#__PURE__*/function () {
                 }, _callee);
               }));
 
-              return function (_x5) {
+              return function (_x6) {
                 return _ref2.apply(this, arguments);
               };
             }())["catch"]( /*#__PURE__*/function () {
@@ -208,7 +212,7 @@ var matrixWalletDepositAddress = /*#__PURE__*/function () {
                 }, _callee2, null, [[0, 5]]);
               }));
 
-              return function (_x6) {
+              return function (_x7) {
                 return _ref3.apply(this, arguments);
               };
             }());
@@ -228,7 +232,7 @@ var matrixWalletDepositAddress = /*#__PURE__*/function () {
     }, _callee3);
   }));
 
-  return function matrixWalletDepositAddress(_x, _x2, _x3, _x4) {
+  return function matrixWalletDepositAddress(_x, _x2, _x3, _x4, _x5) {
     return _ref.apply(this, arguments);
   };
 }();

@@ -13,7 +13,7 @@ var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/sli
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _svgPngConverter = require("svg-png-converter");
+var _sharp = _interopRequireDefault(require("sharp"));
 
 var _lodash = _interopRequireDefault(require("lodash"));
 
@@ -85,7 +85,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                     switch (_context7.prev = _context7.next) {
                       case 0:
                         if (collector.bot) {
-                          _context7.next = 55;
+                          _context7.next = 56;
                           break;
                         }
 
@@ -110,7 +110,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                         findReactTip = _context7.sent;
 
                         if (findReactTip) {
-                          _context7.next = 55;
+                          _context7.next = 56;
                           break;
                         }
 
@@ -133,19 +133,10 @@ var listenReactDrop = /*#__PURE__*/function () {
                             noise: 15,
                             color: true
                           });
-                        } // console.log(captcha);
-
+                        }
 
                         _context7.next = 16;
-                        return (0, _svgPngConverter.svg2png)({
-                          input: "".concat(captcha.data).trim(),
-                          encoding: 'dataURL',
-                          format: 'png',
-                          width: 150,
-                          height: 50,
-                          multiplier: 3,
-                          quality: 1
-                        });
+                        return (0, _sharp["default"])(Buffer.from("".concat(captcha.data).trim())).resize(450, 150).png().toBuffer();
 
                       case 16:
                         captchaPng = _context7.sent;
@@ -198,15 +189,7 @@ var listenReactDrop = /*#__PURE__*/function () {
 
                       case 29:
                         _context7.next = 31;
-                        return (0, _svgPngConverter.svg2png)({
-                          input: "".concat(captcha.image).trim(),
-                          encoding: 'dataURL',
-                          format: 'png',
-                          width: 150,
-                          height: 50,
-                          multiplier: 3,
-                          quality: 1
-                        });
+                        return (0, _sharp["default"])(Buffer.from("".concat(captcha.image).trim())).resize(450, 150).png().toBuffer();
 
                       case 31:
                         captchaPng = _context7.sent;
@@ -247,38 +230,42 @@ var listenReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 41:
-                        _context7.next = 55;
+                        _context7.next = 56;
                         break;
 
                       case 43:
-                        captchaPngFixed = captchaPng.replace('data:image/png;base64,', '');
-                        _context7.next = 46;
+                        captchaPngFixed = captchaPng; // const captchaPngFixed = captchaPng.toString('base64');
+                        // const captchaPngFixed = captchaPng.toString('base64').replace('data:image/png;base64,', '');
+
+                        console.log(captchaPngFixed);
+                        _context7.next = 47;
                         return collector.send({
                           embeds: [(0, _discord2.ReactdropCaptchaMessage)(collector.id)],
-                          files: [new _discord.MessageAttachment(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')]
+                          files: [new _discord.MessageAttachment(captchaPngFixed, 'captcha.png')] // files: [new MessageAttachment(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')],
+
                         })["catch"](function (e) {
                           console.log('failed to send captcha');
                           console.log(e);
                         });
 
-                      case 46:
+                      case 47:
                         awaitCaptchaMessage = _context7.sent;
 
                         if (!awaitCaptchaMessage) {
-                          _context7.next = 55;
+                          _context7.next = 56;
                           break;
                         }
 
-                        _context7.next = 50;
+                        _context7.next = 51;
                         return awaitCaptchaMessage.channel.createMessageCollector({
                           filter: filter,
                           time: 60000,
                           max: 1
                         });
 
-                      case 50:
+                      case 51:
                         Ccollector = _context7.sent;
-                        _context7.next = 53;
+                        _context7.next = 54;
                         return Ccollector.on('collect', /*#__PURE__*/function () {
                           var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(m) {
                             return _regenerator["default"].wrap(function _callee3$(_context3) {
@@ -455,8 +442,8 @@ var listenReactDrop = /*#__PURE__*/function () {
                           };
                         }());
 
-                      case 53:
-                        _context7.next = 55;
+                      case 54:
+                        _context7.next = 56;
                         return Ccollector.on('end', /*#__PURE__*/function () {
                           var _ref7 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(collected) {
                             return _regenerator["default"].wrap(function _callee6$(_context6) {
@@ -591,7 +578,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                           };
                         }());
 
-                      case 55:
+                      case 56:
                       case "end":
                         return _context7.stop();
                     }

@@ -9,6 +9,8 @@ exports.matrixPrice = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _sequelize = require("sequelize");
@@ -18,6 +20,8 @@ var _matrix = require("../../messages/matrix");
 var _models = _interopRequireDefault(require("../../models"));
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
+
+var _userWalletExist = require("../../helpers/client/matrix/userWalletExist");
 
 var matrixPrice = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(matrixClient, message, io) {
@@ -32,49 +36,43 @@ var matrixPrice = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var user, priceRecord, replyString, replyStringHtml, createActivity, findActivity;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, priceRecord, replyString, replyStringHtml, createActivity, findActivity;
+
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
                         _context.next = 2;
-                        return _models["default"].user.findOne({
-                          where: {
-                            user_id: "matrix-".concat(message.sender.userId)
-                          },
-                          include: [{
-                            model: _models["default"].wallet,
-                            as: 'wallet',
-                            include: [{
-                              model: _models["default"].address,
-                              as: 'addresses'
-                            }]
-                          }],
-                          lock: t.LOCK.UPDATE,
-                          transaction: t
-                        });
+                        return (0, _userWalletExist.userWalletExist)(matrixClient, message, t, 'price');
 
                       case 2:
-                        user = _context.sent;
+                        _yield$userWalletExis = _context.sent;
+                        _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
+                        user = _yield$userWalletExis2[0];
+                        userActivity = _yield$userWalletExis2[1];
 
-                        if (!(!user && !user.wallet)) {
-                          _context.next = 6;
+                        if (!userActivity) {
+                          _context.next = 10;
                           break;
                         }
 
-                        _context.next = 6;
-                        return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.walletNotFoundMessage)(message, 'Tip'));
+                        activity.unshift(userActivity);
+                        _context.next = 10;
+                        return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.walletNotFoundMessage)(message, 'Price'));
 
-                      case 6:
-                        if (!(user && user.wallet)) {
-                          _context.next = 23;
+                      case 10:
+                        if (user) {
+                          _context.next = 12;
                           break;
                         }
 
-                        _context.next = 9;
+                        return _context.abrupt("return");
+
+                      case 12:
+                        _context.next = 14;
                         return _models["default"].currency.findAll({});
 
-                      case 9:
+                      case 14:
                         priceRecord = _context.sent;
                         replyString = "";
                         replyString += priceRecord.map(function (a) {
@@ -84,22 +82,22 @@ var matrixPrice = /*#__PURE__*/function () {
                         replyStringHtml += priceRecord.map(function (a) {
                           return "".concat(a.iso, ": ").concat(a.price);
                         }).join('<br>');
-                        _context.next = 16;
+                        _context.next = 21;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.priceMessage)(replyString, replyStringHtml));
 
-                      case 16:
-                        _context.next = 18;
+                      case 21:
+                        _context.next = 23;
                         return _models["default"].activity.create({
-                          type: 'price',
+                          type: 'price_s',
                           earnerId: user.id
                         }, {
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 18:
+                      case 23:
                         createActivity = _context.sent;
-                        _context.next = 21;
+                        _context.next = 26;
                         return _models["default"].activity.findOne({
                           where: {
                             id: createActivity.id
@@ -112,16 +110,14 @@ var matrixPrice = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 21:
+                      case 26:
                         findActivity = _context.sent;
                         activity.unshift(findActivity);
-
-                      case 23:
                         t.afterCommit(function () {
                           console.log('done price request');
                         });
 
-                      case 24:
+                      case 29:
                       case "end":
                         return _context.stop();
                     }

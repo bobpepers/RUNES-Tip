@@ -37,7 +37,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 var matrixFlood = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, queue, userDirectMessageRoomId, isCurrentRoomDirectMessage) {
-    var user, userActivity, currentRoom, members, activity;
+    var activity;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -48,7 +48,7 @@ var matrixFlood = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var onlineMembers, _yield$userWalletExis, _yield$userWalletExis2, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, factivity, updatedBalance, fee, amountPerUser, faucetWatered, floodRecord, cactivity, activityCreate, listOfUsersRained, _iterator, _step, floodee, floodeeWallet, floodtipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, currentRoom, members, onlineMembers, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, factivity, updatedBalance, fee, amountPerUser, faucetWatered, floodRecord, cactivity, activityCreate, listOfUsersRained, _iterator, _step, floodee, floodeeWallet, floodtipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -67,24 +67,9 @@ var matrixFlood = /*#__PURE__*/function () {
 
                       case 4:
                         _context.next = 6;
-                        return matrixClient.getRoom(message.sender.roomId);
-
-                      case 6:
-                        currentRoom = _context.sent;
-                        _context.next = 9;
-                        return currentRoom.getMembers();
-
-                      case 9:
-                        members = _context.sent;
-                        onlineMembers = members.filter(function (member) {
-                          console.log(member);
-                          console.log(member.presence);
-                          return member;
-                        });
-                        _context.next = 13;
                         return (0, _userWalletExist.userWalletExist)(matrixClient, message, t, filteredMessage[1].toLowerCase());
 
-                      case 13:
+                      case 6:
                         _yield$userWalletExis = _context.sent;
                         _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
                         user = _yield$userWalletExis2[0];
@@ -95,13 +80,28 @@ var matrixFlood = /*#__PURE__*/function () {
                         }
 
                         if (user) {
-                          _context.next = 20;
+                          _context.next = 13;
                           break;
                         }
 
                         return _context.abrupt("return");
 
-                      case 20:
+                      case 13:
+                        _context.next = 15;
+                        return matrixClient.getRoom(message.sender.roomId);
+
+                      case 15:
+                        currentRoom = _context.sent;
+                        _context.next = 18;
+                        return currentRoom.getMembers();
+
+                      case 18:
+                        members = _context.sent;
+                        onlineMembers = members.filter(function (member) {
+                          console.log(member);
+                          console.log(member.presence);
+                          return member;
+                        });
                         _context.next = 22;
                         return (0, _mapMembers.mapMembers)(matrixClient, message, t, onlineMembers, setting);
 

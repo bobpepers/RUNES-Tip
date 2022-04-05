@@ -216,7 +216,10 @@ var telegramFaucetClaim = /*#__PURE__*/function () {
                         return _models["default"].activity.create({
                           type: 'faucettip_s',
                           earnerId: user.id,
-                          faucettipId: faucetTip.id
+                          faucettipId: faucetTip.id,
+                          amount: Number(amountToTip),
+                          spender_balance: updateFaucet.amount,
+                          earner_balance: updateWallet.available + updateWallet.locked
                         }, {
                           lock: t.LOCK.UPDATE,
                           transaction: t
@@ -239,7 +242,6 @@ var telegramFaucetClaim = /*#__PURE__*/function () {
 
                       case 62:
                         finalActivity = _context.sent;
-                        // console.log(finalActivity);
                         activity.unshift(finalActivity);
                         _context.t3 = ctx;
                         _context.next = 67;

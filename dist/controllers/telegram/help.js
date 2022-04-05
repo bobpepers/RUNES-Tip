@@ -118,7 +118,7 @@ var fetchHelp = /*#__PURE__*/function () {
                       case 27:
                         _context.next = 29;
                         return _models["default"].activity.create({
-                          type: 'help',
+                          type: 'help_s',
                           earnerId: user.id
                         }, {
                           lock: t.LOCK.UPDATE,

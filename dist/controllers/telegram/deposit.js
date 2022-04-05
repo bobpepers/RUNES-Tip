@@ -139,7 +139,7 @@ var fetchWalletDepositAddress = /*#__PURE__*/function () {
                       case 46:
                         _context.next = 48;
                         return _models["default"].activity.create({
-                          type: 'deposit',
+                          type: 'deposit_s',
                           earnerId: user.id
                         }, {
                           lock: t.LOCK.UPDATE,
