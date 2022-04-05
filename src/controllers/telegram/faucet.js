@@ -113,6 +113,7 @@ export const telegramFaucetClaim = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+
     const updateFaucet = await faucet.update({
       amount: Number(faucet.amount) - Number(amountToTip),
       claims: faucet.claims + 1,
@@ -128,10 +129,14 @@ export const telegramFaucetClaim = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+
     const preActivity = await db.activity.create({
       type: 'faucettip_s',
       earnerId: user.id,
       faucettipId: faucetTip.id,
+      amount: Number(amountToTip),
+      spender_balance: updateFaucet.amount,
+      earner_balance: updateWallet.available + updateWallet.locked,
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
@@ -150,7 +155,7 @@ export const telegramFaucetClaim = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
-    // console.log(finalActivity);
+
     activity.unshift(finalActivity);
     await ctx.replyWithHTML(
       await faucetClaimedMessage(
@@ -161,7 +166,12 @@ export const telegramFaucetClaim = async (
       {
         ...Markup.inlineKeyboard(
           [
-            [Markup.button.callback('Claim Faucet', 'faucet')],
+            [
+              Markup.button.callback(
+                'Claim Faucet',
+                'faucet',
+              ),
+            ],
           ],
         ),
       },

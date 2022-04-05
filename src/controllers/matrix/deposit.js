@@ -90,7 +90,7 @@ export const matrixWalletDepositAddress = async (
       }
 
       const preActivity = await db.activity.create({
-        type: 'deposit',
+        type: 'deposit_s',
         earnerId: user.id,
       }, {
         lock: t.LOCK.UPDATE,

@@ -64,7 +64,7 @@ export const matrixPrice = async (
       );
 
       const createActivity = await db.activity.create({
-        type: 'price',
+        type: 'price_s',
         earnerId: user.id,
       }, {
         lock: t.LOCK.UPDATE,

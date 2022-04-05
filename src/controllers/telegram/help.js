@@ -75,7 +75,7 @@ export const fetchHelp = async (
     }
 
     const activityCreateFinish = await db.activity.create({
-      type: 'help',
+      type: 'help_s',
       earnerId: user.id,
     }, {
       lock: t.LOCK.UPDATE,

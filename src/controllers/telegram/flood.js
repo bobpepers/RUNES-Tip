@@ -3,7 +3,7 @@
 import { Transaction } from "sequelize";
 // import axios from 'axios';
 // import { Api } from 'telegram';
-import dotenv from 'dotenv';
+import { config } from 'dotenv';
 import db from '../../models';
 import {
   afterSuccessMessage,
@@ -11,7 +11,6 @@ import {
   userListMessage,
   errorMessage,
 } from '../../messages/telegram';
-
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/client/telegram/validateAmount";
 import { mapMembers } from "../../helpers/client/telegram/mapMembers";
@@ -20,7 +19,7 @@ import { waterFaucet } from "../../helpers/waterFaucet";
 import { getUserToMentionFromDatabaseRecord } from "../../helpers/client/telegram/userToMention";
 // const { Api } = require('telegram');
 
-dotenv.config();
+config();
 
 export const telegramFlood = async (
   telegramClient,

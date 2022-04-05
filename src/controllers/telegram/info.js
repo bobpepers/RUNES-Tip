@@ -42,7 +42,7 @@ export const fetchInfo = async (
     });
 
     const preActivity = await db.activity.create({
-      type: 'info',
+      type: 'info_s',
       earnerId: user.id,
     }, {
       lock: t.LOCK.UPDATE,

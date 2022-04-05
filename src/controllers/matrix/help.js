@@ -61,7 +61,7 @@ export const matrixHelp = async (
     }
 
     const preActivity = await db.activity.create({
-      type: 'help',
+      type: 'help_s',
       earnerId: user.id,
     }, {
       lock: t.LOCK.UPDATE,

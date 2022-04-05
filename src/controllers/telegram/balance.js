@@ -31,7 +31,7 @@ export const telegramBalance = async (
     if (!user) return;
 
     const createActivity = await db.activity.create({
-      type: 'balance',
+      type: 'balance_s',
       earnerId: user.id,
       earner_balance: user.wallet.available + user.wallet.locked,
     }, {
