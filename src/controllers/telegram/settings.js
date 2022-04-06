@@ -42,7 +42,9 @@ export const telegramFeatureSettings = async (
   if (!setting.enabled && setting.groupId) {
     try {
       await ctx.replyWithHTML(
-        await featureDisabledServerMessage(),
+        await featureDisabledServerMessage(
+          capitalize(name),
+        ),
       );
     } catch (e) {
       console.log(e);
@@ -52,7 +54,9 @@ export const telegramFeatureSettings = async (
   if (!setting.enabled) {
     try {
       await ctx.replyWithHTML(
-        await featureDisabledGlobalMessage(),
+        await featureDisabledGlobalMessage(
+          capitalize(name),
+        ),
       );
     } catch (e) {
       console.log(e);

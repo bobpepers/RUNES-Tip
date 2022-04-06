@@ -9,15 +9,23 @@ import { capitalize } from "../../helpers/utils";
 
 const settings = getCoinSettings();
 
-export const featureDisabledServerMessage = async () => {
-  const result = `<u><b>This feature has been disabled for this group</b></u>
+export const featureDisabledServerMessage = async (
+  title,
+) => {
+  const result = `<b><u>${title}</u></b>
+
+This feature has been disabled for this group
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
 
-export const featureDisabledGlobalMessage = async () => {
-  const result = `<u><b>This feature has been disabled</b></u>
+export const featureDisabledGlobalMessage = async (
+  title,
+) => {
+  const result = `<b><u>${title}</u></b>
+
+This feature has been disabled
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
