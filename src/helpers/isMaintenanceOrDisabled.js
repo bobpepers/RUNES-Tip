@@ -18,7 +18,7 @@ import {
 export const isMaintenanceOrDisabled = async (
   message,
   side,
-  matrixClient = null,
+  client = null,
 ) => {
   const botSetting = await db.bots.findOne({
     where: {
@@ -64,14 +64,14 @@ export const isMaintenanceOrDisabled = async (
 
   if (side === 'matrix') {
     if (!botSetting.enabled) {
-      await matrixClient.sendEvent(
+      await client.sendEvent(
         message.event.room_id,
         "m.room.message",
         matrixBotDisabledMessage(),
         "123",
       );
     } else if (botSetting.maintenance) {
-      await matrixClient.sendEvent(
+      await client.sendEvent(
         message.event.room_id,
         "m.room.message",
         matrixBotMaintenanceMessage(),

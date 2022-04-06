@@ -1,8 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable import/prefer-default-export */
-import sharp from 'sharp';
 import _ from 'lodash';
-import svgCaptcha from "svg-captcha";
 import { Transaction } from "sequelize";
 import {
   MessageAttachment,
@@ -10,7 +8,6 @@ import {
   MessageActionRow,
   MessageButton,
 } from "discord.js";
-import { AlgebraicCaptcha } from "algebraic-captcha";
 import {
   reactDropMessage,
   minimumTimeReactDropMessage,
@@ -20,30 +17,17 @@ import {
   invalidEmojiMessage,
   maxTimeReactdropMessage,
   ReactDropReturnInitiatorMessage,
-  NotInDirectMessage,
+  // NotInDirectMessage,
   discordErrorMessage,
 } from '../../messages/discord';
 import db from '../../models';
 import emojiCompact from "../../config/emoji";
 import logger from "../../helpers/logger";
-import { validateAmount } from "../../helpers/client/discord/validateAmount";
+import { generateCaptcha } from "../../helpers/generateCaptcha";
 import { waterFaucet } from "../../helpers/waterFaucet";
+import { validateAmount } from "../../helpers/client/discord/validateAmount";
 import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
-
-function shuffle(array) {
-  let currentIndex = array.length;
-  let randomIndex;
-
-  while (currentIndex !== 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
-    // eslint-disable-next-line no-param-reassign
-    [array[parseInt(currentIndex, 10)], array[parseInt(randomIndex, 10)]] = [
-      array[parseInt(randomIndex, 10)], array[parseInt(currentIndex, 10)]];
-  }
-
-  return array;
-}
+import { discordwaterFaucetSettings } from './settings';
 
 export const listenReactDrop = async (
   reactMessage,
@@ -53,7 +37,11 @@ export const listenReactDrop = async (
   queue,
 ) => {
   const filter = () => true;
-  const collector = reactMessage.createReactionCollector({ filter, time: distance });
+  const collector = reactMessage.createReactionCollector({
+    filter,
+    time: distance,
+  });
+
   collector.on('collect', async (
     reaction,
     collector,
@@ -64,263 +52,218 @@ export const listenReactDrop = async (
           user_id: `discord-${collector.id}`,
         },
       });
-      const findReactTip = await db.reactdroptip.findOne({
-        where: {
-          userId: findReactUser.id,
-          reactdropId: reactDrop.id,
-        },
-      });
-      if (!findReactTip) {
-        let captcha;
-        let captchaPng;
-        let findReactTip;
-        const backgroundArray = [
-          '#cc9966',
-          '#ffffff',
-          "#FF5733",
-          "#33FFE6",
-          "#272F92 ",
-          "#882792",
-          "#922759",
-        ];
-        const captchaTypeArray = [
-          'svg',
-          'algebraic',
-        ];
-        const randomFunc = captchaTypeArray[Math.floor(Math.random() * captchaTypeArray.length)];
-        const randomBackground = backgroundArray[Math.floor(Math.random() * backgroundArray.length)];
-        if (randomFunc === 'svg') {
-          while (!captcha || Number(captcha.text) < 0) {
-            captcha = svgCaptcha.createMathExpr({
-              mathMin: 0,
-              mathMax: 9,
-              mathOperator: '+-',
-              background: randomBackground,
-              noise: 15,
-              color: true,
-            });
-          }
-
-          captchaPng = await sharp(Buffer.from(`${captcha.data}`.trim()))
-            .resize(450, 150)
-            .png()
-            .toBuffer();
+      if (findReactUser) {
+        let findReactTip = await db.reactdroptip.findOne({
+          where: {
+            userId: findReactUser.id,
+            reactdropId: reactDrop.id,
+          },
+        });
+        if (!findReactTip) {
+          const [
+            captchaImage,
+            captchaText,
+            captchaType,
+          ] = await generateCaptcha();
 
           findReactTip = await db.reactdroptip.create({
             status: 'waiting',
-            captchaType: 'svg',
-            solution: captcha.text,
+            captchaType,
+            solution: captchaText,
             userId: findReactUser.id,
             reactdropId: reactDrop.id,
           });
-        }
-        if (randomFunc === 'algebraic') {
-          const modes = [
-            'formula',
-            'equation',
-          ];
-          while (!captcha || Number(captcha.answer) < 0) {
-            const preCaptcha = new AlgebraicCaptcha({
-              width: 150,
-              height: 50,
-              background: randomBackground,
-              noise: Math.floor(Math.random() * (8 - 4 + 1)) + 4,
-              minValue: 1,
-              maxValue: 9,
-              operandAmount: Math.floor((Math.random() * 2) + 1),
-              operandTypes: ['+', '-'],
-              mode: modes[Math.round(Math.random())],
-              targetSymbol: '?',
-            });
-            // eslint-disable-next-line no-await-in-loop
-            captcha = await preCaptcha.generateCaptcha();
+
+          // eslint-disable-next-line no-underscore-dangle
+          let constructEmoji;
+          if (reaction._emoji && reaction._emoji.animated) {
+            constructEmoji = reaction._emoji.id ? `<a:${reaction._emoji.name}:${reaction._emoji.id}>` : reaction._emoji.name;
+          } else if (reaction._emoji && !reaction._emoji.animated) {
+            constructEmoji = reaction._emoji.id ? `<:${reaction._emoji.name}:${reaction._emoji.id}>` : reaction._emoji.name;
           }
 
-          captchaPng = await sharp(Buffer.from(`${captcha.image}`.trim()))
-            .resize(450, 150)
-            .png()
-            .toBuffer();
-
-          findReactTip = await db.reactdroptip.create({
-            status: 'waiting',
-            captchaType: 'algebraic',
-            solution: captcha.answer.toString(),
-            userId: findReactUser.id,
-            reactdropId: reactDrop.id,
-          });
-        }
-
-        // eslint-disable-next-line no-underscore-dangle
-        let constructEmoji;
-        if (reaction._emoji && reaction._emoji.animated) {
-          constructEmoji = reaction._emoji.id ? `<a:${reaction._emoji.name}:${reaction._emoji.id}>` : reaction._emoji.name;
-        } else if (reaction._emoji && !reaction._emoji.animated) {
-          constructEmoji = reaction._emoji.id ? `<:${reaction._emoji.name}:${reaction._emoji.id}>` : reaction._emoji.name;
-        }
-
-        if (reactDrop.emoji !== constructEmoji) {
-          await collector.send('Failed, pressed wrong emoji').catch((e) => {
-            console.log('failed to send wrong emoji warning');
-            console.log(e);
-          });
-          await findReactTip.update({ status: 'failed' });
-        } else {
-          const captchaPngFixed = captchaPng;
-          // const captchaPngFixed = captchaPng.toString('base64');
-          // const captchaPngFixed = captchaPng.toString('base64').replace('data:image/png;base64,', '');
-          console.log(captchaPngFixed);
-          const awaitCaptchaMessage = await collector.send({
-            embeds: [ReactdropCaptchaMessage(collector.id)],
-            files: [new MessageAttachment(captchaPngFixed, 'captcha.png')],
-            // files: [new MessageAttachment(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')],
-          }).catch((e) => {
-            console.log('failed to send captcha');
-            console.log(e);
-          });
-          if (awaitCaptchaMessage) {
-            const Ccollector = await awaitCaptchaMessage.channel.createMessageCollector({ filter, time: 60000, max: 1 });
-            await Ccollector.on('collect', async (m) => {
-              await db.sequelize.transaction({
-                isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-              }, async (t) => {
-                if (m.content === findReactTip.solution) {
-                  await findReactTip.update(
-                    {
-                      status: 'success',
-                    },
-                    {
+          if (reactDrop.emoji !== constructEmoji) {
+            await collector.send('Failed, pressed wrong emoji').catch((e) => {
+              console.log('failed to send wrong emoji warning');
+              console.log(e);
+            });
+            await findReactTip.update({
+              status: 'failed',
+            });
+          } else {
+            // const captchaPngFixed = captchaImage.toString('base64');
+            // const captchaPngFixed = captchaImage.toString('base64').replace('data:image/png;base64,', '');
+            const captchaPngFixed = captchaImage;
+            const awaitCaptchaMessage = await collector.send({
+              embeds: [
+                ReactdropCaptchaMessage(
+                  collector.id,
+                ),
+              ],
+              // files: [new MessageAttachment(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')],
+              files: [
+                new MessageAttachment(
+                  captchaPngFixed,
+                  'captcha.png',
+                ),
+              ],
+            }).catch((e) => {
+              console.log('failed to send captcha');
+              console.log(e);
+            });
+            if (awaitCaptchaMessage) {
+              const Ccollector = await awaitCaptchaMessage.channel.createMessageCollector({
+                filter,
+                time: 60000,
+                max: 1,
+              });
+              await Ccollector.on('collect', async (m) => {
+                await db.sequelize.transaction({
+                  isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+                }, async (t) => {
+                  if (m.content === findReactTip.solution) {
+                    await findReactTip.update(
+                      {
+                        status: 'success',
+                      },
+                      {
+                        lock: t.LOCK.UPDATE,
+                        transaction: t,
+                      },
+                    );
+                    const reactDropRecord = await db.reactdrop.findOne({
+                      where: {
+                        id: findReactTip.reactdropId,
+                      },
+                      include: [
+                        {
+                          model: db.group,
+                          as: 'group',
+                        },
+                        {
+                          model: db.channel,
+                          as: 'channel',
+                        },
+                      ],
                       lock: t.LOCK.UPDATE,
                       transaction: t,
-                    },
-                  );
-                  const reactDropRecord = await db.reactdrop.findOne({
-                    where: {
-                      id: findReactTip.reactdropId,
-                    },
-                    include: [
-                      {
-                        model: db.group,
-                        as: 'group',
-                      },
-                      {
-                        model: db.channel,
-                        as: 'channel',
-                      },
-                    ],
-                    lock: t.LOCK.UPDATE,
-                    transaction: t,
-                  });
+                    });
 
-                  const row = new MessageActionRow().addComponents(
-                    new MessageButton()
-                      .setLabel('Back to ReactDrop')
-                      .setStyle('LINK')
-                      .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`),
-                  );
+                    const backToReactDropButton = new MessageActionRow().addComponents(
+                      new MessageButton()
+                        .setLabel('Back to ReactDrop')
+                        .setStyle('LINK')
+                        .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`),
+                    );
 
-                  await m.react('✅');
-                  await collector.send({ content: '\u200b', components: [row] });
-                } else if (m.content !== findReactTip.solution) {
-                  await findReactTip.update({
-                    status: 'failed',
-                  }, {
-                    lock: t.LOCK.UPDATE,
-                    transaction: t,
-                  });
-                  const reactDropRecord = await db.reactdrop.findOne({
-                    where: {
-                      id: findReactTip.reactdropId,
-                    },
-                    include: [
-                      {
-                        model: db.group,
-                        as: 'group',
+                    await m.react('✅');
+                    await collector.send({
+                      content: '\u200b',
+                      components: [
+                        backToReactDropButton,
+                      ],
+                    });
+                  } else if (m.content !== findReactTip.solution) {
+                    await findReactTip.update({
+                      status: 'failed',
+                    }, {
+                      lock: t.LOCK.UPDATE,
+                      transaction: t,
+                    });
+                    const reactDropRecord = await db.reactdrop.findOne({
+                      where: {
+                        id: findReactTip.reactdropId,
                       },
-                      {
-                        model: db.channel,
-                        as: 'channel',
-                      },
-                    ],
-                    lock: t.LOCK.UPDATE,
-                    transaction: t,
+                      include: [
+                        {
+                          model: db.group,
+                          as: 'group',
+                        },
+                        {
+                          model: db.channel,
+                          as: 'channel',
+                        },
+                      ],
+                      lock: t.LOCK.UPDATE,
+                      transaction: t,
+                    });
+                    const row = new MessageActionRow().addComponents(
+                      new MessageButton()
+                        .setLabel('Back to ReactDrop')
+                        .setStyle('LINK')
+                        .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`),
+                    );
+                    await m.react('❌');
+                    await collector.send({
+                      content: `Failed\nSolution: **${findReactTip.solution}**`,
+                      components: [row],
+                    });
+                  }
+                  t.afterCommit(() => {
+                    console.log('done');
                   });
-                  const row = new MessageActionRow().addComponents(
-                    new MessageButton()
-                      .setLabel('Back to ReactDrop')
-                      .setStyle('LINK')
-                      .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`),
-                  );
-                  await m.react('❌');
-                  await collector.send({
-                    content: `Failed
-Solution: **${findReactTip.solution}**`,
-                    components: [row],
-                  });
-                }
-                t.afterCommit(() => {
-                  console.log('done');
-                });
-              }).catch(async (err) => {
-                try {
-                  await db.error.create({
-                    type: 'collectAnswerReactDrop',
-                    error: `${err}`,
-                  });
-                } catch (e) {
-                  logger.error(`Error Discord: ${e}`);
-                }
-                console.log('failed');
-              });
-            });
-
-            await Ccollector.on('end', async (collected) => {
-              // eslint-disable-next-line no-promise-executor-return
-              await new Promise((r) => setTimeout(r, 200));
-              await db.sequelize.transaction({
-                isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-              }, async (t) => {
-                const findReactUserTwo = await db.user.findOne({
-                  where: {
-                    user_id: `discord-${collector.id}`,
-                  },
-                  lock: t.LOCK.UPDATE,
-                  transaction: t,
-                });
-                const findReactTipTwo = await db.reactdroptip.findOne({
-                  where: {
-                    userId: findReactUserTwo.id,
-                    reactdropId: reactDrop.id,
-                  },
-                  lock: t.LOCK.UPDATE,
-                  transaction: t,
-                });
-                if (findReactTipTwo.status === 'waiting') {
-                  await findReactTipTwo.update({
-                    status: 'failed',
-                  }, {
-                    lock: t.LOCK.UPDATE,
-                    transaction: t,
-                  });
-                  collector.send('Out of time');
-                }
-                t.afterCommit(() => {
-                  console.log('done');
-                });
-              }).catch(async (err) => {
-                try {
-                  await db.error.create({
-                    type: 'endAnswerReactDrop',
-                    error: `${err}`,
-                  });
-                } catch (e) {
-                  logger.error(`Error Discord: ${e}`);
-                }
-                console.log(err);
-                await collector.send('Something went wrong').catch((e) => {
-                  console.log(e);
+                }).catch(async (err) => {
+                  try {
+                    await db.error.create({
+                      type: 'collectAnswerReactDrop',
+                      error: `${err}`,
+                    });
+                  } catch (e) {
+                    logger.error(`Error Discord: ${e}`);
+                  }
+                  console.log('failed');
                 });
               });
-            });
+
+              await Ccollector.on('end', async (collected) => {
+                // eslint-disable-next-line no-promise-executor-return
+                await new Promise((r) => setTimeout(r, 200));
+                await db.sequelize.transaction({
+                  isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+                }, async (t) => {
+                  const findReactUserTwo = await db.user.findOne({
+                    where: {
+                      user_id: `discord-${collector.id}`,
+                    },
+                    lock: t.LOCK.UPDATE,
+                    transaction: t,
+                  });
+                  const findReactTipTwo = await db.reactdroptip.findOne({
+                    where: {
+                      userId: findReactUserTwo.id,
+                      reactdropId: reactDrop.id,
+                    },
+                    lock: t.LOCK.UPDATE,
+                    transaction: t,
+                  });
+                  if (findReactTipTwo.status === 'waiting') {
+                    await findReactTipTwo.update({
+                      status: 'failed',
+                    }, {
+                      lock: t.LOCK.UPDATE,
+                      transaction: t,
+                    });
+                    collector.send('Out of time');
+                  }
+                  t.afterCommit(() => {
+                    console.log('done');
+                  });
+                }).catch(async (err) => {
+                  try {
+                    await db.error.create({
+                      type: 'endAnswerReactDrop',
+                      error: `${err}`,
+                    });
+                  } catch (e) {
+                    logger.error(`Error Discord: ${e}`);
+                  }
+                  console.log(err);
+                  await collector.send('Something went wrong').catch((e) => {
+                    console.log(e);
+                  });
+                });
+              });
+            }
           }
         }
       }
@@ -395,42 +338,19 @@ Solution: **${findReactTip.solution}**`,
               lock: t.LOCK.UPDATE,
               transaction: t,
             });
-            await reactMessage.channel.send({ embeds: [ReactDropReturnInitiatorMessage()] });
-          } else {
-          // Get Faucet Settings
-            let faucetSetting;
-            faucetSetting = await db.features.findOne({
-              where: {
-                type: 'local',
-                name: 'faucet',
-                groupId: endReactDrop.group.id,
-                channelId: endReactDrop.channel.id,
-              },
-              lock: t.LOCK.UPDATE,
-              transaction: t,
+            await reactMessage.channel.send({
+              embeds: [
+                ReactDropReturnInitiatorMessage(),
+              ],
             });
-            if (!faucetSetting) {
-              faucetSetting = await db.features.findOne({
-                where: {
-                  type: 'local',
-                  name: 'faucet',
-                  groupId: endReactDrop.group.id,
-                  channelId: null,
-                },
-                lock: t.LOCK.UPDATE,
-                transaction: t,
-              });
-            }
-            if (!faucetSetting) {
-              faucetSetting = await db.features.findOne({
-                where: {
-                  type: 'global',
-                  name: 'faucet',
-                },
-                lock: t.LOCK.UPDATE,
-                transaction: t,
-              });
-            }
+          } else {
+            // Get Faucet Settings
+            const faucetSetting = await discordwaterFaucetSettings(
+              endReactDrop.group.id,
+              endReactDrop.channel.id,
+              t,
+            );
+
             // water the faucet
             const faucetWatered = await waterFaucet(
               t,
@@ -557,15 +477,9 @@ export const discordReactDrop = async (
 ) => {
   const activity = [];
   const useEmojis = [];
-  let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    // if (!groupTask || !channelTask) {
-    //  await message.channel.send({ embeds: [NotInDirectMessage(message, 'Reactdrop')] });
-    //  return;
-    // }
-
     const [
       user,
       userActivity,
@@ -595,15 +509,13 @@ export const discordReactDrop = async (
       return;
     }
 
-    /// Reactdrop
-
     // Convert Message time to MS
     let textTime = '5m';
     if (filteredMessage[3]) {
       // eslint-disable-next-line prefer-destructuring
       textTime = filteredMessage[3];
     }
-    // const textTime = filteredMessage[3];
+
     const cutLastTimeLetter = textTime.substring(textTime.length - 1, textTime.length).toLowerCase();
     const cutNumberTime = textTime.substring(0, textTime.length - 1);
     const isnum = /^\d+$/.test(cutNumberTime);
@@ -625,7 +537,14 @@ export const discordReactDrop = async (
         transaction: t,
       });
       activity.unshift(timeFailActivity);
-      await message.channel.send({ embeds: [invalidTimeMessage(message, 'Reactdrop')] });
+      await message.channel.send({
+        embeds: [
+          invalidTimeMessage(
+            message,
+            'Reactdrop',
+          ),
+        ],
+      });
     } else if (cutLastTimeLetter === 's' && Number(cutNumberTime) < 60) {
       const timeFailActivity = await db.activity.create({
         type: 'reactdrop_f',
@@ -635,7 +554,13 @@ export const discordReactDrop = async (
         transaction: t,
       });
       activity.unshift(timeFailActivity);
-      await message.channel.send({ embeds: [minimumTimeReactDropMessage(message)] });
+      await message.channel.send({
+        embeds: [
+          minimumTimeReactDropMessage(
+            message,
+          ),
+        ],
+      });
     } else {
       const allEmojis = emojiCompact;
       await message.guild.emojis.cache.forEach((customEmoji) => {
@@ -693,17 +618,16 @@ export const discordReactDrop = async (
         let now = await new Date().getTime();
         let distance = countDownDate - now;
 
-        const randomAmount = Math.floor(Math.random() * 3) + 1;
+        const randomAmount = Math.floor(Math.random() * 3) + 2;
 
         for (let i = 0; i < randomAmount; i += 1) {
           const randomX = Math.floor(Math.random() * allEmojis.length);
-          useEmojis.push(allEmojis[randomX]);
+          useEmojis.push(allEmojis[parseInt(randomX, 10)]);
         }
+
         await useEmojis.push(filteredMessage[4]);
+        const shuffeledEmojisArray = await _.shuffle(useEmojis);
 
-        const shuffeledEmojisArray = await shuffle(useEmojis);
-
-        // console.log(shuffeledEmojisArray);
         const findGroup = await db.group.findOne({
           where: {
             groupId: `discord-${message.guildId}`,
@@ -815,7 +739,6 @@ export const discordReactDrop = async (
 
           // eslint-disable-next-line no-restricted-syntax
           for (const shufEmoji of shuffeledEmojisArray) {
-            // console.log(shufEmoji);
             // eslint-disable-next-line no-await-in-loop
             await reactMessage.react(shufEmoji);
           }
@@ -857,8 +780,7 @@ export const discordReactDrop = async (
     }
     console.log(err);
     console.log(useEmojis);
-    logger.error(`reactdrop error: ${err}
-Emojis used: ${useEmojis}`);
+    logger.error(`reactdrop error: ${err}\nEmojis used: ${useEmojis}`);
     await message.channel.send({ embeds: [discordErrorMessage("ReactDrop")] }).catch((e) => {
       console.log(e);
     });

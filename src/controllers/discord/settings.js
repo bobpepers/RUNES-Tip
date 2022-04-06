@@ -89,6 +89,7 @@ export const discordSettings = async (
 export const discordwaterFaucetSettings = async (
   groupId = null,
   channelId = null,
+  t = null,
 ) => {
   let setting;
   setting = await db.features.findOne({
@@ -98,6 +99,12 @@ export const discordwaterFaucetSettings = async (
       groupId,
       channelId,
     },
+    ...(
+      t && {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      }
+    ),
   });
   if (!setting) {
     setting = await db.features.findOne({
@@ -107,6 +114,12 @@ export const discordwaterFaucetSettings = async (
         groupId,
         channelId: null,
       },
+      ...(
+        t && {
+          lock: t.LOCK.UPDATE,
+          transaction: t,
+        }
+      ),
     });
   }
   if (!setting) {
@@ -115,6 +128,12 @@ export const discordwaterFaucetSettings = async (
         type: 'global',
         name: 'faucet',
       },
+      ...(
+        t && {
+          lock: t.LOCK.UPDATE,
+          transaction: t,
+        }
+      ),
     });
   }
 
