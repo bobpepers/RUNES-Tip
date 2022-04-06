@@ -639,7 +639,7 @@ export const discordTrivia = async (
             channelId: channel.id,
             ends: dateObj,
             triviaquestionId: randomQuestion.id,
-            discordMessageId: 'notYetSpecified',
+            messageId: 'notYetSpecified',
             userId: user.id,
           }, {
             transaction: t,
@@ -662,7 +662,7 @@ export const discordTrivia = async (
           });
 
           const newUpdatedTriviaCreate = await newTriviaCreate.update({
-            discordMessageId: sendTriviaMessage.id,
+            messageId: sendTriviaMessage.id,
           }, {
             transaction: t,
             lock: t.LOCK.UPDATE,

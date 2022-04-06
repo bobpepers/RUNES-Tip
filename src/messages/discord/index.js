@@ -183,7 +183,7 @@ export const AfterTriviaSuccessMessage = (
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle(`Trivia #${endTrivia.id}`)
-    .setDescription(`:tada:[Trivia](https://discord.com/channels/${endTrivia.group.groupId.replace("discord-", "")}/${endTrivia.channel.channelId.replace("discord-", "")}/${endTrivia.discordMessageId}) started by <@${initiator}> has finished!:tada:
+    .setDescription(`:tada:[Trivia](https://discord.com/channels/${endTrivia.group.groupId.replace("discord-", "")}/${endTrivia.channel.channelId.replace("discord-", "")}/${endTrivia.messageId}) started by <@${initiator}> has finished!:tada:
 
 :money_with_wings:${endTrivia.triviatips.length} ${endTrivia.triviatips.length === 1 ? 'user' : 'users'} will share ${endTrivia.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)!:money_with_wings:`)
     .setTimestamp()
@@ -199,7 +199,7 @@ export const AfterReactDropSuccessMessage = (endReactDrop, amountEach, initiator
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle(`Reactdrop #${endReactDrop.id}`)
-    .setDescription(`:tada:[React airdrop](https://discord.com/channels/${endReactDrop.group.groupId.replace("discord-", "")}/${endReactDrop.channel.channelId.replace("discord-", "")}/${endReactDrop.discordMessageId}) started by <@${initiator}> has finished!:tada:
+    .setDescription(`:tada:[React airdrop](https://discord.com/channels/${endReactDrop.group.groupId.replace("discord-", "")}/${endReactDrop.channel.channelId.replace("discord-", "")}/${endReactDrop.messageId}) started by <@${initiator}> has finished!:tada:
 
 :money_with_wings:${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)!:money_with_wings:`)
     .setTimestamp()

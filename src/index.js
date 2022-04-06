@@ -41,6 +41,7 @@ import { processWithdrawals } from "./services/processWithdrawals";
 import {
   recoverDiscordReactdrops,
   recoverDiscordTrivia,
+  recoverMatrixReactdrops,
 } from './helpers/recover';
 import logger from "./helpers/logger";
 
@@ -180,18 +181,6 @@ config();
     matrixClient,
   );
 
-  await recoverDiscordReactdrops(
-    discordClient,
-    io,
-    queue,
-  );
-
-  await recoverDiscordTrivia(
-    discordClient,
-    io,
-    queue,
-  );
-
   // patch deposits and sync
   if (settings.coin.setting === 'Runebase') {
     await startRunebaseSync(
@@ -263,6 +252,24 @@ config();
     discordClient,
     telegramClient,
     matrixClient,
+  );
+
+  await recoverDiscordReactdrops(
+    discordClient,
+    io,
+    queue,
+  );
+
+  await recoverDiscordTrivia(
+    discordClient,
+    io,
+    queue,
+  );
+
+  await recoverMatrixReactdrops(
+    matrixClient,
+    io,
+    queue,
   );
 
   const scheduleUpdateConversionRatesFiat = schedule.scheduleJob('0 */8 * * *', () => { // Update Fiat conversion rates every 8 hours

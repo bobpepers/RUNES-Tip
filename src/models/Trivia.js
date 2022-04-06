@@ -27,7 +27,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: false,
     },
-    discordMessageId: {
+    messageId: {
       type: DataTypes.STRING,
       allowNull: false,
     },

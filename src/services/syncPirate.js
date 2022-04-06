@@ -4,11 +4,10 @@ import _ from "lodash";
 import { Transaction } from "sequelize";
 import { config } from "dotenv";
 import db from '../models';
-import getCoinSettings from '../config/settings';
 import { getInstance } from "./rclient";
 import { waterFaucet } from "../helpers/waterFaucet";
-
 import { isDepositOrWithdrawalCompleteMessageHandler } from '../helpers/messageHandlers';
+import getCoinSettings from '../config/settings';
 
 config();
 

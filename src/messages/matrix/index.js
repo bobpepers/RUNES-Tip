@@ -716,6 +716,109 @@ ${message.sender.name} ${typeH} **${amount / 1e8} ${settings.coin.ticker}** on $
   return result;
 };
 
+export const afterReactDropSuccessMessage = (
+  endReactDrop,
+  amountEach,
+  user,
+) => {
+  const initiatorId = user.user_id.replace('matrix-', '');
+  const result = {
+    body: `Reactdrop #${endReactDrop.id}\n
+🎉<a href="https://matrix.to/#/${endReactDrop.group.groupId.replace("matrix-", "")}/${endReactDrop.messageId}">[React airdrop]</a> started by <a href="https://matrix.to/#/${initiatorId}">${user.username}</a> has finished!🎉
+\n\n
+💸${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)!💸`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><h5>Reactdrop #${endReactDrop.id}</h5>
+<p><strong>
+🎉<a href="https://matrix.to/#/${endReactDrop.group.groupId.replace("matrix-", "")}/${endReactDrop.messageId}">[React airdrop]</a> started by <a href="https://matrix.to/#/${initiatorId}">${user.username}</a> has finished!🎉
+<br><br>
+💸${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)!💸
+</strong></p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
+export const maxTimeReactdropMessage = () => {
+  const result = {
+    body: `Reactdrop\n
+Maximum time is 2 days`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><h5>Reactdrop</h5>
+<p><strong>Maximum time is 2 days</strong></p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
+export const reactDropReturnInitiatorMessage = () => {
+  const result = {
+    body: `Reactdrop\n
+Nobody claimed, returning funds to reactdrop initiator`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><h5>Reactdrop</h5>
+<p><strong>Nobody claimed, returning funds to reactdrop initiator</strong></p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
+export const outOfTimeReactdropMessage = (
+  link,
+) => {
+  const result = {
+    body: `Out of Time`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><h5>Reactdrop</h5>
+<p><strong>Out of time</strong></p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
+export const backToReactDropMessage = (
+  link,
+) => {
+  const result = {
+    body: `<a href="${link}">Back to Reactdrop</a>`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><h3><strong><a href="${link}">Back to Reactdrop</a></strong></h3>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
+export const reactdropCaptchaMessage = (
+  message,
+) => {
+  const result = {
+    body: `Reactdrop
+${message.sender.userId} you have 1 minute to guess`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><h5>Reactdrop</h5>
+<p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you have 1 minute to guessi</strong></p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
+export const reactdropPressWrongEmojiMessage = () => {
+  const result = {
+    body: "Failed, pressed wrong emoji",
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><p><strong>Failed, pressed wrong emoji</strong></p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
 export const groupNotFoundMessage = () => {
   const result = {
     body: "Room not found",
@@ -727,13 +830,84 @@ export const groupNotFoundMessage = () => {
   return result;
 };
 
-export const invalidTimeMessage = (message, title) => {
+export const matrixReactDropMessage = (
+  id,
+  distance,
+  user,
+  emoji,
+  amount,
+) => {
+  // Time calculations for days, hours, minutes and seconds
+  const days = Math.floor((distance % (1000 * 60 * 60 * 24 * 60)) / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  const ended = days < 1 && hours < 1 && minutes < 1 && seconds < 1;
+  const actualUserId = user.user_id.replace('matrix-', '');
+  const result = {
+    body: `Reactdrop #${id}
+
+🎉 ${user.username} has started a react airdrop! 🎉
+
+ℹ️ React to this message ONLY with ${emoji} to win a share in ${amount / 1e8} ${settings.coin.ticker}! You will also be presented with a simple math question in your direct messages which you need to solve to be eligible.
+
+${!ended ? `:clock9: Time remaining ${days > 0 ? `${days} days` : ''}  ${hours > 0 ? `${hours} hours` : ''} ${minutes > 0 ? `${minutes} minutes` : ''} ${seconds > 0 ? `${seconds} seconds` : ''}` : `Ended`}`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><h5>Reactdrop #${id}</h5>
+<p><strong>
+🎉 <a href="https://matrix.to/#/${actualUserId}">${user.username}</a> has started a react airdrop! 🎉<br><br>
+
+ℹ️ React to this message ONLY with ${emoji} to win a share in ${amount / 1e8} ${settings.coin.ticker}! You will also be presented with a simple math question in your direct messages which you need to solve to be eligible.
+<br><br>
+${!ended ? `🕘️ Time remaining ${days > 0 ? `${days} days` : ''}  ${hours > 0 ? `${hours} hours` : ''} ${minutes > 0 ? `${minutes} minutes` : ''} ${seconds > 0 ? `${seconds} seconds` : ''}` : `Ended`}
+</strong></p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
+export const invalidEmojiMessage = (
+  message,
+  title,
+) => {
+  const result = {
+    body: `${title}
+${message.sender.name}, You used an invalid emoji`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><h5>${title}</h5>
+<p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, You used an invalid emoji</strong></p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
+export const minimumTimeReactDropMessage = (
+  message,
+) => {
+  const result = {
+    body: `Reactdrop
+${message.sender.name}, Minimum time for reactdrop is 60 seconds (60s)`,
+    msgtype: "m.text",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><h5>Reactdrop</h5>
+<p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Minimum time for reactdrop is 60 seconds (60s)</strong></p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
+  };
+  return result;
+};
+
+export const invalidTimeMessage = (
+  message,
+  title,
+) => {
   const result = {
     body: `${title}
 ${message.sender.name}, Invalid time`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>${title}</h5><br>
+    formatted_body: `<blockquote><h5>${title}</h5>
 <p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Invalid time</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };

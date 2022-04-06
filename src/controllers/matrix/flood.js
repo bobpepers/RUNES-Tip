@@ -56,23 +56,6 @@ export const matrixFlood = async (
     }
     if (!user) return;
 
-    const currentRoom = await matrixClient.getRoom(message.sender.roomId);
-    const members = await currentRoom.getMembers();
-
-    const onlineMembers = members.filter((member) => {
-      console.log(member);
-      console.log(member.presence);
-      return member;
-    });
-
-    const withoutBots = await mapMembers(
-      matrixClient,
-      message,
-      t,
-      onlineMembers,
-      setting,
-    );
-
     const [
       activityValiateAmount,
       amount,
@@ -90,6 +73,23 @@ export const matrixFlood = async (
       activity.unshift(activityValiateAmount);
       return;
     }
+
+    const currentRoom = await matrixClient.getRoom(message.sender.roomId);
+    const members = await currentRoom.getMembers();
+
+    const onlineMembers = members.filter((member) => {
+      console.log(member);
+      console.log(member.presence);
+      return member;
+    });
+
+    const withoutBots = await mapMembers(
+      matrixClient,
+      message,
+      t,
+      onlineMembers,
+      setting,
+    );
 
     if (withoutBots.length < 2) {
       const factivity = await db.activity.create({

@@ -153,7 +153,7 @@ export const listenReactDrop = async (
                       new MessageButton()
                         .setLabel('Back to ReactDrop')
                         .setStyle('LINK')
-                        .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`),
+                        .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.messageId}`),
                     );
 
                     await m.react('✅');
@@ -191,7 +191,7 @@ export const listenReactDrop = async (
                       new MessageButton()
                         .setLabel('Back to ReactDrop')
                         .setStyle('LINK')
-                        .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.discordMessageId}`),
+                        .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.messageId}`),
                     );
                     await m.react('❌');
                     await collector.send({
@@ -436,7 +436,15 @@ export const listenReactDrop = async (
               await reactMessage.channel.send(element);
             }
             const initiator = endReactDrop.user.user_id.replace('discord-', '');
-            await reactMessage.channel.send({ embeds: [AfterReactDropSuccessMessage(endReactDrop, amountEach, initiator)] });
+            await reactMessage.channel.send({
+              embeds: [
+                AfterReactDropSuccessMessage(
+                  endReactDrop,
+                  amountEach,
+                  initiator,
+                ),
+              ],
+            });
           }
         }
 
@@ -574,7 +582,6 @@ export const discordReactDrop = async (
         // eslint-disable-next-line no-param-reassign
         filteredMessage[4] = _.sample(allEmojis);
       }
-      console.log(filteredMessage[4]);
 
       if (!allEmojis.includes(filteredMessage[4])) {
         const failEmojiActivity = await db.activity.create({
@@ -585,7 +592,14 @@ export const discordReactDrop = async (
           transaction: t,
         });
         activity.unshift(failEmojiActivity);
-        await message.channel.send({ embeds: [invalidEmojiMessage(message, 'Reactdrop')] });
+        await message.channel.send({
+          embeds: [
+            invalidEmojiMessage(
+              message,
+              'Reactdrop',
+            ),
+          ],
+        });
       } else {
         const timeDay = Number(cutNumberTime) * 24 * 60 * 60 * 1000;
         const timeHour = Number(cutNumberTime) * 60 * 60 * 1000;
@@ -670,8 +684,9 @@ export const discordReactDrop = async (
             channelId: channel.id,
             ends: dateObj,
             emoji: filteredMessage[4],
-            discordMessageId: 'notYetSpecified',
+            messageId: 'notYetSpecified',
             userId: user.id,
+            side: 'discord',
           }, {
             transaction: t,
             lock: t.LOCK.UPDATE,
@@ -690,7 +705,7 @@ export const discordReactDrop = async (
           });
 
           const newUpdatedReactDrop = await newReactDrop.update({
-            discordMessageId: sendReactDropMessage.id,
+            messageId: sendReactDropMessage.id,
           }, {
             transaction: t,
             lock: t.LOCK.UPDATE,
@@ -781,7 +796,13 @@ export const discordReactDrop = async (
     console.log(err);
     console.log(useEmojis);
     logger.error(`reactdrop error: ${err}\nEmojis used: ${useEmojis}`);
-    await message.channel.send({ embeds: [discordErrorMessage("ReactDrop")] }).catch((e) => {
+    await message.channel.send({
+      embeds: [
+        discordErrorMessage(
+          "ReactDrop",
+        ),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
   });

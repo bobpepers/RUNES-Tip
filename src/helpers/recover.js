@@ -10,6 +10,10 @@ import {
 } from "../messages/discord";
 import { listenReactDrop } from "../controllers/discord/reactdrop";
 import { listenTrivia } from "../controllers/discord/trivia";
+import { listenMatrixReactDrop } from "../controllers/matrix/reactdrop";
+import {
+  matrixReactDropMessage,
+} from "../messages/matrix";
 
 export const recoverDiscordReactdrops = async (
   discordClient,
@@ -19,6 +23,7 @@ export const recoverDiscordReactdrops = async (
   const allRunningReactDrops = await db.reactdrop.findAll({
     where: {
       ended: false,
+      side: 'discord',
     },
     include: [
       {
@@ -44,7 +49,7 @@ export const recoverDiscordReactdrops = async (
     // eslint-disable-next-line no-await-in-loop
     const reactMessage = await discordClient.guilds.cache.get(actualGroupId)
       .channels.cache.get(actualChannelId)
-      .messages.fetch(runningReactDrop.discordMessageId);
+      .messages.fetch(runningReactDrop.messageId);
     // eslint-disable-next-line no-await-in-loop
     const countDownDate = await runningReactDrop.ends.getTime();
     let now = new Date().getTime();
@@ -125,7 +130,7 @@ export const recoverDiscordTrivia = async (
     // eslint-disable-next-line no-await-in-loop
     const triviaMessage = await discordClient.guilds.cache.get(actualGroupId)
       .channels.cache.get(actualChannelId)
-      .messages.fetch(runningTrivia.discordMessageId);
+      .messages.fetch(runningTrivia.messageId);
 
     // eslint-disable-next-line no-await-in-loop
     const countDownDate = await runningTrivia.ends.getTime();
@@ -197,4 +202,76 @@ export const recoverDiscordTrivia = async (
     );
   }
   return true;
+};
+
+export const recoverMatrixReactdrops = async (
+  matrixClient,
+  io,
+  queue,
+) => {
+  const allRunningReactDrops = await db.reactdrop.findAll({
+    where: {
+      ended: false,
+      side: 'matrix',
+    },
+    include: [
+      {
+        model: db.group,
+        as: 'group',
+      },
+      {
+        model: db.user,
+        as: 'user',
+      },
+    ],
+  });
+  // eslint-disable-next-line no-restricted-syntax
+  for (const runningReactDrop of allRunningReactDrops) {
+    const actualGroupId = runningReactDrop.group.groupId.replace('matrix-', '');
+    // const actualUserId = runningReactDrop.user.user_id.replace('matrix-', '');
+
+    // eslint-disable-next-line no-await-in-loop
+    const countDownDate = await runningReactDrop.ends.getTime();
+    let now = new Date().getTime();
+    let distance = countDownDate - now;
+    console.log('recover listenMatrixReactDrop');
+    // eslint-disable-next-line no-await-in-loop
+    await listenMatrixReactDrop(
+      matrixClient,
+      runningReactDrop.messageId,
+      distance,
+      runningReactDrop,
+      io,
+      queue,
+    );
+
+    // eslint-disable-next-line no-loop-func
+    const updateMessage = setInterval(async () => {
+      now = new Date().getTime();
+      console.log('listen');
+      distance = countDownDate - now;
+      const editedMessage = matrixReactDropMessage(
+        runningReactDrop.id,
+        distance,
+        runningReactDrop.user,
+        runningReactDrop.emoji,
+        runningReactDrop.amount,
+      );
+      await matrixClient.sendEvent(
+        actualGroupId,
+        'm.room.message',
+        {
+          "m.relates_to": {
+            event_id: runningReactDrop.messageId,
+            rel_type: "m.replace",
+          },
+          body: editedMessage.body,
+          "m.new_content": editedMessage,
+        },
+      );
+      if (distance < 0) {
+        clearInterval(updateMessage);
+      }
+    }, 10000);
+  }
 };

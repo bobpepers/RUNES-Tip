@@ -3,13 +3,11 @@
 import _ from "lodash";
 import { Transaction } from "sequelize";
 import db from '../models';
-
 import getCoinSettings from '../config/settings';
 import { getInstance } from "./rclient";
 import { waterFaucet } from "../helpers/waterFaucet";
-import logger from "../helpers/logger";
-
 import { isDepositOrWithdrawalCompleteMessageHandler } from '../helpers/messageHandlers';
+import logger from "../helpers/logger";
 
 const settings = getCoinSettings();
 

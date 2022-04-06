@@ -16,6 +16,7 @@ import { tipRunesToMatrixUser } from '../controllers/matrix/tip';
 import { matrixPrice } from '../controllers/matrix/price';
 import { matrixFeeSchedule } from '../controllers/matrix/fees';
 import { matrixCoinInfo } from '../controllers/matrix/info';
+import { matrixReactDrop } from '../controllers/matrix/reactdrop';
 import { updateMatrixGroup } from '../controllers/matrix/group';
 import { matrixFeatureSettings } from '../controllers/matrix/settings';
 import { waterFaucetSettings } from '../controllers/settings';
@@ -491,6 +492,40 @@ export const matrixRouter = async (
 
           await executeTipFunction(
             matrixSleet,
+            queue,
+            filteredMessage[2],
+            matrixClient,
+            message,
+            filteredMessage,
+            io,
+            groupTask,
+            setting,
+            faucetSetting,
+            userDirectMessageRoomId,
+            isCurrentRoomDirectMessage,
+          );
+        }
+
+        if (filteredMessage[1] && filteredMessage[1].toLowerCase() === 'reactdrop') {
+          const limited = await myRateLimiter(
+            matrixClient,
+            message,
+            'matrix',
+            'Reactdrop',
+          );
+          if (limited) return;
+
+          const setting = await matrixFeatureSettings(
+            matrixClient,
+            message,
+            'reactdrop',
+            groupTaskId,
+            channelTaskId,
+          );
+          if (!setting) return;
+
+          await executeTipFunction(
+            matrixReactDrop,
             queue,
             filteredMessage[2],
             matrixClient,
