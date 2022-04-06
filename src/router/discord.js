@@ -26,24 +26,25 @@ import { discordStats } from '../controllers/discord/stats';
 import { discordPublicStats } from '../controllers/discord/publicstats';
 import { discordHalving } from '../controllers/discord/halving';
 import { discordMining } from '../controllers/discord/mining';
-import { discordLeaderboard } from '../controllers/discord/leaderboard';
+// import { discordLeaderboard } from '../controllers/discord/leaderboard';
 import { tipCoinsToDiscordFaucet, tipRunesToDiscordUser } from '../controllers/discord/tip';
 import { createUpdateDiscordUser, updateDiscordLastSeen } from '../controllers/discord/user';
-import { discordSettings, discordwaterFaucetSettings } from '../controllers/discord/settings';
-
 import { myRateLimiter } from '../helpers/rateLimit';
 import { disallowDirectMessage } from '../helpers/client/discord/disallowDirectMessage';
 import { executeTipFunction } from '../helpers/client/discord/executeTips';
 import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
+
+import { discordFeatureSettings } from '../controllers/discord/settings';
+import { waterFaucetSettings } from '../controllers/settings';
 
 import {
   discordUserBannedMessage,
   discordServerBannedMessage,
   discordChannelBannedMessage,
 } from '../messages/discord';
-import getCoinSettings from '../config/settings';
 
-const settings = getCoinSettings();
+// import getCoinSettings from '../config/settings';
+// const settings = getCoinSettings();
 
 config();
 
@@ -127,7 +128,7 @@ export const discordRouter = (
             'Faucet',
           );
           if (limited) return;
-          const setting = await discordSettings(
+          const setting = await discordFeatureSettings(
             interaction,
             'faucet',
             groupTaskId,
@@ -216,7 +217,7 @@ export const discordRouter = (
       return;
     }
 
-    const faucetSetting = await discordwaterFaucetSettings(
+    const faucetSetting = await waterFaucetSettings(
       groupTaskId,
       channelTaskId,
     );
@@ -426,7 +427,7 @@ export const discordRouter = (
         'Faucet',
       );
       if (limited) return;
-      const setting = await discordSettings(
+      const setting = await discordFeatureSettings(
         message,
         'faucet',
         groupTaskId,
@@ -463,7 +464,7 @@ export const discordRouter = (
         'Withdraw',
       );
       if (limited) return;
-      const setting = await discordSettings(
+      const setting = await discordFeatureSettings(
         message,
         'withdraw',
         groupTaskId,
@@ -509,7 +510,7 @@ export const discordRouter = (
       });
       if (disallow) return;
 
-      const setting = await discordSettings(
+      const setting = await discordFeatureSettings(
         message,
         'tip',
         groupTaskId,
@@ -578,7 +579,7 @@ export const discordRouter = (
       });
       if (disallow) return;
 
-      const setting = await discordSettings(
+      const setting = await discordFeatureSettings(
         message,
         'voicerain',
         groupTaskId,
@@ -620,7 +621,7 @@ export const discordRouter = (
       });
       if (disallow) return;
 
-      const setting = await discordSettings(
+      const setting = await discordFeatureSettings(
         message,
         'rain',
         groupTaskId,
@@ -662,7 +663,7 @@ export const discordRouter = (
       });
       if (disallow) return;
 
-      const setting = await discordSettings(
+      const setting = await discordFeatureSettings(
         message,
         'flood',
         groupTaskId,
@@ -704,7 +705,7 @@ export const discordRouter = (
       });
       if (disallow) return;
 
-      const setting = await discordSettings(
+      const setting = await discordFeatureSettings(
         message,
         'thunder',
         groupTaskId,
@@ -746,7 +747,7 @@ export const discordRouter = (
       });
       if (disallow) return;
 
-      const setting = await discordSettings(
+      const setting = await discordFeatureSettings(
         message,
         'thunderstorm',
         groupTaskId,
@@ -788,7 +789,7 @@ export const discordRouter = (
       });
       if (disallow) return;
 
-      const setting = await discordSettings(
+      const setting = await discordFeatureSettings(
         message,
         'hurricane',
         groupTaskId,
@@ -830,7 +831,7 @@ export const discordRouter = (
       });
       if (disallow) return;
 
-      const setting = await discordSettings(
+      const setting = await discordFeatureSettings(
         message,
         'soak',
         groupTaskId,
@@ -872,7 +873,7 @@ export const discordRouter = (
       });
       if (disallow) return;
 
-      const setting = await discordSettings(
+      const setting = await discordFeatureSettings(
         message,
         'sleet',
         groupTaskId,
@@ -913,7 +914,7 @@ export const discordRouter = (
       });
       if (disallow) return;
 
-      const setting = await discordSettings(
+      const setting = await discordFeatureSettings(
         message,
         'reactdrop',
         groupTaskId,
@@ -955,7 +956,7 @@ export const discordRouter = (
       });
       if (disallow) return;
 
-      const setting = await discordSettings(
+      const setting = await discordFeatureSettings(
         message,
         'trivia',
         groupTaskId,

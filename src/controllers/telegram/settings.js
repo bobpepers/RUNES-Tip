@@ -4,8 +4,9 @@ import {
   featureDisabledGlobalMessage,
 } from '../../messages/telegram';
 import db from '../../models';
+import { capitalize } from '../../helpers/utils';
 
-export const telegramSettings = async (
+export const telegramFeatureSettings = async (
   ctx,
   name,
   groupId = null,
@@ -58,40 +59,5 @@ export const telegramSettings = async (
     }
     return false;
   }
-  return setting;
-};
-
-export const telegramWaterFaucetSettings = async (
-  groupId = null,
-  channelId = null,
-) => {
-  let setting;
-  setting = await db.features.findOne({
-    where: {
-      type: 'local',
-      name: 'faucet',
-      groupId,
-      channelId,
-    },
-  });
-  if (!setting) {
-    setting = await db.features.findOne({
-      where: {
-        type: 'local',
-        name: 'faucet',
-        groupId,
-        channelId: null,
-      },
-    });
-  }
-  if (!setting) {
-    setting = await db.features.findOne({
-      where: {
-        type: 'global',
-        name: 'faucet',
-      },
-    });
-  }
-
   return setting;
 };

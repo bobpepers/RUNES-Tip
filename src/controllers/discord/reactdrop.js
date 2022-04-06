@@ -27,7 +27,7 @@ import { generateCaptcha } from "../../helpers/generateCaptcha";
 import { waterFaucet } from "../../helpers/waterFaucet";
 import { validateAmount } from "../../helpers/client/discord/validateAmount";
 import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
-import { discordwaterFaucetSettings } from './settings';
+import { waterFaucetSettings } from '../settings';
 
 export const listenReactDrop = async (
   reactMessage,
@@ -345,7 +345,7 @@ export const listenReactDrop = async (
             });
           } else {
             // Get Faucet Settings
-            const faucetSetting = await discordwaterFaucetSettings(
+            const faucetSetting = await waterFaucetSettings(
               endReactDrop.group.id,
               endReactDrop.channel.id,
               t,

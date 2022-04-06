@@ -6,10 +6,9 @@ import {
   settingsNotFoundMessage,
 } from '../../messages/matrix';
 import db from '../../models';
+import { capitalize } from '../../helpers/utils';
 
-const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1); // Upper case first letter
-
-export const matrixSettings = async (
+export const matrixFeatureSettings = async (
   matrixClient,
   message,
   name,
@@ -81,40 +80,5 @@ export const matrixSettings = async (
     return false;
   }
   console.log(setting);
-  return setting;
-};
-
-export const matrixWaterFaucetSettings = async (
-  groupId = null,
-  channelId = null,
-) => {
-  let setting;
-  setting = await db.features.findOne({
-    where: {
-      type: 'local',
-      name: 'faucet',
-      groupId,
-      channelId,
-    },
-  });
-  if (!setting) {
-    setting = await db.features.findOne({
-      where: {
-        type: 'local',
-        name: 'faucet',
-        groupId,
-        channelId: null,
-      },
-    });
-  }
-  if (!setting) {
-    setting = await db.features.findOne({
-      where: {
-        type: 'global',
-        name: 'faucet',
-      },
-    });
-  }
-
   return setting;
 };

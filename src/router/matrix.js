@@ -16,32 +16,17 @@ import { tipRunesToMatrixUser } from '../controllers/matrix/tip';
 import { matrixPrice } from '../controllers/matrix/price';
 import { matrixFeeSchedule } from '../controllers/matrix/fees';
 import { matrixCoinInfo } from '../controllers/matrix/info';
-
-import {
-  findUserDirectMessageRoom,
-  inviteUserToDirectMessageRoom,
-} from '../helpers/client/matrix/directMessageRoom';
-
-import {
-  createUpdateMatrixUser,
-  updateMatrixLastSeen,
-} from '../controllers/matrix/user';
-
 import { updateMatrixGroup } from '../controllers/matrix/group';
-
-import {
-  matrixSettings,
-  matrixWaterFaucetSettings,
-} from '../controllers/matrix/settings';
+import { matrixFeatureSettings } from '../controllers/matrix/settings';
+import { waterFaucetSettings } from '../controllers/settings';
+import { createUpdateMatrixUser, updateMatrixLastSeen } from '../controllers/matrix/user';
+import { myRateLimiter } from '../helpers/rateLimit';
+import { findUserDirectMessageRoom, inviteUserToDirectMessageRoom } from '../helpers/client/matrix/directMessageRoom';
 
 import {
   matrixUserBannedMessage,
   matrixRoomBannedMessage,
 } from '../messages/matrix';
-
-import { myRateLimiter } from '../helpers/rateLimit';
-
-import db from '../models';
 
 config();
 
@@ -218,7 +203,7 @@ export const matrixRouter = async (
 
       if (!myBody.startsWith(settings.bot.command.matrix)) return;
       if (myBody.startsWith(settings.bot.command.matrix)) {
-        faucetSetting = await matrixWaterFaucetSettings(
+        faucetSetting = await waterFaucetSettings(
           groupTaskId,
           channelTaskId,
         );
@@ -427,7 +412,7 @@ export const matrixRouter = async (
           );
           if (limited) return;
 
-          const setting = await matrixSettings(
+          const setting = await matrixFeatureSettings(
             matrixClient,
             message,
             'withdraw',
@@ -461,7 +446,7 @@ export const matrixRouter = async (
           );
           if (limited) return;
 
-          const setting = await matrixSettings(
+          const setting = await matrixFeatureSettings(
             matrixClient,
             message,
             'flood',
@@ -495,7 +480,7 @@ export const matrixRouter = async (
           );
           if (limited) return;
 
-          const setting = await matrixSettings(
+          const setting = await matrixFeatureSettings(
             matrixClient,
             message,
             'sleet',
@@ -533,7 +518,7 @@ export const matrixRouter = async (
           );
           if (limited) return;
 
-          const setting = await matrixSettings(
+          const setting = await matrixFeatureSettings(
             matrixClient,
             message,
             'tip',

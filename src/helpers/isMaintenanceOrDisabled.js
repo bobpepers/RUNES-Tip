@@ -29,13 +29,17 @@ export const isMaintenanceOrDisabled = async (
   if (side === 'discord') {
     if (!botSetting.enabled) {
       await message.reply({
-        embeds: [discordBotDisabledMessage()],
+        embeds: [
+          discordBotDisabledMessage(),
+        ],
       }).catch((e) => {
         console.log(e);
       });
     } else if (botSetting.maintenance) {
       await message.reply({
-        embeds: [discordBotMaintenanceMessage()],
+        embeds: [
+          discordBotMaintenanceMessage(),
+        ],
       }).catch((e) => {
         console.log(e);
       });

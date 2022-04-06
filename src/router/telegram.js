@@ -13,35 +13,29 @@ import { telegramFlood } from '../controllers/telegram/flood';
 import { telegramSleet } from '../controllers/telegram/sleet';
 import { telegramPrice } from '../controllers/telegram/price';
 import { telegramFeeSchedule } from '../controllers/telegram/fees';
-
+import { updateLastSeen, createUpdateUser } from '../controllers/telegram/user';
 import { executeTipFunction } from '../helpers/client/telegram/executeTips';
 import { disallowDirectMessage } from '../helpers/client/telegram/disallowDirectMessage';
 import { isMaintenanceOrDisabled } from '../helpers/isMaintenanceOrDisabled';
 import { myRateLimiter } from '../helpers/rateLimit';
-
 import { updateGroup } from '../controllers/telegram/group';
-import {
-  updateLastSeen,
-  createUpdateUser,
-} from '../controllers/telegram/user';
-import {
-  fetchReferralCount,
-  // createReferral,
-  fetchReferralTopTen,
-} from '../controllers/telegram/referral';
-import {
-  telegramSettings,
-  telegramWaterFaucetSettings,
-} from '../controllers/telegram/settings';
+import { telegramFeatureSettings } from '../controllers/telegram/settings';
+import { waterFaucetSettings } from '../controllers/settings';
 
 import {
   telegramUserBannedMessage,
   telegramServerBannedMessage,
 } from '../messages/telegram';
 
-import getCoinSettings from '../config/settings';
+import {
+  fetchReferralCount,
+  // createReferral,
+  fetchReferralTopTen,
+} from '../controllers/telegram/referral';
 
-const settings = getCoinSettings();
+// import getCoinSettings from '../config/settings';
+
+// const settings = getCoinSettings();
 
 config();
 
@@ -478,7 +472,7 @@ export const telegramRouter = async (
       }
       const groupTaskId = groupTask && groupTask.id;
 
-      const faucetSetting = await telegramWaterFaucetSettings(
+      const faucetSetting = await waterFaucetSettings(
         groupTaskId,
       );
       if (!faucetSetting) return;
@@ -653,7 +647,7 @@ export const telegramRouter = async (
         });
         if (disallow) return;
 
-        const setting = await telegramSettings(
+        const setting = await telegramFeatureSettings(
           ctx,
           'flood',
           groupTaskId,
@@ -694,7 +688,7 @@ export const telegramRouter = async (
         });
         if (disallow) return;
 
-        const setting = await telegramSettings(
+        const setting = await telegramFeatureSettings(
           ctx,
           'sleet',
           groupTaskId,
@@ -735,7 +729,7 @@ export const telegramRouter = async (
         });
         if (disallow) return;
 
-        const setting = await telegramSettings(
+        const setting = await telegramFeatureSettings(
           ctx,
           'rain',
           groupTaskId,
@@ -766,7 +760,7 @@ export const telegramRouter = async (
           'Withdraw',
         );
         if (limited) return;
-        const setting = await telegramSettings(
+        const setting = await telegramFeatureSettings(
           ctx,
           'withdraw',
           groupTaskId,
@@ -814,7 +808,7 @@ export const telegramRouter = async (
         });
         if (disallow) return;
 
-        const setting = await telegramSettings(
+        const setting = await telegramFeatureSettings(
           ctx,
           'tip',
           groupTaskId,

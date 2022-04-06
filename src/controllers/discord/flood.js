@@ -29,11 +29,6 @@ export const discordFlood = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    // if (!groupTask || !channelTask) {
-    //  await message.channel.send({ embeds: [NotInDirectMessage(message, 'Flood')] });
-    //  return;
-    // }
-
     const [
       user,
       userActivity,
@@ -50,7 +45,8 @@ export const discordFlood = async (
     const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
 
     const onlineMembers = members.filter((member) => {
-      console.log(member.presence);
+      // console.log(member.presence);
+      console.log('-');
       return member;
     });
 
@@ -86,7 +82,14 @@ export const discordFlood = async (
         transaction: t,
       });
       activity.unshift(factivity);
-      await message.channel.send({ embeds: [notEnoughActiveUsersMessage(message, 'Flood')] });
+      await message.channel.send({
+        embeds: [
+          notEnoughActiveUsersMessage(
+            message,
+            'Flood',
+          ),
+        ],
+      });
       return;
     }
     const updatedBalance = await user.wallet.update({
@@ -104,6 +107,7 @@ export const discordFlood = async (
       Number(fee),
       faucetSetting,
     );
+
     const floodRecord = await db.flood.create({
       feeAmount: fee,
       amount,

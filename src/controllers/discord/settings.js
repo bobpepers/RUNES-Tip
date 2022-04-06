@@ -7,7 +7,7 @@ import {
 import db from '../../models';
 import { capitalize } from '../../helpers/utils';
 
-export const discordSettings = async (
+export const discordFeatureSettings = async (
   message,
   name,
   groupId = null,
@@ -83,59 +83,5 @@ export const discordSettings = async (
     });
     return false;
   }
-  return setting;
-};
-
-export const discordwaterFaucetSettings = async (
-  groupId = null,
-  channelId = null,
-  t = null,
-) => {
-  let setting;
-  setting = await db.features.findOne({
-    where: {
-      type: 'local',
-      name: 'faucet',
-      groupId,
-      channelId,
-    },
-    ...(
-      t && {
-        lock: t.LOCK.UPDATE,
-        transaction: t,
-      }
-    ),
-  });
-  if (!setting) {
-    setting = await db.features.findOne({
-      where: {
-        type: 'local',
-        name: 'faucet',
-        groupId,
-        channelId: null,
-      },
-      ...(
-        t && {
-          lock: t.LOCK.UPDATE,
-          transaction: t,
-        }
-      ),
-    });
-  }
-  if (!setting) {
-    setting = await db.features.findOne({
-      where: {
-        type: 'global',
-        name: 'faucet',
-      },
-      ...(
-        t && {
-          lock: t.LOCK.UPDATE,
-          transaction: t,
-        }
-      ),
-    });
-  }
-
   return setting;
 };
