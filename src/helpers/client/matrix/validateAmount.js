@@ -6,8 +6,6 @@ import {
   minimumMessage,
 } from '../../../messages/matrix';
 
-const capitalize = (s) => s && s[0].toUpperCase() + s.slice(1);
-
 export const validateAmount = async (
   matrixClient,
   message,
@@ -20,7 +18,6 @@ export const validateAmount = async (
   usersToTip = null,
 ) => {
   let activity;
-  const capType = capitalize(type);
   let amount = 0;
 
   if (!preAmount) {
@@ -36,10 +33,9 @@ export const validateAmount = async (
       "m.room.message",
       invalidAmountMessage(
         message,
-        capType,
+        type,
       ),
     );
-    // await message.channel.send({ embeds: [invalidAmountMessage(message, capType)] });
     return [
       activity,
       amount,
@@ -66,10 +62,9 @@ export const validateAmount = async (
       minimumMessage(
         message,
         setting,
-        capType,
+        type,
       ),
     );
-    // await message.channel.send({ embeds: [minimumMessage(message, setting, capType)] });
     return [
       activity,
       amount,
@@ -93,10 +88,9 @@ export const validateAmount = async (
       "m.room.message",
       invalidAmountMessage(
         message,
-        capType,
+        type,
       ),
     );
-    // await message.channel.send({ embeds: [invalidAmountMessage(message, capType)] });
     return [
       activity,
       amount,
@@ -116,10 +110,9 @@ export const validateAmount = async (
       "m.room.message",
       invalidAmountMessage(
         message,
-        capType,
+        type,
       ),
     );
-    // await message.channel.send({ embeds: [invalidAmountMessage(message, capType)] });
     return [
       activity,
       amount,
@@ -140,16 +133,15 @@ export const validateAmount = async (
       "m.room.message",
       insufficientBalanceMessage(
         message,
-        capType,
+        type,
       ),
     );
-    // await message.channel.send({ embeds: [insufficientBalanceMessage(message, capType)] });
     return [
       activity,
       amount,
     ];
   }
-  console.log(`amount: ${amount}`);
+
   return [
     activity,
     amount,

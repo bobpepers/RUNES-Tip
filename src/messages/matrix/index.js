@@ -168,7 +168,9 @@ ${username}, i've sent you a direct message.
 ${settings.bot.name} v${pjson.version}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><p>${title}</p><p><strong>${username}, i've sent you a direct message</strong></p>
+    formatted_body: `<blockquote>
+<h4>${title}</h4>
+<p><strong>${username}, i've sent you a direct message</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
@@ -311,7 +313,7 @@ Balance will be reflected in your wallet in ~${settings.min.confirmations}+ conf
 ${settings.coin.explorer}/tx/${detail.transaction[0].txid}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>Deposit #${detail.transaction[0].id}</h5>
+    formatted_body: `<blockquote><h4>Deposit #${detail.transaction[0].id}</h4>
 <p>incoming deposit detected for <strong>${detail.amount} ${settings.coin.ticker}</strong><br>
 Balance will be reflected in your wallet in <strong>~${settings.min.confirmations}+ confirmations</strong><br>
 ${settings.coin.explorer}/tx/${detail.transaction[0].txid}</p>
@@ -331,7 +333,7 @@ Deposit Confirmed
 ${amount} ${settings.coin.ticker} has been credited to your wallet`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>Deposit #${trans.id}</h5>
+    formatted_body: `<blockquote><h4>Deposit #${trans.id}</h4>
 <p>Deposit Confirmed<br>
 ${amount} ${settings.coin.ticker} has been credited to your wallet</p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p>
@@ -470,10 +472,12 @@ export const invalidAmountMessage = (
   title,
 ) => {
   const result = {
-    body: `${message.sender.name}, Invalid Amount`,
+    body: `${capitalize(title)}
+${message.sender.name}, Invalid Amount`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Invalid Amount</strong></p>
+    formatted_body: `<blockquote><h4>${capitalize(title)}</h4>
+<p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Invalid Amount</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
@@ -484,10 +488,12 @@ export const insufficientBalanceMessage = (
   title,
 ) => {
   const result = {
-    body: `${message.sender.name}, Insufficient balance`,
+    body: `${capitalize(title)}
+${message.sender.name}, Insufficient balance`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Insufficient balance</strong></p>
+    formatted_body: `<blockquote><h4>${capitalize(title)}</h4>
+<p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Insufficient balance</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
@@ -499,10 +505,12 @@ export const minimumMessage = (
   type,
 ) => {
   const result = {
-    body: `${message.sender.name}, Minimum ${type} is ${setting.min / 1e8} ${settings.coin.ticker}`,
+    body: `${capitalize(type)}
+${message.sender.name}, Minimum ${type} is ${setting.min / 1e8} ${settings.coin.ticker}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Minimum ${type} is ${setting.min / 1e8} ${settings.coin.ticker}</strong></p>
+    formatted_body: `<blockquote><h4>${capitalize(type)}</h4>
+<p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Minimum ${type} is ${setting.min / 1e8} ${settings.coin.ticker}</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
@@ -539,7 +547,7 @@ fee: ${fee}
 total: ${total}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>Withdraw #${transaction.id}</h5>
+    formatted_body: `<blockquote><h4>Withdraw #${transaction.id}</h4>
 <p><strong>
 <a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>,  Your withdrawal is being reviewed<br><br>
 
@@ -582,7 +590,7 @@ total: ${total}
 ${settings.coin.explorer}/tx/${updatedTrans.txid}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>Withdraw #${updatedTrans.id}</h5>
+    formatted_body: `<blockquote><h4>Withdraw #${updatedTrans.id}</h4>
 <p><strong>
 Your withdrawal has been accepted<br><br>
 amount: ${amount}<br>
@@ -605,7 +613,7 @@ export const matrixWithdrawalConfirmedMessage = (
 ${userId}, Your withdrawal has been complete`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><strong><h5>Withdraw #${trans.id}</h5><br><p>${userId}, Your withdrawal has been complete</p></strong>
+    formatted_body: `<blockquote><strong><h4>Withdraw #${trans.id}</h4><br><p>${userId}, Your withdrawal has been complete</p></strong>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
@@ -628,7 +636,8 @@ export const notInDirectMessage = (message, title) => {
 ${message.sender.name}, Can't use this command in a direct message`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><strong><h5>${title}</h5><p><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Can't use this command in a direct message</p></strong>
+    formatted_body: `<blockquote><strong><h4>${title}</h4>
+<p><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Can't use this command in a direct message</p></strong>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
   return result;
@@ -644,7 +653,7 @@ Reason:
 ${user.banMessage}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>🚫     User: ${user.username} Banned     🚫</h5>
+    formatted_body: `<blockquote><h4>🚫     User: ${user.username} Banned     🚫</h4>
 <p><strong>Reason:<br>
 ${user.banMessage}</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -662,7 +671,7 @@ ${server.banMessage}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
-<h5>🚫     Server Banned     🚫</h5>
+<h4>🚫     Server Banned     🚫</h4>
 <p><strong>Reason:<br>
 ${server.banMessage}</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -708,7 +717,7 @@ ${message.sender.name} ${typeH} **${amount / 1e8} ${settings.coin.ticker}** on $
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
-<h5>${type} #${id}</h5>
+<h4>${type} #${id}</h4>
 <p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a> ${typeH} <u>${amount / 1e8} ${settings.coin.ticker}</u> on ${withoutBots.length} users<br>
 💸 <u>${amountPerUser / 1e8} ${settings.coin.ticker}</u> each 💸</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -724,16 +733,16 @@ export const afterReactDropSuccessMessage = (
   const initiatorId = user.user_id.replace('matrix-', '');
   const result = {
     body: `Reactdrop #${endReactDrop.id}\n
-🎉<a href="https://matrix.to/#/${endReactDrop.group.groupId.replace("matrix-", "")}/${endReactDrop.messageId}">[React airdrop]</a> started by <a href="https://matrix.to/#/${initiatorId}">${user.username}</a> has finished!🎉
+🎉 <a href="https://matrix.to/#/${endReactDrop.group.groupId.replace("matrix-", "")}/${endReactDrop.messageId}">React airdrop</a> started by <a href="https://matrix.to/#/${initiatorId}">${user.username}</a> has finished! 🎉
 \n\n
-💸${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)!💸`,
+💸 ${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)! 💸`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>Reactdrop #${endReactDrop.id}</h5>
+    formatted_body: `<blockquote><h4>Reactdrop #${endReactDrop.id}</h4>
 <p><strong>
-🎉<a href="https://matrix.to/#/${endReactDrop.group.groupId.replace("matrix-", "")}/${endReactDrop.messageId}">[React airdrop]</a> started by <a href="https://matrix.to/#/${initiatorId}">${user.username}</a> has finished!🎉
+🎉 <a href="https://matrix.to/#/${endReactDrop.group.groupId.replace("matrix-", "")}/${endReactDrop.messageId}">React airdrop</a> started by <a href="https://matrix.to/#/${initiatorId}">${user.username}</a> has finished! 🎉
 <br><br>
-💸${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)!💸
+💸 ${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)! 💸
 </strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
@@ -746,7 +755,7 @@ export const maxTimeReactdropMessage = () => {
 Maximum time is 2 days`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>Reactdrop</h5>
+    formatted_body: `<blockquote><h4>Reactdrop</h4>
 <p><strong>Maximum time is 2 days</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
@@ -759,7 +768,7 @@ export const reactDropReturnInitiatorMessage = () => {
 Nobody claimed, returning funds to reactdrop initiator`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>Reactdrop</h5>
+    formatted_body: `<blockquote><h4>Reactdrop</h4>
 <p><strong>Nobody claimed, returning funds to reactdrop initiator</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
@@ -773,7 +782,7 @@ export const outOfTimeReactdropMessage = (
     body: `Out of Time`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>Reactdrop</h5>
+    formatted_body: `<blockquote><h4>Reactdrop</h4>
 <p><strong>Out of time</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
@@ -801,7 +810,7 @@ export const reactdropCaptchaMessage = (
 ${message.sender.userId} you have 1 minute to guess`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>Reactdrop</h5>
+    formatted_body: `<blockquote><h4>Reactdrop</h4>
 <p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you have 1 minute to guessi</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
@@ -854,11 +863,12 @@ export const matrixReactDropMessage = (
 ${!ended ? `:clock9: Time remaining ${days > 0 ? `${days} days` : ''}  ${hours > 0 ? `${hours} hours` : ''} ${minutes > 0 ? `${minutes} minutes` : ''} ${seconds > 0 ? `${seconds} seconds` : ''}` : `Ended`}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>Reactdrop #${id}</h5>
+    formatted_body: `<blockquote><h4>Reactdrop #${id}</h4>
 <p><strong>
-🎉 <a href="https://matrix.to/#/${actualUserId}">${user.username}</a> has started a react airdrop! 🎉<br><br>
+🎉 ${user.username} has started a react airdrop! 🎉<br><br>
 
-ℹ️ React to this message ONLY with ${emoji} to win a share in ${amount / 1e8} ${settings.coin.ticker}! You will also be presented with a simple math question in your direct messages which you need to solve to be eligible.
+ℹ️ React to this message ONLY with ${emoji} to win a share in ${amount / 1e8} ${settings.coin.ticker}!<br><br>
+You will also be presented with a simple math question in your direct messages which you need to solve to be eligible.
 <br><br>
 ${!ended ? `🕘️ Time remaining ${days > 0 ? `${days} days` : ''}  ${hours > 0 ? `${hours} hours` : ''} ${minutes > 0 ? `${minutes} minutes` : ''} ${seconds > 0 ? `${seconds} seconds` : ''}` : `Ended`}
 </strong></p>
@@ -876,7 +886,7 @@ export const invalidEmojiMessage = (
 ${message.sender.name}, You used an invalid emoji`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>${title}</h5>
+    formatted_body: `<blockquote><h4>${title}</h4>
 <p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, You used an invalid emoji</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
@@ -891,7 +901,7 @@ export const minimumTimeReactDropMessage = (
 ${message.sender.name}, Minimum time for reactdrop is 60 seconds (60s)`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>Reactdrop</h5>
+    formatted_body: `<blockquote><h4>Reactdrop</h4>
 <p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Minimum time for reactdrop is 60 seconds (60s)</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
@@ -907,7 +917,7 @@ export const invalidTimeMessage = (
 ${message.sender.name}, Invalid time`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>${title}</h5>
+    formatted_body: `<blockquote><h4>${title}</h4>
 <p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Invalid time</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
@@ -921,7 +931,7 @@ ${message.sender.name}, you will no longer be @mentioned while receiving rains, 
 If you wish to be @mentioned, please issue this command again.`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>Ignore me</h5><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you will no longer be @mentioned while receiving rains, soaks and other mass operations, but will continue to receive coins from them.<br>
+    formatted_body: `<blockquote><h4>Ignore me</h4><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you will no longer be @mentioned while receiving rains, soaks and other mass operations, but will continue to receive coins from them.<br>
 If you wish to be @mentioned, please issue this command again.</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
@@ -935,7 +945,7 @@ ${message.sender.name}, you will again be @mentioned while receiving rains, soak
 If you do not wish to be @mentioned, please issue this command again.`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
-    formatted_body: `<blockquote><h5>Ignore me</h5><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you will again be @mentioned while receiving rains, soaks and other mass operations.<br>
+    formatted_body: `<blockquote><h4>Ignore me</h4><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you will again be @mentioned while receiving rains, soaks and other mass operations.<br>
 If you do not wish to be @mentioned, please issue this command again.</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
@@ -954,7 +964,7 @@ ${message.sender.name} tipped ${amount / 1e8} ${settings.coin.ticker} to ${listO
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
-<h5>Tip #${id}</h5>
+<h4>Tip #${id}</h4>
 <p><strong>${message.sender.name} tipped ${amount / 1e8} ${settings.coin.ticker} to ${listOfUsersRained[0]}</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
@@ -978,7 +988,7 @@ Type: **${capitalize(type)}**
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
-<h5>Tip #${id}</h5>
+<h4>Tip #${id}</h4>
 <p><strong>${message.sender.name} tipped <u>${(amount * listOfUsersRained.length) / 1e8} ${settings.coin.ticker}</u> to ${listOfUsersRained.length} users
 <br><br>
 Type: <u>${capitalize(type)}</u>
@@ -1000,7 +1010,7 @@ ${replyString}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
-<h5>Price</h5>
+<h4>Price</h4>
 <p><strong>${replyStringHtml}</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
@@ -1023,7 +1033,7 @@ ${feeString}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
-<h5>Fee schedule</h5>
+<h4>Fee schedule</h4>
 <p><strong>${feeStringHtml}</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };

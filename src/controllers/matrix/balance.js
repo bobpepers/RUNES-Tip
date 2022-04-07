@@ -51,33 +51,6 @@ export const matrixBalance = async (
 
     const userId = user.user_id.replace('matrix-', '');
 
-    if (isCurrentRoomDirectMessage) {
-      await matrixClient.sendEvent(
-        userDirectMessageRoomId,
-        "m.room.message",
-        balanceMessage(
-          userId,
-          user,
-          priceInfo,
-        ),
-      );
-    } else {
-      await matrixClient.sendEvent(
-        userDirectMessageRoomId,
-        "m.room.message",
-        balanceMessage(
-          userId,
-          user,
-          priceInfo,
-        ),
-      );
-      await matrixClient.sendEvent(
-        message.sender.roomId,
-        "m.room.message",
-        warnDirectMessage(message.sender.name, 'Help'),
-      );
-    }
-
     const createActivity = await db.activity.create({
       type: 'balance_s',
       earnerId: user.id,
@@ -101,6 +74,36 @@ export const matrixBalance = async (
       transaction: t,
     });
     activity.unshift(findActivity);
+
+    if (isCurrentRoomDirectMessage) {
+      await matrixClient.sendEvent(
+        userDirectMessageRoomId,
+        "m.room.message",
+        balanceMessage(
+          userId,
+          user,
+          priceInfo,
+        ),
+      );
+    } else {
+      await matrixClient.sendEvent(
+        userDirectMessageRoomId,
+        "m.room.message",
+        balanceMessage(
+          userId,
+          user,
+          priceInfo,
+        ),
+      );
+      await matrixClient.sendEvent(
+        message.sender.roomId,
+        "m.room.message",
+        warnDirectMessage(
+          message.sender.name,
+          'Balance',
+        ),
+      );
+    }
 
     t.afterCommit(() => {
       console.log('done balance request');
