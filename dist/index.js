@@ -318,11 +318,10 @@ global.Olm = _olm["default"];
           return (0, _recover.recoverDiscordTrivia)(discordClient, io, queue);
 
         case 82:
-          // await recoverMatrixReactdrops(
-          //   matrixClient,
-          //   io,
-          //   queue,
-          // );
+          _context3.next = 84;
+          return (0, _recover.recoverMatrixReactdrops)(matrixClient, io, queue);
+
+        case 84:
           scheduleUpdateConversionRatesFiat = _nodeSchedule["default"].scheduleJob('0 */8 * * *', function () {
             // Update Fiat conversion rates every 8 hours
             (0, _updateConversionRates.updateConversionRatesFiat)();
@@ -367,7 +366,7 @@ global.Olm = _olm["default"];
           server.listen(port);
           console.log('server listening on:', port);
 
-        case 90:
+        case 92:
         case "end":
           return _context3.stop();
       }

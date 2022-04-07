@@ -248,7 +248,6 @@ export const recoverMatrixReactdrops = async (
     // eslint-disable-next-line no-loop-func
     const updateMessage = setInterval(async () => {
       now = new Date().getTime();
-      console.log('listen');
       distance = countDownDate - now;
       const editedMessage = matrixReactDropMessage(
         runningReactDrop.id,
@@ -265,6 +264,9 @@ export const recoverMatrixReactdrops = async (
             event_id: runningReactDrop.messageId,
             rel_type: "m.replace",
           },
+          msgtype: "m.text",
+          format: 'org.matrix.custom.html',
+          formatted_body: editedMessage.formatted_body,
           body: editedMessage.body,
           "m.new_content": editedMessage,
         },

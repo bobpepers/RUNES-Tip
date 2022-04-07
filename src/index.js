@@ -266,11 +266,11 @@ config();
     queue,
   );
 
-  // await recoverMatrixReactdrops(
-  //   matrixClient,
-  //   io,
-  //   queue,
-  // );
+  await recoverMatrixReactdrops(
+    matrixClient,
+    io,
+    queue,
+  );
 
   const scheduleUpdateConversionRatesFiat = schedule.scheduleJob('0 */8 * * *', () => { // Update Fiat conversion rates every 8 hours
     updateConversionRatesFiat();

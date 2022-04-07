@@ -1343,6 +1343,9 @@ var matrixReactDrop = /*#__PURE__*/function () {
                                       event_id: sendReactDropMessage.event_id,
                                       rel_type: "m.replace"
                                     },
+                                    msgtype: "m.text",
+                                    format: 'org.matrix.custom.html',
+                                    formatted_body: editedMessage.formatted_body,
                                     body: editedMessage.body,
                                     "m.new_content": editedMessage
                                   });

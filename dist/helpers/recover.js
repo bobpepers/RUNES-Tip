@@ -412,25 +412,27 @@ var recoverMatrixReactdrops = /*#__PURE__*/function () {
                             switch (_context7.prev = _context7.next) {
                               case 0:
                                 now = new Date().getTime();
-                                console.log('listen');
                                 distance = countDownDate - now;
                                 editedMessage = (0, _matrix.matrixReactDropMessage)(runningReactDrop.id, distance, runningReactDrop.user, runningReactDrop.emoji, runningReactDrop.amount);
-                                _context7.next = 6;
+                                _context7.next = 5;
                                 return matrixClient.sendEvent(actualGroupId, 'm.room.message', {
                                   "m.relates_to": {
                                     event_id: runningReactDrop.messageId,
                                     rel_type: "m.replace"
                                   },
+                                  msgtype: "m.text",
+                                  format: 'org.matrix.custom.html',
+                                  formatted_body: editedMessage.formatted_body,
                                   body: editedMessage.body,
                                   "m.new_content": editedMessage
                                 });
 
-                              case 6:
+                              case 5:
                                 if (distance < 0) {
                                   clearInterval(updateMessage);
                                 }
 
-                              case 7:
+                              case 6:
                               case "end":
                                 return _context7.stop();
                             }
