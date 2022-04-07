@@ -25,13 +25,13 @@ var _utils = require("../../helpers/utils");
 var settings = (0, _settings["default"])();
 
 var featureDisabledServerMessage = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(title) {
     var result;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            result = "<u><b>This feature has been disabled for this group</b></u>\n\n<pre>".concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            result = "<b><u>".concat(title, "</u></b>\n\nThis feature has been disabled for this group\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context.abrupt("return", result);
 
           case 2:
@@ -42,7 +42,7 @@ var featureDisabledServerMessage = /*#__PURE__*/function () {
     }, _callee);
   }));
 
-  return function featureDisabledServerMessage() {
+  return function featureDisabledServerMessage(_x) {
     return _ref.apply(this, arguments);
   };
 }();
@@ -50,13 +50,13 @@ var featureDisabledServerMessage = /*#__PURE__*/function () {
 exports.featureDisabledServerMessage = featureDisabledServerMessage;
 
 var featureDisabledGlobalMessage = /*#__PURE__*/function () {
-  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
+  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(title) {
     var result;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            result = "<u><b>This feature has been disabled</b></u>\n\n<pre>".concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            result = "<b><u>".concat(title, "</u></b>\n\nThis feature has been disabled\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context2.abrupt("return", result);
 
           case 2:
@@ -67,7 +67,7 @@ var featureDisabledGlobalMessage = /*#__PURE__*/function () {
     }, _callee2);
   }));
 
-  return function featureDisabledGlobalMessage() {
+  return function featureDisabledGlobalMessage(_x2) {
     return _ref2.apply(this, arguments);
   };
 }();
@@ -92,7 +92,7 @@ var telegramDepositConfirmedMessage = /*#__PURE__*/function () {
     }, _callee3);
   }));
 
-  return function telegramDepositConfirmedMessage(_x, _x2) {
+  return function telegramDepositConfirmedMessage(_x3, _x4) {
     return _ref3.apply(this, arguments);
   };
 }();
@@ -118,7 +118,7 @@ var telegramIncomingDepositMessage = /*#__PURE__*/function () {
     }, _callee4);
   }));
 
-  return function telegramIncomingDepositMessage(_x3) {
+  return function telegramIncomingDepositMessage(_x5) {
     return _ref4.apply(this, arguments);
   };
 }();
@@ -146,7 +146,7 @@ var withdrawalAcceptedAdminMessage = /*#__PURE__*/function () {
     }, _callee5);
   }));
 
-  return function withdrawalAcceptedAdminMessage(_x4) {
+  return function withdrawalAcceptedAdminMessage(_x6) {
     return _ref5.apply(this, arguments);
   };
 }();
@@ -174,7 +174,7 @@ var withdrawalAcceptedMessage = /*#__PURE__*/function () {
     }, _callee6);
   }));
 
-  return function withdrawalAcceptedMessage(_x5, _x6) {
+  return function withdrawalAcceptedMessage(_x7, _x8) {
     return _ref6.apply(this, arguments);
   };
 }();
@@ -207,7 +207,7 @@ var telegramFeeMessage = /*#__PURE__*/function () {
     }, _callee7);
   }));
 
-  return function telegramFeeMessage(_x7) {
+  return function telegramFeeMessage(_x9) {
     return _ref7.apply(this, arguments);
   };
 }();
@@ -241,7 +241,7 @@ var telegramWithdrawalConfirmedMessage = /*#__PURE__*/function () {
     }, _callee8);
   }));
 
-  return function telegramWithdrawalConfirmedMessage(_x8, _x9) {
+  return function telegramWithdrawalConfirmedMessage(_x10, _x11) {
     return _ref8.apply(this, arguments);
   };
 }();
@@ -275,7 +275,7 @@ var balanceMessage = /*#__PURE__*/function () {
     }, _callee9);
   }));
 
-  return function balanceMessage(_x10, _x11) {
+  return function balanceMessage(_x12, _x13) {
     return _ref9.apply(this, arguments);
   };
 }();
@@ -369,7 +369,7 @@ var reviewMessage = /*#__PURE__*/function () {
     }, _callee12);
   }));
 
-  return function reviewMessage(_x12, _x13) {
+  return function reviewMessage(_x14, _x15) {
     return _ref12.apply(this, arguments);
   };
 }();
@@ -408,7 +408,7 @@ var minimumMessage = /*#__PURE__*/function () {
     }, _callee13);
   }));
 
-  return function minimumMessage(_x14, _x15) {
+  return function minimumMessage(_x16, _x17) {
     return _ref13.apply(this, arguments);
   };
 }();
@@ -445,7 +445,7 @@ var claimTooFastFaucetMessage = /*#__PURE__*/function () {
     }, _callee14);
   }));
 
-  return function claimTooFastFaucetMessage(_x16, _x17) {
+  return function claimTooFastFaucetMessage(_x18, _x19) {
     return _ref14.apply(this, arguments);
   };
 }();
@@ -479,7 +479,7 @@ var faucetClaimedMessage = /*#__PURE__*/function () {
     }, _callee15);
   }));
 
-  return function faucetClaimedMessage(_x18, _x19, _x20) {
+  return function faucetClaimedMessage(_x20, _x21, _x22) {
     return _ref15.apply(this, arguments);
   };
 }();
@@ -532,7 +532,7 @@ var insufficientBalanceMessage = /*#__PURE__*/function () {
     }, _callee16);
   }));
 
-  return function insufficientBalanceMessage(_x21) {
+  return function insufficientBalanceMessage(_x23) {
     return _ref16.apply(this, arguments);
   };
 }();
@@ -573,7 +573,7 @@ var unableToWithdrawToSelfMessage = /*#__PURE__*/function () {
     }, _callee17);
   }));
 
-  return function unableToWithdrawToSelfMessage(_x22) {
+  return function unableToWithdrawToSelfMessage(_x24) {
     return _ref17.apply(this, arguments);
   };
 }();
@@ -607,7 +607,7 @@ var userNotFoundMessage = /*#__PURE__*/function () {
     }, _callee18);
   }));
 
-  return function userNotFoundMessage(_x23, _x24) {
+  return function userNotFoundMessage(_x25, _x26) {
     return _ref18.apply(this, arguments);
   };
 }();
@@ -632,7 +632,7 @@ var telegramServerBannedMessage = /*#__PURE__*/function () {
     }, _callee19);
   }));
 
-  return function telegramServerBannedMessage(_x25) {
+  return function telegramServerBannedMessage(_x27) {
     return _ref19.apply(this, arguments);
   };
 }();
@@ -666,7 +666,7 @@ var telegramUserBannedMessage = /*#__PURE__*/function () {
     }, _callee20);
   }));
 
-  return function telegramUserBannedMessage(_x26) {
+  return function telegramUserBannedMessage(_x28) {
     return _ref20.apply(this, arguments);
   };
 }();
@@ -721,7 +721,7 @@ var telegramLimitSpamMessage = /*#__PURE__*/function () {
     }, _callee21);
   }));
 
-  return function telegramLimitSpamMessage(_x27, _x28) {
+  return function telegramLimitSpamMessage(_x29, _x30) {
     return _ref21.apply(this, arguments);
   };
 }();
@@ -755,7 +755,7 @@ var depositAddressMessage = /*#__PURE__*/function () {
     }, _callee22);
   }));
 
-  return function depositAddressMessage(_x29) {
+  return function depositAddressMessage(_x31) {
     return _ref22.apply(this, arguments);
   };
 }();
@@ -832,7 +832,7 @@ var welcomeMessage = /*#__PURE__*/function () {
     }, _callee23);
   }));
 
-  return function welcomeMessage(_x30) {
+  return function welcomeMessage(_x32) {
     return _ref23.apply(this, arguments);
   };
 }();
@@ -866,7 +866,7 @@ var warnDirectMessage = /*#__PURE__*/function () {
     }, _callee24);
   }));
 
-  return function warnDirectMessage(_x31) {
+  return function warnDirectMessage(_x33) {
     return _ref24.apply(this, arguments);
   };
 }();
@@ -900,7 +900,7 @@ var disallowDirectMessageMessage = /*#__PURE__*/function () {
     }, _callee25);
   }));
 
-  return function disallowDirectMessageMessage(_x32) {
+  return function disallowDirectMessageMessage(_x34) {
     return _ref25.apply(this, arguments);
   };
 }();
@@ -929,7 +929,7 @@ var priceMessage = /*#__PURE__*/function () {
     }, _callee26);
   }));
 
-  return function priceMessage(_x33) {
+  return function priceMessage(_x35) {
     return _ref26.apply(this, arguments);
   };
 }();
@@ -954,7 +954,7 @@ var errorMessage = /*#__PURE__*/function () {
     }, _callee27);
   }));
 
-  return function errorMessage(_x34) {
+  return function errorMessage(_x36) {
     return _ref27.apply(this, arguments);
   };
 }();
@@ -995,7 +995,7 @@ var invalidTimeMessage = /*#__PURE__*/function () {
     }, _callee28);
   }));
 
-  return function invalidTimeMessage(_x35, _x36) {
+  return function invalidTimeMessage(_x37, _x38) {
     return _ref28.apply(this, arguments);
   };
 }();
@@ -1020,7 +1020,7 @@ var userListMessage = /*#__PURE__*/function () {
     }, _callee29);
   }));
 
-  return function userListMessage(_x37) {
+  return function userListMessage(_x39) {
     return _ref29.apply(this, arguments);
   };
 }();
@@ -1054,7 +1054,7 @@ var tipSingleSuccessMessage = /*#__PURE__*/function () {
     }, _callee30);
   }));
 
-  return function tipSingleSuccessMessage(_x38, _x39, _x40, _x41) {
+  return function tipSingleSuccessMessage(_x40, _x41, _x42, _x43) {
     return _ref30.apply(this, arguments);
   };
 }();
@@ -1088,7 +1088,7 @@ var tipMultipleSuccessMessage = /*#__PURE__*/function () {
     }, _callee31);
   }));
 
-  return function tipMultipleSuccessMessage(_x42, _x43, _x44, _x45, _x46) {
+  return function tipMultipleSuccessMessage(_x44, _x45, _x46, _x47, _x48) {
     return _ref31.apply(this, arguments);
   };
 }();
@@ -1122,7 +1122,7 @@ var afterSuccessMessage = /*#__PURE__*/function () {
     }, _callee32);
   }));
 
-  return function afterSuccessMessage(_x47, _x48, _x49, _x50, _x51, _x52, _x53) {
+  return function afterSuccessMessage(_x49, _x50, _x51, _x52, _x53, _x54, _x55) {
     return _ref32.apply(this, arguments);
   };
 }();

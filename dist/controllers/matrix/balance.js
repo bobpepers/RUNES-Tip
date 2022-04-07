@@ -81,29 +81,7 @@ var matrixBalance = /*#__PURE__*/function () {
                       case 14:
                         priceInfo = _context.sent;
                         userId = user.user_id.replace('matrix-', '');
-
-                        if (!isCurrentRoomDirectMessage) {
-                          _context.next = 21;
-                          break;
-                        }
-
-                        _context.next = 19;
-                        return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.balanceMessage)(userId, user, priceInfo));
-
-                      case 19:
-                        _context.next = 25;
-                        break;
-
-                      case 21:
-                        _context.next = 23;
-                        return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.balanceMessage)(userId, user, priceInfo));
-
-                      case 23:
-                        _context.next = 25;
-                        return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.warnDirectMessage)(message.sender.name, 'Help'));
-
-                      case 25:
-                        _context.next = 27;
+                        _context.next = 18;
                         return _models["default"].activity.create({
                           type: 'balance_s',
                           earnerId: user.id,
@@ -113,9 +91,9 @@ var matrixBalance = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 27:
+                      case 18:
                         createActivity = _context.sent;
-                        _context.next = 30;
+                        _context.next = 21;
                         return _models["default"].activity.findOne({
                           where: {
                             id: createActivity.id
@@ -128,9 +106,31 @@ var matrixBalance = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 30:
+                      case 21:
                         findActivity = _context.sent;
                         activity.unshift(findActivity);
+
+                        if (!isCurrentRoomDirectMessage) {
+                          _context.next = 28;
+                          break;
+                        }
+
+                        _context.next = 26;
+                        return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.balanceMessage)(userId, user, priceInfo));
+
+                      case 26:
+                        _context.next = 32;
+                        break;
+
+                      case 28:
+                        _context.next = 30;
+                        return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.balanceMessage)(userId, user, priceInfo));
+
+                      case 30:
+                        _context.next = 32;
+                        return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.warnDirectMessage)(message.sender.name, 'Balance'));
+
+                      case 32:
                         t.afterCommit(function () {
                           console.log('done balance request');
                         });

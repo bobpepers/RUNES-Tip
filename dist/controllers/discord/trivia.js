@@ -1092,7 +1092,7 @@ var discordTrivia = /*#__PURE__*/function () {
                           channelId: channel.id,
                           ends: dateObj,
                           triviaquestionId: randomQuestion.id,
-                          discordMessageId: 'notYetSpecified',
+                          messageId: 'notYetSpecified',
                           userId: user.id
                         }, {
                           transaction: t,
@@ -1111,7 +1111,7 @@ var discordTrivia = /*#__PURE__*/function () {
                         sendTriviaMessage = _context11.sent;
                         _context11.next = 122;
                         return newTriviaCreate.update({
-                          discordMessageId: sendTriviaMessage.id
+                          messageId: sendTriviaMessage.id
                         }, {
                           transaction: t,
                           lock: t.LOCK.UPDATE

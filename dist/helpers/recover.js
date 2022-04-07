@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.recoverDiscordTrivia = exports.recoverDiscordReactdrops = void 0;
+exports.recoverMatrixReactdrops = exports.recoverDiscordTrivia = exports.recoverDiscordReactdrops = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -22,6 +22,10 @@ var _discord2 = require("../messages/discord");
 var _reactdrop = require("../controllers/discord/reactdrop");
 
 var _trivia = require("../controllers/discord/trivia");
+
+var _reactdrop2 = require("../controllers/matrix/reactdrop");
+
+var _matrix = require("../messages/matrix");
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
@@ -40,7 +44,8 @@ var recoverDiscordReactdrops = /*#__PURE__*/function () {
             _context3.next = 2;
             return _models["default"].reactdrop.findAll({
               where: {
-                ended: false
+                ended: false,
+                side: 'discord'
               },
               include: [{
                 model: _models["default"].group,
@@ -71,7 +76,7 @@ var recoverDiscordReactdrops = /*#__PURE__*/function () {
                       actualUserId = runningReactDrop.user.user_id.replace('discord-', ''); // eslint-disable-next-line no-await-in-loop
 
                       _context2.next = 6;
-                      return discordClient.guilds.cache.get(actualGroupId).channels.cache.get(actualChannelId).messages.fetch(runningReactDrop.discordMessageId);
+                      return discordClient.guilds.cache.get(actualGroupId).channels.cache.get(actualChannelId).messages.fetch(runningReactDrop.messageId);
 
                     case 6:
                       reactMessage = _context2.sent;
@@ -221,7 +226,7 @@ var recoverDiscordTrivia = /*#__PURE__*/function () {
                       actualUserId = runningTrivia.user.user_id.replace('discord-', ''); // eslint-disable-next-line no-await-in-loop
 
                       _context5.next = 6;
-                      return discordClient.guilds.cache.get(actualGroupId).channels.cache.get(actualChannelId).messages.fetch(runningTrivia.discordMessageId);
+                      return discordClient.guilds.cache.get(actualGroupId).channels.cache.get(actualChannelId).messages.fetch(runningTrivia.messageId);
 
                     case 6:
                       triviaMessage = _context5.sent;
@@ -347,3 +352,142 @@ var recoverDiscordTrivia = /*#__PURE__*/function () {
 }();
 
 exports.recoverDiscordTrivia = recoverDiscordTrivia;
+
+var recoverMatrixReactdrops = /*#__PURE__*/function () {
+  var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(matrixClient, io, queue) {
+    var allRunningReactDrops, _iterator4, _step4, _loop3;
+
+    return _regenerator["default"].wrap(function _callee6$(_context9) {
+      while (1) {
+        switch (_context9.prev = _context9.next) {
+          case 0:
+            _context9.next = 2;
+            return _models["default"].reactdrop.findAll({
+              where: {
+                ended: false,
+                side: 'matrix'
+              },
+              include: [{
+                model: _models["default"].group,
+                as: 'group'
+              }, {
+                model: _models["default"].user,
+                as: 'user'
+              }]
+            });
+
+          case 2:
+            allRunningReactDrops = _context9.sent;
+            // eslint-disable-next-line no-restricted-syntax
+            _iterator4 = _createForOfIteratorHelper(allRunningReactDrops);
+            _context9.prev = 4;
+            _loop3 = /*#__PURE__*/_regenerator["default"].mark(function _loop3() {
+              var runningReactDrop, actualGroupId, countDownDate, now, distance, updateMessage;
+              return _regenerator["default"].wrap(function _loop3$(_context8) {
+                while (1) {
+                  switch (_context8.prev = _context8.next) {
+                    case 0:
+                      runningReactDrop = _step4.value;
+                      actualGroupId = runningReactDrop.group.groupId.replace('matrix-', ''); // const actualUserId = runningReactDrop.user.user_id.replace('matrix-', '');
+                      // eslint-disable-next-line no-await-in-loop
+
+                      _context8.next = 4;
+                      return runningReactDrop.ends.getTime();
+
+                    case 4:
+                      countDownDate = _context8.sent;
+                      now = new Date().getTime();
+                      distance = countDownDate - now;
+                      console.log('recover listenMatrixReactDrop'); // eslint-disable-next-line no-await-in-loop
+
+                      _context8.next = 10;
+                      return (0, _reactdrop2.listenMatrixReactDrop)(matrixClient, runningReactDrop.messageId, distance, runningReactDrop, io, queue);
+
+                    case 10:
+                      // eslint-disable-next-line no-loop-func
+                      updateMessage = setInterval( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5() {
+                        var editedMessage;
+                        return _regenerator["default"].wrap(function _callee5$(_context7) {
+                          while (1) {
+                            switch (_context7.prev = _context7.next) {
+                              case 0:
+                                now = new Date().getTime();
+                                console.log('listen');
+                                distance = countDownDate - now;
+                                editedMessage = (0, _matrix.matrixReactDropMessage)(runningReactDrop.id, distance, runningReactDrop.user, runningReactDrop.emoji, runningReactDrop.amount);
+                                _context7.next = 6;
+                                return matrixClient.sendEvent(actualGroupId, 'm.room.message', {
+                                  "m.relates_to": {
+                                    event_id: runningReactDrop.messageId,
+                                    rel_type: "m.replace"
+                                  },
+                                  body: editedMessage.body,
+                                  "m.new_content": editedMessage
+                                });
+
+                              case 6:
+                                if (distance < 0) {
+                                  clearInterval(updateMessage);
+                                }
+
+                              case 7:
+                              case "end":
+                                return _context7.stop();
+                            }
+                          }
+                        }, _callee5);
+                      })), 10000);
+
+                    case 11:
+                    case "end":
+                      return _context8.stop();
+                  }
+                }
+              }, _loop3);
+            });
+
+            _iterator4.s();
+
+          case 7:
+            if ((_step4 = _iterator4.n()).done) {
+              _context9.next = 11;
+              break;
+            }
+
+            return _context9.delegateYield(_loop3(), "t0", 9);
+
+          case 9:
+            _context9.next = 7;
+            break;
+
+          case 11:
+            _context9.next = 16;
+            break;
+
+          case 13:
+            _context9.prev = 13;
+            _context9.t1 = _context9["catch"](4);
+
+            _iterator4.e(_context9.t1);
+
+          case 16:
+            _context9.prev = 16;
+
+            _iterator4.f();
+
+            return _context9.finish(16);
+
+          case 19:
+          case "end":
+            return _context9.stop();
+        }
+      }
+    }, _callee6, null, [[4, 13, 16, 19]]);
+  }));
+
+  return function recoverMatrixReactdrops(_x7, _x8, _x9) {
+    return _ref5.apply(this, arguments);
+  };
+}();
+
+exports.recoverMatrixReactdrops = recoverMatrixReactdrops;

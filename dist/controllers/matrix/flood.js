@@ -48,7 +48,7 @@ var matrixFlood = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, currentRoom, members, onlineMembers, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, factivity, updatedBalance, fee, amountPerUser, faucetWatered, floodRecord, cactivity, activityCreate, listOfUsersRained, _iterator, _step, floodee, floodeeWallet, floodtipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, currentRoom, members, onlineMembers, withoutBots, factivity, updatedBalance, fee, amountPerUser, faucetWatered, floodRecord, cactivity, activityCreate, listOfUsersRained, _iterator, _step, floodee, floodeeWallet, floodtipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -88,43 +88,44 @@ var matrixFlood = /*#__PURE__*/function () {
 
                       case 13:
                         _context.next = 15;
-                        return matrixClient.getRoom(message.sender.roomId);
-
-                      case 15:
-                        currentRoom = _context.sent;
-                        _context.next = 18;
-                        return currentRoom.getMembers();
-
-                      case 18:
-                        members = _context.sent;
-                        onlineMembers = members.filter(function (member) {
-                          console.log(member);
-                          console.log(member.presence);
-                          return member;
-                        });
-                        _context.next = 22;
-                        return (0, _mapMembers.mapMembers)(matrixClient, message, t, onlineMembers, setting);
-
-                      case 22:
-                        withoutBots = _context.sent;
-                        _context.next = 25;
                         return (0, _validateAmount.validateAmount)(matrixClient, message, t, filteredMessage[2], user, setting, filteredMessage[1].toLowerCase());
 
-                      case 25:
+                      case 15:
                         _yield$validateAmount = _context.sent;
                         _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
                         activityValiateAmount = _yield$validateAmount2[0];
                         amount = _yield$validateAmount2[1];
 
                         if (!activityValiateAmount) {
-                          _context.next = 32;
+                          _context.next = 22;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 32:
+                      case 22:
+                        _context.next = 24;
+                        return matrixClient.getRoom(message.sender.roomId);
+
+                      case 24:
+                        currentRoom = _context.sent;
+                        _context.next = 27;
+                        return currentRoom.getMembers();
+
+                      case 27:
+                        members = _context.sent;
+                        onlineMembers = members.filter(function (member) {
+                          console.log(member);
+                          console.log(member.presence);
+                          return member;
+                        });
+                        _context.next = 31;
+                        return (0, _mapMembers.mapMembers)(matrixClient, message, t, onlineMembers, setting);
+
+                      case 31:
+                        withoutBots = _context.sent;
+
                         if (!(withoutBots.length < 2)) {
                           _context.next = 40;
                           break;

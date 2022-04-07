@@ -124,7 +124,7 @@ var reactDropMessage = function reactDropMessage(id, distance, author, emoji, am
 exports.reactDropMessage = reactDropMessage;
 
 var AfterTriviaSuccessMessage = function AfterTriviaSuccessMessage(endTrivia, amountEach, initiator) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Trivia #".concat(endTrivia.id)).setDescription(":tada:[Trivia](https://discord.com/channels/".concat(endTrivia.group.groupId.replace("discord-", ""), "/").concat(endTrivia.channel.channelId.replace("discord-", ""), "/").concat(endTrivia.discordMessageId, ") started by <@").concat(initiator, "> has finished!:tada:\n\n:money_with_wings:").concat(endTrivia.triviatips.length, " ").concat(endTrivia.triviatips.length === 1 ? 'user' : 'users', " will share ").concat(endTrivia.amount / 1e8, " ").concat(settings.coin.ticker, " (").concat(amountEach / 1e8, " each)!:money_with_wings:")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Trivia #".concat(endTrivia.id)).setDescription(":tada:[Trivia](https://discord.com/channels/".concat(endTrivia.group.groupId.replace("discord-", ""), "/").concat(endTrivia.channel.channelId.replace("discord-", ""), "/").concat(endTrivia.messageId, ") started by <@").concat(initiator, "> has finished!:tada:\n\n:money_with_wings:").concat(endTrivia.triviatips.length, " ").concat(endTrivia.triviatips.length === 1 ? 'user' : 'users', " will share ").concat(endTrivia.amount / 1e8, " ").concat(settings.coin.ticker, " (").concat(amountEach / 1e8, " each)!:money_with_wings:")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
@@ -134,7 +134,7 @@ var AfterTriviaSuccessMessage = function AfterTriviaSuccessMessage(endTrivia, am
 exports.AfterTriviaSuccessMessage = AfterTriviaSuccessMessage;
 
 var AfterReactDropSuccessMessage = function AfterReactDropSuccessMessage(endReactDrop, amountEach, initiator) {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Reactdrop #".concat(endReactDrop.id)).setDescription(":tada:[React airdrop](https://discord.com/channels/".concat(endReactDrop.group.groupId.replace("discord-", ""), "/").concat(endReactDrop.channel.channelId.replace("discord-", ""), "/").concat(endReactDrop.discordMessageId, ") started by <@").concat(initiator, "> has finished!:tada:\n\n:money_with_wings:").concat(endReactDrop.reactdroptips.length, " user(s) will share ").concat(endReactDrop.amount / 1e8, " ").concat(settings.coin.ticker, " (").concat(amountEach / 1e8, " each)!:money_with_wings:")).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Reactdrop #".concat(endReactDrop.id)).setDescription(":tada:[React airdrop](https://discord.com/channels/".concat(endReactDrop.group.groupId.replace("discord-", ""), "/").concat(endReactDrop.channel.channelId.replace("discord-", ""), "/").concat(endReactDrop.messageId, ") started by <@").concat(initiator, "> has finished!:tada:\n\n:money_with_wings:").concat(endReactDrop.reactdroptips.length, " user(s) will share ").concat(endReactDrop.amount / 1e8, " ").concat(settings.coin.ticker, " (").concat(amountEach / 1e8, " each)!:money_with_wings:")).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });

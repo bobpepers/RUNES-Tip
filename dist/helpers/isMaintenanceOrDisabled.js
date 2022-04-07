@@ -21,14 +21,14 @@ var _discord = require("../messages/discord");
 
 var isMaintenanceOrDisabled = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(message, side) {
-    var matrixClient,
+    var client,
         botSetting,
         _args = arguments;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            matrixClient = _args.length > 2 && _args[2] !== undefined ? _args[2] : null;
+            client = _args.length > 2 && _args[2] !== undefined ? _args[2] : null;
             _context.next = 3;
             return _models["default"].bots.findOne({
               where: {
@@ -144,7 +144,7 @@ var isMaintenanceOrDisabled = /*#__PURE__*/function () {
             }
 
             _context.next = 46;
-            return matrixClient.sendEvent(message.event.room_id, "m.room.message", (0, _matrix.matrixBotDisabledMessage)(), "123");
+            return client.sendEvent(message.event.room_id, "m.room.message", (0, _matrix.matrixBotDisabledMessage)(), "123");
 
           case 46:
             _context.next = 51;
@@ -157,7 +157,7 @@ var isMaintenanceOrDisabled = /*#__PURE__*/function () {
             }
 
             _context.next = 51;
-            return matrixClient.sendEvent(message.event.room_id, "m.room.message", (0, _matrix.matrixBotMaintenanceMessage)(), "123");
+            return client.sendEvent(message.event.room_id, "m.room.message", (0, _matrix.matrixBotMaintenanceMessage)(), "123");
 
           case 51:
             return _context.abrupt("return", botSetting);

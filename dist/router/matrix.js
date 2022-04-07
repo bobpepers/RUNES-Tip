@@ -41,19 +41,21 @@ var _fees = require("../controllers/matrix/fees");
 
 var _info = require("../controllers/matrix/info");
 
-var _directMessageRoom = require("../helpers/client/matrix/directMessageRoom");
-
-var _user = require("../controllers/matrix/user");
+var _reactdrop = require("../controllers/matrix/reactdrop");
 
 var _group = require("../controllers/matrix/group");
 
 var _settings = require("../controllers/matrix/settings");
 
-var _matrix = require("../messages/matrix");
+var _settings2 = require("../controllers/settings");
+
+var _user = require("../controllers/matrix/user");
 
 var _rateLimit = require("../helpers/rateLimit");
 
-var _models = _interopRequireDefault(require("../models"));
+var _directMessageRoom = require("../helpers/client/matrix/directMessageRoom");
+
+var _matrix = require("../messages/matrix");
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
@@ -335,7 +337,7 @@ var matrixRouter = /*#__PURE__*/function () {
             }());
             matrixClient.on('Room.timeline', /*#__PURE__*/function () {
               var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee13(message, room) {
-                var lastSeenMatrixTask, faucetSetting, groupTask, channelTask, groupTaskId, channelTaskId, myBody, formatted_body, maintenance, walletExists, _yield$findUserDirect3, _yield$findUserDirect4, directUserMessageRoom, isCurrentRoomDirectMessage, userState, event, regex, preFilteredMessageWithTags, filteredMessageWithTags, preFilteredMessage, filteredMessage, userDirectMessageRoomId, limited, _limited, _limited2, _limited3, _limited4, _limited5, _limited6, _limited7, _limited8, setting, _limited9, _setting, _limited10, _setting2, _limited11, _setting3, AmountPosition, AmountPositionEnded, preSplitAfterTags, splitAfterTags, filteredMessageWithTagsClean, finalFilteredTipsWithTags;
+                var lastSeenMatrixTask, faucetSetting, groupTask, channelTask, groupTaskId, channelTaskId, myBody, formatted_body, maintenance, walletExists, _yield$findUserDirect3, _yield$findUserDirect4, directUserMessageRoom, isCurrentRoomDirectMessage, userState, event, regex, preFilteredMessageWithTags, filteredMessageWithTags, preFilteredMessage, filteredMessage, userDirectMessageRoomId, limited, _limited, _limited2, _limited3, _limited4, _limited5, _limited6, _limited7, _limited8, setting, _limited9, _setting, _limited10, _setting2, _limited11, _setting3, _limited12, _setting4, AmountPosition, AmountPositionEnded, preSplitAfterTags, splitAfterTags, filteredMessageWithTagsClean, finalFilteredTipsWithTags;
 
                 return _regenerator["default"].wrap(function _callee13$(_context13) {
                   while (1) {
@@ -446,7 +448,7 @@ var matrixRouter = /*#__PURE__*/function () {
 
                       case 42:
                         if (!myBody) {
-                          _context13.next = 210;
+                          _context13.next = 223;
                           break;
                         }
 
@@ -459,12 +461,12 @@ var matrixRouter = /*#__PURE__*/function () {
 
                       case 45:
                         if (!myBody.startsWith(settings.bot.command.matrix)) {
-                          _context13.next = 210;
+                          _context13.next = 223;
                           break;
                         }
 
                         _context13.next = 48;
-                        return (0, _settings.matrixWaterFaucetSettings)(groupTaskId, channelTaskId);
+                        return (0, _settings2.waterFaucetSettings)(groupTaskId, channelTaskId);
 
                       case 48:
                         faucetSetting = _context13.sent;
@@ -898,7 +900,7 @@ var matrixRouter = /*#__PURE__*/function () {
 
                       case 155:
                         _context13.next = 157;
-                        return (0, _settings.matrixSettings)(matrixClient, message, 'withdraw', groupTaskId, channelTaskId);
+                        return (0, _settings.matrixFeatureSettings)(matrixClient, message, 'withdraw', groupTaskId, channelTaskId);
 
                       case 157:
                         setting = _context13.sent;
@@ -935,7 +937,7 @@ var matrixRouter = /*#__PURE__*/function () {
 
                       case 168:
                         _context13.next = 170;
-                        return (0, _settings.matrixSettings)(matrixClient, message, 'flood', groupTaskId, channelTaskId);
+                        return (0, _settings.matrixFeatureSettings)(matrixClient, message, 'flood', groupTaskId, channelTaskId);
 
                       case 170:
                         _setting = _context13.sent;
@@ -972,7 +974,7 @@ var matrixRouter = /*#__PURE__*/function () {
 
                       case 181:
                         _context13.next = 183;
-                        return (0, _settings.matrixSettings)(matrixClient, message, 'sleet', groupTaskId, channelTaskId);
+                        return (0, _settings.matrixFeatureSettings)(matrixClient, message, 'sleet', groupTaskId, channelTaskId);
 
                       case 183:
                         _setting2 = _context13.sent;
@@ -989,13 +991,13 @@ var matrixRouter = /*#__PURE__*/function () {
                         return (0, _executeTips.executeTipFunction)(_sleet.matrixSleet, queue, filteredMessage[2], matrixClient, message, filteredMessage, io, groupTask, _setting2, faucetSetting, userDirectMessageRoomId, isCurrentRoomDirectMessage);
 
                       case 188:
-                        if (!(filteredMessageWithTags.length > 1 && filteredMessageWithTags[1] && filteredMessageWithTags[1].startsWith('<a'))) {
-                          _context13.next = 210;
+                        if (!(filteredMessage[1] && filteredMessage[1].toLowerCase() === 'reactdrop')) {
+                          _context13.next = 201;
                           break;
                         }
 
                         _context13.next = 191;
-                        return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Tip');
+                        return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Reactdrop');
 
                       case 191:
                         _limited11 = _context13.sent;
@@ -1009,7 +1011,7 @@ var matrixRouter = /*#__PURE__*/function () {
 
                       case 194:
                         _context13.next = 196;
-                        return (0, _settings.matrixSettings)(matrixClient, message, 'tip', groupTaskId, channelTaskId);
+                        return (0, _settings.matrixFeatureSettings)(matrixClient, message, 'reactdrop', groupTaskId, channelTaskId);
 
                       case 196:
                         _setting3 = _context13.sent;
@@ -1022,6 +1024,43 @@ var matrixRouter = /*#__PURE__*/function () {
                         return _context13.abrupt("return");
 
                       case 199:
+                        _context13.next = 201;
+                        return (0, _executeTips.executeTipFunction)(_reactdrop.matrixReactDrop, queue, filteredMessage[2], matrixClient, message, filteredMessage, io, groupTask, _setting3, faucetSetting, userDirectMessageRoomId, isCurrentRoomDirectMessage);
+
+                      case 201:
+                        if (!(filteredMessageWithTags.length > 1 && filteredMessageWithTags[1] && filteredMessageWithTags[1].startsWith('<a'))) {
+                          _context13.next = 223;
+                          break;
+                        }
+
+                        _context13.next = 204;
+                        return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Tip');
+
+                      case 204:
+                        _limited12 = _context13.sent;
+
+                        if (!_limited12) {
+                          _context13.next = 207;
+                          break;
+                        }
+
+                        return _context13.abrupt("return");
+
+                      case 207:
+                        _context13.next = 209;
+                        return (0, _settings.matrixFeatureSettings)(matrixClient, message, 'tip', groupTaskId, channelTaskId);
+
+                      case 209:
+                        _setting4 = _context13.sent;
+
+                        if (_setting4) {
+                          _context13.next = 212;
+                          break;
+                        }
+
+                        return _context13.abrupt("return");
+
+                      case 212:
                         AmountPosition = 1;
                         AmountPositionEnded = false;
 
@@ -1041,10 +1080,10 @@ var matrixRouter = /*#__PURE__*/function () {
                         finalFilteredTipsWithTags = filteredMessageWithTagsClean.concat(splitAfterTags);
                         console.log(finalFilteredTipsWithTags);
                         console.log("myBody");
-                        _context13.next = 210;
-                        return (0, _executeTips.executeTipFunction)(_tip.tipRunesToMatrixUser, queue, finalFilteredTipsWithTags[parseInt(AmountPosition, 10)], matrixClient, message, finalFilteredTipsWithTags, io, groupTask, _setting3, faucetSetting, userDirectMessageRoomId, isCurrentRoomDirectMessage);
+                        _context13.next = 223;
+                        return (0, _executeTips.executeTipFunction)(_tip.tipRunesToMatrixUser, queue, finalFilteredTipsWithTags[parseInt(AmountPosition, 10)], matrixClient, message, finalFilteredTipsWithTags, io, groupTask, _setting4, faucetSetting, userDirectMessageRoomId, isCurrentRoomDirectMessage);
 
-                      case 210:
+                      case 223:
                       case "end":
                         return _context13.stop();
                     }

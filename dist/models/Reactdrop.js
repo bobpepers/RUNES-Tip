@@ -34,9 +34,15 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.BIGINT,
       allowNull: true
     },
-    discordMessageId: {
+    messageId: {
       type: DataTypes.STRING,
       allowNull: false
+    },
+    side: {
+      type: DataTypes.ENUM,
+      defaultValue: 'discord',
+      allowNull: false,
+      values: ['discord', 'matrix']
     }
   };
   var modelOptions = {

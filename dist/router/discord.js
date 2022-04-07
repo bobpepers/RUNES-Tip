@@ -67,13 +67,9 @@ var _halving = require("../controllers/discord/halving");
 
 var _mining = require("../controllers/discord/mining");
 
-var _leaderboard = require("../controllers/discord/leaderboard");
-
 var _tip = require("../controllers/discord/tip");
 
 var _user = require("../controllers/discord/user");
-
-var _settings = require("../controllers/discord/settings");
 
 var _rateLimit = require("../helpers/rateLimit");
 
@@ -83,11 +79,15 @@ var _executeTips = require("../helpers/client/discord/executeTips");
 
 var _isMaintenanceOrDisabled = require("../helpers/isMaintenanceOrDisabled");
 
+var _settings = require("../controllers/discord/settings");
+
+var _settings2 = require("../controllers/settings");
+
 var _discord = require("../messages/discord");
 
-var _settings2 = _interopRequireDefault(require("../config/settings"));
-
-var settings = (0, _settings2["default"])();
+// import { discordLeaderboard } from '../controllers/discord/leaderboard';
+// import getCoinSettings from '../config/settings';
+// const settings = getCoinSettings();
 (0, _dotenv.config)();
 
 var discordRouter = function discordRouter(discordClient, queue, io, settings) {
@@ -284,7 +284,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 20:
               _context6.next = 22;
-              return (0, _settings.discordSettings)(interaction, 'faucet', groupTaskId, channelTaskId);
+              return (0, _settings.discordFeatureSettings)(interaction, 'faucet', groupTaskId, channelTaskId);
 
             case 22:
               setting = _context6.sent;
@@ -460,7 +460,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 27:
               _context34.next = 29;
-              return (0, _settings.discordwaterFaucetSettings)(groupTaskId, channelTaskId);
+              return (0, _settings2.waterFaucetSettings)(groupTaskId, channelTaskId);
 
             case 29:
               faucetSetting = _context34.sent;
@@ -1036,7 +1036,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 146:
               _context34.next = 148;
-              return (0, _settings.discordSettings)(message, 'faucet', groupTaskId, channelTaskId);
+              return (0, _settings.discordFeatureSettings)(message, 'faucet', groupTaskId, channelTaskId);
 
             case 148:
               setting = _context34.sent;
@@ -1132,7 +1132,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 167:
               _context34.next = 169;
-              return (0, _settings.discordSettings)(message, 'withdraw', groupTaskId, channelTaskId);
+              return (0, _settings.discordFeatureSettings)(message, 'withdraw', groupTaskId, channelTaskId);
 
             case 169:
               _setting = _context34.sent;
@@ -1198,7 +1198,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 184:
               _context34.next = 186;
-              return (0, _settings.discordSettings)(message, 'tip', groupTaskId, channelTaskId);
+              return (0, _settings.discordFeatureSettings)(message, 'tip', groupTaskId, channelTaskId);
 
             case 186:
               _setting2 = _context34.sent;
@@ -1288,7 +1288,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 209:
               _context34.next = 211;
-              return (0, _settings.discordSettings)(message, 'voicerain', groupTaskId, channelTaskId);
+              return (0, _settings.discordFeatureSettings)(message, 'voicerain', groupTaskId, channelTaskId);
 
             case 211:
               _setting3 = _context34.sent;
@@ -1354,7 +1354,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 226:
               _context34.next = 228;
-              return (0, _settings.discordSettings)(message, 'rain', groupTaskId, channelTaskId);
+              return (0, _settings.discordFeatureSettings)(message, 'rain', groupTaskId, channelTaskId);
 
             case 228:
               _setting4 = _context34.sent;
@@ -1420,7 +1420,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 243:
               _context34.next = 245;
-              return (0, _settings.discordSettings)(message, 'flood', groupTaskId, channelTaskId);
+              return (0, _settings.discordFeatureSettings)(message, 'flood', groupTaskId, channelTaskId);
 
             case 245:
               _setting5 = _context34.sent;
@@ -1486,7 +1486,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 260:
               _context34.next = 262;
-              return (0, _settings.discordSettings)(message, 'thunder', groupTaskId, channelTaskId);
+              return (0, _settings.discordFeatureSettings)(message, 'thunder', groupTaskId, channelTaskId);
 
             case 262:
               _setting6 = _context34.sent;
@@ -1552,7 +1552,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 277:
               _context34.next = 279;
-              return (0, _settings.discordSettings)(message, 'thunderstorm', groupTaskId, channelTaskId);
+              return (0, _settings.discordFeatureSettings)(message, 'thunderstorm', groupTaskId, channelTaskId);
 
             case 279:
               _setting7 = _context34.sent;
@@ -1618,7 +1618,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 294:
               _context34.next = 296;
-              return (0, _settings.discordSettings)(message, 'hurricane', groupTaskId, channelTaskId);
+              return (0, _settings.discordFeatureSettings)(message, 'hurricane', groupTaskId, channelTaskId);
 
             case 296:
               _setting8 = _context34.sent;
@@ -1684,7 +1684,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 311:
               _context34.next = 313;
-              return (0, _settings.discordSettings)(message, 'soak', groupTaskId, channelTaskId);
+              return (0, _settings.discordFeatureSettings)(message, 'soak', groupTaskId, channelTaskId);
 
             case 313:
               _setting9 = _context34.sent;
@@ -1750,7 +1750,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 328:
               _context34.next = 330;
-              return (0, _settings.discordSettings)(message, 'sleet', groupTaskId, channelTaskId);
+              return (0, _settings.discordFeatureSettings)(message, 'sleet', groupTaskId, channelTaskId);
 
             case 330:
               _setting10 = _context34.sent;
@@ -1816,7 +1816,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 345:
               _context34.next = 347;
-              return (0, _settings.discordSettings)(message, 'reactdrop', groupTaskId, channelTaskId);
+              return (0, _settings.discordFeatureSettings)(message, 'reactdrop', groupTaskId, channelTaskId);
 
             case 347:
               _setting11 = _context34.sent;
@@ -1882,7 +1882,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
             case 362:
               _context34.next = 364;
-              return (0, _settings.discordSettings)(message, 'trivia', groupTaskId, channelTaskId);
+              return (0, _settings.discordFeatureSettings)(message, 'trivia', groupTaskId, channelTaskId);
 
             case 364:
               _setting12 = _context34.sent;

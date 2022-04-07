@@ -83,7 +83,8 @@ var discordFlood = /*#__PURE__*/function () {
                       case 11:
                         members = _context.sent;
                         onlineMembers = members.filter(function (member) {
-                          console.log(member.presence);
+                          // console.log(member.presence);
+                          console.log('-');
                           return member;
                         });
                         _context.next = 15;

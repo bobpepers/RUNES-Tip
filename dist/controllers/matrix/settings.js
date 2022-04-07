@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.matrixWaterFaucetSettings = exports.matrixSettings = void 0;
+exports.matrixFeatureSettings = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -15,13 +15,10 @@ var _matrix = require("../../messages/matrix");
 
 var _models = _interopRequireDefault(require("../../models"));
 
+var _utils = require("../../helpers/utils");
+
 /* eslint-disable import/prefer-default-export */
-var capitalize = function capitalize(s) {
-  return s && s[0].toUpperCase() + s.slice(1);
-}; // Upper case first letter
-
-
-var matrixSettings = /*#__PURE__*/function () {
+var matrixFeatureSettings = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(matrixClient, message, name) {
     var groupId,
         channelId,
@@ -92,7 +89,7 @@ var matrixSettings = /*#__PURE__*/function () {
             }
 
             _context.next = 20;
-            return matrixClient.sendEvent(message.event.room_id, "m.room.message", (0, _matrix.settingsNotFoundMessage)(capitalize(name)));
+            return matrixClient.sendEvent(message.event.room_id, "m.room.message", (0, _matrix.settingsNotFoundMessage)((0, _utils.capitalize)(name)));
 
           case 20:
             return _context.abrupt("return", false);
@@ -104,7 +101,7 @@ var matrixSettings = /*#__PURE__*/function () {
             }
 
             _context.next = 24;
-            return matrixClient.sendEvent(message.event.room_id, "m.room.message", (0, _matrix.featureDisabledChannelMessage)(capitalize(name)));
+            return matrixClient.sendEvent(message.event.room_id, "m.room.message", (0, _matrix.featureDisabledChannelMessage)((0, _utils.capitalize)(name)));
 
           case 24:
             return _context.abrupt("return", false);
@@ -116,7 +113,7 @@ var matrixSettings = /*#__PURE__*/function () {
             }
 
             _context.next = 28;
-            return matrixClient.sendEvent(message.event.room_id, "m.room.message", (0, _matrix.featureDisabledServerMessage)(capitalize(name)));
+            return matrixClient.sendEvent(message.event.room_id, "m.room.message", (0, _matrix.featureDisabledServerMessage)((0, _utils.capitalize)(name)));
 
           case 28:
             return _context.abrupt("return", false);
@@ -128,7 +125,7 @@ var matrixSettings = /*#__PURE__*/function () {
             }
 
             _context.next = 32;
-            return matrixClient.sendEvent(message.event.room_id, "m.room.message", (0, _matrix.featureDisabledGlobalMessage)(capitalize(name)));
+            return matrixClient.sendEvent(message.event.room_id, "m.room.message", (0, _matrix.featureDisabledGlobalMessage)((0, _utils.capitalize)(name)));
 
           case 32:
             return _context.abrupt("return", false);
@@ -145,87 +142,9 @@ var matrixSettings = /*#__PURE__*/function () {
     }, _callee);
   }));
 
-  return function matrixSettings(_x, _x2, _x3) {
+  return function matrixFeatureSettings(_x, _x2, _x3) {
     return _ref.apply(this, arguments);
   };
 }();
 
-exports.matrixSettings = matrixSettings;
-
-var matrixWaterFaucetSettings = /*#__PURE__*/function () {
-  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
-    var groupId,
-        channelId,
-        setting,
-        _args2 = arguments;
-    return _regenerator["default"].wrap(function _callee2$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            groupId = _args2.length > 0 && _args2[0] !== undefined ? _args2[0] : null;
-            channelId = _args2.length > 1 && _args2[1] !== undefined ? _args2[1] : null;
-            _context2.next = 4;
-            return _models["default"].features.findOne({
-              where: {
-                type: 'local',
-                name: 'faucet',
-                groupId: groupId,
-                channelId: channelId
-              }
-            });
-
-          case 4:
-            setting = _context2.sent;
-
-            if (setting) {
-              _context2.next = 9;
-              break;
-            }
-
-            _context2.next = 8;
-            return _models["default"].features.findOne({
-              where: {
-                type: 'local',
-                name: 'faucet',
-                groupId: groupId,
-                channelId: null
-              }
-            });
-
-          case 8:
-            setting = _context2.sent;
-
-          case 9:
-            if (setting) {
-              _context2.next = 13;
-              break;
-            }
-
-            _context2.next = 12;
-            return _models["default"].features.findOne({
-              where: {
-                type: 'global',
-                name: 'faucet'
-              }
-            });
-
-          case 12:
-            setting = _context2.sent;
-
-          case 13:
-            return _context2.abrupt("return", setting);
-
-          case 14:
-          case "end":
-            return _context2.stop();
-        }
-      }
-    }, _callee2);
-  }));
-
-  return function matrixWaterFaucetSettings() {
-    return _ref2.apply(this, arguments);
-  };
-}();
-
-exports.matrixWaterFaucetSettings = matrixWaterFaucetSettings;
+exports.matrixFeatureSettings = matrixFeatureSettings;

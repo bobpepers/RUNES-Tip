@@ -235,89 +235,93 @@ global.Olm = _olm["default"];
           return (0, _initDatabaseRecords.initDatabaseRecords)(discordClient, telegramClient, matrixClient);
 
         case 47:
-          _context3.next = 49;
-          return (0, _recover.recoverDiscordReactdrops)(discordClient, io, queue);
-
-        case 49:
-          _context3.next = 51;
-          return (0, _recover.recoverDiscordTrivia)(discordClient, io, queue);
-
-        case 51:
           if (!(settings.coin.setting === 'Runebase')) {
-            _context3.next = 59;
+            _context3.next = 55;
             break;
           }
 
-          _context3.next = 54;
+          _context3.next = 50;
           return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, matrixClient, queue);
 
-        case 54:
-          _context3.next = 56;
+        case 50:
+          _context3.next = 52;
           return (0, _patcher.patchRunebaseDeposits)();
 
-        case 56:
+        case 52:
           schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher.patchRunebaseDeposits)();
           });
-          _context3.next = 80;
+          _context3.next = 76;
           break;
 
-        case 59:
+        case 55:
           if (!(settings.coin.setting === 'Pirate')) {
-            _context3.next = 67;
+            _context3.next = 63;
             break;
           }
 
-          _context3.next = 62;
+          _context3.next = 58;
           return (0, _syncPirate.startPirateSync)(discordClient, telegramClient, matrixClient, queue);
 
-        case 62:
-          _context3.next = 64;
+        case 58:
+          _context3.next = 60;
           return (0, _patcher2.patchPirateDeposits)();
 
-        case 64:
+        case 60:
           _schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher2.patchPirateDeposits)();
           });
-          _context3.next = 80;
+          _context3.next = 76;
           break;
 
-        case 67:
+        case 63:
           if (!(settings.coin.setting === 'Komodo')) {
-            _context3.next = 75;
+            _context3.next = 71;
             break;
           }
 
-          _context3.next = 70;
+          _context3.next = 66;
           return (0, _syncKomodo.startKomodoSync)(discordClient, telegramClient, matrixClient, queue);
 
-        case 70:
-          _context3.next = 72;
+        case 66:
+          _context3.next = 68;
           return (0, _patcher3.patchKomodoDeposits)();
 
-        case 72:
+        case 68:
           _schedulePatchDeposits2 = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher3.patchKomodoDeposits)();
           });
-          _context3.next = 80;
+          _context3.next = 76;
           break;
 
-        case 75:
-          _context3.next = 77;
+        case 71:
+          _context3.next = 73;
           return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, matrixClient, queue);
 
-        case 77:
-          _context3.next = 79;
+        case 73:
+          _context3.next = 75;
           return (0, _patcher.patchRunebaseDeposits)();
 
-        case 79:
+        case 75:
           _schedulePatchDeposits3 = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher.patchRunebaseDeposits)();
           });
 
-        case 80:
+        case 76:
           (0, _router.router)(app, discordClient, telegramClient, matrixClient, io, settings, queue);
           (0, _router2.dashboardRouter)(app, io, discordClient, telegramClient, matrixClient);
+          _context3.next = 80;
+          return (0, _recover.recoverDiscordReactdrops)(discordClient, io, queue);
+
+        case 80:
+          _context3.next = 82;
+          return (0, _recover.recoverDiscordTrivia)(discordClient, io, queue);
+
+        case 82:
+          _context3.next = 84;
+          return (0, _recover.recoverMatrixReactdrops)(matrixClient, io, queue);
+
+        case 84:
           scheduleUpdateConversionRatesFiat = _nodeSchedule["default"].scheduleJob('0 */8 * * *', function () {
             // Update Fiat conversion rates every 8 hours
             (0, _updateConversionRates.updateConversionRatesFiat)();
@@ -362,7 +366,7 @@ global.Olm = _olm["default"];
           server.listen(port);
           console.log('server listening on:', port);
 
-        case 90:
+        case 92:
         case "end":
           return _context3.stop();
       }

@@ -17,16 +17,11 @@ var _models = _interopRequireDefault(require("../../../models"));
 
 var _matrix = require("../../../messages/matrix");
 
-var capitalize = function capitalize(s) {
-  return s && s[0].toUpperCase() + s.slice(1);
-};
-
 var validateAmount = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(matrixClient, message, t, preAmount, user, setting, type) {
     var tipType,
         usersToTip,
         activity,
-        capType,
         amount,
         _args = arguments;
     return _regenerator["default"].wrap(function _callee$(_context) {
@@ -35,15 +30,14 @@ var validateAmount = /*#__PURE__*/function () {
           case 0:
             tipType = _args.length > 7 && _args[7] !== undefined ? _args[7] : null;
             usersToTip = _args.length > 8 && _args[8] !== undefined ? _args[8] : null;
-            capType = capitalize(type);
             amount = 0;
 
             if (preAmount) {
-              _context.next = 11;
+              _context.next = 10;
               break;
             }
 
-            _context.next = 7;
+            _context.next = 6;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
               spenderId: user.id
@@ -52,15 +46,15 @@ var validateAmount = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 7:
+          case 6:
             activity = _context.sent;
-            _context.next = 10;
-            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidAmountMessage)(message, capType));
+            _context.next = 9;
+            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidAmountMessage)(message, type));
 
-          case 10:
+          case 9:
             return _context.abrupt("return", [activity, amount]);
 
-          case 11:
+          case 10:
             if (preAmount.toLowerCase() === 'all') {
               amount = user.wallet.available;
             } else {
@@ -68,11 +62,11 @@ var validateAmount = /*#__PURE__*/function () {
             }
 
             if (!(amount < setting.min)) {
-              _context.next = 19;
+              _context.next = 18;
               break;
             }
 
-            _context.next = 15;
+            _context.next = 14;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
               spenderId: user.id
@@ -81,25 +75,25 @@ var validateAmount = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 15:
+          case 14:
             activity = _context.sent;
-            _context.next = 18;
-            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.minimumMessage)(message, setting, capType));
+            _context.next = 17;
+            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.minimumMessage)(message, setting, type));
 
-          case 18:
+          case 17:
             return _context.abrupt("return", [activity, amount]);
 
-          case 19:
+          case 18:
             if (tipType === 'each' && preAmount.toLowerCase() !== 'all') {
               amount *= usersToTip.length;
             }
 
             if (!(amount % 1 !== 0)) {
-              _context.next = 27;
+              _context.next = 26;
               break;
             }
 
-            _context.next = 23;
+            _context.next = 22;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
               spenderId: user.id
@@ -108,21 +102,21 @@ var validateAmount = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 23:
+          case 22:
             activity = _context.sent;
-            _context.next = 26;
-            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidAmountMessage)(message, capType));
+            _context.next = 25;
+            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidAmountMessage)(message, type));
+
+          case 25:
+            return _context.abrupt("return", [activity, amount]);
 
           case 26:
-            return _context.abrupt("return", [activity, amount]);
-
-          case 27:
             if (!(amount <= 0)) {
-              _context.next = 34;
+              _context.next = 33;
               break;
             }
 
-            _context.next = 30;
+            _context.next = 29;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
               spenderId: user.id
@@ -131,21 +125,21 @@ var validateAmount = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 30:
+          case 29:
             activity = _context.sent;
-            _context.next = 33;
-            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidAmountMessage)(message, capType));
+            _context.next = 32;
+            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidAmountMessage)(message, type));
 
-          case 33:
+          case 32:
             return _context.abrupt("return", [activity, amount]);
 
-          case 34:
+          case 33:
             if (!(user.wallet.available < amount)) {
-              _context.next = 41;
+              _context.next = 40;
               break;
             }
 
-            _context.next = 37;
+            _context.next = 36;
             return _models["default"].activity.create({
               type: "".concat(type, "_i"),
               spenderId: user.id,
@@ -155,19 +149,18 @@ var validateAmount = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 37:
+          case 36:
             activity = _context.sent;
-            _context.next = 40;
-            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.insufficientBalanceMessage)(message, capType));
+            _context.next = 39;
+            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.insufficientBalanceMessage)(message, type));
+
+          case 39:
+            return _context.abrupt("return", [activity, amount]);
 
           case 40:
             return _context.abrupt("return", [activity, amount]);
 
           case 41:
-            console.log("amount: ".concat(amount));
-            return _context.abrupt("return", [activity, amount]);
-
-          case 43:
           case "end":
             return _context.stop();
         }

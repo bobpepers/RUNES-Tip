@@ -41,6 +41,8 @@ var _price = require("../controllers/telegram/price");
 
 var _fees = require("../controllers/telegram/fees");
 
+var _user = require("../controllers/telegram/user");
+
 var _executeTips = require("../helpers/client/telegram/executeTips");
 
 var _disallowDirectMessage = require("../helpers/client/telegram/disallowDirectMessage");
@@ -51,17 +53,16 @@ var _rateLimit = require("../helpers/rateLimit");
 
 var _group = require("../controllers/telegram/group");
 
-var _user = require("../controllers/telegram/user");
-
-var _referral = require("../controllers/telegram/referral");
-
 var _settings = require("../controllers/telegram/settings");
+
+var _settings2 = require("../controllers/settings");
 
 var _telegram2 = require("../messages/telegram");
 
-var _settings2 = _interopRequireDefault(require("../config/settings"));
+var _referral = require("../controllers/telegram/referral");
 
-var settings = (0, _settings2["default"])();
+// import getCoinSettings from '../config/settings';
+// const settings = getCoinSettings();
 (0, _dotenv.config)();
 var storeSession = new _sessions.StoreSession("telegram_session");
 var telegramApiClient = new _telegram.TelegramClient(storeSession, Number(process.env.TELEGRAM_API_ID), process.env.TELEGRAM_API_HASH, {
@@ -1443,7 +1444,7 @@ var telegramRouter = /*#__PURE__*/function () {
                       case 40:
                         groupTaskId = groupTask && groupTask.id;
                         _context44.next = 43;
-                        return (0, _settings.telegramWaterFaucetSettings)(groupTaskId);
+                        return (0, _settings2.waterFaucetSettings)(groupTaskId);
 
                       case 43:
                         faucetSetting = _context44.sent;
@@ -1916,7 +1917,7 @@ var telegramRouter = /*#__PURE__*/function () {
 
                       case 135:
                         _context44.next = 137;
-                        return (0, _settings.telegramSettings)(ctx, 'flood', groupTaskId);
+                        return (0, _settings.telegramFeatureSettings)(ctx, 'flood', groupTaskId);
 
                       case 137:
                         setting = _context44.sent;
@@ -1985,7 +1986,7 @@ var telegramRouter = /*#__PURE__*/function () {
 
                       case 153:
                         _context44.next = 155;
-                        return (0, _settings.telegramSettings)(ctx, 'sleet', groupTaskId);
+                        return (0, _settings.telegramFeatureSettings)(ctx, 'sleet', groupTaskId);
 
                       case 155:
                         _setting = _context44.sent;
@@ -2054,7 +2055,7 @@ var telegramRouter = /*#__PURE__*/function () {
 
                       case 171:
                         _context44.next = 173;
-                        return (0, _settings.telegramSettings)(ctx, 'rain', groupTaskId);
+                        return (0, _settings.telegramFeatureSettings)(ctx, 'rain', groupTaskId);
 
                       case 173:
                         _setting2 = _context44.sent;
@@ -2094,7 +2095,7 @@ var telegramRouter = /*#__PURE__*/function () {
 
                       case 185:
                         _context44.next = 187;
-                        return (0, _settings.telegramSettings)(ctx, 'withdraw', groupTaskId);
+                        return (0, _settings.telegramFeatureSettings)(ctx, 'withdraw', groupTaskId);
 
                       case 187:
                         _setting3 = _context44.sent;
@@ -2163,7 +2164,7 @@ var telegramRouter = /*#__PURE__*/function () {
 
                       case 203:
                         _context44.next = 205;
-                        return (0, _settings.telegramSettings)(ctx, 'tip', groupTaskId);
+                        return (0, _settings.telegramFeatureSettings)(ctx, 'tip', groupTaskId);
 
                       case 205:
                         _setting4 = _context44.sent;
