@@ -11,7 +11,7 @@ export const matrixBotDisabledMessage = () => {
     body: `Matrix tipbot disabled
 
 ${settings.bot.name} v${pjson.version}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Matrix tipbot disabled</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -30,7 +30,7 @@ export const matrixLimitSpamMessage = (
 ${username}, you're using this command too fast, wait a while before using it again.
 
 ${settings.bot.name} v${pjson.version}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>${title}</strong></p>
 <p>🚫 Slow down! 🚫<br>
@@ -45,7 +45,7 @@ export const matrixBotMaintenanceMessage = () => {
     body: `Matrix tipbot maintenance
 
 ${settings.bot.name} v${pjson.version}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Matrix tipbot maintenance</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -59,7 +59,7 @@ export const matrixWelcomeMessage = (username) => {
 Type "${settings.bot.command.matrix} help" for usage info
 
 ${settings.bot.name} v${pjson.version}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Welcome ${username}, we created a wallet for you.
 Type "${settings.bot.command.matrix} help" for usage info</strong></p>
@@ -74,7 +74,7 @@ export const inviteMatrixDirectMessageRoom = (username) => {
 Please accept the invite to allow full functionality of this bot.
 
 ${settings.bot.name} v${pjson.version}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>${username}, i invited you to a direct message room.</strong></p>
 <p><strong>Please accept the invite to allow full functionality of this bot.</strong></p>
@@ -124,7 +124,7 @@ Current price
 $${priceInfo.price} (source: coinpaprika)
 
 ${settings.bot.name} v${pjson.version}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Coin Info</strong></p>
 <p>
@@ -166,7 +166,7 @@ export const warnDirectMessage = (
 ${username}, i've sent you a direct message.
 
 ${settings.bot.name} v${pjson.version}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
 <h4>${title}</h4>
@@ -212,7 +212,11 @@ example: ${settings.bot.command.matrix} flood 5.00
 
 ${settings.bot.command.matrix} sleet <amount|all> [<time>]
 Makes a sleet storm with the desired amount onto all users that have been active in the room in the last 15 minutes (optionally, within specified time)
-example: \`${settings.bot.command.matrix} sleet 5.00\`, \`${settings.bot.command.matrix} sleet 5.00 @supporters
+example: ${settings.bot.command.matrix} sleet 5.00
+
+${settings.bot.command.matrix} reactdrop <amount> [<time>] [<emoji>]
+Performs a react airdrop with the amount, optionally within custom time, optionally using a custom-supplied emoji. <time> parameter accepts time interval expressions in the form of: 60s, 5m, 1h. Default time interval is 5m(5minutes).
+example: ${settings.bot.command.matrix} reactdrop 10 20m, ${settings.bot.command.matrix} reactdrop 10 3h 😃
 
 ${settings.bot.command.matrix} fees
 Displays fee schedule
@@ -221,7 +225,7 @@ ${settings.bot.command.matrix} ignoreme
 Turns @mentioning you during mass operations on/off
 
 ${settings.bot.name} v${pjson.version}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Help message v${pjson.version}</strong></p
     >
@@ -259,6 +263,10 @@ example: ${settings.bot.command.matrix} flood 5.00</p>
 <p>Makes a sleet storm with the desired amount onto all users that have been active in the room in the last 15 minutes (optionally, within specified time)<br>
 example: ${settings.bot.command.matrix} sleet 5.00, ${settings.bot.command.matrix} sleet 5.00 @supporters</p>
 
+<code>${settings.bot.command.matrix} reactdrop &lt;amount&gt; [&lt;time&gt;] [&lt;emoji&gt;]</code>
+<p>Performs a react airdrop with the amount, optionally within custom time, optionally using a custom-supplied emoji. <time> parameter accepts time interval expressions in the form of: 60s, 5m, 1h. Default time interval is 5m(5minutes).<br>
+example: ${settings.bot.command.matrix} reactdrop 10 20m, ${settings.bot.command.matrix} reactdrop 10 3h 😃</p>
+
 <code>${settings.bot.command.matrix} fees</code>
 <p>Displays fee schedule</p>
 
@@ -280,7 +288,7 @@ export const balanceMessage = (
     body: `${user.username}'s current available balance: ${user.wallet.available / 1e8} ${settings.coin.ticker}
 ${user.username}'s current locked balance: ${user.wallet.locked / 1e8} ${settings.coin.ticker}
 Estimated value of ${user.username}'s balance: $${(((user.wallet.available + user.wallet.locked) / 1e8) * priceInfo.price).toFixed(2)}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
 <p><a href="https://matrix.to/#/${myUserId}">${user.username}</a>'s current available balance: <strong>${user.wallet.available / 1e8} ${settings.coin.ticker}</strong><br>
@@ -295,7 +303,7 @@ export const depositAddressMessage = (user) => {
   const result = {
     body: `deposit address: ${user.wallet.addresses[0].address}
 ${settings.bot.name} v${pjson.version}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>deposit address: </strong>${user.wallet.addresses[0].address}</p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -311,7 +319,7 @@ export const matrixIncomingDepositMessage = (
 incoming deposit detected for ${detail.amount} ${settings.coin.ticker}
 Balance will be reflected in your wallet in ~${settings.min.confirmations}+ confirmations
 ${settings.coin.explorer}/tx/${detail.transaction[0].txid}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>Deposit #${detail.transaction[0].id}</h4>
 <p>incoming deposit detected for <strong>${detail.amount} ${settings.coin.ticker}</strong><br>
@@ -331,7 +339,7 @@ export const matrixDepositConfirmedMessage = (
     body: `Deposit #${trans.id}
 Deposit Confirmed
 ${amount} ${settings.coin.ticker} has been credited to your wallet`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>Deposit #${trans.id}</h4>
 <p>Deposit Confirmed<br>
@@ -347,7 +355,7 @@ ${amount} ${settings.coin.ticker} has been credited to your wallet</p>
 export const featureDisabledChannelMessage = (name) => {
   const result = {
     body: "This Feature has been disabled for this channel",
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>This Feature has been disabled for this channel</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -358,7 +366,7 @@ export const featureDisabledChannelMessage = (name) => {
 export const featureDisabledServerMessage = (name) => {
   const result = {
     body: "This Feature has been disabled for this server",
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>This Feature has been disabled for this server</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -369,7 +377,7 @@ export const featureDisabledServerMessage = (name) => {
 export const featureDisabledGlobalMessage = (name) => {
   const result = {
     body: "This Feature has been disabled",
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>This Feature has been disabled</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -380,7 +388,7 @@ export const featureDisabledGlobalMessage = (name) => {
 export const settingsNotFoundMessage = (name) => {
   const result = {
     body: "Settings not found!",
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Settings not found!</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -398,7 +406,7 @@ export const confirmAllAmoutMessage = (
     body: `${message.sender.name}, are you sure that you want to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}?
 Accepted answers: **yes/no/y/n**;
 Auto-cancel in 30 seconds.`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, are you sure that you want to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}?<br>
 Accepted answers: <u>yes/no/y/n</u>;<br>
@@ -415,7 +423,7 @@ export const canceledAllAmoutMessage = (
 ) => {
   const result = {
     body: `${message.sender.name}, you canceled the request to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you canceled the request to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -428,7 +436,7 @@ export const unableToWithdrawToSelfMessage = (
 ) => {
   const result = {
     body: `${message.sender.name}, unable to withdraw to your own deposit address`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, unable to withdraw to your own deposit address</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -443,7 +451,7 @@ export const timeOutAllAmoutMessage = (
 ) => {
   const result = {
     body: `${message.sender.name}, the request to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker} has expired`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, the request to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker} has expired</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -457,7 +465,7 @@ export const walletNotFoundMessage = (
 ) => {
   const result = {
     body: `${message.sender.name}, Wallet not found`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Wallet not found</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -474,7 +482,7 @@ export const invalidAmountMessage = (
   const result = {
     body: `${capitalize(title)}
 ${message.sender.name}, Invalid Amount`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>${capitalize(title)}</h4>
 <p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Invalid Amount</strong></p>
@@ -490,7 +498,7 @@ export const insufficientBalanceMessage = (
   const result = {
     body: `${capitalize(title)}
 ${message.sender.name}, Insufficient balance`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>${capitalize(title)}</h4>
 <p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Insufficient balance</strong></p>
@@ -507,7 +515,7 @@ export const minimumMessage = (
   const result = {
     body: `${capitalize(type)}
 ${message.sender.name}, Minimum ${type} is ${setting.min / 1e8} ${settings.coin.ticker}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>${capitalize(type)}</h4>
 <p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Minimum ${type} is ${setting.min / 1e8} ${settings.coin.ticker}</strong></p>
@@ -523,7 +531,7 @@ export const errorMessage = (
 ) => {
   const result = {
     body: `Something went wrong.`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Something went wrong.</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -545,7 +553,7 @@ ${message.sender.name},  Your withdrawal is being reviewed
 amount: ${amount}
 fee: ${fee}
 total: ${total}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>Withdraw #${transaction.id}</h4>
 <p><strong>
@@ -565,7 +573,7 @@ export const invalidAddressMessage = (
 ) => {
   const result = {
     body: `${message.sender.name}, Invalid ${settings.coin.name} Address`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>${message.sender.name}, Invalid Runebase Address</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -588,7 +596,7 @@ fee: ${fee}
 total: ${total}
 
 ${settings.coin.explorer}/tx/${updatedTrans.txid}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>Withdraw #${updatedTrans.id}</h4>
 <p><strong>
@@ -611,7 +619,7 @@ export const matrixWithdrawalConfirmedMessage = (
   const result = {
     body: `Withdraw #${trans.id}
 ${userId}, Your withdrawal has been complete`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><strong><h4>Withdraw #${trans.id}</h4><br><p>${userId}, Your withdrawal has been complete</p></strong>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -622,7 +630,7 @@ ${userId}, Your withdrawal has been complete`,
 export const nodeOfflineMessage = () => {
   const result = {
     body: `Runebase node is offline`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><strong><p>Runebase node is offline</p></strong>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -634,7 +642,7 @@ export const notInDirectMessage = (message, title) => {
   const result = {
     body: `${title}
 ${message.sender.name}, Can't use this command in a direct message`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><strong><h4>${title}</h4>
 <p><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Can't use this command in a direct message</p></strong>
@@ -651,7 +659,7 @@ export const matrixUserBannedMessage = (
     body: `🚫     User: ${user.username} Banned     🚫
 Reason:
 ${user.banMessage}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>🚫     User: ${user.username} Banned     🚫</h4>
 <p><strong>Reason:<br>
@@ -668,7 +676,7 @@ export const matrixRoomBannedMessage = (
     body: `🚫     Server Banned     🚫
 Reason:
 ${server.banMessage}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
 <h4>🚫     Server Banned     🚫</h4>
@@ -682,7 +690,7 @@ ${server.banMessage}</strong></p>
 export const notEnoughUsers = () => {
   const result = {
     body: "not enough users",
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>not enough users</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -693,7 +701,7 @@ export const notEnoughUsers = () => {
 export const userListMessage = (list) => {
   const result = {
     body: `${list}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>${list}</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -714,7 +722,7 @@ export const afterSuccessMessage = (
     body: `${type} #${id}
 ${message.sender.name} ${typeH} **${amount / 1e8} ${settings.coin.ticker}** on ${withoutBots.length} users
 💸 **${amountPerUser / 1e8} ${settings.coin.ticker}** each 💸`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
 <h4>${type} #${id}</h4>
@@ -736,7 +744,7 @@ export const afterReactDropSuccessMessage = (
 🎉 <a href="https://matrix.to/#/${endReactDrop.group.groupId.replace("matrix-", "")}/${endReactDrop.messageId}">React airdrop</a> started by <a href="https://matrix.to/#/${initiatorId}">${user.username}</a> has finished! 🎉
 \n\n
 💸 ${endReactDrop.reactdroptips.length} user(s) will share ${endReactDrop.amount / 1e8} ${settings.coin.ticker} (${amountEach / 1e8} each)! 💸`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>Reactdrop #${endReactDrop.id}</h4>
 <p><strong>
@@ -753,7 +761,7 @@ export const maxTimeReactdropMessage = () => {
   const result = {
     body: `Reactdrop\n
 Maximum time is 2 days`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>Reactdrop</h4>
 <p><strong>Maximum time is 2 days</strong></p>
@@ -766,7 +774,7 @@ export const reactDropReturnInitiatorMessage = () => {
   const result = {
     body: `Reactdrop\n
 Nobody claimed, returning funds to reactdrop initiator`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>Reactdrop</h4>
 <p><strong>Nobody claimed, returning funds to reactdrop initiator</strong></p>
@@ -780,7 +788,7 @@ export const outOfTimeReactdropMessage = (
 ) => {
   const result = {
     body: `Out of Time`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>Reactdrop</h4>
 <p><strong>Out of time</strong></p>
@@ -794,7 +802,7 @@ export const backToReactDropMessage = (
 ) => {
   const result = {
     body: `<a href="${link}">Back to Reactdrop</a>`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h3><strong><a href="${link}">Back to Reactdrop</a></strong></h3>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -808,7 +816,7 @@ export const reactdropCaptchaMessage = (
   const result = {
     body: `Reactdrop
 ${message.sender.userId} you have 1 minute to guess`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>Reactdrop</h4>
 <p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you have 1 minute to guessi</strong></p>
@@ -820,7 +828,7 @@ ${message.sender.userId} you have 1 minute to guess`,
 export const reactdropPressWrongEmojiMessage = () => {
   const result = {
     body: "Failed, pressed wrong emoji",
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Failed, pressed wrong emoji</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -831,7 +839,7 @@ export const reactdropPressWrongEmojiMessage = () => {
 export const groupNotFoundMessage = () => {
   const result = {
     body: "Room not found",
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Room not found</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
@@ -861,7 +869,7 @@ export const matrixReactDropMessage = (
 ℹ️ React to this message ONLY with ${emoji} to win a share in ${amount / 1e8} ${settings.coin.ticker}! You will also be presented with a simple math question in your direct messages which you need to solve to be eligible.
 
 ${!ended ? `🕘️ Time remaining ${days > 0 ? `${days} days` : ''}  ${hours > 0 ? `${hours} hours` : ''} ${minutes > 0 ? `${minutes} minutes` : ''} ${seconds > 0 ? `${seconds} seconds` : ''}` : `Ended`}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>Reactdrop #${id}</h4>
 <p><strong>
@@ -884,7 +892,7 @@ export const invalidEmojiMessage = (
   const result = {
     body: `${title}
 ${message.sender.name}, You used an invalid emoji`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>${title}</h4>
 <p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, You used an invalid emoji</strong></p>
@@ -899,7 +907,7 @@ export const minimumTimeReactDropMessage = (
   const result = {
     body: `Reactdrop
 ${message.sender.name}, Minimum time for reactdrop is 60 seconds (60s)`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>Reactdrop</h4>
 <p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Minimum time for reactdrop is 60 seconds (60s)</strong></p>
@@ -915,7 +923,7 @@ export const invalidTimeMessage = (
   const result = {
     body: `${title}
 ${message.sender.name}, Invalid time`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>${title}</h4>
 <p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, Invalid time</strong></p>
@@ -929,7 +937,7 @@ export const ignoreMeMessage = (message) => {
     body: `Ignore me
 ${message.sender.name}, you will no longer be @mentioned while receiving rains, soaks and other mass operations, but will continue to receive coins from them.
 If you wish to be @mentioned, please issue this command again.`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>Ignore me</h4><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you will no longer be @mentioned while receiving rains, soaks and other mass operations, but will continue to receive coins from them.<br>
 If you wish to be @mentioned, please issue this command again.</strong></p>
@@ -943,7 +951,7 @@ export const unIngoreMeMessage = (message) => {
     body: `Ignore me
 ${message.sender.name}, you will again be @mentioned while receiving rains, soaks and other mass operations.
 If you do not wish to be @mentioned, please issue this command again.`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>Ignore me</h4><p><strong><a href="https://matrix.to/#/${message.sender.userId}">${message.sender.name}</a>, you will again be @mentioned while receiving rains, soaks and other mass operations.<br>
 If you do not wish to be @mentioned, please issue this command again.</strong></p>
@@ -961,7 +969,7 @@ export const tipSingleSuccessMessage = (
   const result = {
     body: `Tip #${id}
 ${message.sender.name} tipped ${amount / 1e8} ${settings.coin.ticker} to ${listOfUsersRained[0]}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
 <h4>Tip #${id}</h4>
@@ -985,7 +993,7 @@ ${message.sender.name} tipped **${(amount * listOfUsersRained.length) / 1e8} ${s
 Type: **${capitalize(type)}**
 
 💸 **${amount / 1e8} ${settings.coin.ticker}** each 💸`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
 <h4>Tip #${id}</h4>
@@ -1007,7 +1015,7 @@ export const priceMessage = (
     body: `Price
 
 ${replyString}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
 <h4>Price</h4>
@@ -1030,7 +1038,7 @@ export const feeMessage = (message, fee) => {
   const result = {
     body: `Fee schedule
 ${feeString}`,
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote>
 <h4>Fee schedule</h4>
@@ -1044,7 +1052,7 @@ ${feeString}`,
 export const testMessage = () => {
   const result = {
     body: "Hello World",
-    msgtype: "m.text",
+    msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><p><strong>Hello Worlds</strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,

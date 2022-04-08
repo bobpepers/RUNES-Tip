@@ -265,7 +265,7 @@ export const recoverMatrixReactdrops = async (
               event_id: runningReactDrop.messageId,
               rel_type: "m.replace",
             },
-            msgtype: "m.text",
+            msgtype: "m.notice",
             format: 'org.matrix.custom.html',
             formatted_body: editedMessage.formatted_body,
             body: editedMessage.body,

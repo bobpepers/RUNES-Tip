@@ -46,7 +46,7 @@ export const listenMatrixReactDrop = async (
     confirmMessage,
     room,
   ) => {
-    console.log(confirmMessage);
+    // console.log(confirmMessage);
     if (
       room.roomId === reactDropRoomId
       && confirmMessage.event.type === 'm.reaction'
@@ -899,7 +899,8 @@ export const matrixReactDrop = async (
                 event_id: sendReactDropMessage.event_id,
                 rel_type: "m.replace",
               },
-              msgtype: "m.text",
+              // server_notice_type: "m.server_notice.suppress_notices",
+              msgtype: "m.notice",
               format: 'org.matrix.custom.html',
               formatted_body: editedMessage.formatted_body,
               body: editedMessage.body,
