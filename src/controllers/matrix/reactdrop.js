@@ -28,6 +28,7 @@ import { validateAmount } from "../../helpers/client/matrix/validateAmount";
 import { userWalletExist } from "../../helpers/client/matrix/userWalletExist";
 import { waterFaucetSettings } from '../settings';
 import { findUserDirectMessageRoom, inviteUserToDirectMessageRoom } from '../../helpers/client/matrix/directMessageRoom';
+import { decryptIncomingMessage } from '../../helpers/client/matrix/decryptIncomingMessage';
 
 export const listenMatrixReactDrop = async (
   matrixClient,
@@ -45,6 +46,7 @@ export const listenMatrixReactDrop = async (
     confirmMessage,
     room,
   ) => {
+    console.log(confirmMessage);
     if (
       room.roomId === reactDropRoomId
       && confirmMessage.event.type === 'm.reaction'
@@ -156,13 +158,10 @@ export const listenMatrixReactDrop = async (
                 await db.sequelize.transaction({
                   isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
                 }, async (t) => {
-                  let tempBody = '';
-                  if (confirmUserMessage.event.type === 'm.room.encrypted') {
-                    const event = await matrixClient.crypto.decryptEvent(confirmUserMessage);
-                    tempBody = event.clearEvent.content.body;
-                  } else {
-                    tempBody = confirmUserMessage.event.content.body;
-                  }
+                  const tempBody = await decryptIncomingMessage(
+                    matrixClient,
+                    confirmUserMessage,
+                  );
                   if (tempBody === findReactTip.solution) {
                     await findReactTip.update(
                       {
@@ -880,38 +879,41 @@ export const matrixReactDrop = async (
       );
     }
 
-    const updateMessage = setInterval(async () => {
-      now = new Date().getTime();
-      distance = countDownDate - now;
-      const editedMessage = matrixReactDropMessage(
-        newReactDrop.id,
-        distance,
-        findUpdatedReactDrop.user,
-        filteredMessage[4],
-        amount,
-      );
-      await matrixClient.sendEvent(
-        message.sender.roomId,
-        'm.room.message',
-        {
-          "m.relates_to": {
-            event_id: sendReactDropMessage.event_id,
-            rel_type: "m.replace",
-          },
-          msgtype: "m.text",
-          format: 'org.matrix.custom.html',
-          formatted_body: editedMessage.formatted_body,
-          body: editedMessage.body,
-          "m.new_content": editedMessage,
-        },
-      );
-      if (distance < 0) {
-        clearInterval(updateMessage);
-      }
-    }, 10000);
-
-    t.afterCommit(() => {
-      console.log('done');
+    t.afterCommit(async () => {
+      const updateMessage = setInterval(async () => {
+        now = new Date().getTime();
+        distance = countDownDate - now;
+        const editedMessage = matrixReactDropMessage(
+          newReactDrop.id,
+          distance,
+          findUpdatedReactDrop.user,
+          filteredMessage[4],
+          amount,
+        );
+        try {
+          await matrixClient.sendEvent(
+            message.sender.roomId,
+            'm.room.message',
+            {
+              "m.relates_to": {
+                event_id: sendReactDropMessage.event_id,
+                rel_type: "m.replace",
+              },
+              msgtype: "m.text",
+              format: 'org.matrix.custom.html',
+              formatted_body: editedMessage.formatted_body,
+              body: editedMessage.body,
+              "m.new_content": editedMessage,
+            },
+          );
+        } catch (e) {
+          console.log(e);
+          console.log('error');
+        }
+        if (distance < 0) {
+          clearInterval(updateMessage);
+        }
+      }, 30000);
     });
   }).catch(async (err) => {
     try {

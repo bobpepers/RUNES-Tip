@@ -23,6 +23,7 @@ import { waterFaucetSettings } from '../controllers/settings';
 import { createUpdateMatrixUser, updateMatrixLastSeen } from '../controllers/matrix/user';
 import { myRateLimiter } from '../helpers/rateLimit';
 import { findUserDirectMessageRoom, inviteUserToDirectMessageRoom } from '../helpers/client/matrix/directMessageRoom';
+import { decryptIncomingMessage } from '../helpers/client/matrix/decryptIncomingMessage';
 
 import {
   matrixUserBannedMessage,
@@ -137,15 +138,7 @@ export const matrixRouter = async (
     let channelTask;
     let groupTaskId;
     let channelTaskId;
-    let myBody;
-    let formatted_body;
 
-    const maintenance = await isMaintenanceOrDisabled(
-      message,
-      'matrix',
-      matrixClient,
-    );
-    if (maintenance.maintenance || !maintenance.enabled) return;
     const walletExists = await createUpdateMatrixUser(
       message,
       matrixClient,
@@ -173,37 +166,20 @@ export const matrixRouter = async (
       );
     }
 
-    // console.log(message);
-    try {
-      if (message.event.type === 'm.room.encrypted') {
-        // console.log(matrixClient);
-        // const event = await matrixClient._crypto.decryptEvent(message);
-        const event = await matrixClient.crypto.decryptEvent(message);
-        if (event.clearEvent.content.formatted_body) {
-          myBody = event.clearEvent.content.formatted_body;
-        } else {
-          myBody = event.clearEvent.content.body;
-        }
-      } else {
-        if (message.event.content.formatted_body) {
-          myBody = message.event.content.formatted_body;
-        } else {
-          myBody = message.event.content.body;
-        }
-        console.log(message.event.content);
-      }
-    } catch (error) {
-      console.error('#### ', error);
-    }
+    const myBody = await decryptIncomingMessage(
+      matrixClient,
+      message,
+    );
     // console.log(body);
     if (myBody) {
-      // const space = await matrixClient.getRoomHierarchy(message.event.room_id, 100, 100, false);
-      // const directories = await matrixClient.getRoomSummary(message.event.room_id);
-      // console.log(space);
-      // console.log(directories);
-
       if (!myBody.startsWith(settings.bot.command.matrix)) return;
       if (myBody.startsWith(settings.bot.command.matrix)) {
+        const maintenance = await isMaintenanceOrDisabled(
+          message,
+          'matrix',
+          matrixClient,
+        );
+        if (maintenance.maintenance || !maintenance.enabled) return;
         faucetSetting = await waterFaucetSettings(
           groupTaskId,
           channelTaskId,

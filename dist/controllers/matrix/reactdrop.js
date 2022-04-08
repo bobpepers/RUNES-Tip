@@ -37,6 +37,8 @@ var _settings = require("../settings");
 
 var _directMessageRoom = require("../../helpers/client/matrix/directMessageRoom");
 
+var _decryptIncomingMessage = require("../../helpers/client/matrix/decryptIncomingMessage");
+
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -62,28 +64,30 @@ var listenMatrixReactDrop = /*#__PURE__*/function () {
                   while (1) {
                     switch (_context7.prev = _context7.next) {
                       case 0:
+                        console.log(confirmMessage);
+
                         if (!(room.roomId === reactDropRoomId && confirmMessage.event.type === 'm.reaction' && confirmMessage.event.content && confirmMessage.event.content['m.relates_to'] && confirmMessage.event.content['m.relates_to'].event_id && confirmMessage.event.content['m.relates_to'].key && confirmMessage.event.content['m.relates_to'].event_id === reactMessage)) {
-                          _context7.next = 59;
+                          _context7.next = 60;
                           break;
                         }
 
-                        _context7.next = 3;
+                        _context7.next = 4;
                         return _models["default"].user.findOne({
                           where: {
                             user_id: "matrix-".concat(confirmMessage.sender.userId)
                           }
                         });
 
-                      case 3:
+                      case 4:
                         findReactUser = _context7.sent;
 
                         if (!findReactUser) {
-                          _context7.next = 59;
+                          _context7.next = 60;
                           break;
                         }
 
                         reactDropTipUserId = findReactUser.user_id.replace('matrix-', '');
-                        _context7.next = 8;
+                        _context7.next = 9;
                         return _models["default"].reactdroptip.findOne({
                           where: {
                             userId: findReactUser.id,
@@ -91,38 +95,38 @@ var listenMatrixReactDrop = /*#__PURE__*/function () {
                           }
                         });
 
-                      case 8:
+                      case 9:
                         findReactTip = _context7.sent;
 
                         if (findReactTip) {
-                          _context7.next = 59;
+                          _context7.next = 60;
                           break;
                         }
 
-                        _context7.next = 12;
+                        _context7.next = 13;
                         return (0, _directMessageRoom.findUserDirectMessageRoom)(matrixClient, confirmMessage.sender.userId, confirmMessage.sender.roomId);
 
-                      case 12:
+                      case 13:
                         _yield$findUserDirect = _context7.sent;
                         _yield$findUserDirect2 = (0, _slicedToArray2["default"])(_yield$findUserDirect, 3);
                         directUserMessageRoom = _yield$findUserDirect2[0];
                         isCurrentRoomDirectMessage = _yield$findUserDirect2[1];
                         userState = _yield$findUserDirect2[2];
-                        _context7.next = 19;
+                        _context7.next = 20;
                         return (0, _directMessageRoom.inviteUserToDirectMessageRoom)(matrixClient, directUserMessageRoom, userState, confirmMessage.sender.userId, confirmMessage.sender.name, confirmMessage.sender.roomId);
 
-                      case 19:
+                      case 20:
                         userDirectMessageRoomId = _context7.sent;
-                        _context7.next = 22;
+                        _context7.next = 23;
                         return (0, _generateCaptcha.generateCaptcha)();
 
-                      case 22:
+                      case 23:
                         _yield$generateCaptch = _context7.sent;
                         _yield$generateCaptch2 = (0, _slicedToArray2["default"])(_yield$generateCaptch, 3);
                         captchaImage = _yield$generateCaptch2[0];
                         captchaText = _yield$generateCaptch2[1];
                         captchaType = _yield$generateCaptch2[2];
-                        _context7.next = 29;
+                        _context7.next = 30;
                         return _models["default"].reactdroptip.create({
                           status: 'waiting',
                           captchaType: captchaType,
@@ -131,48 +135,48 @@ var listenMatrixReactDrop = /*#__PURE__*/function () {
                           reactdropId: reactDrop.id
                         });
 
-                      case 29:
+                      case 30:
                         findReactTip = _context7.sent;
 
                         if (!(reactDrop.emoji !== confirmMessage.event.content['m.relates_to'].key)) {
-                          _context7.next = 43;
+                          _context7.next = 44;
                           break;
                         }
 
-                        _context7.prev = 31;
-                        _context7.next = 34;
+                        _context7.prev = 32;
+                        _context7.next = 35;
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.reactdropPressWrongEmojiMessage)());
 
-                      case 34:
-                        _context7.next = 39;
+                      case 35:
+                        _context7.next = 40;
                         break;
 
-                      case 36:
-                        _context7.prev = 36;
-                        _context7.t0 = _context7["catch"](31);
+                      case 37:
+                        _context7.prev = 37;
+                        _context7.t0 = _context7["catch"](32);
                         console.log(_context7.t0);
 
-                      case 39:
-                        _context7.next = 41;
+                      case 40:
+                        _context7.next = 42;
                         return findReactTip.update({
                           status: 'failed'
                         });
 
-                      case 41:
-                        _context7.next = 59;
+                      case 42:
+                        _context7.next = 60;
                         break;
 
-                      case 43:
-                        _context7.prev = 43;
-                        _context7.next = 46;
+                      case 44:
+                        _context7.prev = 44;
+                        _context7.next = 47;
                         return matrixClient.uploadContent(captchaImage, {
                           rawResponse: false,
                           type: 'image/png'
                         });
 
-                      case 46:
+                      case 47:
                         uploadResponse = _context7.sent;
-                        _context7.next = 49;
+                        _context7.next = 50;
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", {
                           msgtype: "m.image",
                           url: uploadResponse.content_uri,
@@ -180,20 +184,20 @@ var listenMatrixReactDrop = /*#__PURE__*/function () {
                           body: "captchaImage"
                         });
 
-                      case 49:
-                        _context7.next = 51;
+                      case 50:
+                        _context7.next = 52;
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.reactdropCaptchaMessage)(confirmMessage));
 
-                      case 51:
-                        _context7.next = 56;
+                      case 52:
+                        _context7.next = 57;
                         break;
 
-                      case 53:
-                        _context7.prev = 53;
-                        _context7.t1 = _context7["catch"](43);
+                      case 54:
+                        _context7.prev = 54;
+                        _context7.t1 = _context7["catch"](44);
                         console.log(_context7.t1);
 
-                      case 56:
+                      case 57:
                         listenerFunctionForUser = /*#__PURE__*/function () {
                           var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(confirmUserMessage, room) {
                             return _regenerator["default"].wrap(function _callee3$(_context3) {
@@ -211,38 +215,24 @@ var listenMatrixReactDrop = /*#__PURE__*/function () {
                                       isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
                                     }, /*#__PURE__*/function () {
                                       var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                                        var tempBody, event, _reactDropRecord, reactDropRecord;
+                                        var tempBody, _reactDropRecord, reactDropRecord;
 
                                         return _regenerator["default"].wrap(function _callee$(_context) {
                                           while (1) {
                                             switch (_context.prev = _context.next) {
                                               case 0:
-                                                tempBody = '';
+                                                _context.next = 2;
+                                                return (0, _decryptIncomingMessage.decryptIncomingMessage)(matrixClient, confirmUserMessage);
 
-                                                if (!(confirmUserMessage.event.type === 'm.room.encrypted')) {
-                                                  _context.next = 8;
-                                                  break;
-                                                }
+                                              case 2:
+                                                tempBody = _context.sent;
 
-                                                _context.next = 4;
-                                                return matrixClient.crypto.decryptEvent(confirmUserMessage);
-
-                                              case 4:
-                                                event = _context.sent;
-                                                tempBody = event.clearEvent.content.body;
-                                                _context.next = 9;
-                                                break;
-
-                                              case 8:
-                                                tempBody = confirmUserMessage.event.content.body;
-
-                                              case 9:
                                                 if (!(tempBody === findReactTip.solution)) {
-                                                  _context.next = 20;
+                                                  _context.next = 14;
                                                   break;
                                                 }
 
-                                                _context.next = 12;
+                                                _context.next = 6;
                                                 return findReactTip.update({
                                                   status: 'success'
                                                 }, {
@@ -250,8 +240,8 @@ var listenMatrixReactDrop = /*#__PURE__*/function () {
                                                   transaction: t
                                                 });
 
-                                              case 12:
-                                                _context.next = 14;
+                                              case 6:
+                                                _context.next = 8;
                                                 return _models["default"].reactdrop.findOne({
                                                   where: {
                                                     id: findReactTip.reactdropId
@@ -267,9 +257,9 @@ var listenMatrixReactDrop = /*#__PURE__*/function () {
                                                   transaction: t
                                                 });
 
-                                              case 14:
+                                              case 8:
                                                 _reactDropRecord = _context.sent;
-                                                _context.next = 17;
+                                                _context.next = 11;
                                                 return matrixClient.sendEvent(userDirectMessageRoomId, 'm.reaction', {
                                                   "m.relates_to": {
                                                     event_id: confirmUserMessage.event.event_id,
@@ -278,15 +268,15 @@ var listenMatrixReactDrop = /*#__PURE__*/function () {
                                                   }
                                                 });
 
-                                              case 17:
-                                                _context.next = 19;
+                                              case 11:
+                                                _context.next = 13;
                                                 return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.backToReactDropMessage)(backToReactDropLink));
 
-                                              case 19:
+                                              case 13:
                                                 return _context.abrupt("return");
 
-                                              case 20:
-                                                _context.next = 22;
+                                              case 14:
+                                                _context.next = 16;
                                                 return findReactTip.update({
                                                   status: 'failed'
                                                 }, {
@@ -294,8 +284,8 @@ var listenMatrixReactDrop = /*#__PURE__*/function () {
                                                   transaction: t
                                                 });
 
-                                              case 22:
-                                                _context.next = 24;
+                                              case 16:
+                                                _context.next = 18;
                                                 return _models["default"].reactdrop.findOne({
                                                   where: {
                                                     id: findReactTip.reactdropId
@@ -311,9 +301,9 @@ var listenMatrixReactDrop = /*#__PURE__*/function () {
                                                   transaction: t
                                                 });
 
-                                              case 24:
+                                              case 18:
                                                 reactDropRecord = _context.sent;
-                                                _context.next = 27;
+                                                _context.next = 21;
                                                 return matrixClient.sendEvent(userDirectMessageRoomId, 'm.reaction', {
                                                   "m.relates_to": {
                                                     event_id: confirmUserMessage.event.event_id,
@@ -322,16 +312,16 @@ var listenMatrixReactDrop = /*#__PURE__*/function () {
                                                   }
                                                 });
 
-                                              case 27:
-                                                _context.next = 29;
+                                              case 21:
+                                                _context.next = 23;
                                                 return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.backToReactDropMessage)(backToReactDropLink));
 
-                                              case 29:
+                                              case 23:
                                                 t.afterCommit(function () {
                                                   console.log('done');
                                                 });
 
-                                              case 30:
+                                              case 24:
                                               case "end":
                                                 return _context.stop();
                                             }
@@ -528,12 +518,12 @@ var listenMatrixReactDrop = /*#__PURE__*/function () {
                           }, _callee6);
                         })), 60000);
 
-                      case 59:
+                      case 60:
                       case "end":
                         return _context7.stop();
                     }
                   }
-                }, _callee7, null, [[31, 36], [43, 53]]);
+                }, _callee7, null, [[32, 37], [44, 54]]);
               }));
 
               return function listenerFunction(_x7, _x8) {
@@ -917,42 +907,42 @@ var listenMatrixReactDrop = /*#__PURE__*/function () {
 exports.listenMatrixReactDrop = listenMatrixReactDrop;
 
 var matrixReactDrop = /*#__PURE__*/function () {
-  var _ref13 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee16(matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, queue, userDirectMessageRoomId, isCurrentRoomDirectMessage) {
+  var _ref13 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee17(matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, queue, userDirectMessageRoomId, isCurrentRoomDirectMessage) {
     var activity, useEmojis;
-    return _regenerator["default"].wrap(function _callee16$(_context16) {
+    return _regenerator["default"].wrap(function _callee17$(_context17) {
       while (1) {
-        switch (_context16.prev = _context16.next) {
+        switch (_context17.prev = _context17.next) {
           case 0:
             activity = [];
             useEmojis = [];
-            _context16.next = 4;
+            _context17.next = 4;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
-              var _ref14 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee14(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, textTime, cutLastTimeLetter, cutNumberTime, isnum, timeFailActivity, _timeFailActivity, allEmojis, failEmojiActivity, timeDay, timeHour, timeMinute, timeSecond, dateObj, countDownDate, now, distance, randomAmount, i, randomX, shuffeledEmojisArray, group, wallet, fee, newReactDrop, findNotUpdatedReactDrop, sendReactDropMessage, newUpdatedReactDrop, preActivity, finalActivity, findUpdatedReactDrop, _iterator3, _step3, shufEmoji, updateMessage;
+              var _ref14 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee15(t) {
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, textTime, cutLastTimeLetter, cutNumberTime, isnum, timeFailActivity, _timeFailActivity, allEmojis, failEmojiActivity, timeDay, timeHour, timeMinute, timeSecond, dateObj, countDownDate, now, distance, randomAmount, i, randomX, shuffeledEmojisArray, group, wallet, fee, newReactDrop, findNotUpdatedReactDrop, sendReactDropMessage, newUpdatedReactDrop, preActivity, finalActivity, findUpdatedReactDrop, _iterator3, _step3, shufEmoji;
 
-                return _regenerator["default"].wrap(function _callee14$(_context14) {
+                return _regenerator["default"].wrap(function _callee15$(_context15) {
                   while (1) {
-                    switch (_context14.prev = _context14.next) {
+                    switch (_context15.prev = _context15.next) {
                       case 0:
                         if (!isCurrentRoomDirectMessage) {
-                          _context14.next = 4;
+                          _context15.next = 4;
                           break;
                         }
 
-                        _context14.next = 3;
+                        _context15.next = 3;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.notInDirectMessage)(message, 'Flood'));
 
                       case 3:
-                        return _context14.abrupt("return");
+                        return _context15.abrupt("return");
 
                       case 4:
-                        _context14.next = 6;
+                        _context15.next = 6;
                         return (0, _userWalletExist.userWalletExist)(matrixClient, message, t, filteredMessage[1].toLowerCase());
 
                       case 6:
-                        _yield$userWalletExis = _context14.sent;
+                        _yield$userWalletExis = _context15.sent;
                         _yield$userWalletExis2 = (0, _slicedToArray2["default"])(_yield$userWalletExis, 2);
                         user = _yield$userWalletExis2[0];
                         userActivity = _yield$userWalletExis2[1];
@@ -962,29 +952,29 @@ var matrixReactDrop = /*#__PURE__*/function () {
                         }
 
                         if (user) {
-                          _context14.next = 13;
+                          _context15.next = 13;
                           break;
                         }
 
-                        return _context14.abrupt("return");
+                        return _context15.abrupt("return");
 
                       case 13:
-                        _context14.next = 15;
+                        _context15.next = 15;
                         return (0, _validateAmount.validateAmount)(matrixClient, message, t, filteredMessage[2], user, setting, filteredMessage[1].toLowerCase());
 
                       case 15:
-                        _yield$validateAmount = _context14.sent;
+                        _yield$validateAmount = _context15.sent;
                         _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
                         activityValiateAmount = _yield$validateAmount2[0];
                         amount = _yield$validateAmount2[1];
 
                         if (!activityValiateAmount) {
-                          _context14.next = 22;
+                          _context15.next = 22;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
-                        return _context14.abrupt("return");
+                        return _context15.abrupt("return");
 
                       case 22:
                         textTime = '5m';
@@ -1000,11 +990,11 @@ var matrixReactDrop = /*#__PURE__*/function () {
 
                         if (!(!isnum // && Number(cutNumberTime) < 0
                         || cutLastTimeLetter !== 'd' && cutLastTimeLetter !== 'h' && cutLastTimeLetter !== 'm' && cutLastTimeLetter !== 's')) {
-                          _context14.next = 35;
+                          _context15.next = 35;
                           break;
                         }
 
-                        _context14.next = 30;
+                        _context15.next = 30;
                         return _models["default"].activity.create({
                           type: 'reactdrop_f',
                           spenderId: user.id
@@ -1014,21 +1004,21 @@ var matrixReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 30:
-                        timeFailActivity = _context14.sent;
+                        timeFailActivity = _context15.sent;
                         activity.unshift(timeFailActivity);
-                        _context14.next = 34;
+                        _context15.next = 34;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidTimeMessage)(message, 'Reactdrop'));
 
                       case 34:
-                        return _context14.abrupt("return");
+                        return _context15.abrupt("return");
 
                       case 35:
                         if (!(cutLastTimeLetter === 's' && Number(cutNumberTime) < 60)) {
-                          _context14.next = 43;
+                          _context15.next = 43;
                           break;
                         }
 
-                        _context14.next = 38;
+                        _context15.next = 38;
                         return _models["default"].activity.create({
                           type: 'reactdrop_f',
                           spenderId: user.id
@@ -1038,13 +1028,13 @@ var matrixReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 38:
-                        _timeFailActivity = _context14.sent;
+                        _timeFailActivity = _context15.sent;
                         activity.unshift(_timeFailActivity);
-                        _context14.next = 42;
+                        _context15.next = 42;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.minimumTimeReactDropMessage)(message, 'Reactdrop'));
 
                       case 42:
-                        return _context14.abrupt("return");
+                        return _context15.abrupt("return");
 
                       case 43:
                         allEmojis = _emoji["default"];
@@ -1055,11 +1045,11 @@ var matrixReactDrop = /*#__PURE__*/function () {
                         }
 
                         if (allEmojis.includes(filteredMessage[4])) {
-                          _context14.next = 53;
+                          _context15.next = 53;
                           break;
                         }
 
-                        _context14.next = 48;
+                        _context15.next = 48;
                         return _models["default"].activity.create({
                           type: 'reactdrop_f',
                           spenderId: user.id
@@ -1069,13 +1059,13 @@ var matrixReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 48:
-                        failEmojiActivity = _context14.sent;
+                        failEmojiActivity = _context15.sent;
                         activity.unshift(failEmojiActivity);
-                        _context14.next = 52;
+                        _context15.next = 52;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidEmojiMessage)(message, 'Reactdrop'));
 
                       case 52:
-                        return _context14.abrupt("return");
+                        return _context15.abrupt("return");
 
                       case 53:
                         timeDay = Number(cutNumberTime) * 24 * 60 * 60 * 1000;
@@ -1084,22 +1074,22 @@ var matrixReactDrop = /*#__PURE__*/function () {
                         timeSecond = Number(cutNumberTime) * 1000;
 
                         if (!(cutLastTimeLetter === 'd' && timeDay > 172800000 || cutLastTimeLetter === 'h' && timeHour > 172800000 || cutLastTimeLetter === 'm' && timeMinute > 172800000 || cutLastTimeLetter === 's' && timeSecond > 172800000)) {
-                          _context14.next = 61;
+                          _context15.next = 61;
                           break;
                         }
 
-                        _context14.next = 60;
+                        _context15.next = 60;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.maxTimeReactdropMessage)());
 
                       case 60:
-                        return _context14.abrupt("return");
+                        return _context15.abrupt("return");
 
                       case 61:
-                        _context14.next = 63;
+                        _context15.next = 63;
                         return new Date().getTime();
 
                       case 63:
-                        dateObj = _context14.sent;
+                        dateObj = _context15.sent;
 
                         if (cutLastTimeLetter === 'd') {
                           dateObj += timeDay;
@@ -1117,21 +1107,21 @@ var matrixReactDrop = /*#__PURE__*/function () {
                           dateObj += timeSecond;
                         }
 
-                        _context14.next = 70;
+                        _context15.next = 70;
                         return new Date(dateObj);
 
                       case 70:
-                        dateObj = _context14.sent;
-                        _context14.next = 73;
+                        dateObj = _context15.sent;
+                        _context15.next = 73;
                         return dateObj.getTime();
 
                       case 73:
-                        countDownDate = _context14.sent;
-                        _context14.next = 76;
+                        countDownDate = _context15.sent;
+                        _context15.next = 76;
                         return new Date().getTime();
 
                       case 76:
-                        now = _context14.sent;
+                        now = _context15.sent;
                         distance = countDownDate - now;
                         randomAmount = Math.floor(Math.random() * 3) + 2;
 
@@ -1140,16 +1130,16 @@ var matrixReactDrop = /*#__PURE__*/function () {
                           useEmojis.push(allEmojis[parseInt(randomX, 10)]);
                         }
 
-                        _context14.next = 82;
+                        _context15.next = 82;
                         return useEmojis.push(filteredMessage[4]);
 
                       case 82:
-                        _context14.next = 84;
+                        _context15.next = 84;
                         return _lodash["default"].shuffle(useEmojis);
 
                       case 84:
-                        shuffeledEmojisArray = _context14.sent;
-                        _context14.next = 87;
+                        shuffeledEmojisArray = _context15.sent;
+                        _context15.next = 87;
                         return _models["default"].group.findOne({
                           where: {
                             groupId: "matrix-".concat(message.sender.roomId)
@@ -1159,18 +1149,18 @@ var matrixReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 87:
-                        group = _context14.sent;
+                        group = _context15.sent;
 
                         if (group) {
-                          _context14.next = 91;
+                          _context15.next = 91;
                           break;
                         }
 
                         console.log('group not found');
-                        return _context14.abrupt("return");
+                        return _context15.abrupt("return");
 
                       case 91:
-                        _context14.next = 93;
+                        _context15.next = 93;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -1179,9 +1169,9 @@ var matrixReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 93:
-                        wallet = _context14.sent;
+                        wallet = _context15.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
-                        _context14.next = 97;
+                        _context15.next = 97;
                         return _models["default"].reactdrop.create({
                           feeAmount: Number(fee),
                           amount: amount,
@@ -1197,8 +1187,8 @@ var matrixReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 97:
-                        newReactDrop = _context14.sent;
-                        _context14.next = 100;
+                        newReactDrop = _context15.sent;
+                        _context15.next = 100;
                         return _models["default"].reactdrop.findOne({
                           where: {
                             id: newReactDrop.id
@@ -1215,13 +1205,13 @@ var matrixReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 100:
-                        findNotUpdatedReactDrop = _context14.sent;
-                        _context14.next = 103;
+                        findNotUpdatedReactDrop = _context15.sent;
+                        _context15.next = 103;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.matrixReactDropMessage)(newReactDrop.id, distance, findNotUpdatedReactDrop.user, filteredMessage[4], amount));
 
                       case 103:
-                        sendReactDropMessage = _context14.sent;
-                        _context14.next = 106;
+                        sendReactDropMessage = _context15.sent;
+                        _context15.next = 106;
                         return newReactDrop.update({
                           messageId: sendReactDropMessage.event_id
                         }, {
@@ -1230,8 +1220,8 @@ var matrixReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 106:
-                        newUpdatedReactDrop = _context14.sent;
-                        _context14.next = 109;
+                        newUpdatedReactDrop = _context15.sent;
+                        _context15.next = 109;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'reactdrop_s',
@@ -1244,8 +1234,8 @@ var matrixReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 109:
-                        preActivity = _context14.sent;
-                        _context14.next = 112;
+                        preActivity = _context15.sent;
+                        _context15.next = 112;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -1262,9 +1252,9 @@ var matrixReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 112:
-                        finalActivity = _context14.sent;
+                        finalActivity = _context15.sent;
                         activity.unshift(finalActivity);
-                        _context14.next = 116;
+                        _context15.next = 116;
                         return _models["default"].reactdrop.findOne({
                           where: {
                             id: newUpdatedReactDrop.id
@@ -1281,23 +1271,23 @@ var matrixReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 116:
-                        findUpdatedReactDrop = _context14.sent;
+                        findUpdatedReactDrop = _context15.sent;
                         listenMatrixReactDrop(matrixClient, sendReactDropMessage.event_id, distance, findUpdatedReactDrop, io, queue); // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator3 = _createForOfIteratorHelper(shuffeledEmojisArray);
-                        _context14.prev = 119;
+                        _context15.prev = 119;
 
                         _iterator3.s();
 
                       case 121:
                         if ((_step3 = _iterator3.n()).done) {
-                          _context14.next = 127;
+                          _context15.next = 127;
                           break;
                         }
 
                         shufEmoji = _step3.value;
-                        _context14.next = 125;
+                        _context15.next = 125;
                         return matrixClient.sendEvent(message.sender.roomId, 'm.reaction', {
                           "m.relates_to": {
                             event_id: sendReactDropMessage.event_id,
@@ -1307,127 +1297,149 @@ var matrixReactDrop = /*#__PURE__*/function () {
                         });
 
                       case 125:
-                        _context14.next = 121;
+                        _context15.next = 121;
                         break;
 
                       case 127:
-                        _context14.next = 132;
+                        _context15.next = 132;
                         break;
 
                       case 129:
-                        _context14.prev = 129;
-                        _context14.t0 = _context14["catch"](119);
+                        _context15.prev = 129;
+                        _context15.t0 = _context15["catch"](119);
 
-                        _iterator3.e(_context14.t0);
+                        _iterator3.e(_context15.t0);
 
                       case 132:
-                        _context14.prev = 132;
+                        _context15.prev = 132;
 
                         _iterator3.f();
 
-                        return _context14.finish(132);
+                        return _context15.finish(132);
 
                       case 135:
-                        updateMessage = setInterval( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee13() {
-                          var editedMessage;
-                          return _regenerator["default"].wrap(function _callee13$(_context13) {
+                        t.afterCommit( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee14() {
+                          var updateMessage;
+                          return _regenerator["default"].wrap(function _callee14$(_context14) {
                             while (1) {
-                              switch (_context13.prev = _context13.next) {
+                              switch (_context14.prev = _context14.next) {
                                 case 0:
-                                  now = new Date().getTime();
-                                  distance = countDownDate - now;
-                                  editedMessage = (0, _matrix.matrixReactDropMessage)(newReactDrop.id, distance, findUpdatedReactDrop.user, filteredMessage[4], amount);
-                                  _context13.next = 5;
-                                  return matrixClient.sendEvent(message.sender.roomId, 'm.room.message', {
-                                    "m.relates_to": {
-                                      event_id: sendReactDropMessage.event_id,
-                                      rel_type: "m.replace"
-                                    },
-                                    msgtype: "m.text",
-                                    format: 'org.matrix.custom.html',
-                                    formatted_body: editedMessage.formatted_body,
-                                    body: editedMessage.body,
-                                    "m.new_content": editedMessage
-                                  });
+                                  updateMessage = setInterval( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee13() {
+                                    var editedMessage;
+                                    return _regenerator["default"].wrap(function _callee13$(_context13) {
+                                      while (1) {
+                                        switch (_context13.prev = _context13.next) {
+                                          case 0:
+                                            now = new Date().getTime();
+                                            distance = countDownDate - now;
+                                            editedMessage = (0, _matrix.matrixReactDropMessage)(newReactDrop.id, distance, findUpdatedReactDrop.user, filteredMessage[4], amount);
+                                            _context13.prev = 3;
+                                            _context13.next = 6;
+                                            return matrixClient.sendEvent(message.sender.roomId, 'm.room.message', {
+                                              "m.relates_to": {
+                                                event_id: sendReactDropMessage.event_id,
+                                                rel_type: "m.replace"
+                                              },
+                                              msgtype: "m.text",
+                                              format: 'org.matrix.custom.html',
+                                              formatted_body: editedMessage.formatted_body,
+                                              body: editedMessage.body,
+                                              "m.new_content": editedMessage
+                                            });
 
-                                case 5:
-                                  if (distance < 0) {
-                                    clearInterval(updateMessage);
-                                  }
+                                          case 6:
+                                            _context13.next = 12;
+                                            break;
 
-                                case 6:
+                                          case 8:
+                                            _context13.prev = 8;
+                                            _context13.t0 = _context13["catch"](3);
+                                            console.log(_context13.t0);
+                                            console.log('error');
+
+                                          case 12:
+                                            if (distance < 0) {
+                                              clearInterval(updateMessage);
+                                            }
+
+                                          case 13:
+                                          case "end":
+                                            return _context13.stop();
+                                        }
+                                      }
+                                    }, _callee13, null, [[3, 8]]);
+                                  })), 30000);
+
+                                case 1:
                                 case "end":
-                                  return _context13.stop();
+                                  return _context14.stop();
                               }
                             }
-                          }, _callee13);
-                        })), 10000);
-                        t.afterCommit(function () {
-                          console.log('done');
-                        });
+                          }, _callee14);
+                        })));
 
-                      case 137:
+                      case 136:
                       case "end":
-                        return _context14.stop();
+                        return _context15.stop();
                     }
                   }
-                }, _callee14, null, [[119, 129, 132, 135]]);
+                }, _callee15, null, [[119, 129, 132, 135]]);
               }));
 
               return function (_x27) {
                 return _ref14.apply(this, arguments);
               };
             }())["catch"]( /*#__PURE__*/function () {
-              var _ref16 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee15(err) {
-                return _regenerator["default"].wrap(function _callee15$(_context15) {
+              var _ref17 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee16(err) {
+                return _regenerator["default"].wrap(function _callee16$(_context16) {
                   while (1) {
-                    switch (_context15.prev = _context15.next) {
+                    switch (_context16.prev = _context16.next) {
                       case 0:
-                        _context15.prev = 0;
-                        _context15.next = 3;
+                        _context16.prev = 0;
+                        _context16.next = 3;
                         return _models["default"].error.create({
                           type: 'reactdrop',
                           error: "".concat(err)
                         });
 
                       case 3:
-                        _context15.next = 8;
+                        _context16.next = 8;
                         break;
 
                       case 5:
-                        _context15.prev = 5;
-                        _context15.t0 = _context15["catch"](0);
+                        _context16.prev = 5;
+                        _context16.t0 = _context16["catch"](0);
 
-                        _logger["default"].error("Error Matrix: ".concat(_context15.t0));
+                        _logger["default"].error("Error Matrix: ".concat(_context16.t0));
 
                       case 8:
                         console.log(err);
 
                         _logger["default"].error("reactdrop error: ".concat(err));
 
-                        _context15.prev = 10;
-                        _context15.next = 13;
+                        _context16.prev = 10;
+                        _context16.next = 13;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.errorMessage)('Reactdrop'));
 
                       case 13:
-                        _context15.next = 18;
+                        _context16.next = 18;
                         break;
 
                       case 15:
-                        _context15.prev = 15;
-                        _context15.t1 = _context15["catch"](10);
-                        console.log(_context15.t1);
+                        _context16.prev = 15;
+                        _context16.t1 = _context16["catch"](10);
+                        console.log(_context16.t1);
 
                       case 18:
                       case "end":
-                        return _context15.stop();
+                        return _context16.stop();
                     }
                   }
-                }, _callee15, null, [[0, 5], [10, 15]]);
+                }, _callee16, null, [[0, 5], [10, 15]]);
               }));
 
               return function (_x28) {
-                return _ref16.apply(this, arguments);
+                return _ref17.apply(this, arguments);
               };
             }());
 
@@ -1440,10 +1452,10 @@ var matrixReactDrop = /*#__PURE__*/function () {
 
           case 5:
           case "end":
-            return _context16.stop();
+            return _context17.stop();
         }
       }
-    }, _callee16);
+    }, _callee17);
   }));
 
   return function matrixReactDrop(_x17, _x18, _x19, _x20, _x21, _x22, _x23, _x24, _x25, _x26) {

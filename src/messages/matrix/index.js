@@ -856,16 +856,16 @@ export const matrixReactDropMessage = (
   const result = {
     body: `Reactdrop #${id}
 
-🎉 ${user.username} has started a react airdrop! 🎉
+🪂 ${user.username} has started a react airdrop! 🪂
 
 ℹ️ React to this message ONLY with ${emoji} to win a share in ${amount / 1e8} ${settings.coin.ticker}! You will also be presented with a simple math question in your direct messages which you need to solve to be eligible.
 
-${!ended ? `:clock9: Time remaining ${days > 0 ? `${days} days` : ''}  ${hours > 0 ? `${hours} hours` : ''} ${minutes > 0 ? `${minutes} minutes` : ''} ${seconds > 0 ? `${seconds} seconds` : ''}` : `Ended`}`,
+${!ended ? `🕘️ Time remaining ${days > 0 ? `${days} days` : ''}  ${hours > 0 ? `${hours} hours` : ''} ${minutes > 0 ? `${minutes} minutes` : ''} ${seconds > 0 ? `${seconds} seconds` : ''}` : `Ended`}`,
     msgtype: "m.text",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>Reactdrop #${id}</h4>
 <p><strong>
-🎉 ${user.username} has started a react airdrop! 🎉<br><br>
+🪂 ${user.username} has started a react airdrop! 🪂<br><br>
 
 ℹ️ React to this message ONLY with ${emoji} to win a share in ${amount / 1e8} ${settings.coin.ticker}!<br><br>
 You will also be presented with a simple math question in your direct messages which you need to solve to be eligible.

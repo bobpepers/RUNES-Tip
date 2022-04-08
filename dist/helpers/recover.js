@@ -414,7 +414,8 @@ var recoverMatrixReactdrops = /*#__PURE__*/function () {
                                 now = new Date().getTime();
                                 distance = countDownDate - now;
                                 editedMessage = (0, _matrix.matrixReactDropMessage)(runningReactDrop.id, distance, runningReactDrop.user, runningReactDrop.emoji, runningReactDrop.amount);
-                                _context7.next = 5;
+                                _context7.prev = 3;
+                                _context7.next = 6;
                                 return matrixClient.sendEvent(actualGroupId, 'm.room.message', {
                                   "m.relates_to": {
                                     event_id: runningReactDrop.messageId,
@@ -427,18 +428,28 @@ var recoverMatrixReactdrops = /*#__PURE__*/function () {
                                   "m.new_content": editedMessage
                                 });
 
-                              case 5:
+                              case 6:
+                                _context7.next = 12;
+                                break;
+
+                              case 8:
+                                _context7.prev = 8;
+                                _context7.t0 = _context7["catch"](3);
+                                console.log(_context7.t0);
+                                console.log('error');
+
+                              case 12:
                                 if (distance < 0) {
                                   clearInterval(updateMessage);
                                 }
 
-                              case 6:
+                              case 13:
                               case "end":
                                 return _context7.stop();
                             }
                           }
-                        }, _callee5);
-                      })), 10000);
+                        }, _callee5, null, [[3, 8]]);
+                      })), 30000);
 
                     case 11:
                     case "end":

@@ -256,24 +256,30 @@ export const recoverMatrixReactdrops = async (
         runningReactDrop.emoji,
         runningReactDrop.amount,
       );
-      await matrixClient.sendEvent(
-        actualGroupId,
-        'm.room.message',
-        {
-          "m.relates_to": {
-            event_id: runningReactDrop.messageId,
-            rel_type: "m.replace",
+      try {
+        await matrixClient.sendEvent(
+          actualGroupId,
+          'm.room.message',
+          {
+            "m.relates_to": {
+              event_id: runningReactDrop.messageId,
+              rel_type: "m.replace",
+            },
+            msgtype: "m.text",
+            format: 'org.matrix.custom.html',
+            formatted_body: editedMessage.formatted_body,
+            body: editedMessage.body,
+            "m.new_content": editedMessage,
           },
-          msgtype: "m.text",
-          format: 'org.matrix.custom.html',
-          formatted_body: editedMessage.formatted_body,
-          body: editedMessage.body,
-          "m.new_content": editedMessage,
-        },
-      );
+
+        );
+      } catch (e) {
+        console.log(e);
+        console.log('error');
+      }
       if (distance < 0) {
         clearInterval(updateMessage);
       }
-    }, 10000);
+    }, 30000);
   }
 };
