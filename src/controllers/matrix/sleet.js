@@ -28,6 +28,7 @@ export const matrixSleet = async (
   queue,
   userDirectMessageRoomId,
   isCurrentRoomDirectMessage,
+  myBody,
 ) => {
   const activity = [];
   await db.sequelize.transaction({

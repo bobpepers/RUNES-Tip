@@ -1,6 +1,7 @@
 import { config } from "dotenv";
 import { getInstance } from "./rclient";
 import getCoinSettings from '../config/settings';
+import { fromUtf8ToHex } from "../helpers/utils";
 
 const settings = getCoinSettings();
 
@@ -28,11 +29,17 @@ export const processWithdrawal = async (transaction) => {
     }
   } else if (settings.coin.setting === 'Pirate') {
     try {
+      const hexMemo = await fromUtf8ToHex(transaction.memo);
       const preResponse = await getInstance().zSendMany(
         process.env.PIRATE_MAIN_ADDRESS,
         [{
           address: transaction.to_from,
           amount: amount.toFixed(8),
+          ...(
+            hexMemo && {
+              memo: hexMemo,
+            }
+          ),
         }],
         1,
         0.0001,
@@ -46,8 +53,8 @@ export const processWithdrawal = async (transaction) => {
       }
       response = opStatus[0].result.txid;
     } catch (e) {
-      responseStatus = e.response.status;
       console.log(e);
+      responseStatus = e.response.status;
     }
   } else {
     try {

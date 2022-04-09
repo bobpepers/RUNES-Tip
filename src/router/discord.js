@@ -223,7 +223,8 @@ export const discordRouter = (
     );
     if (!faucetSetting) return;
 
-    const preFilteredMessageDiscord = message.content.split(' ');
+    const messageReplaceBreaksWithSpaces = message.content.replace(/\n/g, " ");
+    const preFilteredMessageDiscord = messageReplaceBreaksWithSpaces.split(' ');
     const filteredMessageDiscord = preFilteredMessageDiscord.filter((el) => el !== '');
 
     if (filteredMessageDiscord[1] === undefined) {

@@ -67,7 +67,7 @@ Withdrawal #${updatedTrans.id} Accepted
 
 amount: <b>${amount} ${settings.coin.ticker}</b>
 fee: <b>${fee} ${settings.coin.ticker}</b>
-total: <b>${total} ${settings.coin.ticker}</b>
+total: <b>${total} ${settings.coin.ticker}</b>${settings.coin.setting === 'Pirate' && updatedTrans.memo && updatedTrans.memo !== '' ? `\nmemo: <b>${updatedTrans.memo}</b>` : ''}
 
 ${settings.coin.explorer}/tx/${updatedTrans.txid}
 
@@ -88,7 +88,7 @@ ${transaction.address.wallet.user.username}'s withdrawal has been accepted
 
 amount: <b>${amount} ${settings.coin.ticker}</b>
 fee: <b>${fee} ${settings.coin.ticker}</b>
-total: <b>${total} ${settings.coin.ticker}</b>
+total: <b>${total} ${settings.coin.ticker}</b>${settings.coin.setting === 'Pirate' && transaction.memo && transaction.memo !== '' ? `\nmemo: <b>${transaction.memo}</b>` : ''}
 
 ${settings.coin.explorer}/tx/${updatedTrans.txid}
 
@@ -184,7 +184,7 @@ export const reviewMessage = async (
 
 amount: <b>${amount} ${settings.coin.ticker}</b>
 fee: <b>${fee} ${settings.coin.ticker}</b>
-total: <b>${total} ${settings.coin.ticker}</b>
+total: <b>${total} ${settings.coin.ticker}</b>${settings.coin.setting === 'Pirate' && transaction.memo && transaction.memo !== '' ? `\nmemo: <b>${transaction.memo}</b>` : ''}
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
@@ -290,6 +290,24 @@ Insufficient Balance
 
 export const unableToFindUserMessage = () => {
   const result = `Unable to find user`;
+  return result;
+};
+
+export const telegramTransactionMemoTooLongMessage = async (
+  ctx,
+  memoLength,
+) => {
+  const [
+    userToMention,
+    userId,
+  ] = await getUserToMentionCtx(ctx);
+
+  const result = `<b><u>Withdraw</u></b>
+
+<b><a href="tg://user?id=${userId}">${userToMention}</a></b>, Your withdrawal memo is too long!
+We found ${memoLength} characters, maximum length is 512
+
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
 
@@ -455,28 +473,31 @@ Claim faucet
 Displays fee schedule
 
 <code>${settings.bot.command.telegram} tip &lt;@user&gt; &lt;amount&gt;</code>
-Tips the @ mentioned user with the desired amount, e.g.
+Tips the @ mentioned user with the desired amount
 example: <code>${settings.bot.command.telegram} tip @Bagosan 1.00</code>
 
-<code>${settings.bot.command.discord} &lt;@user&gt; &lt;@user&gt; &lt;@user&gt; &lt;amount|all&gt; [split|each]</code>
+<code>${settings.bot.command.telegram} &lt;@user&gt; &lt;@user&gt; &lt;@user&gt; &lt;amount|all&gt; [split|each]</code>
 Tips the @ mentioned users with the desired amount
-example: <code>${settings.bot.command.discord} @test123456 @test123457 1.00 each</code>
+example: <code>${settings.bot.command.telegram} @test123456 @test123457 1.00 each</code>
 
 <code>${settings.bot.command.discord} rain &lt;amount|all&gt;</code>
 Rains the desired amount onto all recently online users
-example: <code>${settings.bot.command.discord} rain 10</code>
+example: <code>${settings.bot.command.telegram} rain 10</code>
 
 <code>${settings.bot.command.telegram} flood &lt;amount|all&gt;</code>
 Floods the desired amount onto all users (including offline users)
 example: <code>${settings.bot.command.telegram} flood 5.00</code>
 
 <code>${settings.bot.command.telegram} sleet &lt;amount&gt;</code>
-Sleets the desired amount onto all active users (default time is 15min), e.g.
+Sleets the desired amount onto all active users (default time is 15min)
+example:
 <code>${settings.bot.command.telegram} sleet 1.00</code>
 
-<code>${settings.bot.command.telegram} withdraw &lt;address&gt; &lt;amount&gt;</code>
-Withdraws the entered amount to a ${settings.coin.ticker} address of your choice, e.g.
+<code>${settings.bot.command.telegram} withdraw &lt;address&gt; &lt;amount&gt;${settings.coin.setting === 'Pirate' ? ' [memo]' : ''}</code>
+Withdraws the entered amount to a ${settings.coin.ticker} address of your choice
+example:
 <code>${settings.bot.command.telegram} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20</code>
+${settings.coin.setting === 'Pirate' ? `<code>${settings.bot.command.telegram} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20 lorem ipsum memo</code>` : ''}
 Note: Minimal amount to withdraw: ${withdraw.min / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${withdraw.fee / 1e2}% ${settings.coin.ticker} will be automatically deducted from the amount. portion of the fee is donated to common faucet pot.
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;

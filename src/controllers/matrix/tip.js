@@ -27,6 +27,7 @@ export const tipRunesToMatrixUser = async (
   queue,
   userDirectMessageRoomId,
   isCurrentRoomDirectMessage,
+  myBody,
 ) => {
   const activity = [];
   let AmountPosition = 1;

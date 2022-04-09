@@ -436,7 +436,8 @@ export const telegramRouter = async (
       lastSeen = await updateLastSeen(ctx);
     });
 
-    const preFilteredMessageTelegram = ctx.update.message.text.split(' ');
+    const messageReplaceBreaksWithSpaces = ctx.update.message.text.replace(/\n/g, " ");
+    const preFilteredMessageTelegram = messageReplaceBreaksWithSpaces.split(' ');
     const filteredMessageTelegram = preFilteredMessageTelegram.filter((el) => el !== '');
     const telegramUserId = ctx.update.message.from.id;
     const telegramUserName = ctx.update.message.from.username;

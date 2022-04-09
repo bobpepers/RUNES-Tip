@@ -195,8 +195,10 @@ Displays balance
 ${settings.bot.command.matrix}  deposit
 Displays your deposit address
 
-${settings.bot.command.matrix} withdraw <address> <amount|all>
+${settings.bot.command.matrix} withdraw <address> <amount|all>${settings.coin.setting === 'Pirate' ? ' [memo]' : ''}
 Withdraws the entered amount to a ${settings.coin.name} address of your choice
+example:
+${settings.bot.command.matrix} withdraw zs1e3zh7a00wz4ej2lacpl2fvnrl680hkk766nt7z4ujl6rlj04n59ex7hjlnknvhwdc7vxzn0kcvt 5.00${settings.coin.setting === 'Pirate' ? `\n${settings.bot.command.matrix} withdraw zs1e3zh7a00wz4ej2lacpl2fvnrl680hkk766nt7z4ujl6rlj04n59ex7hjlnknvhwdc7vxzn0kcvt 5.00` : ``}
 
 ${settings.bot.command.matrix} <@user> <amount|all>
 Tips the @ mentioned user with the desired amount
@@ -244,28 +246,36 @@ ${settings.bot.name} v${pjson.version}`,
 <code>${settings.bot.command.matrix} deposit</code>
 <p>Displays your deposit address</p>
 
-<code>${settings.bot.command.matrix} withdraw &lt;address&gt; &lt;amount|all&gt;</code>
-<p>Withdraws the entered amount to a ${settings.coin.name} address of your choice</p>
+<code>${settings.bot.command.matrix} withdraw &lt;address&gt; &lt;amount|all&gt;${settings.coin.setting === 'Pirate' ? ' [memo]' : ''}</code>
+<p>Withdraws the entered amount to a ${settings.coin.name} address of your choice
+example:<br>
+${settings.bot.command.matrix} withdraw zs1e3zh7a00wz4ej2lacpl2fvnrl680hkk766nt7z4ujl6rlj04n59ex7hjlnknvhwdc7vxzn0kcvt 5.00${settings.coin.setting === 'Pirate' ? `<br>${settings.bot.command.matrix} withdraw zs1e3zh7a00wz4ej2lacpl2fvnrl680hkk766nt7z4ujl6rlj04n59ex7hjlnknvhwdc7vxzn0kcvt 5.00 Lorem ipsum memo` : ``}
+</p>
 
 <code>${settings.bot.command.matrix} &lt;@user&gt; &lt;amount|all&gt;</code>
 <p>Tips the @ mentioned user with the desired amount<br>
-example: ${settings.bot.command.matrix} @test123456#7890 1.00</p>
+example:<br>
+${settings.bot.command.matrix} @test123456#7890 1.00</p>
 
 <code>${settings.bot.command.matrix} &lt;@user&gt; &lt;@user&gt; &lt;@user&gt; &lt;amount|all&gt; [split|each]</code>
 <p>Tips the @ mentioned users with the desired amount<br>
-example: ${settings.bot.command.matrix} @test123456#7890 @test123457#7890 1.00 each</p>
+example:<br>
+${settings.bot.command.matrix} @test123456#7890 @test123457#7890 1.00 each</p>
 
 <code>${settings.bot.command.matrix} flood &lt;amount|all&gt;</code>
 <p>Floods the desired amount onto all users (including offline users)<br>
-example: ${settings.bot.command.matrix} flood 5.00</p>
+example:<br>
+${settings.bot.command.matrix} flood 5.00</p>
 
 <code>${settings.bot.command.matrix} sleet &lt;amount|all&gt; [&lt;time&gt;]</code>
 <p>Makes a sleet storm with the desired amount onto all users that have been active in the room in the last 15 minutes (optionally, within specified time)<br>
-example: ${settings.bot.command.matrix} sleet 5.00, ${settings.bot.command.matrix} sleet 5.00 @supporters</p>
+example:<br>
+${settings.bot.command.matrix} sleet 5.00, ${settings.bot.command.matrix} sleet 5.00 3h</p>
 
 <code>${settings.bot.command.matrix} reactdrop &lt;amount&gt; [&lt;time&gt;] [&lt;emoji&gt;]</code>
 <p>Performs a react airdrop with the amount, optionally within custom time, optionally using a custom-supplied emoji. <time> parameter accepts time interval expressions in the form of: 60s, 5m, 1h. Default time interval is 5m(5minutes).<br>
-example: ${settings.bot.command.matrix} reactdrop 10 20m, ${settings.bot.command.matrix} reactdrop 10 3h 😃</p>
+example:<br>
+${settings.bot.command.matrix} reactdrop 10 20m, ${settings.bot.command.matrix} reactdrop 10 3h 😃</p>
 
 <code>${settings.bot.command.matrix} fees</code>
 <p>Displays fee schedule</p>
@@ -350,7 +360,24 @@ ${amount} ${settings.coin.ticker} has been credited to your wallet</p>
   return result;
 };
 
-/// /
+export const matrixTransactionMemoTooLongMessage = (
+  username,
+  memoLength,
+) => {
+  const result = {
+    body: `Withdrawal
+${username}, Your withdrawal memo is too long!
+We found ${memoLength} characters, maximum length is 512`,
+    msgtype: "m.notice",
+    format: 'org.matrix.custom.html',
+    formatted_body: `<blockquote><h4>Withdrawal</h4>
+<p>${username}, Your withdrawal memo is too long!<br>
+We found ${memoLength} characters, maximum length is 512</p>
+<p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p>
+</blockquote>`,
+  };
+  return result;
+};
 
 export const featureDisabledChannelMessage = (name) => {
   const result = {
@@ -552,7 +579,7 @@ ${message.sender.name},  Your withdrawal is being reviewed
 
 amount: ${amount}
 fee: ${fee}
-total: ${total}`,
+total: ${total}${settings.coin.setting === 'Pirate' && transaction.memo && transaction.memo !== '' ? `\nmemo: ${transaction.memo}` : ''}`,
     msgtype: "m.notice",
     format: 'org.matrix.custom.html',
     formatted_body: `<blockquote><h4>Withdraw #${transaction.id}</h4>
@@ -561,7 +588,7 @@ total: ${total}`,
 
 amount: ${amount}<br>
 fee: ${fee}<br>
-total: ${total}<br>
+total: ${total}<br>${settings.coin.setting === 'Pirate' && transaction.memo && transaction.memo !== '' ? `memo: ${transaction.memo}<br>` : ''}
 </strong></p>
 <p><font color="${settings.bot.color}">${settings.bot.name} v${pjson.version}</font></p></blockquote>`,
   };
@@ -603,7 +630,7 @@ ${settings.coin.explorer}/tx/${updatedTrans.txid}`,
 Your withdrawal has been accepted<br><br>
 amount: ${amount}<br>
 fee: ${fee}<br>
-total: ${total}<br><br>
+total: ${total}<br>${settings.coin.setting === 'Pirate' && updatedTrans.memo && updatedTrans.memo !== '' ? `memo: ${updatedTrans.memo}<br>` : ''}<br>
 
 ${settings.coin.explorer}/tx/${updatedTrans.txid}
 </strong></p>

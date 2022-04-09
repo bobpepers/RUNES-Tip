@@ -8,6 +8,7 @@ import {
   discordErrorMessage,
   cannotSendMessageUser,
   unableToWithdrawToSelfMessage,
+  discordTransactionMemoTooLongMessage,
 } from '../../messages/discord';
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/client/discord/validateAmount";
@@ -15,6 +16,11 @@ import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 import { validateWithdrawalAddress } from '../../helpers/blockchain/validateWithdrawalAddress';
 import { disallowWithdrawToSelf } from '../../helpers/withdraw/disallowWithdrawToSelf';
 import { createOrUseExternalWithdrawAddress } from '../../helpers/withdraw/createOrUseExternalWithdrawAddress';
+import { extractWithdrawMemo } from '../../helpers/withdraw/extractWithdrawMemo';
+
+import getCoinSettings from '../../config/settings';
+
+const settings = getCoinSettings();
 
 export const withdrawDiscordCreate = async (
   discordClient,
@@ -130,6 +136,25 @@ export const withdrawDiscordCreate = async (
       return;
     }
 
+    let memo = null;
+    if (settings.coin.setting === 'Pirate') {
+      memo = await extractWithdrawMemo(
+        message.content,
+        filteredMessage,
+      );
+      if (memo.length > 512) {
+        await message.channel.send({
+          embeds: [
+            discordTransactionMemoTooLongMessage(
+              message,
+              memo.length,
+            ),
+          ],
+        });
+        return;
+      }
+    }
+
     const addressExternal = await createOrUseExternalWithdrawAddress(
       filteredMessage[2],
       user,
@@ -154,6 +179,7 @@ export const withdrawDiscordCreate = async (
       amount,
       feeAmount: Number(fee),
       userId: user.id,
+      memo,
     }, {
       transaction: t,
       lock: t.LOCK.UPDATE,

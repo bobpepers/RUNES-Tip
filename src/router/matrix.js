@@ -212,10 +212,11 @@ export const matrixRouter = async (
         }
 
         // let userDirectMessageRoomId;
+        const messageReplaceBreaksWithSpaces = myBody.replace(/\n/g, " ");
         const regex = /\s*((?:[^\s<]*<\w[^>]*>[\s\S]*?<\/\w[^>]*>)+[^\s<]*)\s*/;
-        const preFilteredMessageWithTags = myBody.split(regex).filter(Boolean);
+        const preFilteredMessageWithTags = messageReplaceBreaksWithSpaces.split(regex).filter(Boolean);
         const filteredMessageWithTags = preFilteredMessageWithTags.filter((el) => el !== '').filter(String);
-        const preFilteredMessage = myBody.split(' ');
+        const preFilteredMessage = messageReplaceBreaksWithSpaces.split(' ');
         const filteredMessage = preFilteredMessage.filter((el) => el !== '');
         console.log(filteredMessageWithTags);
         console.log(filteredMessage);
@@ -411,6 +412,7 @@ export const matrixRouter = async (
             faucetSetting,
             userDirectMessageRoomId,
             isCurrentRoomDirectMessage,
+            myBody,
           );
         }
 
@@ -445,6 +447,7 @@ export const matrixRouter = async (
             faucetSetting,
             userDirectMessageRoomId,
             isCurrentRoomDirectMessage,
+            myBody,
           );
         }
 
@@ -479,6 +482,7 @@ export const matrixRouter = async (
             faucetSetting,
             userDirectMessageRoomId,
             isCurrentRoomDirectMessage,
+            myBody,
           );
         }
 
@@ -513,6 +517,7 @@ export const matrixRouter = async (
             faucetSetting,
             userDirectMessageRoomId,
             isCurrentRoomDirectMessage,
+            myBody,
           );
         }
 
@@ -567,6 +572,7 @@ export const matrixRouter = async (
             faucetSetting,
             userDirectMessageRoomId,
             isCurrentRoomDirectMessage,
+            myBody,
           );
         }
       }

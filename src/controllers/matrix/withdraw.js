@@ -8,6 +8,7 @@ import {
   errorMessage,
   nodeOfflineMessage,
   unableToWithdrawToSelfMessage,
+  matrixTransactionMemoTooLongMessage,
 } from '../../messages/matrix';
 import getCoinSettings from '../../config/settings';
 import logger from "../../helpers/logger";
@@ -16,6 +17,7 @@ import { userWalletExist } from "../../helpers/client/matrix/userWalletExist";
 import { validateWithdrawalAddress } from '../../helpers/blockchain/validateWithdrawalAddress';
 import { disallowWithdrawToSelf } from '../../helpers/withdraw/disallowWithdrawToSelf';
 import { createOrUseExternalWithdrawAddress } from '../../helpers/withdraw/createOrUseExternalWithdrawAddress';
+import { extractWithdrawMemo } from '../../helpers/withdraw/extractWithdrawMemo';
 
 const settings = getCoinSettings();
 
@@ -30,6 +32,7 @@ export const withdrawMatrixCreate = async (
   queue,
   userDirectMessageRoomId,
   isCurrentRoomDirectMessage,
+  myBody,
 ) => {
   const activity = [];
   await db.sequelize.transaction({
@@ -98,7 +101,10 @@ export const withdrawMatrixCreate = async (
         await matrixClient.sendEvent(
           message.sender.roomId,
           "m.room.message",
-          warnDirectMessage(message.sender.name, 'Withdraw'),
+          warnDirectMessage(
+            message.sender.name,
+            'Withdraw',
+          ),
         );
       }
     }
@@ -126,11 +132,33 @@ export const withdrawMatrixCreate = async (
         await matrixClient.sendEvent(
           message.sender.roomId,
           "m.room.message",
-          warnDirectMessage(message.sender.name, 'Withdraw'),
+          warnDirectMessage(
+            message.sender.name,
+            'Withdraw',
+          ),
         );
       }
       activity.unshift(isMyAddressActivity);
       return;
+    }
+
+    let memo = null;
+    if (settings.coin.setting === 'Pirate') {
+      memo = await extractWithdrawMemo(
+        myBody,
+        filteredMessage,
+      );
+      if (memo.length > 512) {
+        await matrixClient.sendEvent(
+          message.sender.roomId,
+          "m.room.message",
+          matrixTransactionMemoTooLongMessage(
+            message.sender.name,
+            memo.length,
+          ),
+        );
+        return;
+      }
     }
 
     const addressExternal = await createOrUseExternalWithdrawAddress(
@@ -157,6 +185,7 @@ export const withdrawMatrixCreate = async (
       amount,
       feeAmount: Number(fee),
       userId: user.id,
+      memo,
     }, {
       transaction: t,
       lock: t.LOCK.UPDATE,

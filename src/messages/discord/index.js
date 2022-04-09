@@ -417,7 +417,10 @@ export const transactionNotFoundMessage = (title) => {
   return result;
 };
 
-export const reviewMessage = (message, transaction) => {
+export const reviewMessage = (
+  message,
+  transaction,
+) => {
   const amount = ((transaction.amount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
   const fee = ((transaction.feeAmount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
   const total = (((transaction.amount - transaction.feeAmount) / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
@@ -426,9 +429,9 @@ export const reviewMessage = (message, transaction) => {
     .setTitle(`Withdraw #${transaction.id}`)
     .setDescription(`<@${message.author.id}>, Your withdrawal is being reviewed
 
-amount: ${amount}
-fee: ${fee}
-total: ${total}`)
+amount: **${amount} ${settings.coin.ticker}**
+fee: **${fee} ${settings.coin.ticker}**
+total: **${total} ${settings.coin.ticker}**${settings.coin.setting === 'Pirate' && transaction.memo && transaction.memo !== '' ? `\nmemo: **${transaction.memo}**` : ''}`)
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
@@ -438,7 +441,9 @@ total: ${total}`)
   return result;
 };
 
-export const discordWithdrawalAcceptedMessage = (updatedTrans) => {
+export const discordWithdrawalAcceptedMessage = (
+  updatedTrans,
+) => {
   const amount = ((updatedTrans.amount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
   const fee = ((updatedTrans.feeAmount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
   const total = (((updatedTrans.amount - updatedTrans.feeAmount) / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
@@ -447,9 +452,9 @@ export const discordWithdrawalAcceptedMessage = (updatedTrans) => {
     .setTitle(`Withdraw #${updatedTrans.id}`)
     .setDescription(`Your withdrawal has been accepted
 
-amount: ${amount}
-fee: ${fee}
-total: ${total}
+amount: **${amount} ${settings.coin.ticker}**
+fee: **${fee} ${settings.coin.ticker}**
+total: **${total} ${settings.coin.ticker}**${settings.coin.setting === 'Pirate' && updatedTrans.memo && updatedTrans.memo !== '' ? `\nmemo: **${updatedTrans.memo}**` : ''}
 
 ${settings.coin.explorer}/tx/${updatedTrans.txid}`)
     .setTimestamp()
@@ -1361,6 +1366,25 @@ export const warnDirectMessage = (userId, title) => {
   return result;
 };
 
+export const discordTransactionMemoTooLongMessage = (
+  message,
+  memoLength,
+) => {
+  const result = new MessageEmbed()
+    .setColor(settings.bot.color)
+    .setTitle('Withdraw')
+    .setDescription(`<@${message.author.id}>, Your withdrawal memo is too long!
+We found ${memoLength} characters, maximum length is 512`)
+    .setThumbnail(settings.coin.logo)
+    .setTimestamp()
+    .setFooter({
+      text: `${settings.bot.name} v${pjson.version}`,
+      iconURL: settings.coin.logo,
+    });
+
+  return result;
+};
+
 export const helpMessageOne = (withdraw) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
@@ -1399,9 +1423,10 @@ Displays mining info
 Enable/Disable public statistics (determines if you want to be shown on the leaderboards)
 default: disabled
 
-\`${settings.bot.command.discord} withdraw <address> <amount|all>\`
+\`${settings.bot.command.discord} withdraw <address> <amount|all>${settings.coin.setting === 'Pirate' ? ' [memo]' : ''}\`
 Withdraws the entered amount to a ${settings.coin.name} address of your choice
-example: \`${settings.bot.command.discord} withdraw ${settings.coin.exampleAddress} 5.20 \`
+example:
+\`\`\`${settings.bot.command.discord} withdraw ${settings.coin.exampleAddress} 5.20 \`\`\`${settings.coin.setting === 'Pirate' ? `\`\`\`\n${settings.bot.command.discord} withdraw ${settings.coin.exampleAddress} 5.20 lorem ipsum memo text\`\`\`` : ''}
 Note: Minimal amount to withdraw: ${withdraw.min / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${withdraw.fee / 1e2}% ${settings.coin.ticker}. half of the withdrawal fee will be automatically deducted from the amount and will be donated to the common faucet pot.
 `);
     // .setTimestamp()

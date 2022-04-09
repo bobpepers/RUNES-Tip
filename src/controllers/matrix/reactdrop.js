@@ -556,6 +556,7 @@ export const matrixReactDrop = async (
   queue,
   userDirectMessageRoomId,
   isCurrentRoomDirectMessage,
+  myBody,
 ) => {
   const activity = [];
   const useEmojis = [];

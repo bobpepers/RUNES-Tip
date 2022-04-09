@@ -17,6 +17,7 @@ export const executeTipFunction = async (
   faucetSetting,
   userDirectMessageRoomId,
   isCurrentRoomDirectMessage,
+  myBody,
 ) => {
   let operationName;
   let userBeingTipped;
@@ -83,6 +84,7 @@ export const executeTipFunction = async (
               queue,
               userDirectMessageRoomId,
               isCurrentRoomDirectMessage,
+              myBody,
             );
           });
         } else if (tempBody.toUpperCase() === 'NO'
@@ -138,6 +140,7 @@ export const executeTipFunction = async (
         queue,
         userDirectMessageRoomId,
         isCurrentRoomDirectMessage,
+        myBody,
       );
     });
   }
