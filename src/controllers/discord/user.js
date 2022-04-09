@@ -2,9 +2,7 @@ import { Transaction } from "sequelize";
 import db from '../../models';
 import logger from "../../helpers/logger";
 import { getInstance } from "../../services/rclient";
-import {
-  discordWelcomeMessage,
-} from '../../messages/discord';
+import { discordWelcomeMessage } from '../../messages/discord';
 
 export const generateUserWalletAndAddress = async (
   userInfo,

@@ -8,14 +8,12 @@ import {
 } from "discord.js";
 import {
   triviaMessageDiscord,
-  userNotFoundMessage,
   minimumTimeReactDropMessage,
   invalidTimeMessage,
   AfterTriviaSuccessMessage,
   noTriviaQuestionFoundMessage,
   maxTimeTriviaMessage,
   triviaReturnInitiatorMessage,
-  // NotInDirectMessage,
   discordErrorMessage,
   invalidPeopleAmountMessage,
 } from '../../messages/discord';

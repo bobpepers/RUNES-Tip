@@ -5,10 +5,8 @@ import db from '../../models';
 import {
   notEnoughActiveUsersMessage,
   AfterThunderSuccess,
-  // NotInDirectMessage,
   discordErrorMessage,
 } from '../../messages/discord';
-
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/client/discord/validateAmount";
 import { mapMembers } from "../../helpers/client/discord/mapMembers";

@@ -4,7 +4,6 @@ import _ from 'lodash';
 import { Transaction } from "sequelize";
 import {
   MessageAttachment,
-  // MessageCollector,
   MessageActionRow,
   MessageButton,
 } from "discord.js";
@@ -17,7 +16,6 @@ import {
   invalidEmojiMessage,
   maxTimeReactdropMessage,
   ReactDropReturnInitiatorMessage,
-  // NotInDirectMessage,
   discordErrorMessage,
 } from '../../messages/discord';
 import db from '../../models';

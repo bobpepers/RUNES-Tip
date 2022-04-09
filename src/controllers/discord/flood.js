@@ -5,7 +5,6 @@ import db from '../../models';
 import {
   notEnoughActiveUsersMessage,
   AfterSuccessMessage,
-  // NotInDirectMessage,
   discordErrorMessage,
 } from '../../messages/discord';
 import logger from "../../helpers/logger";

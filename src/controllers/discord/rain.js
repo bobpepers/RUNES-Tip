@@ -244,7 +244,6 @@ export const discordRain = async (
         ),
       ],
     });
-    // logger.info(`Success Rain Requested by: ${message.author.id}-${message.author.username} for ${amount / 1e8}`);
 
     t.afterCommit(() => {
       console.log('done');

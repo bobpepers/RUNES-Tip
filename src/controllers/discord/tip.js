@@ -6,7 +6,6 @@ import db from '../../models';
 import {
   tipSingleSuccessMessage,
   tipMultipleSuccessMessage,
-  // NotInDirectMessage,
   notEnoughUsersToTip,
   tipFaucetSuccessMessage,
   discordErrorMessage,

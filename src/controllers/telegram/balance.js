@@ -101,7 +101,7 @@ export const telegramBalance = async (
     }
 
     t.afterCommit(() => {
-      logger.info(`Success Balance Requested by: `);
+      logger.info(`Success Balance Requested`);
     });
   }).catch(async (err) => {
     try {

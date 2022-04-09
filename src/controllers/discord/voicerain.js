@@ -6,7 +6,6 @@ import {
   notAVoiceChannel,
   voiceChannelNotFound,
   AfterSuccessMessage,
-  // NotInDirectMessage,
   discordErrorMessage,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/client/discord/validateAmount";

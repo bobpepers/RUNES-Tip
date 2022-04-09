@@ -3,7 +3,6 @@ import { Transaction } from "sequelize";
 import {
   ignoreMeMessage,
   unIngoreMeMessage,
-  walletNotFoundMessage,
   discordErrorMessage,
   cannotSendMessageUser,
 } from '../../messages/discord';

@@ -3,7 +3,6 @@ import { Transaction } from "sequelize";
 import {
   disablePublicStatsMessage,
   enablePublicStatsMeMessage,
-  walletNotFoundMessage,
   discordErrorMessage,
 } from '../../messages/discord';
 import db from '../../models';
