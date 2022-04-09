@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable import/prefer-default-export */
 import _ from "lodash";
 import { Transaction } from "sequelize";
@@ -13,6 +14,7 @@ import {
 import { validateAmount } from "../../helpers/client/discord/validateAmount";
 import { waterFaucet } from "../../helpers/waterFaucet";
 import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
+import { generateUserWalletAndAddress } from './user';
 
 import logger from "../../helpers/logger";
 
@@ -34,6 +36,9 @@ export const tipRunesToDiscordUser = async (
   const usersToTip = [];
   let type = 'split';
   let userActivity;
+
+  console.log(discordClient);
+  console.log('discordClient');
 
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -57,8 +62,13 @@ export const tipRunesToDiscordUser = async (
       if (filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@!')) {
         discordId = filteredMessage[parseInt(AmountPosition, 10)].slice(3).slice(0, -1);
       } else if (
+        filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@&')
+      ) {
+        discordId = filteredMessage[parseInt(AmountPosition, 10)].slice(3).slice(0, -1);
+      } else if (
         filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@')
         && !filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@!')
+        && !filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@&')
       ) {
         discordId = filteredMessage[parseInt(AmountPosition, 10)].slice(2).slice(0, -1);
       }
@@ -93,6 +103,58 @@ export const tipRunesToDiscordUser = async (
           }
         }
       }
+      if (!userExist) {
+        console.log(discordId);
+        console.log(message.author.id);
+        if (discordId !== message.author.id) {
+          console.log(discordId);
+          const userClient = await discordClient.users.fetch(discordId);
+          console.log(userClient);
+          console.log('userClient');
+          if (
+            userClient
+            && !userClient.bot
+          ) {
+            const [
+              newUser,
+              newAccount,
+            ] = await generateUserWalletAndAddress(
+              userClient,
+              t,
+            );
+
+            const newUserExist = await db.user.findOne({
+              where: {
+                user_id: `discord-${discordId}`,
+              },
+              include: [
+                {
+                  model: db.wallet,
+                  as: 'wallet',
+                  required: true,
+                  include: [
+                    {
+                      model: db.address,
+                      as: 'addresses',
+                      required: true,
+                    },
+                  ],
+                },
+              ],
+              lock: t.LOCK.UPDATE,
+              transaction: t,
+            });
+            if (newUserExist) {
+              const userNewIdTest = newUserExist.user_id.replace('discord-', '');
+              if (userNewIdTest !== message.author.id) {
+                if (!usersToTip.find((o) => o.id === newUserExist.id)) {
+                  usersToTip.push(newUserExist);
+                }
+              }
+            }
+          }
+        }
+      }
       // usersToTip.push(filteredMessage[AmountPosition]);
       AmountPosition += 1;
       if (!filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@')) {
@@ -103,7 +165,9 @@ export const tipRunesToDiscordUser = async (
     if (usersToTip.length < 1) {
       await message.channel.send({
         embeds: [
-          notEnoughUsersToTip(message),
+          notEnoughUsersToTip(
+            message,
+          ),
         ],
       });
       return;
@@ -305,7 +369,13 @@ export const tipRunesToDiscordUser = async (
     }
     console.log(err);
     logger.error(`tip error: ${err}`);
-    await message.channel.send({ embeds: [discordErrorMessage("Tip")] }).catch((e) => {
+    await message.channel.send({
+      embeds: [
+        discordErrorMessage(
+          "Tip",
+        ),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
   });

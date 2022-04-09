@@ -21,7 +21,6 @@ export const updateDiscordChannel = async (
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     if (channelId) {
-      // const channel = await client.channels.cache.get(message.channelId);
       const channel = await message.guild.channels.cache.get(channelId);
 
       channelRecord = await db.channel.findOne(

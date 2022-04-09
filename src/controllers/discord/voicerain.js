@@ -33,11 +33,23 @@ export const discordVoiceRain = async (
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     if (!filteredMessage[3].startsWith('<#')) {
-      await message.channel.send({ embeds: [notAVoiceChannel(message)] });
+      await message.channel.send({
+        embeds: [
+          notAVoiceChannel(
+            message,
+          ),
+        ],
+      });
       return;
     }
     if (!filteredMessage[3].endsWith('>')) {
-      await message.channel.send({ embeds: [notAVoiceChannel(message)] });
+      await message.channel.send({
+        embeds: [
+          notAVoiceChannel(
+            message,
+          ),
+        ],
+      });
       return;
     }
 
@@ -53,6 +65,22 @@ export const discordVoiceRain = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
+
+    const [
+      activityValiateAmount,
+      amount,
+    ] = await validateAmount(
+      message,
+      t,
+      filteredMessage[2],
+      user,
+      setting,
+      filteredMessage[1].toLowerCase(),
+    );
+    if (activityValiateAmount) {
+      activity.unshift(activityValiateAmount);
+      return;
+    }
 
     const voiceChannelId = filteredMessage[3].substr(2).slice(0, -1);
 
@@ -83,22 +111,6 @@ export const discordVoiceRain = async (
       onlineMembers,
       setting,
     );
-
-    const [
-      activityValiateAmount,
-      amount,
-    ] = await validateAmount(
-      message,
-      t,
-      filteredMessage[2],
-      user,
-      setting,
-      filteredMessage[1].toLowerCase(),
-    );
-    if (activityValiateAmount) {
-      activity.unshift(activityValiateAmount);
-      return;
-    }
 
     if (withoutBots.length < 2) {
       const failActivity = await db.activity.create({
@@ -285,7 +297,9 @@ export const discordVoiceRain = async (
     logger.error(`voicerain error: ${err}`);
     await message.channel.send({
       embeds: [
-        discordErrorMessage("VoiceRain"),
+        discordErrorMessage(
+          "VoiceRain",
+        ),
       ],
     }).catch((e) => {
       console.log(e);

@@ -197,7 +197,13 @@ export const fetchFeeSchedule = async (
     }
     console.log(err);
     logger.error(`fees error: ${err}`);
-    await message.channel.send({ embeds: [discordErrorMessage("Fees")] }).catch((e) => {
+    await message.channel.send({
+      embeds: [
+        discordErrorMessage(
+          "Fees",
+        ),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
   });

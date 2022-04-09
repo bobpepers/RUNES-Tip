@@ -7,7 +7,6 @@ import {
   hurricaneMaxUserAmountMessage,
   hurricaneInvalidUserAmount,
   hurricaneUserZeroAmountMessage,
-  // NotInDirectMessage,
   AfterSuccessMessage,
   discordErrorMessage,
 } from '../../messages/discord';
@@ -34,15 +33,33 @@ export const discordHurricane = async (
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     if (Number(filteredMessage[2]) > 50) {
-      await message.channel.send({ embeds: [hurricaneMaxUserAmountMessage(message)] });
+      await message.channel.send({
+        embeds: [
+          hurricaneMaxUserAmountMessage(
+            message,
+          ),
+        ],
+      });
       return;
     }
     if (Number(filteredMessage[2]) % 1 !== 0) {
-      await message.channel.send({ embeds: [hurricaneInvalidUserAmount(message)] });
+      await message.channel.send({
+        embeds: [
+          hurricaneInvalidUserAmount(
+            message,
+          ),
+        ],
+      });
       return;
     }
     if (Number(filteredMessage[2]) <= 0) {
-      await message.channel.send({ embeds: [hurricaneUserZeroAmountMessage(message)] });
+      await message.channel.send({
+        embeds: [
+          hurricaneUserZeroAmountMessage(
+            message,
+          ),
+        ],
+      });
       return;
     }
     const [
@@ -97,7 +114,14 @@ export const discordHurricane = async (
         transaction: t,
       });
       activity.unshift(activityA);
-      await message.channel.send({ embeds: [notEnoughActiveUsersMessage(message, 'Hurricane')] });
+      await message.channel.send({
+        embeds: [
+          notEnoughActiveUsersMessage(
+            message,
+            'Hurricane',
+          ),
+        ],
+      });
       return;
     }
 
@@ -261,7 +285,13 @@ export const discordHurricane = async (
     }
     console.log(err);
     logger.error(`hurricane error: ${err}`);
-    await message.channel.send({ embeds: [discordErrorMessage("Hurricane")] }).catch((e) => {
+    await message.channel.send({
+      embeds: [
+        discordErrorMessage(
+          "Hurricane",
+        ),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
   });

@@ -42,6 +42,30 @@ export const discordCoinInfo = async (
       lock: t.LOCK.UPDATE,
       transaction: t,
     });
+
+    const preActivity = await db.activity.create({
+      type: 'info_s',
+      earnerId: user.id,
+    }, {
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+
+    const finalActivity = await db.activity.findOne({
+      where: {
+        id: preActivity.id,
+      },
+      include: [
+        {
+          model: db.user,
+          as: 'earner',
+        },
+      ],
+      lock: t.LOCK.UPDATE,
+      transaction: t,
+    });
+    activity.unshift(finalActivity);
+
     if (message.channel.type === 'DM') {
       await message.author.send({
         embeds: [
@@ -70,28 +94,7 @@ export const discordCoinInfo = async (
         ],
       });
     }
-    const preActivity = await db.activity.create({
-      type: 'info_s',
-      earnerId: user.id,
-    }, {
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
 
-    const finalActivity = await db.activity.findOne({
-      where: {
-        id: preActivity.id,
-      },
-      include: [
-        {
-          model: db.user,
-          as: 'earner',
-        },
-      ],
-      lock: t.LOCK.UPDATE,
-      transaction: t,
-    });
-    activity.unshift(finalActivity);
     t.afterCommit(() => {
       console.log('done');
     });
@@ -107,11 +110,24 @@ export const discordCoinInfo = async (
     console.log(err);
     logger.error(`info error: ${err}`);
     if (err.code && err.code === 50007) {
-      await message.channel.send({ embeds: [cannotSendMessageUser("Coin Info", message)] }).catch((e) => {
+      await message.channel.send({
+        embeds: [
+          cannotSendMessageUser(
+            "Coin Info",
+            message,
+          ),
+        ],
+      }).catch((e) => {
         console.log(e);
       });
     } else {
-      await message.channel.send({ embeds: [discordErrorMessage("Coin Info")] }).catch((e) => {
+      await message.channel.send({
+        embeds: [
+          discordErrorMessage(
+            "Coin Info",
+          ),
+        ],
+      }).catch((e) => {
         console.log(e);
       });
     }

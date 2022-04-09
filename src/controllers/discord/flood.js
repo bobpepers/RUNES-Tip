@@ -42,21 +42,6 @@ export const discordFlood = async (
     }
     if (!user) return;
 
-    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-
-    const onlineMembers = members.filter((member) => {
-      // console.log(member.presence);
-      console.log('-');
-      return member;
-    });
-
-    const withoutBots = await mapMembers(
-      message,
-      t,
-      filteredMessage[3],
-      onlineMembers,
-      setting,
-    );
     const [
       activityValiateAmount,
       amount,
@@ -72,6 +57,22 @@ export const discordFlood = async (
       activity.unshift(activityValiateAmount);
       return;
     }
+
+    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
+
+    const onlineMembers = members.filter((member) => {
+      // console.log(member.presence);
+      console.log('-');
+      return member;
+    });
+
+    const withoutBots = await mapMembers(
+      message,
+      t,
+      filteredMessage[3],
+      onlineMembers,
+      setting,
+    );
 
     if (withoutBots.length < 2) {
       const factivity = await db.activity.create({
@@ -254,7 +255,13 @@ export const discordFlood = async (
     }
     console.log(err);
     logger.error(`flood error: ${err}`);
-    await message.channel.send({ embeds: [discordErrorMessage("Flood")] }).catch((e) => {
+    await message.channel.send({
+      embeds: [
+        discordErrorMessage(
+          "Flood",
+        ),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
   });

@@ -42,19 +42,6 @@ export const discordSoak = async (
     }
     if (!user) return;
 
-    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-    const onlineMembers = members.filter((member) => (member.presence && member.presence.status === "online")
-      || (member.presence && member.presence.status === "idle")
-      || (member.presence && member.presence.status === "dnd"));
-
-    const withoutBots = await mapMembers(
-      message,
-      t,
-      filteredMessage[3],
-      onlineMembers,
-      setting,
-    );
-
     const [
       activityValiateAmount,
       amount,
@@ -71,6 +58,19 @@ export const discordSoak = async (
       return;
     }
 
+    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
+    const onlineMembers = members.filter((member) => (member.presence && member.presence.status === "online")
+      || (member.presence && member.presence.status === "idle")
+      || (member.presence && member.presence.status === "dnd"));
+
+    const withoutBots = await mapMembers(
+      message,
+      t,
+      filteredMessage[3],
+      onlineMembers,
+      setting,
+    );
+
     if (withoutBots.length < 2) {
       const failActivity = await db.activity.create({
         type: 'soak_f',
@@ -80,7 +80,14 @@ export const discordSoak = async (
         transaction: t,
       });
       activity.unshift(failActivity);
-      await message.channel.send({ embeds: [notEnoughActiveUsersMessage(message, 'Soak')] });
+      await message.channel.send({
+        embeds: [
+          notEnoughActiveUsersMessage(
+            message,
+            'Soak',
+          ),
+        ],
+      });
       return;
     }
     const updatedBalance = await user.wallet.update({
@@ -245,7 +252,13 @@ export const discordSoak = async (
     }
     console.log(err);
     logger.error(`soak error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Soak")] }).catch((e) => {
+    await message.channel.send({
+      embeds: [
+        discordErrorMessage(
+          "Soak",
+        ),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
   });

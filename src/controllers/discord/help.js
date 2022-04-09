@@ -130,7 +130,9 @@ export const discordHelp = async (
     } else {
       await message.channel.send({
         embeds: [
-          discordErrorMessage("Help"),
+          discordErrorMessage(
+            "Help",
+          ),
         ],
       }).catch((e) => {
         console.log(e);

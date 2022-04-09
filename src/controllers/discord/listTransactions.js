@@ -116,11 +116,24 @@ export const fetchDiscordListTransactions = async (
     }
     logger.error(`Error Discord List Transactions Requested by: ${err}`);
     if (err.code && err.code === 50007) {
-      await message.channel.send({ embeds: [cannotSendMessageUser("List transactions", message)] }).catch((e) => {
+      await message.channel.send({
+        embeds: [
+          cannotSendMessageUser(
+            "List transactions",
+            message,
+          ),
+        ],
+      }).catch((e) => {
         console.log(e);
       });
     } else {
-      await message.channel.send({ embeds: [discordErrorMessage("List transactions")] }).catch((e) => {
+      await message.channel.send({
+        embeds: [
+          discordErrorMessage(
+            "List transactions",
+          ),
+        ],
+      }).catch((e) => {
         console.log(e);
       });
     }

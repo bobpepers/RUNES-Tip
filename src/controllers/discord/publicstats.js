@@ -99,7 +99,13 @@ export const discordPublicStats = async (
     }
     console.log(err);
     logger.error(`publicstats error: ${err}`);
-    await message.channel.send({ embeds: [discordErrorMessage("PublicStats")] }).catch((e) => {
+    await message.channel.send({
+      embeds: [
+        discordErrorMessage(
+          "PublicStats",
+        ),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
   });

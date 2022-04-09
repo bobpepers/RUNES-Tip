@@ -2,7 +2,7 @@
 /* eslint-disable no-await-in-loop */
 import _ from 'lodash';
 import db from '../../../models';
-import { getInstance } from "../../../services/rclient";
+import { generateUserWalletAndAddress } from '../../../controllers/discord/user';
 
 export const mapMembers = async (
   message,
@@ -44,7 +44,7 @@ export const mapMembers = async (
             {
               model: db.address,
               as: 'addresses',
-              required: false,
+              required: true,
             },
           ],
         },
@@ -61,80 +61,14 @@ export const mapMembers = async (
       }
     }
     if (!userExist) {
-      let user;
-      user = await db.user.create({
-        user_id: `discord-${discordUser.id}`,
-        username: `${discordUser.username}#${discordUser.discriminator}`,
-        firstname: '',
-        lastname: '',
-      }, {
-        transaction: t,
-        lock: t.LOCK.UPDATE,
-      });
-      if (user) {
-        if (user.username !== `${discordUser.username}#${discordUser.discriminator}`) {
-          user = await user.update(
-            {
-              username: `${discordUser.username}#${discordUser.discriminator}`,
-            },
-            {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            },
-          );
-        }
-        let wallet = await db.wallet.findOne(
-          {
-            where: {
-              userId: user.id,
-            },
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          },
-        );
-        if (!wallet) {
-          wallet = await db.wallet.create({
-            userId: user.id,
-            available: 0,
-            locked: 0,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
-        }
-        let address = await db.address.findOne(
-          {
-            where: {
-              walletId: wallet.id,
-            },
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          },
-        );
-        if (!address) {
-          const newAddress = await getInstance().getNewAddress();
-          const addressAlreadyExist = await db.address.findOne(
-            {
-              where: {
-                address: newAddress,
-              },
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            },
-          );
-          if (!addressAlreadyExist) {
-            address = await db.address.create({
-              address: newAddress,
-              walletId: wallet.id,
-              type: 'deposit',
-              confirmed: true,
-            }, {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            });
-          }
-        }
-      }
+      const [
+        user,
+        newAccount,
+      ] = await generateUserWalletAndAddress(
+        discordUser,
+        t,
+      );
+
       const userExistNew = await db.user.findOne({
         where: {
           user_id: `discord-${discordUser.id}`,

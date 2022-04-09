@@ -92,7 +92,6 @@ export const discordFaucetClaim = async (
     const dateFuture = lastFaucetTip && lastFaucetTip.createdAt.getTime() + (4 * 60 * 60 * 1000);
     const dateNow = new Date().getTime();
     const distance = dateFuture && dateFuture - dateNow;
-    // console.log(distance);
 
     if (distance
       && distance > 0
@@ -106,7 +105,12 @@ export const discordFaucetClaim = async (
       });
       activity.push(activityT);
       await message.channel.send({
-        embeds: [claimTooFactFaucetMessage(username, distance)],
+        embeds: [
+          claimTooFactFaucetMessage(
+            username,
+            distance,
+          ),
+        ],
         components: [row],
       });
       return;

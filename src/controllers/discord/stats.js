@@ -683,7 +683,9 @@ ${earnedTips ? `Tips: ${earnedTips}\n` : ''}${earnedRains ? `Rains: ${earnedRain
     logger.error(`Error Stats Requested by: ${err}`);
     await message.channel.send({
       embeds: [
-        discordErrorMessage("Stats"),
+        discordErrorMessage(
+          "Stats",
+        ),
       ],
     }).catch((e) => {
       console.log(e);

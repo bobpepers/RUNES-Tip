@@ -7,14 +7,12 @@ import {
   thunderstormMaxUserAmountMessage,
   thunderstormInvalidUserAmount,
   thunderstormUserZeroAmountMessage,
-  // NotInDirectMessage,
   AfterSuccessMessage,
   discordErrorMessage,
 } from '../../messages/discord';
 import { validateAmount } from "../../helpers/client/discord/validateAmount";
 import { mapMembers } from "../../helpers/client/discord/mapMembers";
 import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
-
 import logger from "../../helpers/logger";
 import { waterFaucet } from "../../helpers/waterFaucet";
 
@@ -77,18 +75,6 @@ export const discordThunderStorm = async (
     }
     if (!user) return;
 
-    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-    const onlineMembers = members.filter((member) => member && member.presence && member.presence.status && member.presence.status === "online");
-
-    const preWithoutBots = await mapMembers(
-      message,
-      t,
-      filteredMessage[4],
-      onlineMembers,
-      setting,
-    );
-    const withoutBots = _.sampleSize(preWithoutBots, Number(filteredMessage[2]));
-
     const [
       activityValiateAmount,
       amount,
@@ -104,6 +90,18 @@ export const discordThunderStorm = async (
       activity.unshift(activityValiateAmount);
       return;
     }
+
+    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
+    const onlineMembers = members.filter((member) => member && member.presence && member.presence.status && member.presence.status === "online");
+
+    const preWithoutBots = await mapMembers(
+      message,
+      t,
+      filteredMessage[4],
+      onlineMembers,
+      setting,
+    );
+    const withoutBots = _.sampleSize(preWithoutBots, Number(filteredMessage[2]));
 
     if (withoutBots.length < 1) {
       const failActivity = await db.activity.create({
@@ -288,7 +286,9 @@ export const discordThunderStorm = async (
     logger.error(`thunderstorm error: ${err}`);
     message.channel.send({
       embeds: [
-        discordErrorMessage("ThunderStorm"),
+        discordErrorMessage(
+          "ThunderStorm",
+        ),
       ],
     }).catch((e) => {
       console.log(e);

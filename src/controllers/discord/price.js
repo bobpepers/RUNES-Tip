@@ -33,24 +33,6 @@ export const discordPrice = async (
     const priceRecord = await db.currency.findAll({});
     let replyString = ``;
     replyString += priceRecord.map((a) => `${a.iso}: ${a.price}`).join('\n');
-    if (message.channel.type === 'DM') {
-      await message.author.send({
-        embeds: [
-          priceMessage(
-            replyString,
-          ),
-        ],
-      });
-    }
-    if (message.channel.type === 'GUILD_TEXT') {
-      await message.channel.send({
-        embeds: [
-          priceMessage(
-            replyString,
-          ),
-        ],
-      });
-    }
 
     const createActivity = await db.activity.create({
       type: 'price_s',
@@ -75,6 +57,25 @@ export const discordPrice = async (
     });
     activity.unshift(findActivity);
 
+    if (message.channel.type === 'DM') {
+      await message.author.send({
+        embeds: [
+          priceMessage(
+            replyString,
+          ),
+        ],
+      });
+    }
+    if (message.channel.type === 'GUILD_TEXT') {
+      await message.channel.send({
+        embeds: [
+          priceMessage(
+            replyString,
+          ),
+        ],
+      });
+    }
+
     t.afterCommit(() => {
       console.log('done price request');
     });
@@ -90,7 +91,9 @@ export const discordPrice = async (
     logger.error(`Error Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
     message.channel.send({
       embeds: [
-        discordErrorMessage("Price"),
+        discordErrorMessage(
+          "Price",
+        ),
       ],
     }).catch((e) => {
       console.log(e);

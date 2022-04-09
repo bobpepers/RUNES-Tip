@@ -767,7 +767,13 @@ export const discordTrivia = async (
     }
     console.log(err);
     logger.error(`trivia error: ${err}`);
-    await message.channel.send({ embeds: [discordErrorMessage("Trivia")] }).catch((e) => {
+    await message.channel.send({
+      embeds: [
+        discordErrorMessage(
+          "Trivia",
+        ),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
   });

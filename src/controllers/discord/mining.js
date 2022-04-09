@@ -112,7 +112,9 @@ export const discordMining = async (
 
     await message.channel.send({
       embeds: [
-        discordErrorMessage("Halving"),
+        discordErrorMessage(
+          "Halving",
+        ),
       ],
     }).catch((e) => {
       console.log(e);

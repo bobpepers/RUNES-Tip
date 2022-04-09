@@ -29,7 +29,6 @@ export const fetchDiscordWalletBalance = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
-    console.log('123');
 
     const priceInfo = await db.currency.findOne({
       where: {
@@ -72,6 +71,7 @@ export const fetchDiscordWalletBalance = async (
         ],
       });
     }
+
     const createActivity = await db.activity.create({
       type: 'balance_s',
       earnerId: user.id,

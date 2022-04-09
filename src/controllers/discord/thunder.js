@@ -43,20 +43,6 @@ export const discordThunder = async (
     }
     if (!user) return;
 
-    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
-    const onlineMembers = members.filter((member) => member.presence
-      && member.presence.status
-      && member.presence.status === "online");
-
-    const preWithoutBots = await mapMembers(
-      message,
-      t,
-      filteredMessage[3],
-      onlineMembers,
-      setting,
-    );
-    const withoutBots = _.sampleSize(preWithoutBots, 1);
-
     const [
       activityValiateAmount,
       amount,
@@ -72,6 +58,20 @@ export const discordThunder = async (
       activity.unshift(activityValiateAmount);
       return;
     }
+
+    const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
+    const onlineMembers = members.filter((member) => member.presence
+      && member.presence.status
+      && member.presence.status === "online");
+
+    const preWithoutBots = await mapMembers(
+      message,
+      t,
+      filteredMessage[3],
+      onlineMembers,
+      setting,
+    );
+    const withoutBots = _.sampleSize(preWithoutBots, 1);
 
     if (withoutBots.length < 1) {
       const failActivity = await db.activity.create({
@@ -244,7 +244,13 @@ export const discordThunder = async (
     }
     console.log(err);
     logger.error(`thunder error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Thunder")] }).catch((e) => {
+    await message.channel.send({
+      embeds: [
+        discordErrorMessage(
+          "Thunder",
+        ),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
   });

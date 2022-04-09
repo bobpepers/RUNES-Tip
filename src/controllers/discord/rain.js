@@ -4,10 +4,8 @@ import db from '../../models';
 import {
   notEnoughActiveUsersMessage,
   AfterSuccessMessage,
-  // NotInDirectMessage,
   discordErrorMessage,
 } from '../../messages/discord';
-
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/client/discord/validateAmount";
 import { mapMembers } from "../../helpers/client/discord/mapMembers";
@@ -42,6 +40,22 @@ export const discordRain = async (
     }
     if (!user) return;
 
+    const [
+      activityValiateAmount,
+      amount,
+    ] = await validateAmount(
+      message,
+      t,
+      filteredMessage[2],
+      user,
+      setting,
+      filteredMessage[1].toLowerCase(),
+    );
+    if (activityValiateAmount) {
+      activity.unshift(activityValiateAmount);
+      return;
+    }
+
     const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
     const onlineMembers = await members.filter((member) => {
       const memberStatus = member
@@ -60,22 +74,6 @@ export const discordRain = async (
       setting,
     );
 
-    const [
-      activityValiateAmount,
-      amount,
-    ] = await validateAmount(
-      message,
-      t,
-      filteredMessage[2],
-      user,
-      setting,
-      filteredMessage[1].toLowerCase(),
-    );
-    if (activityValiateAmount) {
-      activity.unshift(activityValiateAmount);
-      return;
-    }
-
     if (withoutBots.length < 2) {
       console.log(withoutBots.length);
       const fActivity = await db.activity.create({
@@ -86,7 +84,14 @@ export const discordRain = async (
         transaction: t,
       });
       activity.unshift(fActivity);
-      await message.channel.send({ embeds: [notEnoughActiveUsersMessage(message, 'Rain')] });
+      await message.channel.send({
+        embeds: [
+          notEnoughActiveUsersMessage(
+            message,
+            'Rain',
+          ),
+        ],
+      });
       return;
     }
 
@@ -255,7 +260,13 @@ export const discordRain = async (
     }
     console.log(err);
     logger.error(`rain error: ${err}`);
-    message.channel.send({ embeds: [discordErrorMessage("Rain")] }).catch((e) => {
+    await message.channel.send({
+      embeds: [
+        discordErrorMessage(
+          "Rain",
+        ),
+      ],
+    }).catch((e) => {
       console.log(e);
     });
   });

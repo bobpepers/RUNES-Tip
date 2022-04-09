@@ -41,16 +41,49 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
 
     if (message.channel.type === 'DM') {
       await message.author.send({
-        embeds: [depositAddressMessage(userId, user)],
-        files: [new MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')],
+        embeds: [
+          depositAddressMessage(
+            userId,
+            user,
+          ),
+        ],
+        files: [
+          new MessageAttachment(
+            Buffer.from(
+              depositQrFixed,
+              'base64',
+            ),
+            'qr.png',
+          ),
+        ],
       });
     }
     if (message.channel.type === 'GUILD_TEXT') {
       await message.author.send({
-        embeds: [depositAddressMessage(userId, user)],
-        files: [new MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')],
+        embeds: [
+          depositAddressMessage(
+            userId,
+            user,
+          ),
+        ],
+        files: [
+          new MessageAttachment(
+            Buffer.from(
+              depositQrFixed,
+              'base64',
+            ),
+            'qr.png',
+          ),
+        ],
       });
-      await message.channel.send({ embeds: [warnDirectMessage(userId, 'Deposit')] });
+      await message.channel.send({
+        embeds: [
+          warnDirectMessage(
+            userId,
+            'Deposit',
+          ),
+        ],
+      });
     }
 
     const preActivity = await db.activity.create({

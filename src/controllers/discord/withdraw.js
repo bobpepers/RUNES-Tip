@@ -41,7 +41,6 @@ export const withdrawDiscordCreate = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
-    const userId = user.user_id.replace('discord-', '');
 
     const [
       activityValiateAmount,
@@ -58,6 +57,8 @@ export const withdrawDiscordCreate = async (
       activity.unshift(activityValiateAmount);
       return;
     }
+
+    const userId = user.user_id.replace('discord-', '');
 
     const [
       isInvalidAddress,
@@ -76,7 +77,9 @@ export const withdrawDiscordCreate = async (
     if (isInvalidAddress) {
       await message.author.send({
         embeds: [
-          invalidAddressMessage(message),
+          invalidAddressMessage(
+            message,
+          ),
         ],
       });
     }
@@ -85,7 +88,10 @@ export const withdrawDiscordCreate = async (
       if (message.channel.type !== 'DM') {
         await message.channel.send({
           embeds: [
-            warnDirectMessage(userId, 'Withdraw'),
+            warnDirectMessage(
+              userId,
+              'Withdraw',
+            ),
           ],
         });
       }
@@ -105,13 +111,18 @@ export const withdrawDiscordCreate = async (
     if (isMyAddressActivity) {
       await message.author.send({
         embeds: [
-          unableToWithdrawToSelfMessage(message),
+          unableToWithdrawToSelfMessage(
+            message,
+          ),
         ],
       });
       if (message.channel.type !== 'DM') {
         await message.channel.send({
           embeds: [
-            warnDirectMessage(userId, 'Withdraw'),
+            warnDirectMessage(
+              userId,
+              'Withdraw',
+            ),
           ],
         });
       }
@@ -162,12 +173,33 @@ export const withdrawDiscordCreate = async (
     activity.unshift(activityCreate);
 
     if (message.channel.type === 'DM') {
-      await message.author.send({ embeds: [reviewMessage(message, transaction)] });
+      await message.author.send({
+        embeds: [
+          reviewMessage(
+            message,
+            transaction,
+          ),
+        ],
+      });
     }
 
     if (message.channel.type === 'GUILD_TEXT') {
-      await message.author.send({ embeds: [reviewMessage(message, transaction)] });
-      await message.channel.send({ embeds: [warnDirectMessage(userId, 'Withdraw')] });
+      await message.author.send({
+        embeds: [
+          reviewMessage(
+            message,
+            transaction,
+          ),
+        ],
+      });
+      await message.channel.send({
+        embeds: [
+          warnDirectMessage(
+            userId,
+            'Withdraw',
+          ),
+        ],
+      });
     }
 
     t.afterCommit(() => {
@@ -185,11 +217,24 @@ export const withdrawDiscordCreate = async (
     console.log(err);
     logger.error(`withdraw error: ${err}`);
     if (err.code && err.code === 50007) {
-      await message.channel.send({ embeds: [cannotSendMessageUser("Withdraw", message)] }).catch((e) => {
+      await message.channel.send({
+        embeds: [
+          cannotSendMessageUser(
+            "Withdraw",
+            message,
+          ),
+        ],
+      }).catch((e) => {
         console.log(e);
       });
     } else {
-      await message.channel.send({ embeds: [discordErrorMessage("Withdraw")] }).catch((e) => {
+      await message.channel.send({
+        embeds: [
+          discordErrorMessage(
+            "Withdraw",
+          ),
+        ],
+      }).catch((e) => {
         console.log(e);
       });
     }

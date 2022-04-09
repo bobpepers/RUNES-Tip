@@ -36,7 +36,13 @@ export const setIgnoreMe = async (message, io) => {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      await message.channel.send({ embeds: [unIngoreMeMessage(message)] });
+      await message.channel.send({
+        embeds: [
+          unIngoreMeMessage(
+            message,
+          ),
+        ],
+      });
     } else if (!user.ignoreMe) {
       await user.update({
         ignoreMe: true,
@@ -44,7 +50,13 @@ export const setIgnoreMe = async (message, io) => {
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
-      await message.channel.send({ embeds: [ignoreMeMessage(message)] });
+      await message.channel.send({
+        embeds: [
+          ignoreMeMessage(
+            message,
+          ),
+        ],
+      });
     }
     const preActivity = await db.activity.create({
       type: 'ignoreme_s',

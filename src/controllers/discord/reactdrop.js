@@ -760,7 +760,6 @@ export const discordReactDrop = async (
 
           const updateMessage = setInterval(async () => {
             now = new Date().getTime();
-            console.log('listen');
             distance = countDownDate - now;
             await reactMessage.edit({
               embeds: [
