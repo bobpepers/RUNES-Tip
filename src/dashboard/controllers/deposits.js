@@ -54,10 +54,17 @@ export const fetchDeposits = async (
 
   const options = {
     where: transactionOptions,
+    limit: req.body.limit,
+    offset: req.body.offset,
     order: [
       ['id', 'DESC'],
     ],
     include: [
+      {
+        model: db.user,
+        as: 'user',
+        where: userOptions,
+      },
       {
         model: db.address,
         as: 'address',
@@ -65,19 +72,12 @@ export const fetchDeposits = async (
           {
             model: db.wallet,
             as: 'wallet',
-            include: [
-              {
-                model: db.user,
-                as: 'user',
-                where: userOptions,
-              },
-            ],
           },
         ],
       },
     ],
   };
+  res.locals.count = await db.transaction.count(options);
   res.locals.deposits = await db.transaction.findAll(options);
-  // console.log(res.locals.deposits);
   next();
 };

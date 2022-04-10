@@ -168,32 +168,6 @@ class Pirate {
   }
 
   /**
-   * Lists unspent transaction outputs.
-   * @param {string} address Address to send Pirate to.
-   * @param {number} amount Amount of Pirate to send.
-   * @param {number} minconf (numeric, optional, default=1) Only use funds with at least this many confirmations.
-   * @param {string} comment Comment used to store what the transaction is for.
-   * @param {string} commentTo Comment to store name/organization to which you're sending the transaction.
-   * @param {string} subtractFeeFromAmount (boolean, optional, default=false) The fee will be deducted from the amount being sent.The recipient will receive less PIRATE than you enter in the amount field.
-   * @return {Promise} Transaction ID or Error
-   */
-  sendToAddress(
-    address,
-    amount,
-    comment = '',
-    commentTo = '',
-    subtractFeeFromAmount = false,
-  ) {
-    return this.provider.rawCall('sendtoaddress', [
-      address,
-      amount,
-      comment,
-      commentTo,
-      subtractFeeFromAmount,
-    ]);
-  }
-
-  /**
    * Locks the encrypted wallet.
    * @return {Promise} Success or Error.
    */

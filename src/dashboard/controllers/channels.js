@@ -58,7 +58,8 @@ export const fetchChannels = async (
     order: [
       ['id', 'DESC'],
     ],
-    limit: 300,
+    limit: req.body.limit,
+    offset: req.body.offset,
     where: channelOptions,
     include: [
       {
@@ -67,7 +68,7 @@ export const fetchChannels = async (
       },
     ],
   };
+  res.locals.count = await db.channel.count(options);
   res.locals.channels = await db.channel.findAll(options);
-  // console.log(res.locals.channels);
   next();
 };

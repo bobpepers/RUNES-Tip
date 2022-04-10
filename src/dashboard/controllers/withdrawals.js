@@ -271,27 +271,51 @@ export const fetchWithdrawals = async (
   const userOptions = {};
 
   if (req.body.id !== '') {
-    transactionOptions.id = { [Op.like]: `%${Number(req.body.id)}%` };
+    transactionOptions.id = {
+      [Op.like]: `%${Number(req.body.id)}%`,
+    };
   }
   if (req.body.txId !== '') {
-    transactionOptions.txid = { [Op.like]: `%${req.body.txId}%` };
+    transactionOptions.txid = {
+      [Op.like]: `%${req.body.txId}%`,
+    };
   }
   if (req.body.to !== '') {
-    transactionOptions.to_from = { [Op.like]: `%${req.body.to}%` };
+    transactionOptions.to_from = {
+      [Op.like]: `%${req.body.to}%`,
+    };
   }
   if (req.body.userId !== '') {
-    userOptions.user_id = { [Op.like]: `%${req.body.userId}%` };
+    transactionOptions.userId = {
+      [Op.not]: null,
+    };
+    userOptions.user_id = {
+      [Op.like]: `%${req.body.userId}%`,
+    };
   }
   if (req.body.username !== '') {
-    userOptions.username = { [Op.like]: `%${req.body.username}%` };
+    transactionOptions.userId = {
+      [Op.not]: null,
+    };
+    userOptions.username = {
+      [Op.like]: `%${req.body.username}%`,
+    };
   }
+  console.log(req.body.userId);
 
   const options = {
     where: transactionOptions,
+    limit: req.body.limit,
+    offset: req.body.offset,
     order: [
       ['id', 'DESC'],
     ],
     include: [
+      {
+        model: db.user,
+        as: 'user',
+        where: userOptions,
+      },
       {
         model: db.address,
         as: 'address',
@@ -299,19 +323,12 @@ export const fetchWithdrawals = async (
           {
             model: db.wallet,
             as: 'wallet',
-            include: [
-              {
-                model: db.user,
-                as: 'user',
-                where: userOptions,
-              },
-            ],
           },
         ],
       },
     ],
   };
+  res.locals.count = await db.transaction.count(options);
   res.locals.withdrawals = await db.transaction.findAll(options);
-  console.log(res.locals.withdrawals);
   next();
 };

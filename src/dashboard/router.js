@@ -543,8 +543,12 @@ export const dashboardRouter = (
     ensuretfa,
     fetchChannels,
     (req, res) => {
-      if (res.locals.channels) {
+      if (
+        res.locals.channels
+        && res.locals.count
+      ) {
         res.json({
+          count: res.locals.count,
           channels: res.locals.channels,
         });
       } else {
@@ -741,8 +745,12 @@ export const dashboardRouter = (
     ensuretfa,
     fetchWithdrawals,
     (req, res) => {
-      if (res.locals.withdrawals) {
+      if (
+        res.locals.count
+        && res.locals.withdrawals
+      ) {
         res.json({
+          count: res.locals.count,
           withdrawals: res.locals.withdrawals,
         });
       } else {
@@ -762,8 +770,12 @@ export const dashboardRouter = (
     ensuretfa,
     fetchDeposits,
     (req, res) => {
-      if (res.locals.deposits) {
+      if (
+        res.locals.count
+        && res.locals.deposits
+      ) {
         res.json({
+          count: res.locals.count,
           deposits: res.locals.deposits,
         });
       } else {
@@ -819,8 +831,12 @@ export const dashboardRouter = (
     ensuretfa,
     fetchUsers,
     (req, res) => {
-      if (res.locals.users) {
+      if (
+        res.locals.count
+        && res.locals.users
+      ) {
         res.json({
+          count: res.locals.count,
           users: res.locals.users,
         });
       } else {
@@ -860,8 +876,12 @@ export const dashboardRouter = (
     ensuretfa,
     fetchServers,
     (req, res) => {
-      if (res.locals.servers) {
+      if (
+        res.locals.servers
+        && res.locals.count
+      ) {
         res.json({
+          count: res.locals.count,
           servers: res.locals.servers,
         });
       } else {

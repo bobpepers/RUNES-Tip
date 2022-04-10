@@ -57,10 +57,14 @@ export const fetchUsers = async (req, res, next) => {
     }
   }
 
+  console.log(req.body.limit);
+  console.log(req.body.offset);
   const options = {
     order: [
       ['id', 'DESC'],
     ],
+    limit: req.body.limit,
+    offset: req.body.offset,
     where: userOptions,
     include: [
       {
@@ -70,6 +74,7 @@ export const fetchUsers = async (req, res, next) => {
     ],
   };
 
+  res.locals.count = await db.user.count(options);
   res.locals.users = await db.user.findAll(options);
   // console.log(res.locals.users);
   next();

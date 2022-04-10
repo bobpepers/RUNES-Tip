@@ -45,8 +45,11 @@ export const fetchServers = async (req, res, next) => {
     order: [
       ['id', 'DESC'],
     ],
+    limit: req.body.limit,
+    offset: req.body.offset,
     where: userOptions,
   };
+  res.locals.count = await db.group.count(options);
   res.locals.servers = await db.group.findAll(options);
   next();
 };
