@@ -9,6 +9,7 @@ import {
 import db from '../../models';
 import logger from "../../helpers/logger";
 import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
+import { getInstance } from '../../services/rclient';
 
 export const discordCoinInfo = async (
   message,
@@ -31,6 +32,8 @@ export const discordCoinInfo = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
+
+    const walletInfo = await getInstance().getWalletInfo();
 
     const blockHeight = await db.block.findOne({
       order: [['id', 'DESC']],
@@ -72,6 +75,7 @@ export const discordCoinInfo = async (
           coinInfoMessage(
             blockHeight.id,
             priceInfo,
+            walletInfo.walletversion,
           ),
         ],
       });

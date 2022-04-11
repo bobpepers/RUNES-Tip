@@ -7,6 +7,7 @@ import {
 import db from '../../models';
 import logger from "../../helpers/logger";
 import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
+import { getInstance } from '../../services/rclient';
 
 export const fetchInfo = async (
   ctx,
@@ -28,6 +29,8 @@ export const fetchInfo = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
+
+    const walletInfo = await getInstance().getWalletInfo();
 
     const blockHeight = await db.block.findOne({
       order: [['id', 'DESC']],
@@ -68,6 +71,7 @@ export const fetchInfo = async (
       await InfoMessage(
         blockHeight.id,
         priceInfo,
+        walletInfo.walletversion,
       ),
     );
 

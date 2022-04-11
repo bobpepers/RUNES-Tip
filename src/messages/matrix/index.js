@@ -86,6 +86,7 @@ ${settings.bot.name} v${pjson.version}`,
 export const coinInfoMessage = (
   blockHeight,
   priceInfo,
+  walletVersion,
 ) => {
   const result = {
     body: `Coin Info
@@ -101,6 +102,9 @@ ${settings.coin.ticker}
 
 Current block height
 ${blockHeight}
+
+Wallet version
+${walletVersion}
 
 Website
 ${settings.coin.website}
@@ -136,6 +140,8 @@ ${settings.coin.name}<br><br>
 ${settings.coin.ticker}<br><br>
 <strong>Current block height</strong><br>
 ${blockHeight}<br><br>
+<strong>Wallet version</strong><br>
+${walletVersion}<br><br>
 <strong>Website</strong><br>
 ${settings.coin.website}<br><br>
 <strong>Github</strong><br>

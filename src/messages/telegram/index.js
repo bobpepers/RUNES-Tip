@@ -518,6 +518,7 @@ Note: Minimal amount to withdraw: ${withdraw.min / 1e8} ${settings.coin.ticker}.
 export const InfoMessage = (
   blockHeight,
   priceInfo,
+  walletVersion,
 ) => {
   const result = `<b><u>Coin Info</u></b>
 ${settings.coin.description}
@@ -530,6 +531,9 @@ ${settings.coin.ticker}
 
 <b><u>Current block height</u></b>
 ${blockHeight}
+
+<b><u>Wallet version</u></b>
+${walletVersion}
 
 <b><u>Website</u></b>
 ${settings.coin.website}

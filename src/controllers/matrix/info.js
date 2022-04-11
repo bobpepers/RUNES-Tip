@@ -9,6 +9,7 @@ import {
 import db from '../../models';
 import logger from "../../helpers/logger";
 import { userWalletExist } from "../../helpers/client/matrix/userWalletExist";
+import { getInstance } from '../../services/rclient';
 
 export const matrixCoinInfo = async (
   matrixClient,
@@ -42,6 +43,8 @@ export const matrixCoinInfo = async (
     }
     if (!user) return;
 
+    const walletInfo = await getInstance().getWalletInfo();
+
     const blockHeight = await db.block.findOne({
       order: [['id', 'DESC']],
       lock: t.LOCK.UPDATE,
@@ -61,6 +64,7 @@ export const matrixCoinInfo = async (
         coinInfoMessage(
           blockHeight.id,
           priceInfo,
+          walletInfo.walletversion,
         ),
       );
     } else {
@@ -70,6 +74,7 @@ export const matrixCoinInfo = async (
         coinInfoMessage(
           blockHeight.id,
           priceInfo,
+          walletInfo.walletversion,
         ),
       );
       await matrixClient.sendEvent(

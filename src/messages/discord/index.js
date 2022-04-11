@@ -73,6 +73,7 @@ ${channel.banMessage}`)
 export const coinInfoMessage = (
   blockHeight,
   priceInfo,
+  walletVersion,
 ) => {
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
@@ -86,7 +87,7 @@ export const coinInfoMessage = (
     .addField("\u200b", "\u200b")
     .addFields(
       { name: "Current block height", value: `${blockHeight}`, inline: true },
-      { name: "Wallet version", value: "0", inline: true },
+      { name: "Wallet version", value: `${walletVersion}`, inline: true },
     )
     .addField("\u200b", "\u200b")
     .addField("Website", settings.coin.website)

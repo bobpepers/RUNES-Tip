@@ -28,11 +28,14 @@ module.exports = {
     github: "https://github.com/PirateNetwork",
     telegram: "https://t.me/piratechain",
     discord: "https://discord.gg/V62f77NV6e",
-    description: "Pirate Chain (ARRR) is a 100% private send cryptocurrency. It uses a privacy protocol that cannot be compromised by other users activity on the network. Most privacy coins are riddled with holes created by optional privacy. Pirate Chain uses ZK-Snarks to shield 100% of the peer to peer transactions on the blockchain making for highly anonymous and private transactions.",
+    description: "Pirate Chain (ARRR) is a 100% private send cryptocurrency. It uses a privacy protocol that cannot be compromised by other users’ activity on the network. Most privacy coins are riddled with holes created by optional privacy. Pirate Chain uses zk-SNARKs to shield 100% of the peer-to-peer transactions on the blockchain making for highly anonymous and private transactions",
     exchanges: [
       "https://tradeogre.com/exchange/BTC-ARRR",
-      "https://trade.kucoin.com/trade/ARRR-USDT",
+      "https://www.kucoin.com/trade/ARRR-BTC",
+      "https://www.kucoin.com/trade/ARRR-USDT",
       "https://www.gate.io/trade/ARRR_USDT",
+      "https://www.gate.io/trade/ARRR_ETH",
+      "https://pirate.black/exchanges",
     ],
     exampleAddress: 'zs1e3zh7a00wz4ej2lacpl2fvnrl680hkk766nt7z4ujl6rlj04n59ex7hjlnknvhwdc7vxzn0kcvt',
     halving: {
