@@ -156,7 +156,6 @@ export const discordRouter = (
     let channelTask;
     let channelTaskId;
     let lastSeenDiscordTask;
-    // let faucetSetting;
     let disallow;
     if (!message.author.bot) {
       const walletExists = await createUpdateDiscordUser(

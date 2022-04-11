@@ -80,8 +80,6 @@ export const notifyRouter = (
           && res.locals.detail
           && res.locals.detail.length > 0
         ) {
-          console.log(res.locals.detail);
-          console.log('res.local.detail after walletNotify');
           for await (const detail of res.locals.detail) {
             if (detail.amount) {
               await incomingDepositMessageHandler(
@@ -109,8 +107,6 @@ export const notifyRouter = (
           && res.locals.detail.length > 0
         ) {
           for await (const detail of res.locals.detail) {
-            console.log(detail);
-            console.log('detail');
             if (detail.amount) {
               await incomingDepositMessageHandler(
                 discordClient,

@@ -218,9 +218,6 @@ export const matrixRouter = async (
         const filteredMessageWithTags = preFilteredMessageWithTags.filter((el) => el !== '').filter(String);
         const preFilteredMessage = messageReplaceBreaksWithSpaces.split(' ');
         const filteredMessage = preFilteredMessage.filter((el) => el !== '');
-        console.log(filteredMessageWithTags);
-        console.log(filteredMessage);
-        console.log("myBody");
 
         const userDirectMessageRoomId = await inviteUserToDirectMessageRoom(
           matrixClient,
