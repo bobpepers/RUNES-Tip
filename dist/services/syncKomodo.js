@@ -174,9 +174,7 @@ var syncTransactions = /*#__PURE__*/function () {
                                 userToMessage = void 0;
                                 updatedTransaction = void 0;
                                 updatedWallet = void 0;
-                                console.log(detail);
-                                console.log('sync detail');
-                                _context6.next = 10;
+                                _context6.next = 8;
                                 return _models["default"].sequelize.transaction({
                                   isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
                                 }, /*#__PURE__*/function () {
@@ -194,6 +192,10 @@ var syncTransactions = /*#__PURE__*/function () {
                                                 id: trans.id
                                               },
                                               include: [{
+                                                model: _models["default"].addressExternal,
+                                                as: 'addressExternal',
+                                                required: false
+                                              }, {
                                                 model: _models["default"].address,
                                                 as: 'address',
                                                 include: [{
@@ -245,7 +247,7 @@ var syncTransactions = /*#__PURE__*/function () {
                                               break;
                                             }
 
-                                            if (!(detail.category === 'send' && processTransaction.type === 'send')) {
+                                            if (!(detail.category === 'send' && processTransaction.type === 'send' && processTransaction.addressExternal && processTransaction.addressExternal.address && processTransaction.addressExternal.address === detail.address)) {
                                               _context4.next = 34;
                                               break;
                                             }
@@ -440,7 +442,7 @@ var syncTransactions = /*#__PURE__*/function () {
                                   };
                                 }());
 
-                              case 10:
+                              case 8:
                               case "end":
                                 return _context6.stop();
                             }

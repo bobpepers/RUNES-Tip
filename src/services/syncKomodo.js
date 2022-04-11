@@ -78,8 +78,6 @@ const syncTransactions = async (
       let userToMessage;
       let updatedTransaction;
       let updatedWallet;
-      console.log(detail);
-      console.log('sync detail');
 
       await db.sequelize.transaction({
         isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -89,15 +87,23 @@ const syncTransactions = async (
             phase: 'confirming',
             id: trans.id,
           },
-          include: [{
-            model: db.address,
-            as: 'address',
-            include: [{
-              model: db.wallet,
-              as: 'wallet',
-            }],
-          }],
+          include: [
+            {
+              model: db.addressExternal,
+              as: 'addressExternal',
+              required: false,
+            },
+            {
+              model: db.address,
+              as: 'address',
+              include: [{
+                model: db.wallet,
+                as: 'wallet',
+              }],
+            },
+          ],
         });
+
         if (processTransaction) {
           const wallet = await db.wallet.findOne({
             where: {
@@ -119,6 +125,9 @@ const syncTransactions = async (
             if (
               detail.category === 'send'
               && processTransaction.type === 'send'
+              && processTransaction.addressExternal
+              && processTransaction.addressExternal.address
+              && processTransaction.addressExternal.address === detail.address
             ) {
               const prepareLockedAmount = ((detail.amount * 1e8) - Number(processTransaction.feeAmount));
               const removeLockedAmount = Math.abs(prepareLockedAmount);
