@@ -1,7 +1,7 @@
 import { config } from "dotenv";
-import { Runebase } from "./rpc/runebase";
-import { Pirate } from "./rpc/pirate";
-import { Komodo } from "./rpc/komodo";
+import Runebase from "./rpc/runebase";
+import Pirate from "./rpc/pirate";
+import Komodo from "./rpc/komodo";
 
 import getCoinSettings from '../config/settings';
 
