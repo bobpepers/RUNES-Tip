@@ -99,16 +99,23 @@ var fetchServers = /*#__PURE__*/function () {
 
             options = {
               order: [['id', 'DESC']],
+              limit: req.body.limit,
+              offset: req.body.offset,
               where: userOptions
             };
             _context2.next = 7;
-            return _models["default"].group.findAll(options);
+            return _models["default"].group.count(options);
 
           case 7:
+            res.locals.count = _context2.sent;
+            _context2.next = 10;
+            return _models["default"].group.findAll(options);
+
+          case 10:
             res.locals.servers = _context2.sent;
             next();
 
-          case 9:
+          case 12:
           case "end":
             return _context2.stop();
         }

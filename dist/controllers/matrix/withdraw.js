@@ -33,11 +33,13 @@ var _disallowWithdrawToSelf = require("../../helpers/withdraw/disallowWithdrawTo
 
 var _createOrUseExternalWithdrawAddress = require("../../helpers/withdraw/createOrUseExternalWithdrawAddress");
 
+var _extractWithdrawMemo = require("../../helpers/withdraw/extractWithdrawMemo");
+
 /* eslint-disable import/prefer-default-export */
 var settings = (0, _settings["default"])();
 
 var withdrawMatrixCreate = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, queue, userDirectMessageRoomId, isCurrentRoomDirectMessage) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, queue, userDirectMessageRoomId, isCurrentRoomDirectMessage, myBody) {
     var activity;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
@@ -49,7 +51,7 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, _yield$validateWithdr, _yield$validateWithdr2, isInvalidAddress, isNodeOffline, failWithdrawalActivity, isMyAddressActivity, addressExternal, wallet, fee, transaction, activityCreate;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, _yield$validateWithdr, _yield$validateWithdr2, isInvalidAddress, isNodeOffline, failWithdrawalActivity, isMyAddressActivity, memo, addressExternal, wallet, fee, transaction, activityCreate;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -173,12 +175,37 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                         return _context.abrupt("return");
 
                       case 49:
-                        _context.next = 51;
+                        memo = null;
+
+                        if (!(settings.coin.setting === 'Pirate')) {
+                          _context.next = 58;
+                          break;
+                        }
+
+                        _context.next = 53;
+                        return (0, _extractWithdrawMemo.extractWithdrawMemo)(myBody, filteredMessage);
+
+                      case 53:
+                        memo = _context.sent;
+
+                        if (!(memo.length > 512)) {
+                          _context.next = 58;
+                          break;
+                        }
+
+                        _context.next = 57;
+                        return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.matrixTransactionMemoTooLongMessage)(message.sender.name, memo.length));
+
+                      case 57:
+                        return _context.abrupt("return");
+
+                      case 58:
+                        _context.next = 60;
                         return (0, _createOrUseExternalWithdrawAddress.createOrUseExternalWithdrawAddress)(filteredMessage[2], user, t);
 
-                      case 51:
+                      case 60:
                         addressExternal = _context.sent;
-                        _context.next = 54;
+                        _context.next = 63;
                         return user.wallet.update({
                           available: user.wallet.available - amount,
                           locked: user.wallet.locked + amount
@@ -187,10 +214,10 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 54:
+                      case 63:
                         wallet = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
-                        _context.next = 58;
+                        _context.next = 67;
                         return _models["default"].transaction.create({
                           addressId: wallet.addresses[0].id,
                           addressExternalId: addressExternal.id,
@@ -199,15 +226,16 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                           to_from: filteredMessage[2],
                           amount: amount,
                           feeAmount: Number(fee),
-                          userId: user.id
+                          userId: user.id,
+                          memo: memo
                         }, {
                           transaction: t,
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 58:
+                      case 67:
                         transaction = _context.sent;
-                        _context.next = 61;
+                        _context.next = 70;
                         return _models["default"].activity.create({
                           spenderId: user.id,
                           type: 'withdrawRequested',
@@ -218,36 +246,36 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 61:
+                      case 70:
                         activityCreate = _context.sent;
                         activity.unshift(activityCreate); // const userId = user.user_id.replace('matrix-', '');
 
                         if (!isCurrentRoomDirectMessage) {
-                          _context.next = 68;
+                          _context.next = 77;
                           break;
                         }
 
-                        _context.next = 66;
+                        _context.next = 75;
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.reviewMessage)(message, transaction));
 
-                      case 66:
-                        _context.next = 72;
+                      case 75:
+                        _context.next = 81;
                         break;
 
-                      case 68:
-                        _context.next = 70;
+                      case 77:
+                        _context.next = 79;
                         return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.reviewMessage)(message, transaction));
 
-                      case 70:
-                        _context.next = 72;
+                      case 79:
+                        _context.next = 81;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.warnDirectMessage)(message.sender.name, 'Withdraw'));
 
-                      case 72:
+                      case 81:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 73:
+                      case 82:
                       case "end":
                         return _context.stop();
                     }
@@ -255,7 +283,7 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                 }, _callee);
               }));
 
-              return function (_x11) {
+              return function (_x12) {
                 return _ref2.apply(this, arguments);
               };
             }())["catch"]( /*#__PURE__*/function () {
@@ -307,7 +335,7 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
                 }, _callee2, null, [[0, 5], [10, 15]]);
               }));
 
-              return function (_x12) {
+              return function (_x13) {
                 return _ref3.apply(this, arguments);
               };
             }());
@@ -327,7 +355,7 @@ var withdrawMatrixCreate = /*#__PURE__*/function () {
     }, _callee3);
   }));
 
-  return function withdrawMatrixCreate(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9, _x10) {
+  return function withdrawMatrixCreate(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9, _x10, _x11) {
     return _ref.apply(this, arguments);
   };
 }();

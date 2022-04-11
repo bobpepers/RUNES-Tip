@@ -156,7 +156,7 @@ var telegramBalance = /*#__PURE__*/function () {
 
                       case 45:
                         t.afterCommit(function () {
-                          _logger["default"].info("Success Balance Requested by: ");
+                          _logger["default"].info("Success Balance Requested");
                         });
 
                       case 46:

@@ -41,6 +41,10 @@ module.exports = function (sequelize, DataTypes) {
     to_from: {
       type: DataTypes.STRING,
       allowNull: true
+    },
+    memo: {
+      type: DataTypes.STRING(512),
+      allowNull: true
     }
   };
   var modelOptions = {

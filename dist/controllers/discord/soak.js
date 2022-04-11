@@ -48,7 +48,7 @@ var discordSoak = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, members, onlineMembers, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, soakRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, soakee, soakeeWallet, soaktipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, members, onlineMembers, withoutBots, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, soakRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, soakee, soakeeWallet, soaktipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -76,38 +76,39 @@ var discordSoak = /*#__PURE__*/function () {
 
                       case 9:
                         _context.next = 11;
-                        return discordClient.guilds.cache.get(message.guildId).members.fetch({
-                          withPresences: true
-                        });
-
-                      case 11:
-                        members = _context.sent;
-                        onlineMembers = members.filter(function (member) {
-                          return member.presence && member.presence.status === "online" || member.presence && member.presence.status === "idle" || member.presence && member.presence.status === "dnd";
-                        });
-                        _context.next = 15;
-                        return (0, _mapMembers.mapMembers)(message, t, filteredMessage[3], onlineMembers, setting);
-
-                      case 15:
-                        withoutBots = _context.sent;
-                        _context.next = 18;
                         return (0, _validateAmount.validateAmount)(message, t, filteredMessage[2], user, setting, filteredMessage[1].toLowerCase());
 
-                      case 18:
+                      case 11:
                         _yield$validateAmount = _context.sent;
                         _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
                         activityValiateAmount = _yield$validateAmount2[0];
                         amount = _yield$validateAmount2[1];
 
                         if (!activityValiateAmount) {
-                          _context.next = 25;
+                          _context.next = 18;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 25:
+                      case 18:
+                        _context.next = 20;
+                        return discordClient.guilds.cache.get(message.guildId).members.fetch({
+                          withPresences: true
+                        });
+
+                      case 20:
+                        members = _context.sent;
+                        onlineMembers = members.filter(function (member) {
+                          return member.presence && member.presence.status === "online" || member.presence && member.presence.status === "idle" || member.presence && member.presence.status === "dnd";
+                        });
+                        _context.next = 24;
+                        return (0, _mapMembers.mapMembers)(message, t, filteredMessage[3], onlineMembers, setting);
+
+                      case 24:
+                        withoutBots = _context.sent;
+
                         if (!(withoutBots.length < 2)) {
                           _context.next = 33;
                           break;
@@ -404,13 +405,14 @@ var discordSoak = /*#__PURE__*/function () {
 
                         _logger["default"].error("soak error: ".concat(err));
 
-                        message.channel.send({
+                        _context2.next = 12;
+                        return message.channel.send({
                           embeds: [(0, _discord.discordErrorMessage)("Soak")]
                         })["catch"](function (e) {
                           console.log(e);
                         });
 
-                      case 11:
+                      case 12:
                       case "end":
                         return _context2.stop();
                     }

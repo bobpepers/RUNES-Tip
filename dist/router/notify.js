@@ -69,94 +69,92 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, mat
                 }
 
                 console.log(res.locals.error);
-                _context.next = 37;
+                _context.next = 35;
                 break;
 
               case 4:
                 if (!(!res.locals.error && res.locals.detail && res.locals.detail.length > 0)) {
-                  _context.next = 37;
+                  _context.next = 35;
                   break;
                 }
 
-                console.log(res.locals.detail);
-                console.log('res.local.detail after walletNotify');
                 _iteratorAbruptCompletion = false;
                 _didIteratorError = false;
-                _context.prev = 9;
+                _context.prev = 7;
                 _iterator = _asyncIterator(res.locals.detail);
 
-              case 11:
-                _context.next = 13;
+              case 9:
+                _context.next = 11;
                 return _iterator.next();
 
-              case 13:
+              case 11:
                 if (!(_iteratorAbruptCompletion = !(_step = _context.sent).done)) {
-                  _context.next = 21;
+                  _context.next = 19;
                   break;
                 }
 
                 detail = _step.value;
 
                 if (!detail.amount) {
-                  _context.next = 18;
+                  _context.next = 16;
                   break;
                 }
 
-                _context.next = 18;
+                _context.next = 16;
                 return (0, _messageHandlers.incomingDepositMessageHandler)(discordClient, telegramClient, matrixClient, detail);
 
-              case 18:
+              case 16:
                 _iteratorAbruptCompletion = false;
-                _context.next = 11;
+                _context.next = 9;
+                break;
+
+              case 19:
+                _context.next = 25;
                 break;
 
               case 21:
-                _context.next = 27;
-                break;
-
-              case 23:
-                _context.prev = 23;
-                _context.t0 = _context["catch"](9);
+                _context.prev = 21;
+                _context.t0 = _context["catch"](7);
                 _didIteratorError = true;
                 _iteratorError = _context.t0;
 
-              case 27:
-                _context.prev = 27;
-                _context.prev = 28;
+              case 25:
+                _context.prev = 25;
+                _context.prev = 26;
 
                 if (!(_iteratorAbruptCompletion && _iterator["return"] != null)) {
-                  _context.next = 32;
+                  _context.next = 30;
                   break;
                 }
 
-                _context.next = 32;
+                _context.next = 30;
                 return _iterator["return"]();
 
-              case 32:
-                _context.prev = 32;
+              case 30:
+                _context.prev = 30;
 
                 if (!_didIteratorError) {
-                  _context.next = 35;
+                  _context.next = 33;
                   break;
                 }
 
                 throw _iteratorError;
 
+              case 33:
+                return _context.finish(30);
+
+              case 34:
+                return _context.finish(25);
+
               case 35:
-                return _context.finish(32);
-
-              case 36:
-                return _context.finish(27);
-
-              case 37:
                 res.sendStatus(200);
 
-              case 38:
+              case 36:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee, null, [[9, 23, 27, 37], [28,, 32, 36]]);
+        }, _callee, null, [[7, 21, 25, 35], [26,, 30, 34]]);
       }));
 
       return function (_x, _x2) {
@@ -178,12 +176,12 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, mat
                 }
 
                 console.log(res.locals.error);
-                _context2.next = 37;
+                _context2.next = 35;
                 break;
 
               case 4:
                 if (!(!res.locals.error && res.locals.detail && res.locals.detail.length > 0)) {
-                  _context2.next = 37;
+                  _context2.next = 35;
                   break;
                 }
 
@@ -198,74 +196,72 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, mat
 
               case 11:
                 if (!(_iteratorAbruptCompletion2 = !(_step2 = _context2.sent).done)) {
-                  _context2.next = 21;
+                  _context2.next = 19;
                   break;
                 }
 
                 detail = _step2.value;
-                console.log(detail);
-                console.log('detail');
 
                 if (!detail.amount) {
-                  _context2.next = 18;
+                  _context2.next = 16;
                   break;
                 }
 
-                _context2.next = 18;
+                _context2.next = 16;
                 return (0, _messageHandlers.incomingDepositMessageHandler)(discordClient, telegramClient, matrixClient, detail);
 
-              case 18:
+              case 16:
                 _iteratorAbruptCompletion2 = false;
                 _context2.next = 9;
                 break;
 
-              case 21:
-                _context2.next = 27;
+              case 19:
+                _context2.next = 25;
                 break;
 
-              case 23:
-                _context2.prev = 23;
+              case 21:
+                _context2.prev = 21;
                 _context2.t0 = _context2["catch"](7);
                 _didIteratorError2 = true;
                 _iteratorError2 = _context2.t0;
 
-              case 27:
-                _context2.prev = 27;
-                _context2.prev = 28;
+              case 25:
+                _context2.prev = 25;
+                _context2.prev = 26;
 
                 if (!(_iteratorAbruptCompletion2 && _iterator2["return"] != null)) {
-                  _context2.next = 32;
+                  _context2.next = 30;
                   break;
                 }
 
-                _context2.next = 32;
+                _context2.next = 30;
                 return _iterator2["return"]();
 
-              case 32:
-                _context2.prev = 32;
+              case 30:
+                _context2.prev = 30;
 
                 if (!_didIteratorError2) {
-                  _context2.next = 35;
+                  _context2.next = 33;
                   break;
                 }
 
                 throw _iteratorError2;
 
+              case 33:
+                return _context2.finish(30);
+
+              case 34:
+                return _context2.finish(25);
+
               case 35:
-                return _context2.finish(32);
-
-              case 36:
-                return _context2.finish(27);
-
-              case 37:
                 res.sendStatus(200);
 
-              case 38:
+              case 36:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2, null, [[7, 23, 27, 37], [28,, 32, 36]]);
+        }, _callee2, null, [[7, 21, 25, 35], [26,, 30, 34]]);
       }));
 
       return function (_x3, _x4) {

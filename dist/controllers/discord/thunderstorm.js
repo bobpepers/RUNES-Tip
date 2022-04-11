@@ -50,7 +50,7 @@ var discordThunderStorm = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, members, onlineMembers, preWithoutBots, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, thunderstormRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, thunderstormee, thunderstormeeWallet, thunderstormtipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, members, onlineMembers, preWithoutBots, withoutBots, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, thunderstormRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, thunderstormee, thunderstormeeWallet, thunderstormtipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -120,39 +120,40 @@ var discordThunderStorm = /*#__PURE__*/function () {
 
                       case 21:
                         _context.next = 23;
-                        return discordClient.guilds.cache.get(message.guildId).members.fetch({
-                          withPresences: true
-                        });
-
-                      case 23:
-                        members = _context.sent;
-                        onlineMembers = members.filter(function (member) {
-                          return member && member.presence && member.presence.status && member.presence.status === "online";
-                        });
-                        _context.next = 27;
-                        return (0, _mapMembers.mapMembers)(message, t, filteredMessage[4], onlineMembers, setting);
-
-                      case 27:
-                        preWithoutBots = _context.sent;
-                        withoutBots = _lodash["default"].sampleSize(preWithoutBots, Number(filteredMessage[2]));
-                        _context.next = 31;
                         return (0, _validateAmount.validateAmount)(message, t, filteredMessage[3], user, setting, 'thunderstorm');
 
-                      case 31:
+                      case 23:
                         _yield$validateAmount = _context.sent;
                         _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
                         activityValiateAmount = _yield$validateAmount2[0];
                         amount = _yield$validateAmount2[1];
 
                         if (!activityValiateAmount) {
-                          _context.next = 38;
+                          _context.next = 30;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 38:
+                      case 30:
+                        _context.next = 32;
+                        return discordClient.guilds.cache.get(message.guildId).members.fetch({
+                          withPresences: true
+                        });
+
+                      case 32:
+                        members = _context.sent;
+                        onlineMembers = members.filter(function (member) {
+                          return member && member.presence && member.presence.status && member.presence.status === "online";
+                        });
+                        _context.next = 36;
+                        return (0, _mapMembers.mapMembers)(message, t, filteredMessage[4], onlineMembers, setting);
+
+                      case 36:
+                        preWithoutBots = _context.sent;
+                        withoutBots = _lodash["default"].sampleSize(preWithoutBots, Number(filteredMessage[2]));
+
                         if (!(withoutBots.length < 1)) {
                           _context.next = 46;
                           break;

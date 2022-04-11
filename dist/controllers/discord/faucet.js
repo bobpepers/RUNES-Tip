@@ -146,7 +146,7 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                         username = user.ignoreMe ? "".concat(user.username) : "<@".concat(userId, ">");
                         dateFuture = lastFaucetTip && lastFaucetTip.createdAt.getTime() + 4 * 60 * 60 * 1000;
                         dateNow = new Date().getTime();
-                        distance = dateFuture && dateFuture - dateNow; // console.log(distance);
+                        distance = dateFuture && dateFuture - dateNow;
 
                         if (!(distance && distance > 0)) {
                           _context.next = 44;

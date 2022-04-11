@@ -106,7 +106,8 @@ var fetchChannels = /*#__PURE__*/function () {
 
             options = {
               order: [['id', 'DESC']],
-              limit: 300,
+              limit: req.body.limit,
+              offset: req.body.offset,
               where: channelOptions,
               include: [{
                 model: _models["default"].group,
@@ -114,14 +115,18 @@ var fetchChannels = /*#__PURE__*/function () {
               }]
             };
             _context2.next = 8;
-            return _models["default"].channel.findAll(options);
+            return _models["default"].channel.count(options);
 
           case 8:
+            res.locals.count = _context2.sent;
+            _context2.next = 11;
+            return _models["default"].channel.findAll(options);
+
+          case 11:
             res.locals.channels = _context2.sent;
-            // console.log(res.locals.channels);
             next();
 
-          case 10:
+          case 13:
           case "end":
             return _context2.stop();
         }

@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.withdrawalAcceptedMessage = exports.withdrawalAcceptedAdminMessage = exports.welcomeMessage = exports.warnDirectMessage = exports.userNotFoundMessage = exports.userListMessage = exports.unableToWithdrawToSelfMessage = exports.unableToFindUserMessage = exports.tipSuccessMessage = exports.tipSingleSuccessMessage = exports.tipMultipleSuccessMessage = exports.timeOutAllAmoutMessage = exports.telegramWithdrawalRejectedMessage = exports.telegramWithdrawalConfirmedMessage = exports.telegramUserBannedMessage = exports.telegramServerBannedMessage = exports.telegramLimitSpamMessage = exports.telegramIncomingDepositMessage = exports.telegramFeeMessage = exports.telegramDepositConfirmedMessage = exports.telegramBotMaintenanceMessage = exports.telegramBotDisabledMessage = exports.reviewMessage = exports.rainSuccessMessage = exports.rainErrorMessage = exports.priceMessage = exports.notEnoughUsers = exports.notEnoughActiveUsersMessage = exports.nodeIsOfflineMessage = exports.minimumMessage = exports.invalidTimeMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.helpMessage = exports.groupNotFoundMessage = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.faucetClaimedMessage = exports.errorMessage = exports.disallowDirectMessageMessage = exports.depositAddressNotFoundMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessage = exports.claimTooFastFaucetMessage = exports.canceledAllAmoutMessage = exports.balanceMessage = exports.afterSuccessMessage = exports.InfoMessage = void 0;
+exports.withdrawalAcceptedMessage = exports.withdrawalAcceptedAdminMessage = exports.welcomeMessage = exports.warnDirectMessage = exports.userNotFoundMessage = exports.userListMessage = exports.unableToWithdrawToSelfMessage = exports.unableToFindUserMessage = exports.tipSuccessMessage = exports.tipSingleSuccessMessage = exports.tipMultipleSuccessMessage = exports.timeOutAllAmoutMessage = exports.telegramWithdrawalRejectedMessage = exports.telegramWithdrawalConfirmedMessage = exports.telegramUserBannedMessage = exports.telegramTransactionMemoTooLongMessage = exports.telegramServerBannedMessage = exports.telegramLimitSpamMessage = exports.telegramIncomingDepositMessage = exports.telegramFeeMessage = exports.telegramDepositConfirmedMessage = exports.telegramBotMaintenanceMessage = exports.telegramBotDisabledMessage = exports.reviewMessage = exports.rainSuccessMessage = exports.rainErrorMessage = exports.priceMessage = exports.notEnoughUsers = exports.notEnoughActiveUsersMessage = exports.nodeIsOfflineMessage = exports.minimumMessage = exports.invalidTimeMessage = exports.invalidAmountMessage = exports.invalidAddressMessage = exports.insufficientBalanceMessage = exports.helpMessage = exports.groupNotFoundMessage = exports.featureDisabledServerMessage = exports.featureDisabledGlobalMessage = exports.faucetClaimedMessage = exports.errorMessage = exports.disallowDirectMessageMessage = exports.depositAddressNotFoundMessage = exports.depositAddressMessage = exports.confirmAllAmoutMessage = exports.claimTooFastFaucetMessage = exports.canceledAllAmoutMessage = exports.balanceMessage = exports.afterSuccessMessage = exports.InfoMessage = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -135,7 +135,7 @@ var withdrawalAcceptedAdminMessage = /*#__PURE__*/function () {
             amount = (updatedTrans.amount / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
             fee = (updatedTrans.feeAmount / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
             total = ((updatedTrans.amount - updatedTrans.feeAmount) / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
-            result = "<b><u>Admin withdraw message</u></b>\nWithdrawal #".concat(updatedTrans.id, " Accepted\n\namount: <b>").concat(amount, " ").concat(settings.coin.ticker, "</b>\nfee: <b>").concat(fee, " ").concat(settings.coin.ticker, "</b>\ntotal: <b>").concat(total, " ").concat(settings.coin.ticker, "</b>\n\n").concat(settings.coin.explorer, "/tx/").concat(updatedTrans.txid, "\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            result = "<b><u>Admin withdraw message</u></b>\nWithdrawal #".concat(updatedTrans.id, " Accepted\n\namount: <b>").concat(amount, " ").concat(settings.coin.ticker, "</b>\nfee: <b>").concat(fee, " ").concat(settings.coin.ticker, "</b>\ntotal: <b>").concat(total, " ").concat(settings.coin.ticker, "</b>").concat(settings.coin.setting === 'Pirate' && updatedTrans.memo && updatedTrans.memo !== '' ? "\nmemo: <b>".concat(updatedTrans.memo, "</b>") : '', "\n\n").concat(settings.coin.explorer, "/tx/").concat(updatedTrans.txid, "\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context5.abrupt("return", result);
 
           case 5:
@@ -163,7 +163,7 @@ var withdrawalAcceptedMessage = /*#__PURE__*/function () {
             amount = (updatedTrans.amount / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
             fee = (updatedTrans.feeAmount / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
             total = ((updatedTrans.amount - updatedTrans.feeAmount) / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
-            result = "<b><u>Withdraw #".concat(updatedTrans.id, "</u></b>\n\n").concat(transaction.address.wallet.user.username, "'s withdrawal has been accepted\n\namount: <b>").concat(amount, " ").concat(settings.coin.ticker, "</b>\nfee: <b>").concat(fee, " ").concat(settings.coin.ticker, "</b>\ntotal: <b>").concat(total, " ").concat(settings.coin.ticker, "</b>\n\n").concat(settings.coin.explorer, "/tx/").concat(updatedTrans.txid, "\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            result = "<b><u>Withdraw #".concat(updatedTrans.id, "</u></b>\n\n").concat(transaction.address.wallet.user.username, "'s withdrawal has been accepted\n\namount: <b>").concat(amount, " ").concat(settings.coin.ticker, "</b>\nfee: <b>").concat(fee, " ").concat(settings.coin.ticker, "</b>\ntotal: <b>").concat(total, " ").concat(settings.coin.ticker, "</b>").concat(settings.coin.setting === 'Pirate' && transaction.memo && transaction.memo !== '' ? "\nmemo: <b>".concat(transaction.memo, "</b>") : '', "\n\n").concat(settings.coin.explorer, "/tx/").concat(updatedTrans.txid, "\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context6.abrupt("return", result);
 
           case 5:
@@ -358,7 +358,7 @@ var reviewMessage = /*#__PURE__*/function () {
             _yield$getUserToMenti6 = (0, _slicedToArray2["default"])(_yield$getUserToMenti5, 2);
             userToMention = _yield$getUserToMenti6[0];
             userId = _yield$getUserToMenti6[1];
-            result = "<u><b>Withdrawal #".concat(transaction.id, "</b></u>\n\n<b><a href=\"tg://user?id=").concat(userId, "\">").concat(userToMention, "</a></b>, your withdrawal is being reviewed.\n\namount: <b>").concat(amount, " ").concat(settings.coin.ticker, "</b>\nfee: <b>").concat(fee, " ").concat(settings.coin.ticker, "</b>\ntotal: <b>").concat(total, " ").concat(settings.coin.ticker, "</b>\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            result = "<u><b>Withdrawal #".concat(transaction.id, "</b></u>\n\n<b><a href=\"tg://user?id=").concat(userId, "\">").concat(userToMention, "</a></b>, your withdrawal is being reviewed.\n\namount: <b>").concat(amount, " ").concat(settings.coin.ticker, "</b>\nfee: <b>").concat(fee, " ").concat(settings.coin.ticker, "</b>\ntotal: <b>").concat(total, " ").concat(settings.coin.ticker, "</b>").concat(settings.coin.setting === 'Pirate' && transaction.memo && transaction.memo !== '' ? "\nmemo: <b>".concat(transaction.memo, "</b>") : '', "\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context12.abrupt("return", result);
 
           case 11:
@@ -546,8 +546,8 @@ var unableToFindUserMessage = function unableToFindUserMessage() {
 
 exports.unableToFindUserMessage = unableToFindUserMessage;
 
-var unableToWithdrawToSelfMessage = /*#__PURE__*/function () {
-  var _ref17 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee17(ctx) {
+var telegramTransactionMemoTooLongMessage = /*#__PURE__*/function () {
+  var _ref17 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee17(ctx, memoLength) {
     var _yield$getUserToMenti11, _yield$getUserToMenti12, userToMention, userId, result;
 
     return _regenerator["default"].wrap(function _callee17$(_context17) {
@@ -562,7 +562,7 @@ var unableToWithdrawToSelfMessage = /*#__PURE__*/function () {
             _yield$getUserToMenti12 = (0, _slicedToArray2["default"])(_yield$getUserToMenti11, 2);
             userToMention = _yield$getUserToMenti12[0];
             userId = _yield$getUserToMenti12[1];
-            result = "<b><u>Withdraw</u></b>\n\n<b><a href=\"tg://user?id=".concat(userId, "\">").concat(userToMention, "</a></b>, unable to withdraw to your own deposit address\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            result = "<b><u>Withdraw</u></b>\n\n<b><a href=\"tg://user?id=".concat(userId, "\">").concat(userToMention, "</a></b>, Your withdrawal memo is too long!\nWe found ").concat(memoLength, " characters, maximum length is 512\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context17.abrupt("return", result);
 
           case 8:
@@ -573,15 +573,15 @@ var unableToWithdrawToSelfMessage = /*#__PURE__*/function () {
     }, _callee17);
   }));
 
-  return function unableToWithdrawToSelfMessage(_x24) {
+  return function telegramTransactionMemoTooLongMessage(_x24, _x25) {
     return _ref17.apply(this, arguments);
   };
 }();
 
-exports.unableToWithdrawToSelfMessage = unableToWithdrawToSelfMessage;
+exports.telegramTransactionMemoTooLongMessage = telegramTransactionMemoTooLongMessage;
 
-var userNotFoundMessage = /*#__PURE__*/function () {
-  var _ref18 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee18(ctx, title) {
+var unableToWithdrawToSelfMessage = /*#__PURE__*/function () {
+  var _ref18 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee18(ctx) {
     var _yield$getUserToMenti13, _yield$getUserToMenti14, userToMention, userId, result;
 
     return _regenerator["default"].wrap(function _callee18$(_context18) {
@@ -596,7 +596,7 @@ var userNotFoundMessage = /*#__PURE__*/function () {
             _yield$getUserToMenti14 = (0, _slicedToArray2["default"])(_yield$getUserToMenti13, 2);
             userToMention = _yield$getUserToMenti14[0];
             userId = _yield$getUserToMenti14[1];
-            result = "<b><u>".concat((0, _utils.capitalize)(title), "</u></b>\n\n<b><a href=\"tg://user?id=").concat(userId, "\">").concat(userToMention, "</a></b>'s wallet was not found\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            result = "<b><u>Withdraw</u></b>\n\n<b><a href=\"tg://user?id=".concat(userId, "\">").concat(userToMention, "</a></b>, unable to withdraw to your own deposit address\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context18.abrupt("return", result);
 
           case 8:
@@ -607,24 +607,33 @@ var userNotFoundMessage = /*#__PURE__*/function () {
     }, _callee18);
   }));
 
-  return function userNotFoundMessage(_x25, _x26) {
+  return function unableToWithdrawToSelfMessage(_x26) {
     return _ref18.apply(this, arguments);
   };
 }();
 
-exports.userNotFoundMessage = userNotFoundMessage;
+exports.unableToWithdrawToSelfMessage = unableToWithdrawToSelfMessage;
 
-var telegramServerBannedMessage = /*#__PURE__*/function () {
-  var _ref19 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee19(server) {
-    var result;
+var userNotFoundMessage = /*#__PURE__*/function () {
+  var _ref19 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee19(ctx, title) {
+    var _yield$getUserToMenti15, _yield$getUserToMenti16, userToMention, userId, result;
+
     return _regenerator["default"].wrap(function _callee19$(_context19) {
       while (1) {
         switch (_context19.prev = _context19.next) {
           case 0:
-            result = "\uD83D\uDEAB     <b><u>Server Banned</u></b>     \uD83D\uDEAB\n\nReason:\n<b>".concat(server.banMessage, "</b>\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
-            return _context19.abrupt("return", result);
+            _context19.next = 2;
+            return (0, _userToMention.getUserToMentionCtx)(ctx);
 
           case 2:
+            _yield$getUserToMenti15 = _context19.sent;
+            _yield$getUserToMenti16 = (0, _slicedToArray2["default"])(_yield$getUserToMenti15, 2);
+            userToMention = _yield$getUserToMenti16[0];
+            userId = _yield$getUserToMenti16[1];
+            result = "<b><u>".concat((0, _utils.capitalize)(title), "</u></b>\n\n<b><a href=\"tg://user?id=").concat(userId, "\">").concat(userToMention, "</a></b>'s wallet was not found\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            return _context19.abrupt("return", result);
+
+          case 8:
           case "end":
             return _context19.stop();
         }
@@ -632,33 +641,24 @@ var telegramServerBannedMessage = /*#__PURE__*/function () {
     }, _callee19);
   }));
 
-  return function telegramServerBannedMessage(_x27) {
+  return function userNotFoundMessage(_x27, _x28) {
     return _ref19.apply(this, arguments);
   };
 }();
 
-exports.telegramServerBannedMessage = telegramServerBannedMessage;
+exports.userNotFoundMessage = userNotFoundMessage;
 
-var telegramUserBannedMessage = /*#__PURE__*/function () {
-  var _ref20 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee20(user) {
-    var _yield$getUserToMenti15, _yield$getUserToMenti16, userToMention, userId, result;
-
+var telegramServerBannedMessage = /*#__PURE__*/function () {
+  var _ref20 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee20(server) {
+    var result;
     return _regenerator["default"].wrap(function _callee20$(_context20) {
       while (1) {
         switch (_context20.prev = _context20.next) {
           case 0:
-            _context20.next = 2;
-            return (0, _userToMention.getUserToMentionFromDatabaseRecord)(user);
-
-          case 2:
-            _yield$getUserToMenti15 = _context20.sent;
-            _yield$getUserToMenti16 = (0, _slicedToArray2["default"])(_yield$getUserToMenti15, 2);
-            userToMention = _yield$getUserToMenti16[0];
-            userId = _yield$getUserToMenti16[1];
-            result = "\uD83D\uDEAB     <b><u><a href=\"tg://user?id=".concat(userId, "\">").concat(userToMention, " Banned</a></u></b>     \uD83D\uDEAB\n\nReason:\n<b>").concat(user.banMessage, "</b>\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            result = "\uD83D\uDEAB     <b><u>Server Banned</u></b>     \uD83D\uDEAB\n\nReason:\n<b>".concat(server.banMessage, "</b>\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context20.abrupt("return", result);
 
-          case 8:
+          case 2:
           case "end":
             return _context20.stop();
         }
@@ -666,8 +666,42 @@ var telegramUserBannedMessage = /*#__PURE__*/function () {
     }, _callee20);
   }));
 
-  return function telegramUserBannedMessage(_x28) {
+  return function telegramServerBannedMessage(_x29) {
     return _ref20.apply(this, arguments);
+  };
+}();
+
+exports.telegramServerBannedMessage = telegramServerBannedMessage;
+
+var telegramUserBannedMessage = /*#__PURE__*/function () {
+  var _ref21 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee21(user) {
+    var _yield$getUserToMenti17, _yield$getUserToMenti18, userToMention, userId, result;
+
+    return _regenerator["default"].wrap(function _callee21$(_context21) {
+      while (1) {
+        switch (_context21.prev = _context21.next) {
+          case 0:
+            _context21.next = 2;
+            return (0, _userToMention.getUserToMentionFromDatabaseRecord)(user);
+
+          case 2:
+            _yield$getUserToMenti17 = _context21.sent;
+            _yield$getUserToMenti18 = (0, _slicedToArray2["default"])(_yield$getUserToMenti17, 2);
+            userToMention = _yield$getUserToMenti18[0];
+            userId = _yield$getUserToMenti18[1];
+            result = "\uD83D\uDEAB     <b><u><a href=\"tg://user?id=".concat(userId, "\">").concat(userToMention, " Banned</a></u></b>     \uD83D\uDEAB\n\nReason:\n<b>").concat(user.banMessage, "</b>\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            return _context21.abrupt("return", result);
+
+          case 8:
+          case "end":
+            return _context21.stop();
+        }
+      }
+    }, _callee21);
+  }));
+
+  return function telegramUserBannedMessage(_x30) {
+    return _ref21.apply(this, arguments);
   };
 }();
 
@@ -695,41 +729,7 @@ var invalidAmountMessage = function invalidAmountMessage(title) {
 exports.invalidAmountMessage = invalidAmountMessage;
 
 var telegramLimitSpamMessage = /*#__PURE__*/function () {
-  var _ref21 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee21(ctx, myFunctionName) {
-    var _yield$getUserToMenti17, _yield$getUserToMenti18, userToMention, userId, result;
-
-    return _regenerator["default"].wrap(function _callee21$(_context21) {
-      while (1) {
-        switch (_context21.prev = _context21.next) {
-          case 0:
-            _context21.next = 2;
-            return (0, _userToMention.getUserToMentionCtx)(ctx);
-
-          case 2:
-            _yield$getUserToMenti17 = _context21.sent;
-            _yield$getUserToMenti18 = (0, _slicedToArray2["default"])(_yield$getUserToMenti17, 2);
-            userToMention = _yield$getUserToMenti18[0];
-            userId = _yield$getUserToMenti18[1];
-            result = "<b><u>".concat(myFunctionName, "</u></b>\n\n\uD83D\uDEAB Slow down! \uD83D\uDEAB\n\n<a href=\"tg://user?id=").concat(userId, "\">").concat(userToMention, "</a>, you're using this command too fast, wait a while before using it again.\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
-            return _context21.abrupt("return", result);
-
-          case 8:
-          case "end":
-            return _context21.stop();
-        }
-      }
-    }, _callee21);
-  }));
-
-  return function telegramLimitSpamMessage(_x29, _x30) {
-    return _ref21.apply(this, arguments);
-  };
-}();
-
-exports.telegramLimitSpamMessage = telegramLimitSpamMessage;
-
-var depositAddressMessage = /*#__PURE__*/function () {
-  var _ref22 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee22(user) {
+  var _ref22 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee22(ctx, myFunctionName) {
     var _yield$getUserToMenti19, _yield$getUserToMenti20, userToMention, userId, result;
 
     return _regenerator["default"].wrap(function _callee22$(_context22) {
@@ -737,14 +737,14 @@ var depositAddressMessage = /*#__PURE__*/function () {
         switch (_context22.prev = _context22.next) {
           case 0:
             _context22.next = 2;
-            return (0, _userToMention.getUserToMentionFromDatabaseRecord)(user);
+            return (0, _userToMention.getUserToMentionCtx)(ctx);
 
           case 2:
             _yield$getUserToMenti19 = _context22.sent;
             _yield$getUserToMenti20 = (0, _slicedToArray2["default"])(_yield$getUserToMenti19, 2);
             userToMention = _yield$getUserToMenti20[0];
             userId = _yield$getUserToMenti20[1];
-            result = "<b><u>Deposit Address</u></b>\n\n<a href=\"tg://user?id=".concat(userId, "\">").concat(userToMention, "</a>'s deposit address:\n<b>").concat(user.wallet.addresses[0].address, "</b>\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            result = "<b><u>".concat(myFunctionName, "</u></b>\n\n\uD83D\uDEAB Slow down! \uD83D\uDEAB\n\n<a href=\"tg://user?id=").concat(userId, "\">").concat(userToMention, "</a>, you're using this command too fast, wait a while before using it again.\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context22.abrupt("return", result);
 
           case 8:
@@ -755,15 +755,49 @@ var depositAddressMessage = /*#__PURE__*/function () {
     }, _callee22);
   }));
 
-  return function depositAddressMessage(_x31) {
+  return function telegramLimitSpamMessage(_x31, _x32) {
     return _ref22.apply(this, arguments);
+  };
+}();
+
+exports.telegramLimitSpamMessage = telegramLimitSpamMessage;
+
+var depositAddressMessage = /*#__PURE__*/function () {
+  var _ref23 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee23(user) {
+    var _yield$getUserToMenti21, _yield$getUserToMenti22, userToMention, userId, result;
+
+    return _regenerator["default"].wrap(function _callee23$(_context23) {
+      while (1) {
+        switch (_context23.prev = _context23.next) {
+          case 0:
+            _context23.next = 2;
+            return (0, _userToMention.getUserToMentionFromDatabaseRecord)(user);
+
+          case 2:
+            _yield$getUserToMenti21 = _context23.sent;
+            _yield$getUserToMenti22 = (0, _slicedToArray2["default"])(_yield$getUserToMenti21, 2);
+            userToMention = _yield$getUserToMenti22[0];
+            userId = _yield$getUserToMenti22[1];
+            result = "<b><u>Deposit Address</u></b>\n\n<a href=\"tg://user?id=".concat(userId, "\">").concat(userToMention, "</a>'s deposit address:\n<b>").concat(user.wallet.addresses[0].address, "</b>\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            return _context23.abrupt("return", result);
+
+          case 8:
+          case "end":
+            return _context23.stop();
+        }
+      }
+    }, _callee23);
+  }));
+
+  return function depositAddressMessage(_x33) {
+    return _ref23.apply(this, arguments);
   };
 }();
 
 exports.depositAddressMessage = depositAddressMessage;
 
 var helpMessage = function helpMessage(withdraw) {
-  var result = "<b>Tipbot Help</b>\n\n<code>".concat(settings.bot.command.telegram, "</code>\nDisplay this message\n\n<code>").concat(settings.bot.command.telegram, " help</code>\n/help\nDisplay this message\n\n<code>").concat(settings.bot.command.telegram, " price</code>\n/price\nDisplay current ").concat(settings.coin.ticker, " price\n\n<code>").concat(settings.bot.command.telegram, " info</code>\n/info\nDisplays coin info\n\n<code>").concat(settings.bot.command.telegram, " balance</code>\n/balance\nDisplay wallet balance\n\n<code>").concat(settings.bot.command.telegram, " deposit</code>\n/deposit\nDisplays your deposit address\n\n<code>").concat(settings.bot.command.telegram, " faucet</code>\n/faucet\nClaim faucet\n\n<code>").concat(settings.bot.command.telegram, " fees</code>\nDisplays fee schedule\n\n<code>").concat(settings.bot.command.telegram, " tip &lt;@user&gt; &lt;amount&gt;</code>\nTips the @ mentioned user with the desired amount, e.g.\nexample: <code>").concat(settings.bot.command.telegram, " tip @Bagosan 1.00</code>\n\n<code>").concat(settings.bot.command.discord, " &lt;@user&gt; &lt;@user&gt; &lt;@user&gt; &lt;amount|all&gt; [split|each]</code>\nTips the @ mentioned users with the desired amount\nexample: <code>").concat(settings.bot.command.discord, " @test123456 @test123457 1.00 each</code>\n\n<code>").concat(settings.bot.command.discord, " rain &lt;amount|all&gt;</code>\nRains the desired amount onto all recently online users\nexample: <code>").concat(settings.bot.command.discord, " rain 10</code>\n\n<code>").concat(settings.bot.command.telegram, " flood &lt;amount|all&gt;</code>\nFloods the desired amount onto all users (including offline users)\nexample: <code>").concat(settings.bot.command.telegram, " flood 5.00</code>\n\n<code>").concat(settings.bot.command.telegram, " sleet &lt;amount&gt;</code>\nSleets the desired amount onto all active users (default time is 15min), e.g.\n<code>").concat(settings.bot.command.telegram, " sleet 1.00</code>\n\n<code>").concat(settings.bot.command.telegram, " withdraw &lt;address&gt; &lt;amount&gt;</code>\nWithdraws the entered amount to a ").concat(settings.coin.ticker, " address of your choice, e.g.\n<code>").concat(settings.bot.command.telegram, " withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20</code>\nNote: Minimal amount to withdraw: ").concat(withdraw.min / 1e8, " ").concat(settings.coin.ticker, ". A withdrawal fee of ").concat(withdraw.fee / 1e2, "% ").concat(settings.coin.ticker, " will be automatically deducted from the amount. portion of the fee is donated to common faucet pot.\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+  var result = "<b>Tipbot Help</b>\n\n<code>".concat(settings.bot.command.telegram, "</code>\nDisplay this message\n\n<code>").concat(settings.bot.command.telegram, " help</code>\n/help\nDisplay this message\n\n<code>").concat(settings.bot.command.telegram, " price</code>\n/price\nDisplay current ").concat(settings.coin.ticker, " price\n\n<code>").concat(settings.bot.command.telegram, " info</code>\n/info\nDisplays coin info\n\n<code>").concat(settings.bot.command.telegram, " balance</code>\n/balance\nDisplay wallet balance\n\n<code>").concat(settings.bot.command.telegram, " deposit</code>\n/deposit\nDisplays your deposit address\n\n<code>").concat(settings.bot.command.telegram, " faucet</code>\n/faucet\nClaim faucet\n\n<code>").concat(settings.bot.command.telegram, " fees</code>\nDisplays fee schedule\n\n<code>").concat(settings.bot.command.telegram, " tip &lt;@user&gt; &lt;amount&gt;</code>\nTips the @ mentioned user with the desired amount\nexample: <code>").concat(settings.bot.command.telegram, " tip @Bagosan 1.00</code>\n\n<code>").concat(settings.bot.command.telegram, " &lt;@user&gt; &lt;@user&gt; &lt;@user&gt; &lt;amount|all&gt; [split|each]</code>\nTips the @ mentioned users with the desired amount\nexample: <code>").concat(settings.bot.command.telegram, " @test123456 @test123457 1.00 each</code>\n\n<code>").concat(settings.bot.command.discord, " rain &lt;amount|all&gt;</code>\nRains the desired amount onto all recently online users\nexample: <code>").concat(settings.bot.command.telegram, " rain 10</code>\n\n<code>").concat(settings.bot.command.telegram, " flood &lt;amount|all&gt;</code>\nFloods the desired amount onto all users (including offline users)\nexample: <code>").concat(settings.bot.command.telegram, " flood 5.00</code>\n\n<code>").concat(settings.bot.command.telegram, " sleet &lt;amount&gt;</code>\nSleets the desired amount onto all active users (default time is 15min)\nexample:\n<code>").concat(settings.bot.command.telegram, " sleet 1.00</code>\n\n<code>").concat(settings.bot.command.telegram, " withdraw &lt;address&gt; &lt;amount&gt;").concat(settings.coin.setting === 'Pirate' ? ' [memo]' : '', "</code>\nWithdraws the entered amount to a ").concat(settings.coin.ticker, " address of your choice\nexample:\n<code>").concat(settings.bot.command.telegram, " withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20</code>\n").concat(settings.coin.setting === 'Pirate' ? "<code>".concat(settings.bot.command.telegram, " withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20 lorem ipsum memo</code>") : '', "\nNote: Minimal amount to withdraw: ").concat(withdraw.min / 1e8, " ").concat(settings.coin.ticker, ". A withdrawal fee of ").concat(withdraw.fee / 1e2, "% ").concat(settings.coin.ticker, " will be automatically deducted from the amount. portion of the fee is donated to common faucet pot.\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
   return result;
 }; // ${settings.coin.name === 'Runebase'
 //     && `${settings.bot.command.telegram} referral
@@ -777,8 +811,8 @@ var helpMessage = function helpMessage(withdraw) {
 
 exports.helpMessage = helpMessage;
 
-var InfoMessage = function InfoMessage(blockHeight, priceInfo) {
-  var result = "<b><u>Coin Info</u></b>\n".concat(settings.coin.description, "\n\n<b><u>Coin Name</u></b>\n").concat(settings.coin.name, "\n\n<b><u>Coin Ticker</u></b>\n").concat(settings.coin.ticker, "\n\n<b><u>Current block height</u></b>\n").concat(blockHeight, "\n\n<b><u>Website</u></b>\n").concat(settings.coin.website, "\n\n<b><u>Github</u></b>\n").concat(settings.coin.github, "\n\n<b><u>Block Explorer</u></b>\n").concat(settings.coin.explorer, "\n\n<b><u>Discord Server</u></b>\n").concat(settings.coin.discord, "\n\n<b><u>Telegram Group</u></b>\n").concat(settings.coin.telegram, "\n\n<b><u>Exchanges</u></b>\n").concat(settings.coin.exchanges.join('\n'), "\n\n<b><u>Current price</u></b>\n$").concat(priceInfo.price, " (source: coinpaprika)\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+var InfoMessage = function InfoMessage(blockHeight, priceInfo, walletVersion) {
+  var result = "<b><u>Coin Info</u></b>\n".concat(settings.coin.description, "\n\n<b><u>Coin Name</u></b>\n").concat(settings.coin.name, "\n\n<b><u>Coin Ticker</u></b>\n").concat(settings.coin.ticker, "\n\n<b><u>Current block height</u></b>\n").concat(blockHeight, "\n\n<b><u>Wallet version</u></b>\n").concat(walletVersion, "\n\n<b><u>Website</u></b>\n").concat(settings.coin.website, "\n\n<b><u>Github</u></b>\n").concat(settings.coin.github, "\n\n<b><u>Block Explorer</u></b>\n").concat(settings.coin.explorer, "\n\n<b><u>Discord Server</u></b>\n").concat(settings.coin.discord, "\n\n<b><u>Telegram Group</u></b>\n").concat(settings.coin.telegram, "\n\n<b><u>Exchanges</u></b>\n").concat(settings.coin.exchanges.join('\n'), "\n\n<b><u>Current price</u></b>\n$").concat(priceInfo.price, " (source: coinpaprika)\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
   return result;
 };
 
@@ -806,40 +840,6 @@ var canceledAllAmoutMessage = function canceledAllAmoutMessage(ctx, operationNam
 exports.canceledAllAmoutMessage = canceledAllAmoutMessage;
 
 var welcomeMessage = /*#__PURE__*/function () {
-  var _ref23 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee23(user) {
-    var _yield$getUserToMenti21, _yield$getUserToMenti22, userToMention, userId, result;
-
-    return _regenerator["default"].wrap(function _callee23$(_context23) {
-      while (1) {
-        switch (_context23.prev = _context23.next) {
-          case 0:
-            _context23.next = 2;
-            return (0, _userToMention.getUserToMentionFromDatabaseRecord)(user);
-
-          case 2:
-            _yield$getUserToMenti21 = _context23.sent;
-            _yield$getUserToMenti22 = (0, _slicedToArray2["default"])(_yield$getUserToMenti21, 2);
-            userToMention = _yield$getUserToMenti22[0];
-            userId = _yield$getUserToMenti22[1];
-            result = "Welcome <a href=\"tg://user?id=".concat(userId, "\">").concat(userToMention, "</a>, we created a wallet for you.\nType \"").concat(settings.bot.command.telegram, " help\" for usage info\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
-            return _context23.abrupt("return", result);
-
-          case 8:
-          case "end":
-            return _context23.stop();
-        }
-      }
-    }, _callee23);
-  }));
-
-  return function welcomeMessage(_x32) {
-    return _ref23.apply(this, arguments);
-  };
-}();
-
-exports.welcomeMessage = welcomeMessage;
-
-var warnDirectMessage = /*#__PURE__*/function () {
   var _ref24 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee24(user) {
     var _yield$getUserToMenti23, _yield$getUserToMenti24, userToMention, userId, result;
 
@@ -855,7 +855,7 @@ var warnDirectMessage = /*#__PURE__*/function () {
             _yield$getUserToMenti24 = (0, _slicedToArray2["default"])(_yield$getUserToMenti23, 2);
             userToMention = _yield$getUserToMenti24[0];
             userId = _yield$getUserToMenti24[1];
-            result = "\n<b><a href=\"tg://user?id=".concat(userId, "\">").concat(userToMention, "</a>, i've sent you a direct message.</b>\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            result = "Welcome <a href=\"tg://user?id=".concat(userId, "\">").concat(userToMention, "</a>, we created a wallet for you.\nType \"").concat(settings.bot.command.telegram, " help\" for usage info\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context24.abrupt("return", result);
 
           case 8:
@@ -866,14 +866,14 @@ var warnDirectMessage = /*#__PURE__*/function () {
     }, _callee24);
   }));
 
-  return function warnDirectMessage(_x33) {
+  return function welcomeMessage(_x34) {
     return _ref24.apply(this, arguments);
   };
 }();
 
-exports.warnDirectMessage = warnDirectMessage;
+exports.welcomeMessage = welcomeMessage;
 
-var disallowDirectMessageMessage = /*#__PURE__*/function () {
+var warnDirectMessage = /*#__PURE__*/function () {
   var _ref25 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee25(user) {
     var _yield$getUserToMenti25, _yield$getUserToMenti26, userToMention, userId, result;
 
@@ -889,7 +889,7 @@ var disallowDirectMessageMessage = /*#__PURE__*/function () {
             _yield$getUserToMenti26 = (0, _slicedToArray2["default"])(_yield$getUserToMenti25, 2);
             userToMention = _yield$getUserToMenti26[0];
             userId = _yield$getUserToMenti26[1];
-            result = "<a href=\"tg://user?id=".concat(userId, "\">").concat(userToMention, "</a>, this function is not allowed in direct message.\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            result = "\n<b><a href=\"tg://user?id=".concat(userId, "\">").concat(userToMention, "</a>, i've sent you a direct message.</b>\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context25.abrupt("return", result);
 
           case 8:
@@ -900,28 +900,33 @@ var disallowDirectMessageMessage = /*#__PURE__*/function () {
     }, _callee25);
   }));
 
-  return function disallowDirectMessageMessage(_x34) {
+  return function warnDirectMessage(_x35) {
     return _ref25.apply(this, arguments);
   };
 }();
 
-exports.disallowDirectMessageMessage = disallowDirectMessageMessage;
+exports.warnDirectMessage = warnDirectMessage;
 
-var priceMessage = /*#__PURE__*/function () {
-  var _ref26 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee26(priceRecord) {
-    var replyString, result;
+var disallowDirectMessageMessage = /*#__PURE__*/function () {
+  var _ref26 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee26(user) {
+    var _yield$getUserToMenti27, _yield$getUserToMenti28, userToMention, userId, result;
+
     return _regenerator["default"].wrap(function _callee26$(_context26) {
       while (1) {
         switch (_context26.prev = _context26.next) {
           case 0:
-            replyString = "<b><u>".concat(settings.coin.ticker, " PRICE</u></b>\n");
-            replyString += priceRecord.map(function (a) {
-              return "".concat(a.iso, ": ").concat(a.price);
-            }).join('\n');
-            result = "".concat(replyString, "\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            _context26.next = 2;
+            return (0, _userToMention.getUserToMentionFromDatabaseRecord)(user);
+
+          case 2:
+            _yield$getUserToMenti27 = _context26.sent;
+            _yield$getUserToMenti28 = (0, _slicedToArray2["default"])(_yield$getUserToMenti27, 2);
+            userToMention = _yield$getUserToMenti28[0];
+            userId = _yield$getUserToMenti28[1];
+            result = "<a href=\"tg://user?id=".concat(userId, "\">").concat(userToMention, "</a>, this function is not allowed in direct message.\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context26.abrupt("return", result);
 
-          case 4:
+          case 8:
           case "end":
             return _context26.stop();
         }
@@ -929,24 +934,28 @@ var priceMessage = /*#__PURE__*/function () {
     }, _callee26);
   }));
 
-  return function priceMessage(_x35) {
+  return function disallowDirectMessageMessage(_x36) {
     return _ref26.apply(this, arguments);
   };
 }();
 
-exports.priceMessage = priceMessage;
+exports.disallowDirectMessageMessage = disallowDirectMessageMessage;
 
-var errorMessage = /*#__PURE__*/function () {
-  var _ref27 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee27(title) {
-    var result;
+var priceMessage = /*#__PURE__*/function () {
+  var _ref27 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee27(priceRecord) {
+    var replyString, result;
     return _regenerator["default"].wrap(function _callee27$(_context27) {
       while (1) {
         switch (_context27.prev = _context27.next) {
           case 0:
-            result = "<u><b>".concat(title, "</b></u>\n\n<b>Something went wrong.</b>\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            replyString = "<b><u>".concat(settings.coin.ticker, " PRICE</u></b>\n");
+            replyString += priceRecord.map(function (a) {
+              return "".concat(a.iso, ": ").concat(a.price);
+            }).join('\n');
+            result = "".concat(replyString, "\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context27.abrupt("return", result);
 
-          case 2:
+          case 4:
           case "end":
             return _context27.stop();
         }
@@ -954,8 +963,33 @@ var errorMessage = /*#__PURE__*/function () {
     }, _callee27);
   }));
 
-  return function errorMessage(_x36) {
+  return function priceMessage(_x37) {
     return _ref27.apply(this, arguments);
+  };
+}();
+
+exports.priceMessage = priceMessage;
+
+var errorMessage = /*#__PURE__*/function () {
+  var _ref28 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee28(title) {
+    var result;
+    return _regenerator["default"].wrap(function _callee28$(_context28) {
+      while (1) {
+        switch (_context28.prev = _context28.next) {
+          case 0:
+            result = "<u><b>".concat(title, "</b></u>\n\n<b>Something went wrong.</b>\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            return _context28.abrupt("return", result);
+
+          case 2:
+          case "end":
+            return _context28.stop();
+        }
+      }
+    }, _callee28);
+  }));
+
+  return function errorMessage(_x38) {
+    return _ref28.apply(this, arguments);
   };
 }();
 
@@ -969,50 +1003,25 @@ var notEnoughUsers = function notEnoughUsers(title) {
 exports.notEnoughUsers = notEnoughUsers;
 
 var invalidTimeMessage = /*#__PURE__*/function () {
-  var _ref28 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee28(ctx, title) {
-    var _yield$getUserToMenti27, _yield$getUserToMenti28, userToMention, userId, result;
+  var _ref29 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee29(ctx, title) {
+    var _yield$getUserToMenti29, _yield$getUserToMenti30, userToMention, userId, result;
 
-    return _regenerator["default"].wrap(function _callee28$(_context28) {
-      while (1) {
-        switch (_context28.prev = _context28.next) {
-          case 0:
-            _context28.next = 2;
-            return (0, _userToMention.getUserToMentionCtx)(ctx);
-
-          case 2:
-            _yield$getUserToMenti27 = _context28.sent;
-            _yield$getUserToMenti28 = (0, _slicedToArray2["default"])(_yield$getUserToMenti27, 2);
-            userToMention = _yield$getUserToMenti28[0];
-            userId = _yield$getUserToMenti28[1];
-            result = "<u><b>".concat(title, "</b></u>\n\n<a href=\"tg://user?id=").concat(userId, "\">").concat(userToMention, "</a>, Invalid time.\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
-            return _context28.abrupt("return", result);
-
-          case 8:
-          case "end":
-            return _context28.stop();
-        }
-      }
-    }, _callee28);
-  }));
-
-  return function invalidTimeMessage(_x37, _x38) {
-    return _ref28.apply(this, arguments);
-  };
-}();
-
-exports.invalidTimeMessage = invalidTimeMessage;
-
-var userListMessage = /*#__PURE__*/function () {
-  var _ref29 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee29(list) {
-    var result;
     return _regenerator["default"].wrap(function _callee29$(_context29) {
       while (1) {
         switch (_context29.prev = _context29.next) {
           case 0:
-            result = "<b>".concat(list, "</b>");
-            return _context29.abrupt("return", result);
+            _context29.next = 2;
+            return (0, _userToMention.getUserToMentionCtx)(ctx);
 
           case 2:
+            _yield$getUserToMenti29 = _context29.sent;
+            _yield$getUserToMenti30 = (0, _slicedToArray2["default"])(_yield$getUserToMenti29, 2);
+            userToMention = _yield$getUserToMenti30[0];
+            userId = _yield$getUserToMenti30[1];
+            result = "<u><b>".concat(title, "</b></u>\n\n<a href=\"tg://user?id=").concat(userId, "\">").concat(userToMention, "</a>, Invalid time.\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            return _context29.abrupt("return", result);
+
+          case 8:
           case "end":
             return _context29.stop();
         }
@@ -1020,33 +1029,24 @@ var userListMessage = /*#__PURE__*/function () {
     }, _callee29);
   }));
 
-  return function userListMessage(_x39) {
+  return function invalidTimeMessage(_x39, _x40) {
     return _ref29.apply(this, arguments);
   };
 }();
 
-exports.userListMessage = userListMessage;
+exports.invalidTimeMessage = invalidTimeMessage;
 
-var tipSingleSuccessMessage = /*#__PURE__*/function () {
-  var _ref30 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee30(ctx, id, listOfUsersRained, amount) {
-    var _yield$getUserToMenti29, _yield$getUserToMenti30, userToMention, userId, result;
-
+var userListMessage = /*#__PURE__*/function () {
+  var _ref30 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee30(list) {
+    var result;
     return _regenerator["default"].wrap(function _callee30$(_context30) {
       while (1) {
         switch (_context30.prev = _context30.next) {
           case 0:
-            _context30.next = 2;
-            return (0, _userToMention.getUserToMentionCtx)(ctx);
-
-          case 2:
-            _yield$getUserToMenti29 = _context30.sent;
-            _yield$getUserToMenti30 = (0, _slicedToArray2["default"])(_yield$getUserToMenti29, 2);
-            userToMention = _yield$getUserToMenti30[0];
-            userId = _yield$getUserToMenti30[1];
-            result = "<u><b>Tip #".concat(id, "</b></u>\n\n<a href=\"tg://user?id=").concat(userId, "\">").concat(userToMention, "</a> tipped <b>").concat(amount / 1e8, " ").concat(settings.coin.ticker, "</b> to ").concat(listOfUsersRained[0], "\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            result = "<b>".concat(list, "</b>");
             return _context30.abrupt("return", result);
 
-          case 8:
+          case 2:
           case "end":
             return _context30.stop();
         }
@@ -1054,15 +1054,15 @@ var tipSingleSuccessMessage = /*#__PURE__*/function () {
     }, _callee30);
   }));
 
-  return function tipSingleSuccessMessage(_x40, _x41, _x42, _x43) {
+  return function userListMessage(_x41) {
     return _ref30.apply(this, arguments);
   };
 }();
 
-exports.tipSingleSuccessMessage = tipSingleSuccessMessage;
+exports.userListMessage = userListMessage;
 
-var tipMultipleSuccessMessage = /*#__PURE__*/function () {
-  var _ref31 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee31(ctx, id, listOfUsersRained, amount, type) {
+var tipSingleSuccessMessage = /*#__PURE__*/function () {
+  var _ref31 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee31(ctx, id, listOfUsersRained, amount) {
     var _yield$getUserToMenti31, _yield$getUserToMenti32, userToMention, userId, result;
 
     return _regenerator["default"].wrap(function _callee31$(_context31) {
@@ -1077,7 +1077,7 @@ var tipMultipleSuccessMessage = /*#__PURE__*/function () {
             _yield$getUserToMenti32 = (0, _slicedToArray2["default"])(_yield$getUserToMenti31, 2);
             userToMention = _yield$getUserToMenti32[0];
             userId = _yield$getUserToMenti32[1];
-            result = "<u><b>Tip #".concat(id, "</b></u>\n\n<a href=\"tg://user?id=").concat(userId, "\">").concat(userToMention, "</a> tipped <b>").concat(amount * listOfUsersRained.length / 1e8, " ").concat(settings.coin.ticker, "</b> to ").concat(listOfUsersRained.length, " users\n\nType: <b>").concat((0, _utils.capitalize)(type), "</b>\n\n\uD83D\uDCB8 <b>").concat(amount / 1e8, " ").concat(settings.coin.ticker, "</b> each \uD83D\uDCB8\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            result = "<u><b>Tip #".concat(id, "</b></u>\n\n<a href=\"tg://user?id=").concat(userId, "\">").concat(userToMention, "</a> tipped <b>").concat(amount / 1e8, " ").concat(settings.coin.ticker, "</b> to ").concat(listOfUsersRained[0], "\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context31.abrupt("return", result);
 
           case 8:
@@ -1088,15 +1088,15 @@ var tipMultipleSuccessMessage = /*#__PURE__*/function () {
     }, _callee31);
   }));
 
-  return function tipMultipleSuccessMessage(_x44, _x45, _x46, _x47, _x48) {
+  return function tipSingleSuccessMessage(_x42, _x43, _x44, _x45) {
     return _ref31.apply(this, arguments);
   };
 }();
 
-exports.tipMultipleSuccessMessage = tipMultipleSuccessMessage;
+exports.tipSingleSuccessMessage = tipSingleSuccessMessage;
 
-var afterSuccessMessage = /*#__PURE__*/function () {
-  var _ref32 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee32(ctx, id, amount, userLength, amountPerUser, type, typeH) {
+var tipMultipleSuccessMessage = /*#__PURE__*/function () {
+  var _ref32 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee32(ctx, id, listOfUsersRained, amount, type) {
     var _yield$getUserToMenti33, _yield$getUserToMenti34, userToMention, userId, result;
 
     return _regenerator["default"].wrap(function _callee32$(_context32) {
@@ -1111,7 +1111,7 @@ var afterSuccessMessage = /*#__PURE__*/function () {
             _yield$getUserToMenti34 = (0, _slicedToArray2["default"])(_yield$getUserToMenti33, 2);
             userToMention = _yield$getUserToMenti34[0];
             userId = _yield$getUserToMenti34[1];
-            result = "<b><u>".concat(type, " #").concat(id, "</u></b>\n\n<b><a href=\"tg://user?id=").concat(userId, "\">").concat(userToMention, "</a></b> ").concat(typeH, " <u><b>").concat(amount / 1e8, " ").concat(settings.coin.ticker, "</b></u> on ").concat(userLength, " users\n\uD83D\uDCB8 <u><b>").concat(amountPerUser / 1e8, " ").concat(settings.coin.ticker, "</b></u> each \uD83D\uDCB8\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            result = "<u><b>Tip #".concat(id, "</b></u>\n\n<a href=\"tg://user?id=").concat(userId, "\">").concat(userToMention, "</a> tipped <b>").concat(amount * listOfUsersRained.length / 1e8, " ").concat(settings.coin.ticker, "</b> to ").concat(listOfUsersRained.length, " users\n\nType: <b>").concat((0, _utils.capitalize)(type), "</b>\n\n\uD83D\uDCB8 <b>").concat(amount / 1e8, " ").concat(settings.coin.ticker, "</b> each \uD83D\uDCB8\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context32.abrupt("return", result);
 
           case 8:
@@ -1122,8 +1122,42 @@ var afterSuccessMessage = /*#__PURE__*/function () {
     }, _callee32);
   }));
 
-  return function afterSuccessMessage(_x49, _x50, _x51, _x52, _x53, _x54, _x55) {
+  return function tipMultipleSuccessMessage(_x46, _x47, _x48, _x49, _x50) {
     return _ref32.apply(this, arguments);
+  };
+}();
+
+exports.tipMultipleSuccessMessage = tipMultipleSuccessMessage;
+
+var afterSuccessMessage = /*#__PURE__*/function () {
+  var _ref33 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee33(ctx, id, amount, userLength, amountPerUser, type, typeH) {
+    var _yield$getUserToMenti35, _yield$getUserToMenti36, userToMention, userId, result;
+
+    return _regenerator["default"].wrap(function _callee33$(_context33) {
+      while (1) {
+        switch (_context33.prev = _context33.next) {
+          case 0:
+            _context33.next = 2;
+            return (0, _userToMention.getUserToMentionCtx)(ctx);
+
+          case 2:
+            _yield$getUserToMenti35 = _context33.sent;
+            _yield$getUserToMenti36 = (0, _slicedToArray2["default"])(_yield$getUserToMenti35, 2);
+            userToMention = _yield$getUserToMenti36[0];
+            userId = _yield$getUserToMenti36[1];
+            result = "<b><u>".concat(type, " #").concat(id, "</u></b>\n\n<b><a href=\"tg://user?id=").concat(userId, "\">").concat(userToMention, "</a></b> ").concat(typeH, " <u><b>").concat(amount / 1e8, " ").concat(settings.coin.ticker, "</b></u> on ").concat(userLength, " users\n\uD83D\uDCB8 <u><b>").concat(amountPerUser / 1e8, " ").concat(settings.coin.ticker, "</b></u> each \uD83D\uDCB8\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            return _context33.abrupt("return", result);
+
+          case 8:
+          case "end":
+            return _context33.stop();
+        }
+      }
+    }, _callee33);
+  }));
+
+  return function afterSuccessMessage(_x51, _x52, _x53, _x54, _x55, _x56, _x57) {
+    return _ref33.apply(this, arguments);
   };
 }();
 

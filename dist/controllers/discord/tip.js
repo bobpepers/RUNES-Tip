@@ -27,6 +27,8 @@ var _waterFaucet = require("../../helpers/waterFaucet");
 
 var _userWalletExist = require("../../helpers/client/discord/userWalletExist");
 
+var _user = require("./user");
+
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
@@ -47,7 +49,9 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
             AmountPositionEnded = false;
             usersToTip = [];
             type = 'split';
-            _context4.next = 7;
+            console.log(discordClient);
+            console.log('discordClient');
+            _context4.next = 9;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -80,7 +84,8 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
 
                       case 9:
                         _loop = /*#__PURE__*/_regenerator["default"].mark(function _loop() {
-                          var discordId, userExist, userIdTest;
+                          var discordId, userExist, userIdTest, userClient, _yield$generateUserWa, _yield$generateUserWa2, newUser, newAccount, newUserExist, userNewIdTest;
+
                           return _regenerator["default"].wrap(function _loop$(_context) {
                             while (1) {
                               switch (_context.prev = _context.next) {
@@ -89,7 +94,9 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
 
                                   if (filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@!')) {
                                     discordId = filteredMessage[parseInt(AmountPosition, 10)].slice(3).slice(0, -1);
-                                  } else if (filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@') && !filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@!')) {
+                                  } else if (filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@&')) {
+                                    discordId = filteredMessage[parseInt(AmountPosition, 10)].slice(3).slice(0, -1);
+                                  } else if (filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@') && !filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@!') && !filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@&')) {
                                     discordId = filteredMessage[parseInt(AmountPosition, 10)].slice(2).slice(0, -1);
                                   } // eslint-disable-next-line no-await-in-loop
 
@@ -126,9 +133,78 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                                         usersToTip.push(userExist);
                                       }
                                     }
-                                  } // usersToTip.push(filteredMessage[AmountPosition]);
+                                  }
 
+                                  if (userExist) {
+                                    _context.next = 27;
+                                    break;
+                                  }
 
+                                  console.log(discordId);
+                                  console.log(message.author.id);
+
+                                  if (!(discordId !== message.author.id)) {
+                                    _context.next = 27;
+                                    break;
+                                  }
+
+                                  console.log(discordId);
+                                  _context.next = 13;
+                                  return discordClient.users.fetch(discordId);
+
+                                case 13:
+                                  userClient = _context.sent;
+                                  console.log(userClient);
+                                  console.log('userClient');
+
+                                  if (!(userClient && !userClient.bot)) {
+                                    _context.next = 27;
+                                    break;
+                                  }
+
+                                  _context.next = 19;
+                                  return (0, _user.generateUserWalletAndAddress)(userClient, t);
+
+                                case 19:
+                                  _yield$generateUserWa = _context.sent;
+                                  _yield$generateUserWa2 = (0, _slicedToArray2["default"])(_yield$generateUserWa, 2);
+                                  newUser = _yield$generateUserWa2[0];
+                                  newAccount = _yield$generateUserWa2[1];
+                                  _context.next = 25;
+                                  return _models["default"].user.findOne({
+                                    where: {
+                                      user_id: "discord-".concat(discordId)
+                                    },
+                                    include: [{
+                                      model: _models["default"].wallet,
+                                      as: 'wallet',
+                                      required: true,
+                                      include: [{
+                                        model: _models["default"].address,
+                                        as: 'addresses',
+                                        required: true
+                                      }]
+                                    }],
+                                    lock: t.LOCK.UPDATE,
+                                    transaction: t
+                                  });
+
+                                case 25:
+                                  newUserExist = _context.sent;
+
+                                  if (newUserExist) {
+                                    userNewIdTest = newUserExist.user_id.replace('discord-', '');
+
+                                    if (userNewIdTest !== message.author.id) {
+                                      if (!usersToTip.find(function (o) {
+                                        return o.id === newUserExist.id;
+                                      })) {
+                                        usersToTip.push(newUserExist);
+                                      }
+                                    }
+                                  }
+
+                                case 27:
                                   // usersToTip.push(filteredMessage[AmountPosition]);
                                   AmountPosition += 1;
 
@@ -136,7 +212,7 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                                     AmountPositionEnded = true;
                                   }
 
-                                case 8:
+                                case 29:
                                 case "end":
                                   return _context.stop();
                               }
@@ -503,14 +579,14 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
               };
             }());
 
-          case 7:
+          case 9:
             if (activity.length > 0) {
               io.to('admin').emit('updateActivity', {
                 activity: activity
               });
             }
 
-          case 8:
+          case 10:
           case "end":
             return _context4.stop();
         }

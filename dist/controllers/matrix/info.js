@@ -23,6 +23,8 @@ var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
 var _userWalletExist = require("../../helpers/client/matrix/userWalletExist");
 
+var _rclient = require("../../services/rclient");
+
 /* eslint-disable import/prefer-default-export */
 var matrixCoinInfo = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(matrixClient, message, userDirectMessageRoomId, io) {
@@ -37,7 +39,7 @@ var matrixCoinInfo = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, blockHeight, priceInfo, preActivity, finalActivity;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, walletInfo, blockHeight, priceInfo, preActivity, finalActivity;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -71,46 +73,51 @@ var matrixCoinInfo = /*#__PURE__*/function () {
 
                       case 12:
                         _context.next = 14;
+                        return (0, _rclient.getInstance)().getWalletInfo();
+
+                      case 14:
+                        walletInfo = _context.sent;
+                        _context.next = 17;
                         return _models["default"].block.findOne({
                           order: [['id', 'DESC']],
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 14:
+                      case 17:
                         blockHeight = _context.sent;
-                        _context.next = 17;
+                        _context.next = 20;
                         return _models["default"].currency.findOne({
                           order: [['id', 'ASC']],
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 17:
+                      case 20:
                         priceInfo = _context.sent;
 
                         if (!(message.sender.roomId === userDirectMessageRoomId)) {
-                          _context.next = 23;
+                          _context.next = 26;
                           break;
                         }
 
-                        _context.next = 21;
-                        return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.coinInfoMessage)(blockHeight.id, priceInfo));
+                        _context.next = 24;
+                        return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.coinInfoMessage)(blockHeight.id, priceInfo, walletInfo.walletversion));
 
-                      case 21:
-                        _context.next = 27;
+                      case 24:
+                        _context.next = 30;
                         break;
 
-                      case 23:
-                        _context.next = 25;
-                        return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.coinInfoMessage)(blockHeight.id, priceInfo));
+                      case 26:
+                        _context.next = 28;
+                        return matrixClient.sendEvent(userDirectMessageRoomId, "m.room.message", (0, _matrix.coinInfoMessage)(blockHeight.id, priceInfo, walletInfo.walletversion));
 
-                      case 25:
-                        _context.next = 27;
+                      case 28:
+                        _context.next = 30;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.warnDirectMessage)(message.sender.name, 'Info'));
 
-                      case 27:
-                        _context.next = 29;
+                      case 30:
+                        _context.next = 32;
                         return _models["default"].activity.create({
                           type: 'info_s',
                           earnerId: user.id
@@ -119,9 +126,9 @@ var matrixCoinInfo = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 29:
+                      case 32:
                         preActivity = _context.sent;
-                        _context.next = 32;
+                        _context.next = 35;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -134,14 +141,14 @@ var matrixCoinInfo = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 32:
+                      case 35:
                         finalActivity = _context.sent;
                         activity.unshift(finalActivity);
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 35:
+                      case 38:
                       case "end":
                         return _context.stop();
                     }

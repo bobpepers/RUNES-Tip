@@ -23,6 +23,8 @@ var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
 var _userWalletExist = require("../../helpers/client/discord/userWalletExist");
 
+var _rclient = require("../../services/rclient");
+
 /* eslint-disable import/prefer-default-export */
 var discordCoinInfo = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(message, io) {
@@ -37,7 +39,7 @@ var discordCoinInfo = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, blockHeight, priceInfo, preActivity, finalActivity;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, walletInfo, blockHeight, priceInfo, preActivity, finalActivity;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -65,53 +67,29 @@ var discordCoinInfo = /*#__PURE__*/function () {
 
                       case 9:
                         _context.next = 11;
+                        return (0, _rclient.getInstance)().getWalletInfo();
+
+                      case 11:
+                        walletInfo = _context.sent;
+                        _context.next = 14;
                         return _models["default"].block.findOne({
                           order: [['id', 'DESC']],
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 11:
+                      case 14:
                         blockHeight = _context.sent;
-                        _context.next = 14;
+                        _context.next = 17;
                         return _models["default"].currency.findOne({
                           order: [['id', 'ASC']],
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 14:
+                      case 17:
                         priceInfo = _context.sent;
-
-                        if (!(message.channel.type === 'DM')) {
-                          _context.next = 18;
-                          break;
-                        }
-
-                        _context.next = 18;
-                        return message.author.send({
-                          embeds: [(0, _discord.coinInfoMessage)(blockHeight.id, priceInfo)]
-                        });
-
-                      case 18:
-                        if (!(message.channel.type === 'GUILD_TEXT')) {
-                          _context.next = 23;
-                          break;
-                        }
-
-                        _context.next = 21;
-                        return message.author.send({
-                          embeds: [(0, _discord.coinInfoMessage)(blockHeight.id, priceInfo)]
-                        });
-
-                      case 21:
-                        _context.next = 23;
-                        return message.channel.send({
-                          embeds: [(0, _discord.warnDirectMessage)(message.author.id, 'Coin Info')]
-                        });
-
-                      case 23:
-                        _context.next = 25;
+                        _context.next = 20;
                         return _models["default"].activity.create({
                           type: 'info_s',
                           earnerId: user.id
@@ -120,9 +98,9 @@ var discordCoinInfo = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 25:
+                      case 20:
                         preActivity = _context.sent;
-                        _context.next = 28;
+                        _context.next = 23;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -135,14 +113,43 @@ var discordCoinInfo = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 28:
+                      case 23:
                         finalActivity = _context.sent;
                         activity.unshift(finalActivity);
+
+                        if (!(message.channel.type === 'DM')) {
+                          _context.next = 28;
+                          break;
+                        }
+
+                        _context.next = 28;
+                        return message.author.send({
+                          embeds: [(0, _discord.coinInfoMessage)(blockHeight.id, priceInfo, walletInfo.walletversion)]
+                        });
+
+                      case 28:
+                        if (!(message.channel.type === 'GUILD_TEXT')) {
+                          _context.next = 33;
+                          break;
+                        }
+
+                        _context.next = 31;
+                        return message.author.send({
+                          embeds: [(0, _discord.coinInfoMessage)(blockHeight.id, priceInfo)]
+                        });
+
+                      case 31:
+                        _context.next = 33;
+                        return message.channel.send({
+                          embeds: [(0, _discord.warnDirectMessage)(message.author.id, 'Coin Info')]
+                        });
+
+                      case 33:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 31:
+                      case 34:
                       case "end":
                         return _context.stop();
                     }

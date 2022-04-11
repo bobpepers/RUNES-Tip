@@ -5,9 +5,11 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateDiscordLastSeen = exports.createUpdateDiscordUser = void 0;
+exports.updateDiscordLastSeen = exports.generateUserWalletAndAddress = exports.createUpdateDiscordUser = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
@@ -21,195 +23,227 @@ var _rclient = require("../../services/rclient");
 
 var _discord = require("../../messages/discord");
 
-var createUpdateDiscordUser = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(discordClient, userInfo, queue) {
-    return _regenerator["default"].wrap(function _callee5$(_context5) {
+var generateUserWalletAndAddress = /*#__PURE__*/function () {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(userInfo, t) {
+    var newAccount, user, wallet, address, newAddress, addressAlreadyExist;
+    return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context.prev = _context.next) {
           case 0:
-            _context5.next = 2;
-            return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4() {
-              var newAccount;
-              return _regenerator["default"].wrap(function _callee4$(_context4) {
+            newAccount = false;
+            _context.next = 3;
+            return _models["default"].user.findOne({
+              where: {
+                user_id: "discord-".concat(userInfo.id)
+              },
+              transaction: t,
+              lock: t.LOCK.UPDATE
+            });
+
+          case 3:
+            user = _context.sent;
+
+            if (user) {
+              _context.next = 8;
+              break;
+            }
+
+            _context.next = 7;
+            return _models["default"].user.create({
+              user_id: "discord-".concat(userInfo.id),
+              username: "".concat(userInfo.username, "#").concat(userInfo.discriminator),
+              firstname: '',
+              lastname: ''
+            }, {
+              transaction: t,
+              lock: t.LOCK.UPDATE
+            });
+
+          case 7:
+            user = _context.sent;
+
+          case 8:
+            if (!user) {
+              _context.next = 35;
+              break;
+            }
+
+            if (!(user.username !== "".concat(userInfo.username, "#").concat(userInfo.discriminator))) {
+              _context.next = 13;
+              break;
+            }
+
+            _context.next = 12;
+            return user.update({
+              username: "".concat(userInfo.username, "#").concat(userInfo.discriminator)
+            }, {
+              transaction: t,
+              lock: t.LOCK.UPDATE
+            });
+
+          case 12:
+            user = _context.sent;
+
+          case 13:
+            _context.next = 15;
+            return _models["default"].wallet.findOne({
+              where: {
+                userId: user.id
+              },
+              transaction: t,
+              lock: t.LOCK.UPDATE
+            });
+
+          case 15:
+            wallet = _context.sent;
+
+            if (wallet) {
+              _context.next = 21;
+              break;
+            }
+
+            _context.next = 19;
+            return _models["default"].wallet.create({
+              userId: user.id,
+              available: 0,
+              locked: 0
+            }, {
+              transaction: t,
+              lock: t.LOCK.UPDATE
+            });
+
+          case 19:
+            wallet = _context.sent;
+            newAccount = true;
+
+          case 21:
+            _context.next = 23;
+            return _models["default"].address.findOne({
+              where: {
+                walletId: wallet.id
+              },
+              transaction: t,
+              lock: t.LOCK.UPDATE
+            });
+
+          case 23:
+            address = _context.sent;
+
+            if (address) {
+              _context.next = 35;
+              break;
+            }
+
+            _context.next = 27;
+            return (0, _rclient.getInstance)().getNewAddress();
+
+          case 27:
+            newAddress = _context.sent;
+            _context.next = 30;
+            return _models["default"].address.findOne({
+              where: {
+                address: newAddress
+              },
+              transaction: t,
+              lock: t.LOCK.UPDATE
+            });
+
+          case 30:
+            addressAlreadyExist = _context.sent;
+
+            if (addressAlreadyExist) {
+              _context.next = 35;
+              break;
+            }
+
+            _context.next = 34;
+            return _models["default"].address.create({
+              address: newAddress,
+              walletId: wallet.id,
+              type: 'deposit',
+              confirmed: true
+            }, {
+              transaction: t,
+              lock: t.LOCK.UPDATE
+            });
+
+          case 34:
+            address = _context.sent;
+
+          case 35:
+            return _context.abrupt("return", [user, newAccount]);
+
+          case 36:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+
+  return function generateUserWalletAndAddress(_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+exports.generateUserWalletAndAddress = generateUserWalletAndAddress;
+
+var createUpdateDiscordUser = /*#__PURE__*/function () {
+  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(discordClient, userInfo, queue) {
+    return _regenerator["default"].wrap(function _callee6$(_context6) {
+      while (1) {
+        switch (_context6.prev = _context6.next) {
+          case 0:
+            _context6.next = 2;
+            return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5() {
+              return _regenerator["default"].wrap(function _callee5$(_context5) {
                 while (1) {
-                  switch (_context4.prev = _context4.next) {
+                  switch (_context5.prev = _context5.next) {
                     case 0:
-                      newAccount = false;
-                      _context4.next = 3;
+                      _context5.next = 2;
                       return _models["default"].sequelize.transaction({
                         isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
                       }, /*#__PURE__*/function () {
-                        var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(t) {
-                          var user, wallet, address, newAddress, addressAlreadyExist;
-                          return _regenerator["default"].wrap(function _callee2$(_context2) {
+                        var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(t) {
+                          var _yield$generateUserWa, _yield$generateUserWa2, user, newAccount;
+
+                          return _regenerator["default"].wrap(function _callee3$(_context3) {
                             while (1) {
-                              switch (_context2.prev = _context2.next) {
+                              switch (_context3.prev = _context3.next) {
                                 case 0:
-                                  _context2.next = 2;
-                                  return _models["default"].user.findOne({
-                                    where: {
-                                      user_id: "discord-".concat(userInfo.id)
-                                    },
-                                    transaction: t,
-                                    lock: t.LOCK.UPDATE
-                                  });
+                                  _context3.next = 2;
+                                  return generateUserWalletAndAddress(userInfo, t);
 
                                 case 2:
-                                  user = _context2.sent;
-
-                                  if (user) {
-                                    _context2.next = 7;
-                                    break;
-                                  }
-
-                                  _context2.next = 6;
-                                  return _models["default"].user.create({
-                                    user_id: "discord-".concat(userInfo.id),
-                                    username: "".concat(userInfo.username, "#").concat(userInfo.discriminator),
-                                    firstname: '',
-                                    lastname: ''
-                                  }, {
-                                    transaction: t,
-                                    lock: t.LOCK.UPDATE
-                                  });
-
-                                case 6:
-                                  user = _context2.sent;
-
-                                case 7:
-                                  if (!user) {
-                                    _context2.next = 34;
-                                    break;
-                                  }
-
-                                  if (!(user.username !== "".concat(userInfo.username, "#").concat(userInfo.discriminator))) {
-                                    _context2.next = 12;
-                                    break;
-                                  }
-
-                                  _context2.next = 11;
-                                  return user.update({
-                                    username: "".concat(userInfo.username, "#").concat(userInfo.discriminator)
-                                  }, {
-                                    transaction: t,
-                                    lock: t.LOCK.UPDATE
-                                  });
-
-                                case 11:
-                                  user = _context2.sent;
-
-                                case 12:
-                                  _context2.next = 14;
-                                  return _models["default"].wallet.findOne({
-                                    where: {
-                                      userId: user.id
-                                    },
-                                    transaction: t,
-                                    lock: t.LOCK.UPDATE
-                                  });
-
-                                case 14:
-                                  wallet = _context2.sent;
-
-                                  if (wallet) {
-                                    _context2.next = 20;
-                                    break;
-                                  }
-
-                                  _context2.next = 18;
-                                  return _models["default"].wallet.create({
-                                    userId: user.id,
-                                    available: 0,
-                                    locked: 0
-                                  }, {
-                                    transaction: t,
-                                    lock: t.LOCK.UPDATE
-                                  });
-
-                                case 18:
-                                  wallet = _context2.sent;
-                                  newAccount = true;
-
-                                case 20:
-                                  _context2.next = 22;
-                                  return _models["default"].address.findOne({
-                                    where: {
-                                      walletId: wallet.id
-                                    },
-                                    transaction: t,
-                                    lock: t.LOCK.UPDATE
-                                  });
-
-                                case 22:
-                                  address = _context2.sent;
-
-                                  if (address) {
-                                    _context2.next = 34;
-                                    break;
-                                  }
-
-                                  _context2.next = 26;
-                                  return (0, _rclient.getInstance)().getNewAddress();
-
-                                case 26:
-                                  newAddress = _context2.sent;
-                                  _context2.next = 29;
-                                  return _models["default"].address.findOne({
-                                    where: {
-                                      address: newAddress
-                                    },
-                                    transaction: t,
-                                    lock: t.LOCK.UPDATE
-                                  });
-
-                                case 29:
-                                  addressAlreadyExist = _context2.sent;
-
-                                  if (addressAlreadyExist) {
-                                    _context2.next = 34;
-                                    break;
-                                  }
-
-                                  _context2.next = 33;
-                                  return _models["default"].address.create({
-                                    address: newAddress,
-                                    walletId: wallet.id,
-                                    type: 'deposit',
-                                    confirmed: true
-                                  }, {
-                                    transaction: t,
-                                    lock: t.LOCK.UPDATE
-                                  });
-
-                                case 33:
-                                  address = _context2.sent;
-
-                                case 34:
-                                  t.afterCommit( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
+                                  _yield$generateUserWa = _context3.sent;
+                                  _yield$generateUserWa2 = (0, _slicedToArray2["default"])(_yield$generateUserWa, 2);
+                                  user = _yield$generateUserWa2[0];
+                                  newAccount = _yield$generateUserWa2[1];
+                                  t.afterCommit( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
                                     var userClient;
-                                    return _regenerator["default"].wrap(function _callee$(_context) {
+                                    return _regenerator["default"].wrap(function _callee2$(_context2) {
                                       while (1) {
-                                        switch (_context.prev = _context.next) {
+                                        switch (_context2.prev = _context2.next) {
                                           case 0:
                                             if (!newAccount) {
-                                              _context.next = 7;
+                                              _context2.next = 7;
                                               break;
                                             }
 
-                                            _context.next = 3;
+                                            _context2.next = 3;
                                             return discordClient.users.fetch(userInfo.id)["catch"](function (e) {
                                               console.log(e);
                                             });
 
                                           case 3:
-                                            userClient = _context.sent;
+                                            userClient = _context2.sent;
 
                                             if (!userClient) {
-                                              _context.next = 7;
+                                              _context2.next = 7;
                                               break;
                                             }
 
-                                            _context.next = 7;
+                                            _context2.next = 7;
                                             return userClient.send({
                                               embeds: [(0, _discord.discordWelcomeMessage)(userInfo)]
                                             })["catch"](function (e) {
@@ -218,94 +252,91 @@ var createUpdateDiscordUser = /*#__PURE__*/function () {
 
                                           case 7:
                                           case "end":
-                                            return _context.stop();
+                                            return _context2.stop();
                                         }
                                       }
-                                    }, _callee);
+                                    }, _callee2);
                                   })));
 
-                                case 35:
+                                case 7:
                                 case "end":
-                                  return _context2.stop();
+                                  return _context3.stop();
                               }
                             }
-                          }, _callee2);
+                          }, _callee3);
                         }));
 
-                        return function (_x4) {
-                          return _ref3.apply(this, arguments);
+                        return function (_x6) {
+                          return _ref4.apply(this, arguments);
                         };
                       }())["catch"]( /*#__PURE__*/function () {
-                        var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(err) {
-                          return _regenerator["default"].wrap(function _callee3$(_context3) {
+                        var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(err) {
+                          return _regenerator["default"].wrap(function _callee4$(_context4) {
                             while (1) {
-                              switch (_context3.prev = _context3.next) {
+                              switch (_context4.prev = _context4.next) {
                                 case 0:
-                                  _context3.prev = 0;
-                                  _context3.next = 3;
+                                  _context4.prev = 0;
+                                  _context4.next = 3;
                                   return _models["default"].error.create({
                                     type: 'createUser',
                                     error: "".concat(err)
                                   });
 
                                 case 3:
-                                  _context3.next = 8;
+                                  _context4.next = 8;
                                   break;
 
                                 case 5:
-                                  _context3.prev = 5;
-                                  _context3.t0 = _context3["catch"](0);
+                                  _context4.prev = 5;
+                                  _context4.t0 = _context4["catch"](0);
 
-                                  _logger["default"].error("Error Discord: ".concat(_context3.t0));
+                                  _logger["default"].error("Error Discord: ".concat(_context4.t0));
 
                                 case 8:
                                   console.log(err.message);
 
                                 case 9:
                                 case "end":
-                                  return _context3.stop();
+                                  return _context4.stop();
                               }
                             }
-                          }, _callee3, null, [[0, 5]]);
+                          }, _callee4, null, [[0, 5]]);
                         }));
 
-                        return function (_x5) {
-                          return _ref5.apply(this, arguments);
+                        return function (_x7) {
+                          return _ref6.apply(this, arguments);
                         };
                       }());
 
-                    case 3:
-                      return _context4.abrupt("return", true);
-
-                    case 4:
+                    case 2:
                     case "end":
-                      return _context4.stop();
+                      return _context5.stop();
                   }
                 }
-              }, _callee4);
+              }, _callee5);
             })));
 
           case 2:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
       }
-    }, _callee5);
+    }, _callee6);
   }));
 
-  return function createUpdateDiscordUser(_x, _x2, _x3) {
-    return _ref.apply(this, arguments);
+  return function createUpdateDiscordUser(_x3, _x4, _x5) {
+    return _ref2.apply(this, arguments);
   };
 }();
 
 exports.createUpdateDiscordUser = createUpdateDiscordUser;
 
 var updateDiscordLastSeen = /*#__PURE__*/function () {
-  var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee8(message, userInfo) {
+  var _ref7 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee9(message, userInfo) {
     var updatedUser, guildId;
-    return _regenerator["default"].wrap(function _callee8$(_context8) {
+    return _regenerator["default"].wrap(function _callee9$(_context9) {
       while (1) {
-        switch (_context8.prev = _context8.next) {
+        switch (_context9.prev = _context9.next) {
           case 0:
             if (message.guild && message.guild.id) {
               guildId = message.guild.id;
@@ -313,23 +344,18 @@ var updateDiscordLastSeen = /*#__PURE__*/function () {
               guildId = message.guildId;
             }
 
-            console.log(message);
-            console.log(guildId);
-            console.log('guildId');
-            console.log(userInfo);
-            console.log('userInfo');
-            _context8.next = 8;
+            _context9.next = 3;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
-              var _ref7 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(t) {
+              var _ref8 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee7(t) {
                 var user, group, active, updatedActive, _updatedActive;
 
-                return _regenerator["default"].wrap(function _callee6$(_context6) {
+                return _regenerator["default"].wrap(function _callee7$(_context7) {
                   while (1) {
-                    switch (_context6.prev = _context6.next) {
+                    switch (_context7.prev = _context7.next) {
                       case 0:
-                        _context6.next = 2;
+                        _context7.next = 2;
                         return _models["default"].user.findOne({
                           where: {
                             user_id: "discord-".concat(userInfo.id)
@@ -339,14 +365,14 @@ var updateDiscordLastSeen = /*#__PURE__*/function () {
                         });
 
                       case 2:
-                        user = _context6.sent;
+                        user = _context7.sent;
 
                         if (!guildId) {
-                          _context6.next = 22;
+                          _context7.next = 20;
                           break;
                         }
 
-                        _context6.next = 6;
+                        _context7.next = 6;
                         return _models["default"].group.findOne({
                           where: {
                             groupId: "discord-".concat(guildId)
@@ -356,8 +382,8 @@ var updateDiscordLastSeen = /*#__PURE__*/function () {
                         });
 
                       case 6:
-                        group = _context6.sent;
-                        _context6.next = 9;
+                        group = _context7.sent;
+                        _context7.next = 9;
                         return _models["default"].active.findOne({
                           where: {
                             userId: user.id,
@@ -368,25 +394,24 @@ var updateDiscordLastSeen = /*#__PURE__*/function () {
                         });
 
                       case 9:
-                        active = _context6.sent;
+                        active = _context7.sent;
 
                         if (!group) {
-                          _context6.next = 22;
+                          _context7.next = 20;
                           break;
                         }
 
                         if (!user) {
-                          _context6.next = 22;
+                          _context7.next = 20;
                           break;
                         }
 
                         if (!active) {
-                          _context6.next = 17;
+                          _context7.next = 16;
                           break;
                         }
 
-                        console.log('active record found');
-                        _context6.next = 16;
+                        _context7.next = 15;
                         return active.update({
                           lastSeen: new Date(Date.now())
                         }, {
@@ -394,17 +419,16 @@ var updateDiscordLastSeen = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 16:
-                        updatedActive = _context6.sent;
+                      case 15:
+                        updatedActive = _context7.sent;
 
-                      case 17:
+                      case 16:
                         if (active) {
-                          _context6.next = 22;
+                          _context7.next = 20;
                           break;
                         }
 
-                        console.log('no active record found');
-                        _context6.next = 21;
+                        _context7.next = 19;
                         return _models["default"].active.create({
                           groupId: group.id,
                           userId: user.id,
@@ -414,16 +438,16 @@ var updateDiscordLastSeen = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 21:
-                        _updatedActive = _context6.sent;
+                      case 19:
+                        _updatedActive = _context7.sent;
 
-                      case 22:
+                      case 20:
                         if (!user) {
-                          _context6.next = 26;
+                          _context7.next = 24;
                           break;
                         }
 
-                        _context6.next = 25;
+                        _context7.next = 23;
                         return user.update({
                           lastSeen: new Date(Date.now())
                         }, {
@@ -431,77 +455,77 @@ var updateDiscordLastSeen = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 25:
-                        updatedUser = _context6.sent;
+                      case 23:
+                        updatedUser = _context7.sent;
 
-                      case 26:
+                      case 24:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 27:
+                      case 25:
                       case "end":
-                        return _context6.stop();
+                        return _context7.stop();
                     }
                   }
-                }, _callee6);
+                }, _callee7);
               }));
 
-              return function (_x8) {
-                return _ref7.apply(this, arguments);
+              return function (_x10) {
+                return _ref8.apply(this, arguments);
               };
             }())["catch"]( /*#__PURE__*/function () {
-              var _ref8 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee7(err) {
-                return _regenerator["default"].wrap(function _callee7$(_context7) {
+              var _ref9 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee8(err) {
+                return _regenerator["default"].wrap(function _callee8$(_context8) {
                   while (1) {
-                    switch (_context7.prev = _context7.next) {
+                    switch (_context8.prev = _context8.next) {
                       case 0:
-                        _context7.prev = 0;
-                        _context7.next = 3;
+                        _context8.prev = 0;
+                        _context8.next = 3;
                         return _models["default"].error.create({
                           type: 'updateUser',
                           error: "".concat(err)
                         });
 
                       case 3:
-                        _context7.next = 8;
+                        _context8.next = 8;
                         break;
 
                       case 5:
-                        _context7.prev = 5;
-                        _context7.t0 = _context7["catch"](0);
+                        _context8.prev = 5;
+                        _context8.t0 = _context8["catch"](0);
 
-                        _logger["default"].error("Error Discord: ".concat(_context7.t0));
+                        _logger["default"].error("Error Discord: ".concat(_context8.t0));
 
                       case 8:
                         console.log(err.message);
 
                       case 9:
                       case "end":
-                        return _context7.stop();
+                        return _context8.stop();
                     }
                   }
-                }, _callee7, null, [[0, 5]]);
+                }, _callee8, null, [[0, 5]]);
               }));
 
-              return function (_x9) {
-                return _ref8.apply(this, arguments);
+              return function (_x11) {
+                return _ref9.apply(this, arguments);
               };
             }());
 
-          case 8:
-            return _context8.abrupt("return", updatedUser);
+          case 3:
+            return _context9.abrupt("return", updatedUser);
 
-          case 9:
+          case 4:
           case "end":
-            return _context8.stop();
+            return _context9.stop();
         }
       }
-    }, _callee8);
+    }, _callee9);
   }));
 
-  return function updateDiscordLastSeen(_x6, _x7) {
-    return _ref6.apply(this, arguments);
+  return function updateDiscordLastSeen(_x8, _x9) {
+    return _ref7.apply(this, arguments);
   };
 }();
 

@@ -9,13 +9,15 @@ exports.mapMembers = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _lodash = _interopRequireDefault(require("lodash"));
 
 var _models = _interopRequireDefault(require("../../../models"));
 
-var _rclient = require("../../../services/rclient");
+var _user = require("../../../controllers/discord/user");
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
@@ -25,7 +27,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 var mapMembers = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(message, t, optionalRoleMessage, onlineMembers, setting) {
-    var roleId, mappedMembersArray, withoutBots, filterWithRoles, filterWithoutRoles, _iterator, _step, discordUser, userExist, userIdTest, user, wallet, address, newAddress, addressAlreadyExist, userExistNew, _userIdTest, withoutBotsSorted;
+    var roleId, mappedMembersArray, withoutBots, filterWithRoles, filterWithoutRoles, _iterator, _step, discordUser, userExist, userIdTest, _yield$generateUserWa, _yield$generateUserWa2, user, newAccount, userExistNew, _userIdTest, withoutBotsSorted;
 
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
@@ -97,7 +99,7 @@ var mapMembers = /*#__PURE__*/function () {
 
           case 25:
             if ((_step = _iterator.n()).done) {
-              _context.next = 81;
+              _context.next = 57;
               break;
             }
 
@@ -114,7 +116,7 @@ var mapMembers = /*#__PURE__*/function () {
                 include: [{
                   model: _models["default"].address,
                   as: 'addresses',
-                  required: false
+                  required: true
                 }]
               }],
               lock: t.LOCK.UPDATE,
@@ -150,133 +152,19 @@ var mapMembers = /*#__PURE__*/function () {
 
           case 38:
             if (userExist) {
-              _context.next = 79;
-              break;
-            }
-
-            user = void 0;
-            _context.next = 42;
-            return _models["default"].user.create({
-              user_id: "discord-".concat(discordUser.id),
-              username: "".concat(discordUser.username, "#").concat(discordUser.discriminator),
-              firstname: '',
-              lastname: ''
-            }, {
-              transaction: t,
-              lock: t.LOCK.UPDATE
-            });
-
-          case 42:
-            user = _context.sent;
-
-            if (!user) {
-              _context.next = 69;
-              break;
-            }
-
-            if (!(user.username !== "".concat(discordUser.username, "#").concat(discordUser.discriminator))) {
-              _context.next = 48;
-              break;
-            }
-
-            _context.next = 47;
-            return user.update({
-              username: "".concat(discordUser.username, "#").concat(discordUser.discriminator)
-            }, {
-              transaction: t,
-              lock: t.LOCK.UPDATE
-            });
-
-          case 47:
-            user = _context.sent;
-
-          case 48:
-            _context.next = 50;
-            return _models["default"].wallet.findOne({
-              where: {
-                userId: user.id
-              },
-              transaction: t,
-              lock: t.LOCK.UPDATE
-            });
-
-          case 50:
-            wallet = _context.sent;
-
-            if (wallet) {
               _context.next = 55;
               break;
             }
 
-            _context.next = 54;
-            return _models["default"].wallet.create({
-              userId: user.id,
-              available: 0,
-              locked: 0
-            }, {
-              transaction: t,
-              lock: t.LOCK.UPDATE
-            });
+            _context.next = 41;
+            return (0, _user.generateUserWalletAndAddress)(discordUser, t);
 
-          case 54:
-            wallet = _context.sent;
-
-          case 55:
-            _context.next = 57;
-            return _models["default"].address.findOne({
-              where: {
-                walletId: wallet.id
-              },
-              transaction: t,
-              lock: t.LOCK.UPDATE
-            });
-
-          case 57:
-            address = _context.sent;
-
-            if (address) {
-              _context.next = 69;
-              break;
-            }
-
-            _context.next = 61;
-            return (0, _rclient.getInstance)().getNewAddress();
-
-          case 61:
-            newAddress = _context.sent;
-            _context.next = 64;
-            return _models["default"].address.findOne({
-              where: {
-                address: newAddress
-              },
-              transaction: t,
-              lock: t.LOCK.UPDATE
-            });
-
-          case 64:
-            addressAlreadyExist = _context.sent;
-
-            if (addressAlreadyExist) {
-              _context.next = 69;
-              break;
-            }
-
-            _context.next = 68;
-            return _models["default"].address.create({
-              address: newAddress,
-              walletId: wallet.id,
-              type: 'deposit',
-              confirmed: true
-            }, {
-              transaction: t,
-              lock: t.LOCK.UPDATE
-            });
-
-          case 68:
-            address = _context.sent;
-
-          case 69:
-            _context.next = 71;
+          case 41:
+            _yield$generateUserWa = _context.sent;
+            _yield$generateUserWa2 = (0, _slicedToArray2["default"])(_yield$generateUserWa, 2);
+            user = _yield$generateUserWa2[0];
+            newAccount = _yield$generateUserWa2[1];
+            _context.next = 47;
             return _models["default"].user.findOne({
               where: {
                 user_id: "discord-".concat(discordUser.id)
@@ -295,63 +183,63 @@ var mapMembers = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 71:
+          case 47:
             userExistNew = _context.sent;
 
             if (!userExistNew) {
-              _context.next = 79;
+              _context.next = 55;
               break;
             }
 
-            _context.next = 75;
+            _context.next = 51;
             return userExistNew.user_id.replace('discord-', '');
 
-          case 75:
+          case 51:
             _userIdTest = _context.sent;
 
             if (!(_userIdTest !== message.author.id)) {
-              _context.next = 79;
+              _context.next = 55;
               break;
             }
 
-            _context.next = 79;
+            _context.next = 55;
             return withoutBots.push(userExistNew);
 
-          case 79:
+          case 55:
             _context.next = 25;
             break;
 
-          case 81:
-            _context.next = 86;
+          case 57:
+            _context.next = 62;
             break;
 
-          case 83:
-            _context.prev = 83;
+          case 59:
+            _context.prev = 59;
             _context.t0 = _context["catch"](23);
 
             _iterator.e(_context.t0);
 
-          case 86:
-            _context.prev = 86;
+          case 62:
+            _context.prev = 62;
 
             _iterator.f();
 
-            return _context.finish(86);
+            return _context.finish(62);
 
-          case 89:
-            _context.next = 91;
+          case 65:
+            _context.next = 67;
             return _lodash["default"].sortBy(withoutBots, 'createdAt');
 
-          case 91:
+          case 67:
             withoutBotsSorted = _context.sent;
             return _context.abrupt("return", withoutBotsSorted);
 
-          case 93:
+          case 69:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[23, 83, 86, 89]]);
+    }, _callee, null, [[23, 59, 62, 65]]);
   }));
 
   return function mapMembers(_x, _x2, _x3, _x4, _x5) {

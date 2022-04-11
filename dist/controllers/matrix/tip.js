@@ -36,7 +36,7 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
 var tipRunesToMatrixUser = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, queue, userDirectMessageRoomId, isCurrentRoomDirectMessage) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, queue, userDirectMessageRoomId, isCurrentRoomDirectMessage, myBody) {
     var activity, AmountPosition, AmountPositionEnded, usersToTip, type;
     return _regenerator["default"].wrap(function _callee3$(_context4) {
       while (1) {
@@ -465,7 +465,7 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                 }, _callee, null, [[55, 78, 81, 84], [93, 103, 106, 109]]);
               }));
 
-              return function (_x11) {
+              return function (_x12) {
                 return _ref2.apply(this, arguments);
               };
             }())["catch"]( /*#__PURE__*/function () {
@@ -515,7 +515,7 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                 }, _callee2, null, [[0, 5], [9, 14]]);
               }));
 
-              return function (_x12) {
+              return function (_x13) {
                 return _ref3.apply(this, arguments);
               };
             }());
@@ -535,7 +535,7 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
     }, _callee3);
   }));
 
-  return function tipRunesToMatrixUser(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9, _x10) {
+  return function tipRunesToMatrixUser(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9, _x10, _x11) {
     return _ref.apply(this, arguments);
   };
 }();

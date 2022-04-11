@@ -129,30 +129,35 @@ var fetchDeposits = /*#__PURE__*/function () {
 
             options = {
               where: transactionOptions,
+              limit: req.body.limit,
+              offset: req.body.offset,
               order: [['id', 'DESC']],
               include: [{
+                model: _models["default"].user,
+                as: 'user',
+                where: userOptions
+              }, {
                 model: _models["default"].address,
                 as: 'address',
                 include: [{
                   model: _models["default"].wallet,
-                  as: 'wallet',
-                  include: [{
-                    model: _models["default"].user,
-                    as: 'user',
-                    where: userOptions
-                  }]
+                  as: 'wallet'
                 }]
               }]
             };
             _context2.next = 11;
-            return _models["default"].transaction.findAll(options);
+            return _models["default"].transaction.count(options);
 
           case 11:
+            res.locals.count = _context2.sent;
+            _context2.next = 14;
+            return _models["default"].transaction.findAll(options);
+
+          case 14:
             res.locals.deposits = _context2.sent;
-            // console.log(res.locals.deposits);
             next();
 
-          case 13:
+          case 16:
           case "end":
             return _context2.stop();
         }

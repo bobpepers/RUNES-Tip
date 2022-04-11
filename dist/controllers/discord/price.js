@@ -72,30 +72,7 @@ var discordPrice = /*#__PURE__*/function () {
                         replyString += priceRecord.map(function (a) {
                           return "".concat(a.iso, ": ").concat(a.price);
                         }).join('\n');
-
-                        if (!(message.channel.type === 'DM')) {
-                          _context.next = 17;
-                          break;
-                        }
-
-                        _context.next = 17;
-                        return message.author.send({
-                          embeds: [(0, _discord.priceMessage)(replyString)]
-                        });
-
-                      case 17:
-                        if (!(message.channel.type === 'GUILD_TEXT')) {
-                          _context.next = 20;
-                          break;
-                        }
-
-                        _context.next = 20;
-                        return message.channel.send({
-                          embeds: [(0, _discord.priceMessage)(replyString)]
-                        });
-
-                      case 20:
-                        _context.next = 22;
+                        _context.next = 16;
                         return _models["default"].activity.create({
                           type: 'price_s',
                           earnerId: user.id
@@ -104,9 +81,9 @@ var discordPrice = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 22:
+                      case 16:
                         createActivity = _context.sent;
-                        _context.next = 25;
+                        _context.next = 19;
                         return _models["default"].activity.findOne({
                           where: {
                             id: createActivity.id
@@ -119,9 +96,32 @@ var discordPrice = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 25:
+                      case 19:
                         findActivity = _context.sent;
                         activity.unshift(findActivity);
+
+                        if (!(message.channel.type === 'DM')) {
+                          _context.next = 24;
+                          break;
+                        }
+
+                        _context.next = 24;
+                        return message.author.send({
+                          embeds: [(0, _discord.priceMessage)(replyString)]
+                        });
+
+                      case 24:
+                        if (!(message.channel.type === 'GUILD_TEXT')) {
+                          _context.next = 27;
+                          break;
+                        }
+
+                        _context.next = 27;
+                        return message.channel.send({
+                          embeds: [(0, _discord.priceMessage)(replyString)]
+                        });
+
+                      case 27:
                         t.afterCommit(function () {
                           console.log('done price request');
                         });

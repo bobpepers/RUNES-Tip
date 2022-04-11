@@ -905,7 +905,7 @@ var listenMatrixReactDrop = /*#__PURE__*/function () {
 exports.listenMatrixReactDrop = listenMatrixReactDrop;
 
 var matrixReactDrop = /*#__PURE__*/function () {
-  var _ref13 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee17(matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, queue, userDirectMessageRoomId, isCurrentRoomDirectMessage) {
+  var _ref13 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee17(matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, queue, userDirectMessageRoomId, isCurrentRoomDirectMessage, myBody) {
     var activity, useEmojis;
     return _regenerator["default"].wrap(function _callee17$(_context17) {
       while (1) {
@@ -1385,7 +1385,7 @@ var matrixReactDrop = /*#__PURE__*/function () {
                 }, _callee15, null, [[119, 129, 132, 135]]);
               }));
 
-              return function (_x27) {
+              return function (_x28) {
                 return _ref14.apply(this, arguments);
               };
             }())["catch"]( /*#__PURE__*/function () {
@@ -1437,7 +1437,7 @@ var matrixReactDrop = /*#__PURE__*/function () {
                 }, _callee16, null, [[0, 5], [10, 15]]);
               }));
 
-              return function (_x28) {
+              return function (_x29) {
                 return _ref17.apply(this, arguments);
               };
             }());
@@ -1457,7 +1457,7 @@ var matrixReactDrop = /*#__PURE__*/function () {
     }, _callee17);
   }));
 
-  return function matrixReactDrop(_x17, _x18, _x19, _x20, _x21, _x22, _x23, _x24, _x25, _x26) {
+  return function matrixReactDrop(_x17, _x18, _x19, _x20, _x21, _x22, _x23, _x24, _x25, _x26, _x27) {
     return _ref13.apply(this, arguments);
   };
 }();

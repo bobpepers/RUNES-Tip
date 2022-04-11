@@ -31,9 +31,15 @@ var _disallowWithdrawToSelf = require("../../helpers/withdraw/disallowWithdrawTo
 
 var _createOrUseExternalWithdrawAddress = require("../../helpers/withdraw/createOrUseExternalWithdrawAddress");
 
+var _extractWithdrawMemo = require("../../helpers/withdraw/extractWithdrawMemo");
+
+var _settings = _interopRequireDefault(require("../../config/settings"));
+
 /* eslint-disable no-await-in-loop */
 
 /* eslint-disable import/prefer-default-export */
+var settings = (0, _settings["default"])();
+
 var withdrawTelegramCreate = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(telegramClient, telegramApiClient, ctx, filteredMessage, io, groupTask, setting, faucetSetting, queue) {
     var activity;
@@ -47,7 +53,7 @@ var withdrawTelegramCreate = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, _yield$validateWithdr, _yield$validateWithdr2, isInvalidAddress, isNodeOffline, failWithdrawalActivity, isMyAddressActivity, addressExternal, wallet, fee, transaction, activityCreate;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, _yield$validateWithdr, _yield$validateWithdr2, isInvalidAddress, isNodeOffline, failWithdrawalActivity, isMyAddressActivity, memo, addressExternal, wallet, fee, transaction, activityCreate;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -213,12 +219,43 @@ var withdrawTelegramCreate = /*#__PURE__*/function () {
                         return _context.abrupt("return");
 
                       case 75:
-                        _context.next = 77;
+                        memo = null;
+
+                        if (!(settings.coin.setting === 'Pirate')) {
+                          _context.next = 88;
+                          break;
+                        }
+
+                        _context.next = 79;
+                        return (0, _extractWithdrawMemo.extractWithdrawMemo)(ctx.update.message.text, filteredMessage);
+
+                      case 79:
+                        memo = _context.sent;
+
+                        if (!(memo.length > 512)) {
+                          _context.next = 88;
+                          break;
+                        }
+
+                        _context.t16 = ctx;
+                        _context.next = 84;
+                        return (0, _telegram.telegramTransactionMemoTooLongMessage)(ctx, memo.length);
+
+                      case 84:
+                        _context.t17 = _context.sent;
+                        _context.next = 87;
+                        return _context.t16.replyWithHTML.call(_context.t16, _context.t17);
+
+                      case 87:
+                        return _context.abrupt("return");
+
+                      case 88:
+                        _context.next = 90;
                         return (0, _createOrUseExternalWithdrawAddress.createOrUseExternalWithdrawAddress)(filteredMessage[2], user, t);
 
-                      case 77:
+                      case 90:
                         addressExternal = _context.sent;
-                        _context.next = 80;
+                        _context.next = 93;
                         return user.wallet.update({
                           available: user.wallet.available - amount,
                           locked: user.wallet.locked + amount
@@ -227,10 +264,10 @@ var withdrawTelegramCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 80:
+                      case 93:
                         wallet = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
-                        _context.next = 84;
+                        _context.next = 97;
                         return _models["default"].transaction.create({
                           addressId: wallet.addresses[0].id,
                           addressExternalId: addressExternal.id,
@@ -239,15 +276,16 @@ var withdrawTelegramCreate = /*#__PURE__*/function () {
                           to_from: filteredMessage[2],
                           amount: amount,
                           feeAmount: Number(fee),
-                          userId: user.id
+                          userId: user.id,
+                          memo: memo
                         }, {
                           transaction: t,
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 84:
+                      case 97:
                         transaction = _context.sent;
-                        _context.next = 87;
+                        _context.next = 100;
                         return _models["default"].activity.create({
                           spenderId: user.id,
                           type: 'withdrawRequested',
@@ -258,43 +296,43 @@ var withdrawTelegramCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 87:
+                      case 100:
                         activityCreate = _context.sent;
                         activity.unshift(activityCreate);
-                        _context.t16 = ctx.telegram;
-                        _context.t17 = ctx.update.message.from.id;
-                        _context.next = 93;
+                        _context.t18 = ctx.telegram;
+                        _context.t19 = ctx.update.message.from.id;
+                        _context.next = 106;
                         return (0, _telegram.reviewMessage)(user, transaction);
 
-                      case 93:
-                        _context.t18 = _context.sent;
-                        _context.t19 = {
+                      case 106:
+                        _context.t20 = _context.sent;
+                        _context.t21 = {
                           parse_mode: 'HTML'
                         };
-                        _context.next = 97;
-                        return _context.t16.sendMessage.call(_context.t16, _context.t17, _context.t18, _context.t19);
+                        _context.next = 110;
+                        return _context.t18.sendMessage.call(_context.t18, _context.t19, _context.t20, _context.t21);
 
-                      case 97:
+                      case 110:
                         if (!(ctx.update.message.chat.type !== 'private')) {
-                          _context.next = 104;
+                          _context.next = 117;
                           break;
                         }
 
-                        _context.t20 = ctx;
-                        _context.next = 101;
+                        _context.t22 = ctx;
+                        _context.next = 114;
                         return (0, _telegram.warnDirectMessage)(user);
 
-                      case 101:
-                        _context.t21 = _context.sent;
-                        _context.next = 104;
-                        return _context.t20.replyWithHTML.call(_context.t20, _context.t21);
+                      case 114:
+                        _context.t23 = _context.sent;
+                        _context.next = 117;
+                        return _context.t22.replyWithHTML.call(_context.t22, _context.t23);
 
-                      case 104:
+                      case 117:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 105:
+                      case 118:
                       case "end":
                         return _context.stop();
                     }

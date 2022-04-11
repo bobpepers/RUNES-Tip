@@ -461,39 +461,47 @@ var fetchWithdrawals = /*#__PURE__*/function () {
             }
 
             if (req.body.userId !== '') {
+              transactionOptions.userId = (0, _defineProperty2["default"])({}, _sequelize.Op.not, null);
               userOptions.user_id = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.userId, "%"));
             }
 
             if (req.body.username !== '') {
+              transactionOptions.userId = (0, _defineProperty2["default"])({}, _sequelize.Op.not, null);
               userOptions.username = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.username, "%"));
             }
 
+            console.log(req.body.userId);
             options = {
               where: transactionOptions,
+              limit: req.body.limit,
+              offset: req.body.offset,
               order: [['id', 'DESC']],
               include: [{
+                model: _models["default"].user,
+                as: 'user',
+                where: userOptions
+              }, {
                 model: _models["default"].address,
                 as: 'address',
                 include: [{
                   model: _models["default"].wallet,
-                  as: 'wallet',
-                  include: [{
-                    model: _models["default"].user,
-                    as: 'user',
-                    where: userOptions
-                  }]
+                  as: 'wallet'
                 }]
               }]
             };
-            _context6.next = 10;
+            _context6.next = 11;
+            return _models["default"].transaction.count(options);
+
+          case 11:
+            res.locals.count = _context6.sent;
+            _context6.next = 14;
             return _models["default"].transaction.findAll(options);
 
-          case 10:
+          case 14:
             res.locals.withdrawals = _context6.sent;
-            console.log(res.locals.withdrawals);
             next();
 
-          case 13:
+          case 16:
           case "end":
             return _context6.stop();
         }

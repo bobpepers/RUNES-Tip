@@ -339,7 +339,7 @@ var matrixRouter = /*#__PURE__*/function () {
             }());
             matrixClient.on('Room.timeline', /*#__PURE__*/function () {
               var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee13(message, room) {
-                var lastSeenMatrixTask, faucetSetting, groupTask, channelTask, groupTaskId, channelTaskId, walletExists, _yield$findUserDirect3, _yield$findUserDirect4, directUserMessageRoom, isCurrentRoomDirectMessage, userState, myBody, maintenance, regex, preFilteredMessageWithTags, filteredMessageWithTags, preFilteredMessage, filteredMessage, userDirectMessageRoomId, limited, _limited, _limited2, _limited3, _limited4, _limited5, _limited6, _limited7, _limited8, setting, _limited9, _setting, _limited10, _setting2, _limited11, _setting3, _limited12, _setting4, AmountPosition, AmountPositionEnded, preSplitAfterTags, splitAfterTags, filteredMessageWithTagsClean, finalFilteredTipsWithTags;
+                var lastSeenMatrixTask, faucetSetting, groupTask, channelTask, groupTaskId, channelTaskId, walletExists, _yield$findUserDirect3, _yield$findUserDirect4, directUserMessageRoom, isCurrentRoomDirectMessage, userState, myBody, maintenance, messageReplaceBreaksWithSpaces, regex, preFilteredMessageWithTags, filteredMessageWithTags, preFilteredMessage, filteredMessage, userDirectMessageRoomId, limited, _limited, _limited2, _limited3, _limited4, _limited5, _limited6, _limited7, _limited8, setting, _limited9, _setting, _limited10, _setting2, _limited11, _setting3, _limited12, _setting4, AmountPosition, AmountPositionEnded, preSplitAfterTags, splitAfterTags, filteredMessageWithTagsClean, finalFilteredTipsWithTags;
 
                 return _regenerator["default"].wrap(function _callee13$(_context13) {
                   while (1) {
@@ -401,7 +401,7 @@ var matrixRouter = /*#__PURE__*/function () {
                         myBody = _context13.sent;
 
                         if (!myBody) {
-                          _context13.next = 211;
+                          _context13.next = 209;
                           break;
                         }
 
@@ -414,7 +414,7 @@ var matrixRouter = /*#__PURE__*/function () {
 
                       case 28:
                         if (!myBody.startsWith(settings.bot.command.matrix)) {
-                          _context13.next = 211;
+                          _context13.next = 209;
                           break;
                         }
 
@@ -491,54 +491,52 @@ var matrixRouter = /*#__PURE__*/function () {
 
                       case 59:
                         // let userDirectMessageRoomId;
+                        messageReplaceBreaksWithSpaces = myBody.replace(/\n/g, " ");
                         regex = /\s*((?:[^\s<]*<\w[^>]*>[\s\S]*?<\/\w[^>]*>)+[^\s<]*)\s*/;
-                        preFilteredMessageWithTags = myBody.split(regex).filter(Boolean);
+                        preFilteredMessageWithTags = messageReplaceBreaksWithSpaces.split(regex).filter(Boolean);
                         filteredMessageWithTags = preFilteredMessageWithTags.filter(function (el) {
                           return el !== '';
                         }).filter(String);
-                        preFilteredMessage = myBody.split(' ');
+                        preFilteredMessage = messageReplaceBreaksWithSpaces.split(' ');
                         filteredMessage = preFilteredMessage.filter(function (el) {
                           return el !== '';
                         });
-                        console.log(filteredMessageWithTags);
-                        console.log(filteredMessage);
-                        console.log("myBody");
-                        _context13.next = 69;
+                        _context13.next = 67;
                         return (0, _directMessageRoom.inviteUserToDirectMessageRoom)(matrixClient, directUserMessageRoom, userState, message.sender.userId, message.sender.name, message.sender.roomId);
 
-                      case 69:
+                      case 67:
                         userDirectMessageRoomId = _context13.sent;
 
                         if (!(!directUserMessageRoom || !userDirectMessageRoomId)) {
-                          _context13.next = 72;
+                          _context13.next = 70;
                           break;
                         }
 
                         return _context13.abrupt("return");
 
-                      case 72:
+                      case 70:
                         console.log(userDirectMessageRoomId);
 
                         if (!(filteredMessage[1] === undefined)) {
-                          _context13.next = 81;
-                          break;
-                        }
-
-                        _context13.next = 76;
-                        return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Help');
-
-                      case 76:
-                        limited = _context13.sent;
-
-                        if (!limited) {
                           _context13.next = 79;
                           break;
                         }
 
+                        _context13.next = 74;
+                        return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Help');
+
+                      case 74:
+                        limited = _context13.sent;
+
+                        if (!limited) {
+                          _context13.next = 77;
+                          break;
+                        }
+
                         return _context13.abrupt("return");
 
-                      case 79:
-                        _context13.next = 81;
+                      case 77:
+                        _context13.next = 79;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5() {
                           var task;
                           return _regenerator["default"].wrap(function _callee5$(_context5) {
@@ -559,27 +557,27 @@ var matrixRouter = /*#__PURE__*/function () {
                           }, _callee5);
                         })));
 
-                      case 81:
+                      case 79:
                         if (!(filteredMessage[1] && filteredMessage[1].toLowerCase() === 'help')) {
-                          _context13.next = 89;
+                          _context13.next = 87;
                           break;
                         }
 
-                        _context13.next = 84;
+                        _context13.next = 82;
                         return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Help');
 
-                      case 84:
+                      case 82:
                         _limited = _context13.sent;
 
                         if (!_limited) {
-                          _context13.next = 87;
+                          _context13.next = 85;
                           break;
                         }
 
                         return _context13.abrupt("return");
 
-                      case 87:
-                        _context13.next = 89;
+                      case 85:
+                        _context13.next = 87;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6() {
                           var task;
                           return _regenerator["default"].wrap(function _callee6$(_context6) {
@@ -600,27 +598,27 @@ var matrixRouter = /*#__PURE__*/function () {
                           }, _callee6);
                         })));
 
-                      case 89:
+                      case 87:
                         if (!(filteredMessage[1] && filteredMessage[1].toLowerCase() === 'info')) {
-                          _context13.next = 97;
+                          _context13.next = 95;
                           break;
                         }
 
-                        _context13.next = 92;
+                        _context13.next = 90;
                         return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Info');
 
-                      case 92:
+                      case 90:
                         _limited2 = _context13.sent;
 
                         if (!_limited2) {
-                          _context13.next = 95;
+                          _context13.next = 93;
                           break;
                         }
 
                         return _context13.abrupt("return");
 
-                      case 95:
-                        _context13.next = 97;
+                      case 93:
+                        _context13.next = 95;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee7() {
                           var task;
                           return _regenerator["default"].wrap(function _callee7$(_context7) {
@@ -641,27 +639,27 @@ var matrixRouter = /*#__PURE__*/function () {
                           }, _callee7);
                         })));
 
-                      case 97:
+                      case 95:
                         if (!(filteredMessage[1] && filteredMessage[1].toLowerCase() === 'balance')) {
-                          _context13.next = 105;
+                          _context13.next = 103;
                           break;
                         }
 
-                        _context13.next = 100;
+                        _context13.next = 98;
                         return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Balance');
 
-                      case 100:
+                      case 98:
                         _limited3 = _context13.sent;
 
                         if (!_limited3) {
-                          _context13.next = 103;
+                          _context13.next = 101;
                           break;
                         }
 
                         return _context13.abrupt("return");
 
-                      case 103:
-                        _context13.next = 105;
+                      case 101:
+                        _context13.next = 103;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee8() {
                           var task;
                           return _regenerator["default"].wrap(function _callee8$(_context8) {
@@ -682,27 +680,27 @@ var matrixRouter = /*#__PURE__*/function () {
                           }, _callee8);
                         })));
 
-                      case 105:
+                      case 103:
                         if (!(filteredMessage[1] && filteredMessage[1].toLowerCase() === 'ignoreme')) {
-                          _context13.next = 113;
+                          _context13.next = 111;
                           break;
                         }
 
-                        _context13.next = 108;
+                        _context13.next = 106;
                         return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'IgnoreMe');
 
-                      case 108:
+                      case 106:
                         _limited4 = _context13.sent;
 
                         if (!_limited4) {
-                          _context13.next = 111;
+                          _context13.next = 109;
                           break;
                         }
 
                         return _context13.abrupt("return");
 
-                      case 111:
-                        _context13.next = 113;
+                      case 109:
+                        _context13.next = 111;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee9() {
                           var task;
                           return _regenerator["default"].wrap(function _callee9$(_context9) {
@@ -723,27 +721,27 @@ var matrixRouter = /*#__PURE__*/function () {
                           }, _callee9);
                         })));
 
-                      case 113:
+                      case 111:
                         if (!(filteredMessage[1] && filteredMessage[1].toLowerCase() === 'deposit')) {
-                          _context13.next = 121;
+                          _context13.next = 119;
                           break;
                         }
 
-                        _context13.next = 116;
+                        _context13.next = 114;
                         return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Deposit');
 
-                      case 116:
+                      case 114:
                         _limited5 = _context13.sent;
 
                         if (!_limited5) {
-                          _context13.next = 119;
+                          _context13.next = 117;
                           break;
                         }
 
                         return _context13.abrupt("return");
 
-                      case 119:
-                        _context13.next = 121;
+                      case 117:
+                        _context13.next = 119;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee10() {
                           var task;
                           return _regenerator["default"].wrap(function _callee10$(_context10) {
@@ -764,27 +762,27 @@ var matrixRouter = /*#__PURE__*/function () {
                           }, _callee10);
                         })));
 
-                      case 121:
+                      case 119:
                         if (!(filteredMessage[1] && filteredMessage[1].toLowerCase() === 'price')) {
-                          _context13.next = 129;
+                          _context13.next = 127;
                           break;
                         }
 
-                        _context13.next = 124;
+                        _context13.next = 122;
                         return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Price');
 
-                      case 124:
+                      case 122:
                         _limited6 = _context13.sent;
 
                         if (!_limited6) {
-                          _context13.next = 127;
+                          _context13.next = 125;
                           break;
                         }
 
                         return _context13.abrupt("return");
 
-                      case 127:
-                        _context13.next = 129;
+                      case 125:
+                        _context13.next = 127;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee11() {
                           var task;
                           return _regenerator["default"].wrap(function _callee11$(_context11) {
@@ -805,27 +803,27 @@ var matrixRouter = /*#__PURE__*/function () {
                           }, _callee11);
                         })));
 
-                      case 129:
+                      case 127:
                         if (!(filteredMessage[1] && filteredMessage[1].toLowerCase() === 'fees')) {
-                          _context13.next = 137;
+                          _context13.next = 135;
                           break;
                         }
 
-                        _context13.next = 132;
+                        _context13.next = 130;
                         return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Fees');
 
-                      case 132:
+                      case 130:
                         _limited7 = _context13.sent;
 
                         if (!_limited7) {
-                          _context13.next = 135;
+                          _context13.next = 133;
                           break;
                         }
 
                         return _context13.abrupt("return");
 
-                      case 135:
-                        _context13.next = 137;
+                      case 133:
+                        _context13.next = 135;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee12() {
                           var task;
                           return _regenerator["default"].wrap(function _callee12$(_context12) {
@@ -846,188 +844,188 @@ var matrixRouter = /*#__PURE__*/function () {
                           }, _callee12);
                         })));
 
-                      case 137:
+                      case 135:
                         if (!(filteredMessage[1] && filteredMessage[1].toLowerCase() === 'withdraw')) {
-                          _context13.next = 150;
-                          break;
-                        }
-
-                        _context13.next = 140;
-                        return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Withdraw');
-
-                      case 140:
-                        _limited8 = _context13.sent;
-
-                        if (!_limited8) {
-                          _context13.next = 143;
-                          break;
-                        }
-
-                        return _context13.abrupt("return");
-
-                      case 143:
-                        _context13.next = 145;
-                        return (0, _settings.matrixFeatureSettings)(matrixClient, message, 'withdraw', groupTaskId, channelTaskId);
-
-                      case 145:
-                        setting = _context13.sent;
-
-                        if (setting) {
                           _context13.next = 148;
                           break;
                         }
 
+                        _context13.next = 138;
+                        return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Withdraw');
+
+                      case 138:
+                        _limited8 = _context13.sent;
+
+                        if (!_limited8) {
+                          _context13.next = 141;
+                          break;
+                        }
+
                         return _context13.abrupt("return");
+
+                      case 141:
+                        _context13.next = 143;
+                        return (0, _settings.matrixFeatureSettings)(matrixClient, message, 'withdraw', groupTaskId, channelTaskId);
+
+                      case 143:
+                        setting = _context13.sent;
+
+                        if (setting) {
+                          _context13.next = 146;
+                          break;
+                        }
+
+                        return _context13.abrupt("return");
+
+                      case 146:
+                        _context13.next = 148;
+                        return (0, _executeTips.executeTipFunction)(_withdraw.withdrawMatrixCreate, queue, filteredMessage[3], matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, userDirectMessageRoomId, isCurrentRoomDirectMessage, myBody);
 
                       case 148:
-                        _context13.next = 150;
-                        return (0, _executeTips.executeTipFunction)(_withdraw.withdrawMatrixCreate, queue, filteredMessage[3], matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, userDirectMessageRoomId, isCurrentRoomDirectMessage);
-
-                      case 150:
                         if (!(filteredMessage[1] && filteredMessage[1].toLowerCase() === 'flood')) {
-                          _context13.next = 163;
-                          break;
-                        }
-
-                        _context13.next = 153;
-                        return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Flood');
-
-                      case 153:
-                        _limited9 = _context13.sent;
-
-                        if (!_limited9) {
-                          _context13.next = 156;
-                          break;
-                        }
-
-                        return _context13.abrupt("return");
-
-                      case 156:
-                        _context13.next = 158;
-                        return (0, _settings.matrixFeatureSettings)(matrixClient, message, 'flood', groupTaskId, channelTaskId);
-
-                      case 158:
-                        _setting = _context13.sent;
-
-                        if (_setting) {
                           _context13.next = 161;
                           break;
                         }
 
+                        _context13.next = 151;
+                        return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Flood');
+
+                      case 151:
+                        _limited9 = _context13.sent;
+
+                        if (!_limited9) {
+                          _context13.next = 154;
+                          break;
+                        }
+
                         return _context13.abrupt("return");
+
+                      case 154:
+                        _context13.next = 156;
+                        return (0, _settings.matrixFeatureSettings)(matrixClient, message, 'flood', groupTaskId, channelTaskId);
+
+                      case 156:
+                        _setting = _context13.sent;
+
+                        if (_setting) {
+                          _context13.next = 159;
+                          break;
+                        }
+
+                        return _context13.abrupt("return");
+
+                      case 159:
+                        _context13.next = 161;
+                        return (0, _executeTips.executeTipFunction)(_flood.matrixFlood, queue, filteredMessage[2], matrixClient, message, filteredMessage, io, groupTask, _setting, faucetSetting, userDirectMessageRoomId, isCurrentRoomDirectMessage, myBody);
 
                       case 161:
-                        _context13.next = 163;
-                        return (0, _executeTips.executeTipFunction)(_flood.matrixFlood, queue, filteredMessage[2], matrixClient, message, filteredMessage, io, groupTask, _setting, faucetSetting, userDirectMessageRoomId, isCurrentRoomDirectMessage);
-
-                      case 163:
                         if (!(filteredMessage[1] && filteredMessage[1].toLowerCase() === 'sleet')) {
-                          _context13.next = 176;
-                          break;
-                        }
-
-                        _context13.next = 166;
-                        return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Sleet');
-
-                      case 166:
-                        _limited10 = _context13.sent;
-
-                        if (!_limited10) {
-                          _context13.next = 169;
-                          break;
-                        }
-
-                        return _context13.abrupt("return");
-
-                      case 169:
-                        _context13.next = 171;
-                        return (0, _settings.matrixFeatureSettings)(matrixClient, message, 'sleet', groupTaskId, channelTaskId);
-
-                      case 171:
-                        _setting2 = _context13.sent;
-
-                        if (_setting2) {
                           _context13.next = 174;
                           break;
                         }
 
+                        _context13.next = 164;
+                        return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Sleet');
+
+                      case 164:
+                        _limited10 = _context13.sent;
+
+                        if (!_limited10) {
+                          _context13.next = 167;
+                          break;
+                        }
+
                         return _context13.abrupt("return");
+
+                      case 167:
+                        _context13.next = 169;
+                        return (0, _settings.matrixFeatureSettings)(matrixClient, message, 'sleet', groupTaskId, channelTaskId);
+
+                      case 169:
+                        _setting2 = _context13.sent;
+
+                        if (_setting2) {
+                          _context13.next = 172;
+                          break;
+                        }
+
+                        return _context13.abrupt("return");
+
+                      case 172:
+                        _context13.next = 174;
+                        return (0, _executeTips.executeTipFunction)(_sleet.matrixSleet, queue, filteredMessage[2], matrixClient, message, filteredMessage, io, groupTask, _setting2, faucetSetting, userDirectMessageRoomId, isCurrentRoomDirectMessage, myBody);
 
                       case 174:
-                        _context13.next = 176;
-                        return (0, _executeTips.executeTipFunction)(_sleet.matrixSleet, queue, filteredMessage[2], matrixClient, message, filteredMessage, io, groupTask, _setting2, faucetSetting, userDirectMessageRoomId, isCurrentRoomDirectMessage);
-
-                      case 176:
                         if (!(filteredMessage[1] && filteredMessage[1].toLowerCase() === 'reactdrop')) {
-                          _context13.next = 189;
-                          break;
-                        }
-
-                        _context13.next = 179;
-                        return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Reactdrop');
-
-                      case 179:
-                        _limited11 = _context13.sent;
-
-                        if (!_limited11) {
-                          _context13.next = 182;
-                          break;
-                        }
-
-                        return _context13.abrupt("return");
-
-                      case 182:
-                        _context13.next = 184;
-                        return (0, _settings.matrixFeatureSettings)(matrixClient, message, 'reactdrop', groupTaskId, channelTaskId);
-
-                      case 184:
-                        _setting3 = _context13.sent;
-
-                        if (_setting3) {
                           _context13.next = 187;
                           break;
                         }
 
-                        return _context13.abrupt("return");
+                        _context13.next = 177;
+                        return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Reactdrop');
 
-                      case 187:
-                        _context13.next = 189;
-                        return (0, _executeTips.executeTipFunction)(_reactdrop.matrixReactDrop, queue, filteredMessage[2], matrixClient, message, filteredMessage, io, groupTask, _setting3, faucetSetting, userDirectMessageRoomId, isCurrentRoomDirectMessage);
+                      case 177:
+                        _limited11 = _context13.sent;
 
-                      case 189:
-                        if (!(filteredMessageWithTags.length > 1 && filteredMessageWithTags[1] && filteredMessageWithTags[1].startsWith('<a'))) {
-                          _context13.next = 211;
+                        if (!_limited11) {
+                          _context13.next = 180;
                           break;
                         }
 
-                        _context13.next = 192;
+                        return _context13.abrupt("return");
+
+                      case 180:
+                        _context13.next = 182;
+                        return (0, _settings.matrixFeatureSettings)(matrixClient, message, 'reactdrop', groupTaskId, channelTaskId);
+
+                      case 182:
+                        _setting3 = _context13.sent;
+
+                        if (_setting3) {
+                          _context13.next = 185;
+                          break;
+                        }
+
+                        return _context13.abrupt("return");
+
+                      case 185:
+                        _context13.next = 187;
+                        return (0, _executeTips.executeTipFunction)(_reactdrop.matrixReactDrop, queue, filteredMessage[2], matrixClient, message, filteredMessage, io, groupTask, _setting3, faucetSetting, userDirectMessageRoomId, isCurrentRoomDirectMessage, myBody);
+
+                      case 187:
+                        if (!(filteredMessageWithTags.length > 1 && filteredMessageWithTags[1] && filteredMessageWithTags[1].startsWith('<a'))) {
+                          _context13.next = 209;
+                          break;
+                        }
+
+                        _context13.next = 190;
                         return (0, _rateLimit.myRateLimiter)(matrixClient, message, 'matrix', 'Tip');
 
-                      case 192:
+                      case 190:
                         _limited12 = _context13.sent;
 
                         if (!_limited12) {
-                          _context13.next = 195;
+                          _context13.next = 193;
                           break;
                         }
 
                         return _context13.abrupt("return");
 
-                      case 195:
-                        _context13.next = 197;
+                      case 193:
+                        _context13.next = 195;
                         return (0, _settings.matrixFeatureSettings)(matrixClient, message, 'tip', groupTaskId, channelTaskId);
 
-                      case 197:
+                      case 195:
                         _setting4 = _context13.sent;
 
                         if (_setting4) {
-                          _context13.next = 200;
+                          _context13.next = 198;
                           break;
                         }
 
                         return _context13.abrupt("return");
 
-                      case 200:
+                      case 198:
                         AmountPosition = 1;
                         AmountPositionEnded = false;
 
@@ -1047,10 +1045,10 @@ var matrixRouter = /*#__PURE__*/function () {
                         finalFilteredTipsWithTags = filteredMessageWithTagsClean.concat(splitAfterTags);
                         console.log(finalFilteredTipsWithTags);
                         console.log("myBody");
-                        _context13.next = 211;
-                        return (0, _executeTips.executeTipFunction)(_tip.tipRunesToMatrixUser, queue, finalFilteredTipsWithTags[parseInt(AmountPosition, 10)], matrixClient, message, finalFilteredTipsWithTags, io, groupTask, _setting4, faucetSetting, userDirectMessageRoomId, isCurrentRoomDirectMessage);
+                        _context13.next = 209;
+                        return (0, _executeTips.executeTipFunction)(_tip.tipRunesToMatrixUser, queue, finalFilteredTipsWithTags[parseInt(AmountPosition, 10)], matrixClient, message, finalFilteredTipsWithTags, io, groupTask, _setting4, faucetSetting, userDirectMessageRoomId, isCurrentRoomDirectMessage, myBody);
 
-                      case 211:
+                      case 209:
                       case "end":
                         return _context13.stop();
                     }

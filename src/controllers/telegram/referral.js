@@ -1,4 +1,5 @@
 /* eslint-disable no-await-in-loop */
+// deprecated feature
 import { Transaction } from "sequelize";
 import db from '../../models';
 import getCoinSettings from '../../config/settings';

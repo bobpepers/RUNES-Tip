@@ -114,23 +114,32 @@ var fetchUsers = /*#__PURE__*/function () {
               }
             }
 
+            console.log(req.body.limit);
+            console.log(req.body.offset);
             options = {
               order: [['id', 'DESC']],
+              limit: req.body.limit,
+              offset: req.body.offset,
               where: userOptions,
               include: [{
                 model: _models["default"].wallet,
                 as: 'wallet'
               }]
             };
-            _context2.next = 9;
+            _context2.next = 11;
+            return _models["default"].user.count(options);
+
+          case 11:
+            res.locals.count = _context2.sent;
+            _context2.next = 14;
             return _models["default"].user.findAll(options);
 
-          case 9:
+          case 14:
             res.locals.users = _context2.sent;
             // console.log(res.locals.users);
             next();
 
-          case 11:
+          case 16:
           case "end":
             return _context2.stop();
         }

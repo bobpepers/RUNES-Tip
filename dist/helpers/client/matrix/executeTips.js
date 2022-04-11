@@ -14,7 +14,7 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 var _matrix = require("../../../messages/matrix");
 
 var executeTipFunction = /*#__PURE__*/function () {
-  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(tipFunction, queue, amount, matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, userDirectMessageRoomId, isCurrentRoomDirectMessage) {
+  var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(tipFunction, queue, amount, matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, userDirectMessageRoomId, isCurrentRoomDirectMessage, myBody) {
     var operationName, userBeingTipped, isRunning, listenerFunction, myTimeout;
     return _regenerator["default"].wrap(function _callee5$(_context5) {
       while (1) {
@@ -109,7 +109,7 @@ var executeTipFunction = /*#__PURE__*/function () {
                               switch (_context.prev = _context.next) {
                                 case 0:
                                   _context.next = 2;
-                                  return tipFunction(matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, queue, userDirectMessageRoomId, isCurrentRoomDirectMessage);
+                                  return tipFunction(matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, queue, userDirectMessageRoomId, isCurrentRoomDirectMessage, myBody);
 
                                 case 2:
                                   task = _context.sent;
@@ -155,7 +155,7 @@ var executeTipFunction = /*#__PURE__*/function () {
                 }, _callee2, null, [[2, 13], [26, 31]]);
               }));
 
-              return function listenerFunction(_x13, _x14) {
+              return function listenerFunction(_x14, _x15) {
                 return _ref2.apply(this, arguments);
               };
             }();
@@ -207,7 +207,7 @@ var executeTipFunction = /*#__PURE__*/function () {
                   switch (_context4.prev = _context4.next) {
                     case 0:
                       _context4.next = 2;
-                      return tipFunction(matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, queue, userDirectMessageRoomId, isCurrentRoomDirectMessage);
+                      return tipFunction(matrixClient, message, filteredMessage, io, groupTask, setting, faucetSetting, queue, userDirectMessageRoomId, isCurrentRoomDirectMessage, myBody);
 
                     case 2:
                       task = _context4.sent;
@@ -228,7 +228,7 @@ var executeTipFunction = /*#__PURE__*/function () {
     }, _callee5, null, [[2, 7]]);
   }));
 
-  return function executeTipFunction(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9, _x10, _x11, _x12) {
+  return function executeTipFunction(_x, _x2, _x3, _x4, _x5, _x6, _x7, _x8, _x9, _x10, _x11, _x12, _x13) {
     return _ref.apply(this, arguments);
   };
 }();

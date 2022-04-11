@@ -313,8 +313,9 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
     }
   });
   app.post('/api/channels', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _channels.fetchChannels, function (req, res) {
-    if (res.locals.channels) {
+    if (res.locals.channels && res.locals.count) {
       res.json({
+        count: res.locals.count,
         channels: res.locals.channels
       });
     } else {
@@ -432,8 +433,9 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
     }
   });
   app.post('/api/withdrawals', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _withdrawals.fetchWithdrawals, function (req, res) {
-    if (res.locals.withdrawals) {
+    if (res.locals.count && res.locals.withdrawals) {
       res.json({
+        count: res.locals.count,
         withdrawals: res.locals.withdrawals
       });
     } else {
@@ -443,8 +445,9 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
     }
   });
   app.post('/api/deposits', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _deposits.fetchDeposits, function (req, res) {
-    if (res.locals.deposits) {
+    if (res.locals.count && res.locals.deposits) {
       res.json({
+        count: res.locals.count,
         deposits: res.locals.deposits
       });
     } else {
@@ -471,8 +474,9 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
     }
   });
   app.post('/api/users', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _users.fetchUsers, function (req, res) {
-    if (res.locals.users) {
+    if (res.locals.count && res.locals.users) {
       res.json({
+        count: res.locals.count,
         users: res.locals.users
       });
     } else {
@@ -493,8 +497,9 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
     }
   });
   app.post('/api/servers', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _servers.fetchServers, function (req, res) {
-    if (res.locals.servers) {
+    if (res.locals.servers && res.locals.count) {
       res.json({
+        count: res.locals.count,
         servers: res.locals.servers
       });
     } else {

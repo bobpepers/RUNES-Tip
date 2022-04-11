@@ -23,6 +23,8 @@ var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
 var _userWalletExist = require("../../helpers/client/telegram/userWalletExist");
 
+var _rclient = require("../../services/rclient");
+
 /* eslint-disable import/prefer-default-export */
 var fetchInfo = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(ctx, io) {
@@ -37,7 +39,7 @@ var fetchInfo = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, blockHeight, priceInfo, preActivity, finalActivity;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, walletInfo, blockHeight, priceInfo, preActivity, finalActivity;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -65,24 +67,29 @@ var fetchInfo = /*#__PURE__*/function () {
 
                       case 9:
                         _context.next = 11;
+                        return (0, _rclient.getInstance)().getWalletInfo();
+
+                      case 11:
+                        walletInfo = _context.sent;
+                        _context.next = 14;
                         return _models["default"].block.findOne({
                           order: [['id', 'DESC']],
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 11:
+                      case 14:
                         blockHeight = _context.sent;
-                        _context.next = 14;
+                        _context.next = 17;
                         return _models["default"].currency.findOne({
                           order: [['id', 'ASC']],
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 14:
+                      case 17:
                         priceInfo = _context.sent;
-                        _context.next = 17;
+                        _context.next = 20;
                         return _models["default"].activity.create({
                           type: 'info_s',
                           earnerId: user.id
@@ -91,9 +98,9 @@ var fetchInfo = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 17:
+                      case 20:
                         preActivity = _context.sent;
-                        _context.next = 20;
+                        _context.next = 23;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -106,24 +113,24 @@ var fetchInfo = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 20:
+                      case 23:
                         finalActivity = _context.sent;
                         activity.unshift(finalActivity);
                         _context.t0 = ctx;
-                        _context.next = 25;
-                        return (0, _telegram.InfoMessage)(blockHeight.id, priceInfo);
-
-                      case 25:
-                        _context.t1 = _context.sent;
                         _context.next = 28;
-                        return _context.t0.replyWithHTML.call(_context.t0, _context.t1);
+                        return (0, _telegram.InfoMessage)(blockHeight.id, priceInfo, walletInfo.walletversion);
 
                       case 28:
+                        _context.t1 = _context.sent;
+                        _context.next = 31;
+                        return _context.t0.replyWithHTML.call(_context.t0, _context.t1);
+
+                      case 31:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 29:
+                      case 32:
                       case "end":
                         return _context.stop();
                     }

@@ -1302,19 +1302,18 @@ var discordReactDrop = /*#__PURE__*/function () {
                               switch (_context13.prev = _context13.next) {
                                 case 0:
                                   now = new Date().getTime();
-                                  console.log('listen');
                                   distance = countDownDate - now;
-                                  _context13.next = 5;
+                                  _context13.next = 4;
                                   return reactMessage.edit({
                                     embeds: [(0, _discord2.reactDropMessage)(newUpdatedReactDrop.id, distance, message.author.id, filteredMessage[4], amount)]
                                   });
 
-                                case 5:
+                                case 4:
                                   if (distance < 0) {
                                     clearInterval(updateMessage);
                                   }
 
-                                case 6:
+                                case 5:
                                 case "end":
                                   return _context13.stop();
                               }

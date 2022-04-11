@@ -48,7 +48,7 @@ var discordVoiceRain = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, voiceChannelId, voiceChannel, onlineMembers, withoutBots, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, rainRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, rainee, raineeWallet, raintipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, voiceChannelId, voiceChannel, onlineMembers, withoutBots, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, rainRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, rainee, raineeWallet, raintipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -103,8 +103,26 @@ var discordVoiceRain = /*#__PURE__*/function () {
                         return _context.abrupt("return");
 
                       case 17:
+                        _context.next = 19;
+                        return (0, _validateAmount.validateAmount)(message, t, filteredMessage[2], user, setting, filteredMessage[1].toLowerCase());
+
+                      case 19:
+                        _yield$validateAmount = _context.sent;
+                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
+                        activityValiateAmount = _yield$validateAmount2[0];
+                        amount = _yield$validateAmount2[1];
+
+                        if (!activityValiateAmount) {
+                          _context.next = 26;
+                          break;
+                        }
+
+                        activity.unshift(activityValiateAmount);
+                        return _context.abrupt("return");
+
+                      case 26:
                         voiceChannelId = filteredMessage[3].substr(2).slice(0, -1);
-                        _context.next = 20;
+                        _context.next = 29;
                         return _models["default"].channel.findOne({
                           where: {
                             channelId: "discord-".concat(voiceChannelId),
@@ -114,51 +132,34 @@ var discordVoiceRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 20:
+                      case 29:
                         voiceChannel = _context.sent;
 
                         if (voiceChannel) {
-                          _context.next = 25;
+                          _context.next = 34;
                           break;
                         }
 
-                        _context.next = 24;
+                        _context.next = 33;
                         return message.channel.send({
                           embeds: [(0, _discord.voiceChannelNotFound)(message)]
                         });
 
-                      case 24:
+                      case 33:
                         return _context.abrupt("return");
 
-                      case 25:
-                        _context.next = 27;
+                      case 34:
+                        _context.next = 36;
                         return discordClient.channels.cache.get(voiceChannelId).members;
 
-                      case 27:
+                      case 36:
                         onlineMembers = _context.sent;
-                        _context.next = 30;
+                        _context.next = 39;
                         return (0, _mapMembers.mapMembers)(message, t, filteredMessage[4], onlineMembers, setting);
 
-                      case 30:
+                      case 39:
                         withoutBots = _context.sent;
-                        _context.next = 33;
-                        return (0, _validateAmount.validateAmount)(message, t, filteredMessage[2], user, setting, filteredMessage[1].toLowerCase());
 
-                      case 33:
-                        _yield$validateAmount = _context.sent;
-                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
-                        activityValiateAmount = _yield$validateAmount2[0];
-                        amount = _yield$validateAmount2[1];
-
-                        if (!activityValiateAmount) {
-                          _context.next = 40;
-                          break;
-                        }
-
-                        activity.unshift(activityValiateAmount);
-                        return _context.abrupt("return");
-
-                      case 40:
                         if (!(withoutBots.length < 2)) {
                           _context.next = 48;
                           break;
