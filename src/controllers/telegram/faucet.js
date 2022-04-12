@@ -82,9 +82,23 @@ export const telegramFaucetClaim = async (
     if (distance
       && distance > 0
     ) {
-      const activityT = await db.activity.create({
+      const activityTpre = await db.activity.create({
         type: 'faucettip_t',
+        earnerId: user.id,
       }, {
+        lock: t.LOCK.UPDATE,
+        transaction: t,
+      });
+      const activityT = await db.activity.findOne({
+        where: {
+          id: activityTpre.id,
+        },
+        include: [
+          {
+            model: db.user,
+            as: 'earner',
+          },
+        ],
         lock: t.LOCK.UPDATE,
         transaction: t,
       });
