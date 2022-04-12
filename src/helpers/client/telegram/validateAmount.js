@@ -23,6 +23,8 @@ export const validateAmount = async (
     const noPreAmountActivity = await db.activity.create({
       type: `${type}_f`,
       spenderId: user.id,
+      spender_balance: user.wallet.available,
+      failedAmount: 'No Amount Specified',
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,
@@ -62,6 +64,7 @@ export const validateAmount = async (
   if (amount < Number(setting.min)) {
     const minAmountActivity = await db.activity.create({
       type: `${type}_f`,
+      failedAmount: preAmount.toString().length < 4000 ? preAmount.toString() : 'out of range',
       spenderId: user.id,
       spender_balance: user.wallet.available,
     }, {
@@ -105,6 +108,7 @@ export const validateAmount = async (
   if (amount % 1 !== 0) {
     const invalidAmountActivity = await db.activity.create({
       type: `${type}_f`,
+      failedAmount: preAmount.toString().length < 4000 ? preAmount.toString() : 'out of range',
       spenderId: user.id,
       spender_balance: user.wallet.available,
     }, {
@@ -161,7 +165,7 @@ export const validateAmount = async (
       type: `${type}_i`,
       spenderId: user.id,
       spender_balance: user.wallet.available,
-      amount,
+      failedAmount: preAmount.toString().length < 4000 ? preAmount.toString() : 'out of range',
     }, {
       lock: t.LOCK.UPDATE,
       transaction: t,

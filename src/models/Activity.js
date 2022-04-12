@@ -127,6 +127,10 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BIGINT,
       allowNull: true,
     },
+    failedAmount: {
+      type: DataTypes.STRING(4000),
+      allowNull: true,
+    },
   };
 
   // 2: The model options.
