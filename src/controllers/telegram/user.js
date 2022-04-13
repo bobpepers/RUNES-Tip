@@ -1,7 +1,6 @@
-import { Transaction, Op } from "sequelize";
+import { Transaction } from "sequelize";
 import db from '../../models';
 import { welcomeMessage } from '../../messages/telegram';
-
 import { getInstance } from "../../services/rclient";
 
 export const createUpdateUser = async (

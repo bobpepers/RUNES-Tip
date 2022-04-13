@@ -1,9 +1,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable import/prefer-default-export */
 import { Transaction } from "sequelize";
-// import axios from 'axios';
 import { Api } from 'telegram';
-import dotenv from 'dotenv';
 import db from '../../models';
 import {
   afterSuccessMessage,

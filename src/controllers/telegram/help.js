@@ -58,9 +58,9 @@ export const fetchHelp = async (
               Markup.button.callback('Price', 'price')],
             [Markup.button.callback('Info', 'info'),
               Markup.button.callback('Deposit', 'deposit')],
-            settings.coin.setting === 'Runebase'
-              ? [Markup.button.callback('Referral', 'referral'),
-                Markup.button.callback('Referral Top 10', 'top')] : [],
+            // settings.coin.setting === 'Runebase'
+            //   ? [Markup.button.callback('Referral', 'referral'),
+            //     Markup.button.callback('Referral Top 10', 'top')] : [],
           ],
         ),
       },

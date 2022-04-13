@@ -289,9 +289,6 @@ export const tipToTelegramUser = async (
         ),
       );
     } else if (listOfUsersRained.length > 1) {
-      // const newStringListUsers = listOfUsersRained.join(", ");
-      // const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
-
       const cutStringListUsers = [];
       let i = 0;
       listOfUsersRained.forEach((word) => {

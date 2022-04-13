@@ -13,7 +13,6 @@ export const createReferral = async (ctx, bot, runesGroup) => {
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    // console.log(ctx);
     // eslint-disable-next-line no-restricted-syntax
     for (const newMember of ctx.message.new_chat_members) {
       const user = await db.user.findOne({

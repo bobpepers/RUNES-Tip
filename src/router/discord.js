@@ -81,7 +81,7 @@ export const discordRouter = (
 
   discordClient.on("presenceUpdate", (oldMember, newMember) => {
     // const { username } = newMember.user;
-    console.log('presenceUpdate');
+    // console.log('presenceUpdate');
   });
 
   discordClient.on('voiceStateUpdate', async (oldMember, newMember) => {

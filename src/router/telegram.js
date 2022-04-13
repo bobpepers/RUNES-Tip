@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import { Api, TelegramClient } from 'telegram';
+import { TelegramClient } from 'telegram';
 import { StoreSession } from 'telegram/sessions';
 import { fetchHelp } from '../controllers/telegram/help';
 import { fetchInfo } from '../controllers/telegram/info';
@@ -21,17 +21,16 @@ import { myRateLimiter } from '../helpers/rateLimit';
 import { updateGroup } from '../controllers/telegram/group';
 import { telegramFeatureSettings } from '../controllers/telegram/settings';
 import { waterFaucetSettings } from '../controllers/settings';
-
 import {
   telegramUserBannedMessage,
   telegramServerBannedMessage,
 } from '../messages/telegram';
 
-import {
-  fetchReferralCount,
-  // createReferral,
-  fetchReferralTopTen,
-} from '../controllers/telegram/referral';
+// import {
+//   fetchReferralCount,
+//   // createReferral,
+//   fetchReferralTopTen,
+// } from '../controllers/telegram/referral';
 
 // import getCoinSettings from '../config/settings';
 
@@ -50,7 +49,7 @@ const telegramApiClient = new TelegramClient(
   },
 );
 
-const runesGroup = process.env.TELEGRAM_RUNES_GROUP;
+// const runesGroup = process.env.TELEGRAM_RUNES_GROUP;
 
 export const telegramRouter = async (
   telegramClient,
@@ -68,7 +67,10 @@ export const telegramRouter = async (
   telegramClient.command('help', async (ctx) => {
     let groupTask;
     let lastSeen;
-    const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
+    const maintenance = await isMaintenanceOrDisabled(
+      ctx,
+      'telegram',
+    );
     if (maintenance.maintenance || !maintenance.enabled) return;
     await queue.add(async () => {
       await createUpdateUser(ctx);
@@ -115,7 +117,10 @@ export const telegramRouter = async (
   const priceCallBack = async (ctx) => {
     let groupTask;
     let lastSeen;
-    const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
+    const maintenance = await isMaintenanceOrDisabled(
+      ctx,
+      'telegram',
+    );
     if (maintenance.maintenance || !maintenance.enabled) return;
     await queue.add(async () => {
       await createUpdateUser(ctx);
@@ -162,7 +167,10 @@ export const telegramRouter = async (
   const faucetCallBack = async (ctx) => {
     let groupTask;
     let lastSeen;
-    const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
+    const maintenance = await isMaintenanceOrDisabled(
+      ctx,
+      'telegram',
+    );
     if (maintenance.maintenance || !maintenance.enabled) return;
     await queue.add(async () => {
       await createUpdateUser(ctx);
@@ -209,7 +217,10 @@ export const telegramRouter = async (
   const balanceCallBack = async (ctx) => {
     let groupTask;
     let lastSeen;
-    const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
+    const maintenance = await isMaintenanceOrDisabled(
+      ctx,
+      'telegram',
+    );
     if (maintenance.maintenance || !maintenance.enabled) return;
     await queue.add(async () => {
       await createUpdateUser(ctx);
@@ -259,7 +270,10 @@ export const telegramRouter = async (
   const infoCallBack = async (ctx) => {
     let groupTask;
     let lastSeen;
-    const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
+    const maintenance = await isMaintenanceOrDisabled(
+      ctx,
+      'telegram',
+    );
     if (maintenance.maintenance || !maintenance.enabled) return;
     await queue.add(async () => {
       await createUpdateUser(ctx);
@@ -309,7 +323,10 @@ export const telegramRouter = async (
   const depositCallBack = async (ctx) => {
     let groupTask;
     let lastSeen;
-    const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
+    const maintenance = await isMaintenanceOrDisabled(
+      ctx,
+      'telegram',
+    );
     if (maintenance.maintenance || !maintenance.enabled) return;
     await queue.add(async () => {
       await createUpdateUser(ctx);
@@ -367,47 +384,47 @@ export const telegramRouter = async (
   telegramClient.action('deposit', depositCallBack);
   telegramClient.command('deposit', depositCallBack);
 
-  if (settings.coin.setting === 'Runebase') {
-    telegramClient.command('referral', async (ctx) => {
-      const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
-      if (maintenance.maintenance || !maintenance.enabled) return;
-      await queue.add(async () => {
-        const groupTask = await updateGroup(ctx);
-        const telegramUserId = ctx.update.message.from.id;
-        const telegramUserName = ctx.update.message.from.username;
-        const task = await fetchReferralCount(ctx, telegramUserId, telegramUserName);
-      });
-    });
+  // if (settings.coin.setting === 'Runebase') {
+  //   telegramClient.command('referral', async (ctx) => {
+  //     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
+  //     if (maintenance.maintenance || !maintenance.enabled) return;
+  //     await queue.add(async () => {
+  //       const groupTask = await updateGroup(ctx);
+  //       const telegramUserId = ctx.update.message.from.id;
+  //       const telegramUserName = ctx.update.message.from.username;
+  //       const task = await fetchReferralCount(ctx, telegramUserId, telegramUserName);
+  //     });
+  //   });
 
-    telegramClient.action('referral', async (ctx) => {
-      const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
-      if (maintenance.maintenance || !maintenance.enabled) return;
-      await queue.add(async () => {
-        const groupTask = await updateGroup(ctx);
-        const telegramUserId = ctx.update.callback_query.from.id;
-        const telegramUserName = ctx.update.callback_query.from.username;
-        const task = await fetchReferralCount(ctx, telegramUserId, telegramUserName);
-      });
-    });
+  //   telegramClient.action('referral', async (ctx) => {
+  //     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
+  //     if (maintenance.maintenance || !maintenance.enabled) return;
+  //     await queue.add(async () => {
+  //       const groupTask = await updateGroup(ctx);
+  //       const telegramUserId = ctx.update.callback_query.from.id;
+  //       const telegramUserName = ctx.update.callback_query.from.username;
+  //       const task = await fetchReferralCount(ctx, telegramUserId, telegramUserName);
+  //     });
+  //   });
 
-    telegramClient.command('top', async (ctx) => {
-      const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
-      if (maintenance.maintenance || !maintenance.enabled) return;
-      await queue.add(async () => {
-        const groupTask = await updateGroup(ctx);
-        const task = await fetchReferralTopTen(ctx);
-      });
-    });
+  //   telegramClient.command('top', async (ctx) => {
+  //     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
+  //     if (maintenance.maintenance || !maintenance.enabled) return;
+  //     await queue.add(async () => {
+  //       const groupTask = await updateGroup(ctx);
+  //       const task = await fetchReferralTopTen(ctx);
+  //     });
+  //   });
 
-    telegramClient.action('top', async (ctx) => {
-      const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
-      if (maintenance.maintenance || !maintenance.enabled) return;
-      await queue.add(async () => {
-        const groupTask = await updateGroup(ctx);
-        const task = await fetchReferralTopTen(ctx);
-      });
-    });
-  }
+  //   telegramClient.action('top', async (ctx) => {
+  //     const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
+  //     if (maintenance.maintenance || !maintenance.enabled) return;
+  //     await queue.add(async () => {
+  //       const groupTask = await updateGroup(ctx);
+  //       const task = await fetchReferralTopTen(ctx);
+  //     });
+  //   });
+  // }
 
   telegramClient.on('new_chat_members', async (ctx) => {
     await queue.add(async () => {
@@ -439,12 +456,15 @@ export const telegramRouter = async (
     const messageReplaceBreaksWithSpaces = ctx.update.message.text.replace(/\n/g, " ");
     const preFilteredMessageTelegram = messageReplaceBreaksWithSpaces.split(' ');
     const filteredMessageTelegram = preFilteredMessageTelegram.filter((el) => el !== '');
-    const telegramUserId = ctx.update.message.from.id;
-    const telegramUserName = ctx.update.message.from.username;
+    // const telegramUserId = ctx.update.message.from.id;
+    // const telegramUserName = ctx.update.message.from.username;
 
     if (filteredMessageTelegram[0].toLowerCase() === settings.bot.command.telegram) {
       let disallow;
-      const maintenance = await isMaintenanceOrDisabled(ctx, 'telegram');
+      const maintenance = await isMaintenanceOrDisabled(
+        ctx,
+        'telegram',
+      );
       if (maintenance.maintenance || !maintenance.enabled) return;
       if (groupTask && groupTask.banned) {
         try {
@@ -613,22 +633,22 @@ export const telegramRouter = async (
         return;
       }
 
-      if (settings.coin.setting === 'Runebase') {
-        if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'referral' && !filteredMessageTelegram[2]) {
-          await queue.add(async () => {
-            const task = await fetchReferralCount(
-              ctx,
-              telegramUserId,
-              telegramUserName,
-            );
-          });
-        }
-        if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'referral' && filteredMessageTelegram[2] === 'top') {
-          await queue.add(async () => {
-            const task = await fetchReferralTopTen(ctx);
-          });
-        }
-      }
+      // if (settings.coin.setting === 'Runebase') {
+      //   if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'referral' && !filteredMessageTelegram[2]) {
+      //     await queue.add(async () => {
+      //       const task = await fetchReferralCount(
+      //         ctx,
+      //         telegramUserId,
+      //         telegramUserName,
+      //       );
+      //     });
+      //   }
+      //   if (filteredMessageTelegram[1] && filteredMessageTelegram[1] === 'referral' && filteredMessageTelegram[2] === 'top') {
+      //     await queue.add(async () => {
+      //       const task = await fetchReferralTopTen(ctx);
+      //     });
+      //   }
+      // }
 
       if (filteredMessageTelegram[1] && filteredMessageTelegram[1].toLowerCase() === 'flood') {
         const limited = await myRateLimiter(
