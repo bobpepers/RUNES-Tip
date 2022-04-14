@@ -496,8 +496,8 @@ example:
 <code>${settings.bot.command.telegram} withdraw &lt;address&gt; &lt;amount&gt;${settings.coin.setting === 'Pirate' ? ' [memo]' : ''}</code>
 Withdraws the entered amount to a ${settings.coin.ticker} address of your choice
 example:
-<code>${settings.bot.command.telegram} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20</code>
-${settings.coin.setting === 'Pirate' ? `<code>${settings.bot.command.telegram} withdraw ReU2nhYXamYRd2VBk4auwresov6jwLEuSg 5.20 lorem ipsum memo</code>` : ''}
+<code>${settings.bot.command.telegram} withdraw ${settings.coin.exampleAddress} 5.20</code>
+${settings.coin.setting === 'Pirate' ? `<code>${settings.bot.command.telegram} withdraw ${settings.coin.exampleAddress} 5.20 lorem ipsum memo</code>` : ''}
 Note: Minimal amount to withdraw: ${withdraw.min / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${withdraw.fee / 1e2}% ${settings.coin.ticker} will be automatically deducted from the amount. portion of the fee is donated to common faucet pot.
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
