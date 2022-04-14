@@ -58,7 +58,7 @@ export const fetchWalletDepositAddress = async (
     );
 
     await ctx.telegram.sendMessage(
-      ctx.update.message.from.id,
+      userId,
       await depositAddressMessage(
         user,
       ),
