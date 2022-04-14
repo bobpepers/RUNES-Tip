@@ -68,7 +68,9 @@ export const fetchChannels = async (
       },
     ],
   };
+
   res.locals.count = await db.channel.count(options);
   res.locals.channels = await db.channel.findAll(options);
+
   next();
 };

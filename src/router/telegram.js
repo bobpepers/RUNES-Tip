@@ -184,6 +184,13 @@ export const telegramRouter = async (
       'Faucet',
     );
     if (limited) return;
+    const groupTaskId = groupTask && groupTask.id;
+    const setting = await telegramFeatureSettings(
+      ctx,
+      'faucet',
+      groupTaskId,
+    );
+    if (!setting) return;
     if (groupTask && groupTask.banned) {
       try {
         await ctx.replyWithHTML(
@@ -588,6 +595,12 @@ export const telegramRouter = async (
           'Faucet',
         );
         if (limited) return;
+        const setting = await telegramFeatureSettings(
+          ctx,
+          'faucet',
+          groupTaskId,
+        );
+        if (!setting) return;
         await queue.add(async () => {
           const task = await telegramFaucetClaim(
             ctx,

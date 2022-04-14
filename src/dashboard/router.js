@@ -545,7 +545,7 @@ export const dashboardRouter = (
     (req, res) => {
       if (
         res.locals.channels
-        && res.locals.count
+        && res.locals.count >= 0
       ) {
         res.json({
           count: res.locals.count,
