@@ -103,13 +103,8 @@ export const tipRunesToDiscordUser = async (
         }
       }
       if (!userExist) {
-        console.log(discordId);
-        console.log(message.author.id);
         if (discordId !== message.author.id) {
-          console.log(discordId);
           const userClient = await discordClient.users.fetch(discordId);
-          console.log(userClient);
-          console.log('userClient');
           if (
             userClient
             && !userClient.bot

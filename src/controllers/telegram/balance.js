@@ -4,6 +4,7 @@ import {
   balanceMessage,
   warnDirectMessage,
   errorMessage,
+  unableToDirectMessageErrorMessage,
 } from '../../messages/telegram';
 import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
 
@@ -114,14 +115,32 @@ export const telegramBalance = async (
     }
     console.log(err);
     logger.error(`Balance error: ${err}`);
-    try {
-      await ctx.replyWithHTML(
-        await errorMessage(
-          'Balance',
-        ),
-      );
-    } catch (err) {
-      console.log(err);
+    if (
+      err
+      && err.response
+      && err.response.error_code
+      && err.response.error_code === 403
+    ) {
+      try {
+        await ctx.replyWithHTML(
+          await unableToDirectMessageErrorMessage(
+            ctx,
+            'Balance',
+          ),
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      try {
+        await ctx.replyWithHTML(
+          await errorMessage(
+            'Balance',
+          ),
+        );
+      } catch (err) {
+        console.log(err);
+      }
     }
   });
   if (activity.length > 0) {

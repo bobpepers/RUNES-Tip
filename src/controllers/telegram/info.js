@@ -3,6 +3,7 @@ import { Transaction } from "sequelize";
 import {
   InfoMessage,
   errorMessage,
+  unableToDirectMessageErrorMessage,
 } from '../../messages/telegram';
 import db from '../../models';
 import logger from "../../helpers/logger";
@@ -89,14 +90,32 @@ export const fetchInfo = async (
     }
     console.log(err);
     logger.error(`info error: ${err}`);
-    try {
-      await ctx.replyWithHTML(
-        await errorMessage(
-          'Info',
-        ),
-      );
-    } catch (err) {
-      console.log(err);
+    if (
+      err
+      && err.response
+      && err.response.error_code
+      && err.response.error_code === 403
+    ) {
+      try {
+        await ctx.replyWithHTML(
+          await unableToDirectMessageErrorMessage(
+            ctx,
+            'Info',
+          ),
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      try {
+        await ctx.replyWithHTML(
+          await errorMessage(
+            'Info',
+          ),
+        );
+      } catch (err) {
+        console.log(err);
+      }
     }
   });
   if (activity.length > 0) {

@@ -5,6 +5,7 @@ import {
   helpMessage,
   warnDirectMessage,
   errorMessage,
+  unableToDirectMessageErrorMessage,
 } from '../../messages/telegram';
 import getCoinSettings from '../../config/settings';
 import db from '../../models';
@@ -112,14 +113,32 @@ export const fetchHelp = async (
     }
     console.log(err);
     logger.error(`help error: ${err}`);
-    try {
-      await ctx.replyWithHTML(
-        await errorMessage(
-          'Help',
-        ),
-      );
-    } catch (err) {
-      console.log(err);
+    if (
+      err
+      && err.response
+      && err.response.error_code
+      && err.response.error_code === 403
+    ) {
+      try {
+        await ctx.replyWithHTML(
+          await unableToDirectMessageErrorMessage(
+            ctx,
+            'Help',
+          ),
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      try {
+        await ctx.replyWithHTML(
+          await errorMessage(
+            'Help',
+          ),
+        );
+      } catch (err) {
+        console.log(err);
+      }
     }
   });
   if (activity.length > 0) {

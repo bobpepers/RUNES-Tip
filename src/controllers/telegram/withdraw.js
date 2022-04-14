@@ -10,6 +10,7 @@ import {
   reviewMessage,
   unableToWithdrawToSelfMessage,
   telegramTransactionMemoTooLongMessage,
+  unableToDirectMessageErrorMessage,
 } from '../../messages/telegram';
 import logger from "../../helpers/logger";
 import { validateAmount } from "../../helpers/client/telegram/validateAmount";
@@ -233,14 +234,32 @@ export const withdrawTelegramCreate = async (
     }
     console.log(err);
     logger.error(`withdraw error: ${err}`);
-    try {
-      await ctx.replyWithHTML(
-        await errorMessage(
-          'Withdraw',
-        ),
-      );
-    } catch (err) {
-      console.log(err);
+    if (
+      err
+      && err.response
+      && err.response.error_code
+      && err.response.error_code === 403
+    ) {
+      try {
+        await ctx.replyWithHTML(
+          await unableToDirectMessageErrorMessage(
+            ctx,
+            'Withdraw',
+          ),
+        );
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      try {
+        await ctx.replyWithHTML(
+          await errorMessage(
+            'Withdraw',
+          ),
+        );
+      } catch (err) {
+        console.log(err);
+      }
     }
   });
   if (activity.length > 0) {

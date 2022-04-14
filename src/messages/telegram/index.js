@@ -420,6 +420,23 @@ export const telegramLimitSpamMessage = async (
   return result;
 };
 
+export const unableToDirectMessageErrorMessage = async (
+  ctx,
+  myFunctionName,
+) => {
+  const [
+    userToMention,
+    userId,
+  ] = await getUserToMentionCtx(ctx);
+  const result = `<b><u>${myFunctionName}</u></b>
+
+<a href="tg://user?id=${userId}">${userToMention}</a>, ${settings.bot.name} is unable to initiate a conversation with you.
+please manually initiate conversation with the bot first or check your privacy settings.
+
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
+  return result;
+};
+
 export const depositAddressMessage = async (
   user,
 ) => {
@@ -472,9 +489,9 @@ Claim faucet
 <code>${settings.bot.command.telegram} fees</code>
 Displays fee schedule
 
-<code>${settings.bot.command.telegram} tip &lt;@user&gt; &lt;amount&gt;</code>
+<code>${settings.bot.command.telegram} &lt;@user&gt; &lt;amount&gt;</code>
 Tips the @ mentioned user with the desired amount
-example: <code>${settings.bot.command.telegram} tip @Bagosan 1.00</code>
+example: <code>${settings.bot.command.telegram} @Bagosan 1.00</code>
 
 <code>${settings.bot.command.telegram} &lt;@user&gt; &lt;@user&gt; &lt;@user&gt; &lt;amount|all&gt; [split|each]</code>
 Tips the @ mentioned users with the desired amount
