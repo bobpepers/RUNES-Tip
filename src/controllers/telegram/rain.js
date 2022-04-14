@@ -46,6 +46,7 @@ export const telegramRain = async (
     if (!user) return;
 
     const [
+      validAmount,
       activityValiateAmount,
       amount,
     ] = await validateAmount(
@@ -57,7 +58,7 @@ export const telegramRain = async (
       filteredMessage[1].toLowerCase(),
     );
 
-    if (activityValiateAmount) {
+    if (!validAmount) {
       activity.unshift(activityValiateAmount);
       return;
     }

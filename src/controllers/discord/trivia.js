@@ -441,6 +441,7 @@ export const discordTrivia = async (
     if (!user) return;
 
     const [
+      validAmount,
       activityValiateAmount,
       amount,
     ] = await validateAmount(
@@ -451,7 +452,7 @@ export const discordTrivia = async (
       setting,
       'trivia',
     );
-    if (activityValiateAmount) {
+    if (!validAmount) {
       activity = activityValiateAmount;
       return;
     }

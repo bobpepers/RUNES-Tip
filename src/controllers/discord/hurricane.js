@@ -90,6 +90,7 @@ export const discordHurricane = async (
     const withoutBots = _.sampleSize(preWithoutBots, Number(filteredMessage[2]));
 
     const [
+      validAmount,
       activityValiateAmount,
       amount,
     ] = await validateAmount(
@@ -100,7 +101,7 @@ export const discordHurricane = async (
       setting,
       filteredMessage[1].toLowerCase(),
     );
-    if (activityValiateAmount) {
+    if (!validAmount) {
       activity.unshift(activityValiateAmount);
       return;
     }

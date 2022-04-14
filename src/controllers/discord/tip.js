@@ -172,6 +172,7 @@ export const tipRunesToDiscordUser = async (
     }
     // verify amount
     const [
+      validAmount,
       activityValiateAmount,
       amount,
     ] = await validateAmount(
@@ -184,7 +185,7 @@ export const tipRunesToDiscordUser = async (
       type,
       usersToTip,
     );
-    if (activityValiateAmount) {
+    if (!validAmount) {
       activity.unshift(activityValiateAmount);
       return;
     }
@@ -441,6 +442,7 @@ export const tipCoinsToDiscordFaucet = async (
 
     // verify amount
     const [
+      validAmount,
       activityValiateAmount,
       amount,
     ] = await validateAmount(
@@ -454,7 +456,7 @@ export const tipCoinsToDiscordFaucet = async (
       usersToTip,
     );
 
-    if (activityValiateAmount) {
+    if (!validAmount) {
       activity.unshift(activityValiateAmount);
       return;
     }

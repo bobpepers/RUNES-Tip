@@ -42,6 +42,7 @@ export const discordSleet = async (
     if (!user) return;
 
     const [
+      validAmount,
       activityValiateAmount,
       amount,
     ] = await validateAmount(
@@ -52,7 +53,7 @@ export const discordSleet = async (
       setting,
       filteredMessage[1].toLowerCase(),
     );
-    if (activityValiateAmount) {
+    if (!validAmount) {
       activity.unshift(activityValiateAmount);
       return;
     }

@@ -76,6 +76,7 @@ export const discordThunderStorm = async (
     if (!user) return;
 
     const [
+      validAmount,
       activityValiateAmount,
       amount,
     ] = await validateAmount(
@@ -86,7 +87,7 @@ export const discordThunderStorm = async (
       setting,
       'thunderstorm',
     );
-    if (activityValiateAmount) {
+    if (!validAmount) {
       activity.unshift(activityValiateAmount);
       return;
     }

@@ -50,6 +50,7 @@ export const telegramFlood = async (
     if (!user) return;
 
     const [
+      validAmount,
       activityValiateAmount,
       amount,
     ] = await validateAmount(
@@ -61,7 +62,7 @@ export const telegramFlood = async (
       filteredMessage[1].toLowerCase(),
     );
 
-    if (activityValiateAmount) {
+    if (!validAmount) {
       activity.unshift(activityValiateAmount);
       return;
     }

@@ -132,6 +132,7 @@ export const tipToTelegramUser = async (
     }
 
     const [
+      validAmount,
       activityValiateAmount,
       amount,
     ] = await validateAmount(
@@ -145,7 +146,7 @@ export const tipToTelegramUser = async (
       usersToTip,
     );
 
-    if (activityValiateAmount) {
+    if (!validAmount) {
       activity.unshift(activityValiateAmount);
       return;
     }

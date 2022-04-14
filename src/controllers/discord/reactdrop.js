@@ -500,6 +500,7 @@ export const discordReactDrop = async (
     if (!user) return;
 
     const [
+      validAmount,
       activityValiateAmount,
       amount,
     ] = await validateAmount(
@@ -510,7 +511,7 @@ export const discordReactDrop = async (
       setting,
       'reactdrop',
     );
-    if (activityValiateAmount) {
+    if (!validAmount) {
       activity.unshift(activityValiateAmount);
       return;
     }

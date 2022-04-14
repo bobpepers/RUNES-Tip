@@ -519,7 +519,7 @@ export const discordRouter = (
       if (!setting) return;
 
       if (
-        filteredMessageDiscord[1].substr(3).slice(0, -1) === discordClient.user.id
+        filteredMessageDiscord[1].substr(2).slice(0, -1) === discordClient.user.id
       ) {
         await executeTipFunction(
           tipCoinsToDiscordFaucet,
@@ -607,7 +607,7 @@ export const discordRouter = (
         discordClient,
         message,
         'discord',
-        'Fees',
+        'Rain',
       );
       if (limited) return;
 

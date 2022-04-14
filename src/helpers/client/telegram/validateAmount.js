@@ -50,6 +50,7 @@ export const validateAmount = async (
       ),
     );
     return [
+      false,
       activity,
       amount,
     ];
@@ -93,6 +94,7 @@ export const validateAmount = async (
       ),
     );
     return [
+      false,
       activity,
       amount,
     ];
@@ -136,6 +138,7 @@ export const validateAmount = async (
       ),
     );
     return [
+      false,
       activity,
       amount,
     ];
@@ -155,6 +158,7 @@ export const validateAmount = async (
       ),
     );
     return [
+      false,
       activity,
       amount,
     ];
@@ -191,11 +195,13 @@ export const validateAmount = async (
       ),
     );
     return [
+      false,
       activity,
       amount,
     ];
   }
   return [
+    true,
     activity,
     amount,
   ];

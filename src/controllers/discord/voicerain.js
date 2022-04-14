@@ -66,6 +66,7 @@ export const discordVoiceRain = async (
     if (!user) return;
 
     const [
+      validAmount,
       activityValiateAmount,
       amount,
     ] = await validateAmount(
@@ -76,7 +77,7 @@ export const discordVoiceRain = async (
       setting,
       filteredMessage[1].toLowerCase(),
     );
-    if (activityValiateAmount) {
+    if (!validAmount) {
       activity.unshift(activityValiateAmount);
       return;
     }
@@ -162,7 +163,7 @@ export const discordVoiceRain = async (
       amount,
       type: 'voicerain_s',
       spenderId: user.id,
-      rainId: rainRecord.id,
+      voicerainId: rainRecord.id,
       spender_balance: updatedBalance.available + updatedBalance.locked,
     }, {
       lock: t.LOCK.UPDATE,

@@ -134,6 +134,7 @@ export const tipRunesToMatrixUser = async (
     // verify amount
     console.log(filteredMessage[parseInt(AmountPosition, 10)]);
     const [
+      validAmount,
       activityValiateAmount,
       amount,
     ] = await validateAmount(
@@ -147,7 +148,7 @@ export const tipRunesToMatrixUser = async (
       type,
       usersToTip,
     );
-    if (activityValiateAmount) {
+    if (!validAmount) {
       activity.unshift(activityValiateAmount);
       return;
     }
