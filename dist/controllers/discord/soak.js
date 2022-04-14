@@ -48,7 +48,7 @@ var discordSoak = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, members, onlineMembers, withoutBots, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, soakRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, soakee, soakeeWallet, soaktipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, validAmount, activityValiateAmount, amount, members, onlineMembers, withoutBots, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, soakRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, soakee, soakeeWallet, soaktipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -80,41 +80,42 @@ var discordSoak = /*#__PURE__*/function () {
 
                       case 11:
                         _yield$validateAmount = _context.sent;
-                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
-                        activityValiateAmount = _yield$validateAmount2[0];
-                        amount = _yield$validateAmount2[1];
+                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 3);
+                        validAmount = _yield$validateAmount2[0];
+                        activityValiateAmount = _yield$validateAmount2[1];
+                        amount = _yield$validateAmount2[2];
 
-                        if (!activityValiateAmount) {
-                          _context.next = 18;
+                        if (validAmount) {
+                          _context.next = 19;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 18:
-                        _context.next = 20;
+                      case 19:
+                        _context.next = 21;
                         return discordClient.guilds.cache.get(message.guildId).members.fetch({
                           withPresences: true
                         });
 
-                      case 20:
+                      case 21:
                         members = _context.sent;
                         onlineMembers = members.filter(function (member) {
                           return member.presence && member.presence.status === "online" || member.presence && member.presence.status === "idle" || member.presence && member.presence.status === "dnd";
                         });
-                        _context.next = 24;
+                        _context.next = 25;
                         return (0, _mapMembers.mapMembers)(message, t, filteredMessage[3], onlineMembers, setting);
 
-                      case 24:
+                      case 25:
                         withoutBots = _context.sent;
 
                         if (!(withoutBots.length < 2)) {
-                          _context.next = 33;
+                          _context.next = 34;
                           break;
                         }
 
-                        _context.next = 28;
+                        _context.next = 29;
                         return _models["default"].activity.create({
                           type: 'soak_f',
                           spenderId: user.id
@@ -123,19 +124,19 @@ var discordSoak = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 28:
+                      case 29:
                         failActivity = _context.sent;
                         activity.unshift(failActivity);
-                        _context.next = 32;
+                        _context.next = 33;
                         return message.channel.send({
                           embeds: [(0, _discord.notEnoughActiveUsersMessage)(message, 'Soak')]
                         });
 
-                      case 32:
+                      case 33:
                         return _context.abrupt("return");
 
-                      case 33:
-                        _context.next = 35;
+                      case 34:
+                        _context.next = 36;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -143,16 +144,16 @@ var discordSoak = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 35:
+                      case 36:
                         updatedBalance = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
-                        _context.next = 40;
+                        _context.next = 41;
                         return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
 
-                      case 40:
+                      case 41:
                         faucetWatered = _context.sent;
-                        _context.next = 43;
+                        _context.next = 44;
                         return _models["default"].soak.create({
                           feeAmount: fee,
                           amount: amount,
@@ -165,9 +166,9 @@ var discordSoak = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 43:
+                      case 44:
                         soakRecord = _context.sent;
-                        _context.next = 46;
+                        _context.next = 47;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'soak_s',
@@ -179,9 +180,9 @@ var discordSoak = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 46:
+                      case 47:
                         preActivity = _context.sent;
-                        _context.next = 49;
+                        _context.next = 50;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -197,25 +198,25 @@ var discordSoak = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 49:
+                      case 50:
                         finalActivity = _context.sent;
                         activity.unshift(finalActivity);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(withoutBots);
-                        _context.prev = 53;
+                        _context.prev = 54;
 
                         _iterator.s();
 
-                      case 55:
+                      case 56:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 74;
+                          _context.next = 75;
                           break;
                         }
 
                         soakee = _step.value;
-                        _context.next = 59;
+                        _context.next = 60;
                         return soakee.wallet.update({
                           available: soakee.wallet.available + Number(amountPerUser)
                         }, {
@@ -223,9 +224,9 @@ var discordSoak = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 59:
+                      case 60:
                         soakeeWallet = _context.sent;
-                        _context.next = 62;
+                        _context.next = 63;
                         return _models["default"].soaktip.create({
                           amount: amountPerUser,
                           userId: soakee.id,
@@ -237,7 +238,7 @@ var discordSoak = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 62:
+                      case 63:
                         soaktipRecord = _context.sent;
 
                         if (soakee.ignoreMe) {
@@ -249,7 +250,7 @@ var discordSoak = /*#__PURE__*/function () {
 
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context.next = 67;
+                        _context.next = 68;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
                           type: 'soaktip_s',
@@ -264,9 +265,9 @@ var discordSoak = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 67:
+                      case 68:
                         tipActivity = _context.sent;
-                        _context.next = 70;
+                        _context.next = 71;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -288,90 +289,90 @@ var discordSoak = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 70:
+                      case 71:
                         tipActivity = _context.sent;
                         activity.unshift(tipActivity);
 
-                      case 72:
-                        _context.next = 55;
+                      case 73:
+                        _context.next = 56;
                         break;
 
-                      case 74:
-                        _context.next = 79;
+                      case 75:
+                        _context.next = 80;
                         break;
 
-                      case 76:
-                        _context.prev = 76;
-                        _context.t0 = _context["catch"](53);
+                      case 77:
+                        _context.prev = 77;
+                        _context.t0 = _context["catch"](54);
 
                         _iterator.e(_context.t0);
 
-                      case 79:
-                        _context.prev = 79;
+                      case 80:
+                        _context.prev = 80;
 
                         _iterator.f();
 
-                        return _context.finish(79);
+                        return _context.finish(80);
 
-                      case 82:
+                      case 83:
                         newStringListUsers = listOfUsersRained.join(", ");
                         console.log(newStringListUsers);
                         cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                        _context.prev = 86;
+                        _context.prev = 87;
 
                         _iterator2.s();
 
-                      case 88:
+                      case 89:
                         if ((_step2 = _iterator2.n()).done) {
-                          _context.next = 94;
+                          _context.next = 95;
                           break;
                         }
 
                         element = _step2.value;
-                        _context.next = 92;
+                        _context.next = 93;
                         return message.channel.send(element);
 
-                      case 92:
-                        _context.next = 88;
+                      case 93:
+                        _context.next = 89;
                         break;
 
-                      case 94:
-                        _context.next = 99;
+                      case 95:
+                        _context.next = 100;
                         break;
 
-                      case 96:
-                        _context.prev = 96;
-                        _context.t1 = _context["catch"](86);
+                      case 97:
+                        _context.prev = 97;
+                        _context.t1 = _context["catch"](87);
 
                         _iterator2.e(_context.t1);
 
-                      case 99:
-                        _context.prev = 99;
+                      case 100:
+                        _context.prev = 100;
 
                         _iterator2.f();
 
-                        return _context.finish(99);
+                        return _context.finish(100);
 
-                      case 102:
-                        _context.next = 104;
+                      case 103:
+                        _context.next = 105;
                         return message.channel.send({
                           embeds: [(0, _discord.AfterSuccessMessage)(message, soakRecord.id, amount, withoutBots, amountPerUser, 'Soak', 'soaked')]
                         });
 
-                      case 104:
+                      case 105:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 105:
+                      case 106:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[53, 76, 79, 82], [86, 96, 99, 102]]);
+                }, _callee, null, [[54, 77, 80, 83], [87, 97, 100, 103]]);
               }));
 
               return function (_x10) {

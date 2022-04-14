@@ -313,7 +313,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
     }
   });
   app.post('/api/channels', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, _channels.fetchChannels, function (req, res) {
-    if (res.locals.channels && res.locals.count) {
+    if (res.locals.channels && res.locals.count >= 0) {
       res.json({
         count: res.locals.count,
         channels: res.locals.channels

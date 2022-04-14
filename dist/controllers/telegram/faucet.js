@@ -48,7 +48,7 @@ var telegramFaucetClaim = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, faucet, activityNotFound, fActivity, lastFaucetTip, dateFuture, dateNow, distance, activityT, amountToTip, faucetTip, updateFaucet, updateWallet, preActivity, finalActivity;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, faucet, activityNotFound, fActivity, lastFaucetTip, dateFuture, dateNow, distance, activityTpre, activityT, amountToTip, faucetTip, updateFaucet, updateWallet, preActivity, finalActivity;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -148,37 +148,53 @@ var telegramFaucetClaim = /*#__PURE__*/function () {
                         distance = dateFuture && dateFuture - dateNow;
 
                         if (!(distance && distance > 0)) {
-                          _context.next = 47;
+                          _context.next = 50;
                           break;
                         }
 
                         _context.next = 37;
                         return _models["default"].activity.create({
-                          type: 'faucettip_t'
+                          type: 'faucettip_t',
+                          earnerId: user.id
                         }, {
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
                       case 37:
+                        activityTpre = _context.sent;
+                        _context.next = 40;
+                        return _models["default"].activity.findOne({
+                          where: {
+                            id: activityTpre.id
+                          },
+                          include: [{
+                            model: _models["default"].user,
+                            as: 'earner'
+                          }],
+                          lock: t.LOCK.UPDATE,
+                          transaction: t
+                        });
+
+                      case 40:
                         activityT = _context.sent;
                         activity.push(activityT);
                         _context.t0 = ctx;
-                        _context.next = 42;
+                        _context.next = 45;
                         return (0, _telegram.claimTooFastFaucetMessage)(user, distance);
 
-                      case 42:
+                      case 45:
                         _context.t1 = _context.sent;
                         _context.t2 = _objectSpread({}, _telegraf.Markup.inlineKeyboard([[_telegraf.Markup.button.callback('Claim Faucet', 'faucet')]]));
-                        _context.next = 46;
+                        _context.next = 49;
                         return _context.t0.replyWithHTML.call(_context.t0, _context.t1, _context.t2);
 
-                      case 46:
+                      case 49:
                         return _context.abrupt("return");
 
-                      case 47:
+                      case 50:
                         amountToTip = Number((faucet.amount / 100 * (settings.faucet / 1e2)).toFixed(0));
-                        _context.next = 50;
+                        _context.next = 53;
                         return _models["default"].faucettip.create({
                           amount: amountToTip,
                           faucetId: faucet.id,
@@ -188,9 +204,9 @@ var telegramFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 50:
+                      case 53:
                         faucetTip = _context.sent;
-                        _context.next = 53;
+                        _context.next = 56;
                         return faucet.update({
                           amount: Number(faucet.amount) - Number(amountToTip),
                           claims: faucet.claims + 1,
@@ -200,9 +216,9 @@ var telegramFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 53:
+                      case 56:
                         updateFaucet = _context.sent;
-                        _context.next = 56;
+                        _context.next = 59;
                         return user.wallet.update({
                           available: Number(user.wallet.available) + amountToTip
                         }, {
@@ -210,9 +226,9 @@ var telegramFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 56:
+                      case 59:
                         updateWallet = _context.sent;
-                        _context.next = 59;
+                        _context.next = 62;
                         return _models["default"].activity.create({
                           type: 'faucettip_s',
                           earnerId: user.id,
@@ -225,9 +241,9 @@ var telegramFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 59:
+                      case 62:
                         preActivity = _context.sent;
-                        _context.next = 62;
+                        _context.next = 65;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -240,20 +256,20 @@ var telegramFaucetClaim = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 62:
+                      case 65:
                         finalActivity = _context.sent;
                         activity.unshift(finalActivity);
                         _context.t3 = ctx;
-                        _context.next = 67;
+                        _context.next = 70;
                         return (0, _telegram.faucetClaimedMessage)(faucetTip.id, user, amountToTip);
 
-                      case 67:
+                      case 70:
                         _context.t4 = _context.sent;
                         _context.t5 = _objectSpread({}, _telegraf.Markup.inlineKeyboard([[_telegraf.Markup.button.callback('Claim Faucet', 'faucet')]]));
-                        _context.next = 71;
+                        _context.next = 74;
                         return _context.t3.replyWithHTML.call(_context.t3, _context.t4, _context.t5);
 
-                      case 71:
+                      case 74:
                       case "end":
                         return _context.stop();
                     }

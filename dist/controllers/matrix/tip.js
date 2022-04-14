@@ -52,7 +52,7 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _loop, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, updatedBalance, fee, userTipAmount, faucetWatered, tipRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, tipee, tipeeWallet, tiptipRecord, tipActivity, userIdReceivedRain, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _loop, _yield$validateAmount, _yield$validateAmount2, validAmount, activityValiateAmount, amount, updatedBalance, fee, userTipAmount, faucetWatered, tipRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, tipee, tipeeWallet, tiptipRecord, tipActivity, userIdReceivedRain, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context2) {
                   while (1) {
@@ -200,20 +200,21 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
 
                       case 28:
                         _yield$validateAmount = _context2.sent;
-                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
-                        activityValiateAmount = _yield$validateAmount2[0];
-                        amount = _yield$validateAmount2[1];
+                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 3);
+                        validAmount = _yield$validateAmount2[0];
+                        activityValiateAmount = _yield$validateAmount2[1];
+                        amount = _yield$validateAmount2[2];
 
-                        if (!activityValiateAmount) {
-                          _context2.next = 35;
+                        if (validAmount) {
+                          _context2.next = 36;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context2.abrupt("return");
 
-                      case 35:
-                        _context2.next = 37;
+                      case 36:
+                        _context2.next = 38;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -221,16 +222,16 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 37:
+                      case 38:
                         updatedBalance = _context2.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         userTipAmount = (amount - Number(fee)) / usersToTip.length;
-                        _context2.next = 42;
+                        _context2.next = 43;
                         return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
 
-                      case 42:
+                      case 43:
                         faucetWatered = _context2.sent;
-                        _context2.next = 45;
+                        _context2.next = 46;
                         return _models["default"].tip.create({
                           feeAmount: fee,
                           amount: amount,
@@ -243,9 +244,9 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 45:
+                      case 46:
                         tipRecord = _context2.sent;
-                        _context2.next = 48;
+                        _context2.next = 49;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'tip_s',
@@ -257,9 +258,9 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 48:
+                      case 49:
                         preActivity = _context2.sent;
-                        _context2.next = 51;
+                        _context2.next = 52;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -275,25 +276,25 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 51:
+                      case 52:
                         finalActivity = _context2.sent;
                         activity.unshift(finalActivity);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(usersToTip);
-                        _context2.prev = 55;
+                        _context2.prev = 56;
 
                         _iterator.s();
 
-                      case 57:
+                      case 58:
                         if ((_step = _iterator.n()).done) {
-                          _context2.next = 76;
+                          _context2.next = 77;
                           break;
                         }
 
                         tipee = _step.value;
-                        _context2.next = 61;
+                        _context2.next = 62;
                         return tipee.wallet.update({
                           available: tipee.wallet.available + Number(userTipAmount)
                         }, {
@@ -301,9 +302,9 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 61:
+                      case 62:
                         tipeeWallet = _context2.sent;
-                        _context2.next = 64;
+                        _context2.next = 65;
                         return _models["default"].tiptip.create({
                           amount: Number(userTipAmount),
                           userId: tipee.id,
@@ -314,11 +315,11 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 64:
+                      case 65:
                         tiptipRecord = _context2.sent;
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context2.next = 68;
+                        _context2.next = 69;
                         return _models["default"].activity.create({
                           amount: Number(userTipAmount),
                           type: 'tiptip_s',
@@ -333,9 +334,9 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 68:
+                      case 69:
                         tipActivity = _context2.sent;
-                        _context2.next = 71;
+                        _context2.next = 72;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -357,7 +358,7 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 71:
+                      case 72:
                         tipActivity = _context2.sent;
                         activity.unshift(tipActivity);
 
@@ -368,43 +369,43 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                           listOfUsersRained.push("<a href=\"https://matrix.to/#/".concat(userIdReceivedRain, "\">").concat(tipee.username, "</a>"));
                         }
 
-                      case 74:
-                        _context2.next = 57;
+                      case 75:
+                        _context2.next = 58;
                         break;
 
-                      case 76:
-                        _context2.next = 81;
+                      case 77:
+                        _context2.next = 82;
                         break;
 
-                      case 78:
-                        _context2.prev = 78;
-                        _context2.t1 = _context2["catch"](55);
+                      case 79:
+                        _context2.prev = 79;
+                        _context2.t1 = _context2["catch"](56);
 
                         _iterator.e(_context2.t1);
 
-                      case 81:
-                        _context2.prev = 81;
+                      case 82:
+                        _context2.prev = 82;
 
                         _iterator.f();
 
-                        return _context2.finish(81);
+                        return _context2.finish(82);
 
-                      case 84:
+                      case 85:
                         if (!(listOfUsersRained.length === 1)) {
-                          _context2.next = 89;
+                          _context2.next = 90;
                           break;
                         }
 
-                        _context2.next = 87;
+                        _context2.next = 88;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.tipSingleSuccessMessage)(message, tipRecord.id, listOfUsersRained, userTipAmount));
 
-                      case 87:
-                        _context2.next = 111;
+                      case 88:
+                        _context2.next = 112;
                         break;
 
-                      case 89:
+                      case 90:
                         if (!(listOfUsersRained.length > 1)) {
-                          _context2.next = 111;
+                          _context2.next = 112;
                           break;
                         }
 
@@ -413,56 +414,56 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                        _context2.prev = 93;
+                        _context2.prev = 94;
 
                         _iterator2.s();
 
-                      case 95:
+                      case 96:
                         if ((_step2 = _iterator2.n()).done) {
-                          _context2.next = 101;
+                          _context2.next = 102;
                           break;
                         }
 
                         element = _step2.value;
-                        _context2.next = 99;
+                        _context2.next = 100;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.userListMessage)(element));
 
-                      case 99:
-                        _context2.next = 95;
+                      case 100:
+                        _context2.next = 96;
                         break;
 
-                      case 101:
-                        _context2.next = 106;
+                      case 102:
+                        _context2.next = 107;
                         break;
 
-                      case 103:
-                        _context2.prev = 103;
-                        _context2.t2 = _context2["catch"](93);
+                      case 104:
+                        _context2.prev = 104;
+                        _context2.t2 = _context2["catch"](94);
 
                         _iterator2.e(_context2.t2);
 
-                      case 106:
-                        _context2.prev = 106;
+                      case 107:
+                        _context2.prev = 107;
 
                         _iterator2.f();
 
-                        return _context2.finish(106);
+                        return _context2.finish(107);
 
-                      case 109:
-                        _context2.next = 111;
+                      case 110:
+                        _context2.next = 112;
                         return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.tipMultipleSuccessMessage)(message, tipRecord.id, listOfUsersRained, userTipAmount, type));
 
-                      case 111:
+                      case 112:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 112:
+                      case 113:
                       case "end":
                         return _context2.stop();
                     }
                   }
-                }, _callee, null, [[55, 78, 81, 84], [93, 103, 106, 109]]);
+                }, _callee, null, [[56, 79, 82, 85], [94, 104, 107, 110]]);
               }));
 
               return function (_x12) {

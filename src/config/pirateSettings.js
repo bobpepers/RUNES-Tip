@@ -15,7 +15,7 @@ module.exports = {
     enabled: {
       telegram: true,
       discord: true,
-      matrix: true,
+      matrix: false,
     },
   },
   coin: {

@@ -750,7 +750,7 @@ var discordTrivia = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref11 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee11(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, totalPeople, isnumPeople, textTime, cutLastTimeLetter, cutNumberTime, isnum, amountPeopleFailActivity, timeFailActivity, _timeFailActivity, randomQuestion, failFindTriviaQuestion, timeDay, timeHour, timeMinute, timeSecond, dateObj, countDownDate, now, distance, findGroup, wallet, row, alphabet, answers, answerString, positionAlphabet, group, channel, fee, _iterator3, _step3, answer, newTriviaCreate, sendTriviaMessage, newUpdatedTriviaCreate, newTrivia, preActivity, finalActivity, triviaMessage, updateMessage;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, validAmount, activityValiateAmount, amount, totalPeople, isnumPeople, textTime, cutLastTimeLetter, cutNumberTime, isnum, amountPeopleFailActivity, timeFailActivity, _timeFailActivity, randomQuestion, failFindTriviaQuestion, timeDay, timeHour, timeMinute, timeSecond, dateObj, countDownDate, now, distance, findGroup, wallet, row, alphabet, answers, answerString, positionAlphabet, group, channel, fee, _iterator3, _step3, answer, newTriviaCreate, sendTriviaMessage, newUpdatedTriviaCreate, newTrivia, preActivity, finalActivity, triviaMessage, updateMessage;
 
                 return _regenerator["default"].wrap(function _callee11$(_context11) {
                   while (1) {
@@ -782,19 +782,20 @@ var discordTrivia = /*#__PURE__*/function () {
 
                       case 11:
                         _yield$validateAmount = _context11.sent;
-                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
-                        activityValiateAmount = _yield$validateAmount2[0];
-                        amount = _yield$validateAmount2[1];
+                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 3);
+                        validAmount = _yield$validateAmount2[0];
+                        activityValiateAmount = _yield$validateAmount2[1];
+                        amount = _yield$validateAmount2[2];
 
-                        if (!activityValiateAmount) {
-                          _context11.next = 18;
+                        if (validAmount) {
+                          _context11.next = 19;
                           break;
                         }
 
                         activity = activityValiateAmount;
                         return _context11.abrupt("return");
 
-                      case 18:
+                      case 19:
                         /// Trivia
                         /// Amount of people to win trivia
                         totalPeople = 1;
@@ -821,11 +822,11 @@ var discordTrivia = /*#__PURE__*/function () {
                         isnum = /^\d+$/.test(cutNumberTime);
 
                         if (!(!isnumPeople && totalPeople % 1 === 0)) {
-                          _context11.next = 35;
+                          _context11.next = 36;
                           break;
                         }
 
-                        _context11.next = 29;
+                        _context11.next = 30;
                         return _models["default"].activity.create({
                           type: 'trivia_f',
                           spenderId: user.id
@@ -834,26 +835,26 @@ var discordTrivia = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 29:
+                      case 30:
                         amountPeopleFailActivity = _context11.sent;
                         activity.unshift(amountPeopleFailActivity);
-                        _context11.next = 33;
+                        _context11.next = 34;
                         return message.channel.send({
                           embeds: [(0, _discord2.invalidPeopleAmountMessage)(message, 'Trivia')]
                         });
 
-                      case 33:
-                        _context11.next = 138;
+                      case 34:
+                        _context11.next = 139;
                         break;
 
-                      case 35:
+                      case 36:
                         if (!(!isnum // && Number(cutNumberTime) < 0
                         || cutLastTimeLetter !== 'd' && cutLastTimeLetter !== 'h' && cutLastTimeLetter !== 'm' && cutLastTimeLetter !== 's')) {
-                          _context11.next = 44;
+                          _context11.next = 45;
                           break;
                         }
 
-                        _context11.next = 38;
+                        _context11.next = 39;
                         return _models["default"].activity.create({
                           type: 'trivia_f',
                           spenderId: user.id
@@ -862,25 +863,25 @@ var discordTrivia = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 38:
+                      case 39:
                         timeFailActivity = _context11.sent;
                         activity.unshift(timeFailActivity);
-                        _context11.next = 42;
+                        _context11.next = 43;
                         return message.channel.send({
                           embeds: [(0, _discord2.invalidTimeMessage)(message, 'Trivia')]
                         });
 
-                      case 42:
-                        _context11.next = 138;
+                      case 43:
+                        _context11.next = 139;
                         break;
 
-                      case 44:
+                      case 45:
                         if (!(cutLastTimeLetter === 's' && Number(cutNumberTime) < 30)) {
-                          _context11.next = 53;
+                          _context11.next = 54;
                           break;
                         }
 
-                        _context11.next = 47;
+                        _context11.next = 48;
                         return _models["default"].activity.create({
                           type: 'trivia_f',
                           spenderId: user.id
@@ -889,20 +890,20 @@ var discordTrivia = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 47:
+                      case 48:
                         _timeFailActivity = _context11.sent;
                         activity.unshift(_timeFailActivity);
-                        _context11.next = 51;
+                        _context11.next = 52;
                         return message.channel.send({
                           embeds: [(0, _discord2.minimumTimeReactDropMessage)(message)]
                         });
 
-                      case 51:
-                        _context11.next = 138;
+                      case 52:
+                        _context11.next = 139;
                         break;
 
-                      case 53:
-                        _context11.next = 55;
+                      case 54:
+                        _context11.next = 56;
                         return _models["default"].triviaquestion.findOne({
                           order: _models["default"].sequelize.random(),
                           where: {
@@ -916,15 +917,15 @@ var discordTrivia = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 55:
+                      case 56:
                         randomQuestion = _context11.sent;
 
                         if (randomQuestion) {
-                          _context11.next = 65;
+                          _context11.next = 66;
                           break;
                         }
 
-                        _context11.next = 59;
+                        _context11.next = 60;
                         return _models["default"].activity.create({
                           type: 'trivia_f',
                           spenderId: user.id
@@ -933,42 +934,42 @@ var discordTrivia = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 59:
+                      case 60:
                         failFindTriviaQuestion = _context11.sent;
                         activity.unshift(failFindTriviaQuestion);
-                        _context11.next = 63;
+                        _context11.next = 64;
                         return message.channel.send({
                           embeds: [(0, _discord2.noTriviaQuestionFoundMessage)(message, 'Trivia')]
                         });
 
-                      case 63:
-                        _context11.next = 138;
+                      case 64:
+                        _context11.next = 139;
                         break;
 
-                      case 65:
+                      case 66:
                         timeDay = Number(cutNumberTime) * 24 * 60 * 60 * 1000;
                         timeHour = Number(cutNumberTime) * 60 * 60 * 1000;
                         timeMinute = Number(cutNumberTime) * 60 * 1000;
                         timeSecond = Number(cutNumberTime) * 1000;
 
                         if (!(cutLastTimeLetter === 'd' && timeDay > 172800000 || cutLastTimeLetter === 'h' && timeHour > 172800000 || cutLastTimeLetter === 'm' && timeMinute > 172800000 || cutLastTimeLetter === 's' && timeSecond > 172800000)) {
-                          _context11.next = 73;
+                          _context11.next = 74;
                           break;
                         }
 
-                        _context11.next = 72;
+                        _context11.next = 73;
                         return message.channel.send({
                           embeds: [(0, _discord2.maxTimeTriviaMessage)(message)]
                         });
 
-                      case 72:
+                      case 73:
                         return _context11.abrupt("return");
 
-                      case 73:
-                        _context11.next = 75;
+                      case 74:
+                        _context11.next = 76;
                         return new Date().getTime();
 
-                      case 75:
+                      case 76:
                         dateObj = _context11.sent;
 
                         if (cutLastTimeLetter === 'd') {
@@ -987,24 +988,24 @@ var discordTrivia = /*#__PURE__*/function () {
                           dateObj += timeSecond;
                         }
 
-                        _context11.next = 82;
+                        _context11.next = 83;
                         return new Date(dateObj);
 
-                      case 82:
+                      case 83:
                         dateObj = _context11.sent;
-                        _context11.next = 85;
+                        _context11.next = 86;
                         return dateObj.getTime();
 
-                      case 85:
+                      case 86:
                         countDownDate = _context11.sent;
-                        _context11.next = 88;
+                        _context11.next = 89;
                         return new Date().getTime();
 
-                      case 88:
+                      case 89:
                         now = _context11.sent;
                         distance = countDownDate - now; // console.log(shuffeledEmojisArray);
 
-                        _context11.next = 92;
+                        _context11.next = 93;
                         return _models["default"].group.findOne({
                           where: {
                             groupId: "discord-".concat(message.guildId)
@@ -1013,20 +1014,20 @@ var discordTrivia = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 92:
+                      case 93:
                         findGroup = _context11.sent;
 
                         if (findGroup) {
-                          _context11.next = 97;
+                          _context11.next = 98;
                           break;
                         }
 
                         console.log('group not found');
-                        _context11.next = 138;
+                        _context11.next = 139;
                         break;
 
-                      case 97:
-                        _context11.next = 99;
+                      case 98:
+                        _context11.next = 100;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -1034,7 +1035,7 @@ var discordTrivia = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 99:
+                      case 100:
                         wallet = _context11.sent;
                         row = new _discord.MessageActionRow();
                         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -1042,7 +1043,7 @@ var discordTrivia = /*#__PURE__*/function () {
                         answerString = '';
                         positionAlphabet = 0; // console.log(answers);
 
-                        _context11.next = 107;
+                        _context11.next = 108;
                         return _models["default"].group.findOne({
                           where: {
                             groupId: "discord-".concat(message.guildId)
@@ -1051,9 +1052,9 @@ var discordTrivia = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 107:
+                      case 108:
                         group = _context11.sent;
-                        _context11.next = 110;
+                        _context11.next = 111;
                         return _models["default"].channel.findOne({
                           where: {
                             channelId: "discord-".concat(message.channelId)
@@ -1062,7 +1063,7 @@ var discordTrivia = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 110:
+                      case 111:
                         channel = _context11.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0); // eslint-disable-next-line no-restricted-syntax
 
@@ -1083,7 +1084,7 @@ var discordTrivia = /*#__PURE__*/function () {
                           _iterator3.f();
                         }
 
-                        _context11.next = 116;
+                        _context11.next = 117;
                         return _models["default"].trivia.create({
                           feeAmount: Number(fee),
                           amount: amount,
@@ -1099,17 +1100,17 @@ var discordTrivia = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 116:
+                      case 117:
                         newTriviaCreate = _context11.sent;
-                        _context11.next = 119;
+                        _context11.next = 120;
                         return message.channel.send({
                           embeds: [(0, _discord2.triviaMessageDiscord)(newTriviaCreate.id, distance, message.author.id, randomQuestion.question, answerString, amount, totalPeople)],
                           components: [row]
                         });
 
-                      case 119:
+                      case 120:
                         sendTriviaMessage = _context11.sent;
-                        _context11.next = 122;
+                        _context11.next = 123;
                         return newTriviaCreate.update({
                           messageId: sendTriviaMessage.id
                         }, {
@@ -1117,9 +1118,9 @@ var discordTrivia = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 122:
+                      case 123:
                         newUpdatedTriviaCreate = _context11.sent;
-                        _context11.next = 125;
+                        _context11.next = 126;
                         return _models["default"].trivia.findOne({
                           where: {
                             id: newUpdatedTriviaCreate.id
@@ -1135,9 +1136,9 @@ var discordTrivia = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 125:
+                      case 126:
                         newTrivia = _context11.sent;
-                        _context11.next = 128;
+                        _context11.next = 129;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'trivia_s',
@@ -1149,9 +1150,9 @@ var discordTrivia = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 128:
+                      case 129:
                         preActivity = _context11.sent;
-                        _context11.next = 131;
+                        _context11.next = 132;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -1167,13 +1168,13 @@ var discordTrivia = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 131:
+                      case 132:
                         finalActivity = _context11.sent;
                         activity.unshift(finalActivity);
-                        _context11.next = 135;
+                        _context11.next = 136;
                         return discordClient.guilds.cache.get(sendTriviaMessage.guildId).channels.cache.get(sendTriviaMessage.channelId).messages.fetch(sendTriviaMessage.id);
 
-                      case 135:
+                      case 136:
                         triviaMessage = _context11.sent;
                         updateMessage = setInterval( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee10() {
                           return _regenerator["default"].wrap(function _callee10$(_context10) {
@@ -1202,12 +1203,12 @@ var discordTrivia = /*#__PURE__*/function () {
                         })), 10000);
                         listenTrivia(triviaMessage, distance, newTrivia, io, queue, updateMessage, answerString);
 
-                      case 138:
+                      case 139:
                         t.afterCommit(function () {
                           console.log('done trivia transaction');
                         });
 
-                      case 139:
+                      case 140:
                       case "end":
                         return _context11.stop();
                     }

@@ -50,7 +50,7 @@ var telegramSleet = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, group, groupFailActivity, textTime, cutLastTimeLetter, cutNumberTime, isnum, lastSeenOptions, activityA, dateObj, usersToRain, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, sleetRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, sleetee, sleeteeWallet, sleettipRecord, _yield$getUserToMenti, _yield$getUserToMenti2, userToMention, userId, tipActivity, cutStringListUsers, i, _i, _cutStringListUsers, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, validAmount, activityValiateAmount, amount, group, groupFailActivity, textTime, cutLastTimeLetter, cutNumberTime, isnum, lastSeenOptions, activityA, dateObj, usersToRain, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, sleetRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, sleetee, sleeteeWallet, sleettipRecord, _yield$getUserToMenti, _yield$getUserToMenti2, userToMention, userId, tipActivity, cutStringListUsers, i, _i, _cutStringListUsers, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -82,20 +82,21 @@ var telegramSleet = /*#__PURE__*/function () {
 
                       case 11:
                         _yield$validateAmount = _context.sent;
-                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
-                        activityValiateAmount = _yield$validateAmount2[0];
-                        amount = _yield$validateAmount2[1];
+                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 3);
+                        validAmount = _yield$validateAmount2[0];
+                        activityValiateAmount = _yield$validateAmount2[1];
+                        amount = _yield$validateAmount2[2];
 
-                        if (!activityValiateAmount) {
-                          _context.next = 18;
+                        if (validAmount) {
+                          _context.next = 19;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 18:
-                        _context.next = 20;
+                      case 19:
+                        _context.next = 21;
                         return _models["default"].group.findOne({
                           where: {
                             groupId: "telegram-".concat(ctx.update.message.chat.id)
@@ -104,15 +105,15 @@ var telegramSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 20:
+                      case 21:
                         group = _context.sent;
 
                         if (group) {
-                          _context.next = 29;
+                          _context.next = 30;
                           break;
                         }
 
-                        _context.next = 24;
+                        _context.next = 25;
                         return _models["default"].activity.create({
                           type: 'sleet_f',
                           spenderId: user.id
@@ -121,16 +122,16 @@ var telegramSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 24:
+                      case 25:
                         groupFailActivity = _context.sent;
                         activity.unshift(groupFailActivity);
-                        _context.next = 28;
+                        _context.next = 29;
                         return ctx.reply((0, _telegram.groupNotFoundMessage)());
 
-                      case 28:
+                      case 29:
                         return _context.abrupt("return");
 
-                      case 29:
+                      case 30:
                         lastSeenOptions = (0, _defineProperty2["default"])({}, _sequelize.Op.gte, new Date(Date.now() - 15 * 60 * 1000)); // Optional Timer
 
                         // Optional Timer
@@ -144,11 +145,11 @@ var telegramSleet = /*#__PURE__*/function () {
 
                         if (!(filteredMessage[3] && !isnum // && Number(cutNumberTime) < 0
                         && (cutLastTimeLetter !== 'd' || cutLastTimeLetter !== 'h' || cutLastTimeLetter !== 'm' || cutLastTimeLetter !== 's'))) {
-                          _context.next = 43;
+                          _context.next = 44;
                           break;
                         }
 
-                        _context.next = 34;
+                        _context.next = 35;
                         return _models["default"].activity.create({
                           type: 'sleet_i',
                           spenderId: user.id
@@ -157,32 +158,32 @@ var telegramSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 34:
+                      case 35:
                         activityA = _context.sent;
                         activity.unshift(activityA);
                         _context.t0 = ctx;
-                        _context.next = 39;
+                        _context.next = 40;
                         return (0, _telegram.invalidTimeMessage)(ctx, 'Sleet');
 
-                      case 39:
+                      case 40:
                         _context.t1 = _context.sent;
-                        _context.next = 42;
+                        _context.next = 43;
                         return _context.t0.replyWithHTML.call(_context.t0, _context.t1);
 
-                      case 42:
+                      case 43:
                         return _context.abrupt("return");
 
-                      case 43:
+                      case 44:
                         if (!(filteredMessage[2] && isnum // && Number(cutNumberTime) < 0
                         && (cutLastTimeLetter === 'd' || cutLastTimeLetter === 'h' || cutLastTimeLetter === 'm' || cutLastTimeLetter === 's'))) {
-                          _context.next = 55;
+                          _context.next = 56;
                           break;
                         }
 
-                        _context.next = 46;
+                        _context.next = 47;
                         return new Date().getTime();
 
-                      case 46:
+                      case 47:
                         dateObj = _context.sent;
 
                         if (cutLastTimeLetter === 'd') {
@@ -201,15 +202,15 @@ var telegramSleet = /*#__PURE__*/function () {
                           dateObj -= Number(cutNumberTime) * 1000;
                         }
 
-                        _context.next = 53;
+                        _context.next = 54;
                         return new Date(dateObj);
 
-                      case 53:
+                      case 54:
                         dateObj = _context.sent;
                         lastSeenOptions = (0, _defineProperty2["default"])({}, _sequelize.Op.gte, dateObj);
 
-                      case 55:
-                        _context.next = 57;
+                      case 56:
+                        _context.next = 58;
                         return _models["default"].user.findAll({
                           limit: 400,
                           where: (0, _defineProperty2["default"])({}, _sequelize.Op.and, [{
@@ -233,15 +234,15 @@ var telegramSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 57:
+                      case 58:
                         usersToRain = _context.sent;
 
                         if (!(usersToRain.length < 2)) {
-                          _context.next = 66;
+                          _context.next = 67;
                           break;
                         }
 
-                        _context.next = 61;
+                        _context.next = 62;
                         return _models["default"].activity.create({
                           type: 'sleet_f',
                           spenderId: user.id
@@ -250,22 +251,22 @@ var telegramSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 61:
+                      case 62:
                         failActivity = _context.sent;
                         activity.unshift(failActivity);
-                        _context.next = 65;
+                        _context.next = 66;
                         return ctx.replyWithHTML((0, _telegram.notEnoughUsers)('Sleet'));
 
-                      case 65:
+                      case 66:
                         return _context.abrupt("return");
 
-                      case 66:
+                      case 67:
                         if (!(usersToRain.length >= 2)) {
-                          _context.next = 143;
+                          _context.next = 144;
                           break;
                         }
 
-                        _context.next = 69;
+                        _context.next = 70;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -273,16 +274,16 @@ var telegramSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 69:
+                      case 70:
                         updatedBalance = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         amountPerUser = ((amount - Number(fee)) / usersToRain.length).toFixed(0);
-                        _context.next = 74;
+                        _context.next = 75;
                         return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
 
-                      case 74:
+                      case 75:
                         faucetWatered = _context.sent;
-                        _context.next = 77;
+                        _context.next = 78;
                         return _models["default"].sleet.create({
                           feeAmount: fee,
                           amount: amount,
@@ -294,9 +295,9 @@ var telegramSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 77:
+                      case 78:
                         sleetRecord = _context.sent;
-                        _context.next = 80;
+                        _context.next = 81;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'sleet_s',
@@ -308,9 +309,9 @@ var telegramSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 80:
+                      case 81:
                         preActivity = _context.sent;
-                        _context.next = 83;
+                        _context.next = 84;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -326,25 +327,25 @@ var telegramSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 83:
+                      case 84:
                         finalActivity = _context.sent;
                         activity.push(finalActivity);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(usersToRain);
-                        _context.prev = 87;
+                        _context.prev = 88;
 
                         _iterator.s();
 
-                      case 89:
+                      case 90:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 114;
+                          _context.next = 115;
                           break;
                         }
 
                         sleetee = _step.value;
-                        _context.next = 93;
+                        _context.next = 94;
                         return sleetee.wallet.update({
                           available: sleetee.wallet.available + Number(amountPerUser)
                         }, {
@@ -352,9 +353,9 @@ var telegramSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 93:
+                      case 94:
                         sleeteeWallet = _context.sent;
-                        _context.next = 96;
+                        _context.next = 97;
                         return _models["default"].sleettip.create({
                           amount: Number(amountPerUser),
                           userId: sleetee.id,
@@ -365,12 +366,12 @@ var telegramSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 96:
+                      case 97:
                         sleettipRecord = _context.sent;
-                        _context.next = 99;
+                        _context.next = 100;
                         return (0, _userToMention.getUserToMentionFromDatabaseRecord)(sleetee);
 
-                      case 99:
+                      case 100:
                         _yield$getUserToMenti = _context.sent;
                         _yield$getUserToMenti2 = (0, _slicedToArray2["default"])(_yield$getUserToMenti, 2);
                         userToMention = _yield$getUserToMenti2[0];
@@ -384,7 +385,7 @@ var telegramSleet = /*#__PURE__*/function () {
 
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context.next = 107;
+                        _context.next = 108;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
                           type: 'sleettip_s',
@@ -399,9 +400,9 @@ var telegramSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 107:
+                      case 108:
                         tipActivity = _context.sent;
-                        _context.next = 110;
+                        _context.next = 111;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -423,32 +424,32 @@ var telegramSleet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 110:
+                      case 111:
                         tipActivity = _context.sent;
                         activity.unshift(tipActivity);
 
-                      case 112:
-                        _context.next = 89;
+                      case 113:
+                        _context.next = 90;
                         break;
 
-                      case 114:
-                        _context.next = 119;
+                      case 115:
+                        _context.next = 120;
                         break;
 
-                      case 116:
-                        _context.prev = 116;
-                        _context.t2 = _context["catch"](87);
+                      case 117:
+                        _context.prev = 117;
+                        _context.t2 = _context["catch"](88);
 
                         _iterator.e(_context.t2);
 
-                      case 119:
-                        _context.prev = 119;
+                      case 120:
+                        _context.prev = 120;
 
                         _iterator.f();
 
-                        return _context.finish(119);
+                        return _context.finish(120);
 
-                      case 122:
+                      case 123:
                         cutStringListUsers = [];
                         i = 0;
                         listOfUsersRained.forEach(function (word) {
@@ -464,48 +465,48 @@ var telegramSleet = /*#__PURE__*/function () {
 
                         _i = 0, _cutStringListUsers = cutStringListUsers;
 
-                      case 126:
+                      case 127:
                         if (!(_i < _cutStringListUsers.length)) {
-                          _context.next = 137;
+                          _context.next = 138;
                           break;
                         }
 
                         element = _cutStringListUsers[_i];
                         _context.t3 = ctx;
-                        _context.next = 131;
+                        _context.next = 132;
                         return (0, _telegram.userListMessage)(element);
 
-                      case 131:
+                      case 132:
                         _context.t4 = _context.sent;
-                        _context.next = 134;
+                        _context.next = 135;
                         return _context.t3.replyWithHTML.call(_context.t3, _context.t4);
 
-                      case 134:
+                      case 135:
                         _i++;
-                        _context.next = 126;
+                        _context.next = 127;
                         break;
 
-                      case 137:
+                      case 138:
                         _context.t5 = ctx;
-                        _context.next = 140;
+                        _context.next = 141;
                         return (0, _telegram.afterSuccessMessage)(ctx, sleetRecord.id, amount, listOfUsersRained.length, amountPerUser, 'Sleet', 'sleeted');
 
-                      case 140:
+                      case 141:
                         _context.t6 = _context.sent;
-                        _context.next = 143;
+                        _context.next = 144;
                         return _context.t5.replyWithHTML.call(_context.t5, _context.t6);
 
-                      case 143:
+                      case 144:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 144:
+                      case 145:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[87, 116, 119, 122]]);
+                }, _callee, null, [[88, 117, 120, 123]]);
               }));
 
               return function (_x10) {

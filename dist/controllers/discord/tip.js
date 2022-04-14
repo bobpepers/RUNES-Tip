@@ -56,7 +56,7 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, _loop, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, updatedBalance, fee, userTipAmount, faucetWatered, tipRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, tipee, tipeeWallet, tiptipRecord, tipActivity, userIdReceivedRain, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, _loop, _yield$validateAmount, _yield$validateAmount2, validAmount, activityValiateAmount, amount, updatedBalance, fee, userTipAmount, faucetWatered, tipRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, tipee, tipeeWallet, tiptipRecord, tipActivity, userIdReceivedRain, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context2) {
                   while (1) {
@@ -136,41 +136,35 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                                   }
 
                                   if (userExist) {
-                                    _context.next = 27;
+                                    _context.next = 22;
                                     break;
                                   }
-
-                                  console.log(discordId);
-                                  console.log(message.author.id);
 
                                   if (!(discordId !== message.author.id)) {
-                                    _context.next = 27;
+                                    _context.next = 22;
                                     break;
                                   }
 
-                                  console.log(discordId);
-                                  _context.next = 13;
+                                  _context.next = 10;
                                   return discordClient.users.fetch(discordId);
 
-                                case 13:
+                                case 10:
                                   userClient = _context.sent;
-                                  console.log(userClient);
-                                  console.log('userClient');
 
                                   if (!(userClient && !userClient.bot)) {
-                                    _context.next = 27;
+                                    _context.next = 22;
                                     break;
                                   }
 
-                                  _context.next = 19;
+                                  _context.next = 14;
                                   return (0, _user.generateUserWalletAndAddress)(userClient, t);
 
-                                case 19:
+                                case 14:
                                   _yield$generateUserWa = _context.sent;
                                   _yield$generateUserWa2 = (0, _slicedToArray2["default"])(_yield$generateUserWa, 2);
                                   newUser = _yield$generateUserWa2[0];
                                   newAccount = _yield$generateUserWa2[1];
-                                  _context.next = 25;
+                                  _context.next = 20;
                                   return _models["default"].user.findOne({
                                     where: {
                                       user_id: "discord-".concat(discordId)
@@ -189,7 +183,7 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                                     transaction: t
                                   });
 
-                                case 25:
+                                case 20:
                                   newUserExist = _context.sent;
 
                                   if (newUserExist) {
@@ -204,7 +198,7 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                                     }
                                   }
 
-                                case 27:
+                                case 22:
                                   // usersToTip.push(filteredMessage[AmountPosition]);
                                   AmountPosition += 1;
 
@@ -212,7 +206,7 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                                     AmountPositionEnded = true;
                                   }
 
-                                case 29:
+                                case 24:
                                 case "end":
                                   return _context.stop();
                               }
@@ -257,20 +251,21 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
 
                       case 21:
                         _yield$validateAmount = _context2.sent;
-                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
-                        activityValiateAmount = _yield$validateAmount2[0];
-                        amount = _yield$validateAmount2[1];
+                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 3);
+                        validAmount = _yield$validateAmount2[0];
+                        activityValiateAmount = _yield$validateAmount2[1];
+                        amount = _yield$validateAmount2[2];
 
-                        if (!activityValiateAmount) {
-                          _context2.next = 28;
+                        if (validAmount) {
+                          _context2.next = 29;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context2.abrupt("return");
 
-                      case 28:
-                        _context2.next = 30;
+                      case 29:
+                        _context2.next = 31;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -278,16 +273,16 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 30:
+                      case 31:
                         updatedBalance = _context2.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         userTipAmount = (amount - Number(fee)) / usersToTip.length;
-                        _context2.next = 35;
+                        _context2.next = 36;
                         return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
 
-                      case 35:
+                      case 36:
                         faucetWatered = _context2.sent;
-                        _context2.next = 38;
+                        _context2.next = 39;
                         return _models["default"].tip.create({
                           feeAmount: fee,
                           amount: amount,
@@ -301,9 +296,9 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 38:
+                      case 39:
                         tipRecord = _context2.sent;
-                        _context2.next = 41;
+                        _context2.next = 42;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'tip_s',
@@ -315,9 +310,9 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 41:
+                      case 42:
                         preActivity = _context2.sent;
-                        _context2.next = 44;
+                        _context2.next = 45;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -333,25 +328,25 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 44:
+                      case 45:
                         finalActivity = _context2.sent;
                         activity.unshift(finalActivity);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(usersToTip);
-                        _context2.prev = 48;
+                        _context2.prev = 49;
 
                         _iterator.s();
 
-                      case 50:
+                      case 51:
                         if ((_step = _iterator.n()).done) {
-                          _context2.next = 69;
+                          _context2.next = 70;
                           break;
                         }
 
                         tipee = _step.value;
-                        _context2.next = 54;
+                        _context2.next = 55;
                         return tipee.wallet.update({
                           available: tipee.wallet.available + Number(userTipAmount)
                         }, {
@@ -359,9 +354,9 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 54:
+                      case 55:
                         tipeeWallet = _context2.sent;
-                        _context2.next = 57;
+                        _context2.next = 58;
                         return _models["default"].tiptip.create({
                           amount: Number(userTipAmount),
                           userId: tipee.id,
@@ -373,11 +368,11 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 57:
+                      case 58:
                         tiptipRecord = _context2.sent;
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context2.next = 61;
+                        _context2.next = 62;
                         return _models["default"].activity.create({
                           amount: Number(userTipAmount),
                           type: 'tiptip_s',
@@ -392,9 +387,9 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 61:
+                      case 62:
                         tipActivity = _context2.sent;
-                        _context2.next = 64;
+                        _context2.next = 65;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -416,7 +411,7 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 64:
+                      case 65:
                         tipActivity = _context2.sent;
                         activity.unshift(tipActivity);
 
@@ -427,45 +422,45 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                           listOfUsersRained.push("<@".concat(userIdReceivedRain, ">"));
                         }
 
-                      case 67:
-                        _context2.next = 50;
+                      case 68:
+                        _context2.next = 51;
                         break;
 
-                      case 69:
-                        _context2.next = 74;
+                      case 70:
+                        _context2.next = 75;
                         break;
 
-                      case 71:
-                        _context2.prev = 71;
-                        _context2.t1 = _context2["catch"](48);
+                      case 72:
+                        _context2.prev = 72;
+                        _context2.t1 = _context2["catch"](49);
 
                         _iterator.e(_context2.t1);
 
-                      case 74:
-                        _context2.prev = 74;
+                      case 75:
+                        _context2.prev = 75;
 
                         _iterator.f();
 
-                        return _context2.finish(74);
+                        return _context2.finish(75);
 
-                      case 77:
+                      case 78:
                         if (!(listOfUsersRained.length === 1)) {
-                          _context2.next = 82;
+                          _context2.next = 83;
                           break;
                         }
 
-                        _context2.next = 80;
+                        _context2.next = 81;
                         return message.channel.send({
                           embeds: [(0, _discord.tipSingleSuccessMessage)(message, tipRecord.id, listOfUsersRained, userTipAmount)]
                         });
 
-                      case 80:
-                        _context2.next = 104;
+                      case 81:
+                        _context2.next = 105;
                         break;
 
-                      case 82:
+                      case 83:
                         if (!(listOfUsersRained.length > 1)) {
-                          _context2.next = 104;
+                          _context2.next = 105;
                           break;
                         }
 
@@ -474,58 +469,58 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                        _context2.prev = 86;
+                        _context2.prev = 87;
 
                         _iterator2.s();
 
-                      case 88:
+                      case 89:
                         if ((_step2 = _iterator2.n()).done) {
-                          _context2.next = 94;
+                          _context2.next = 95;
                           break;
                         }
 
                         element = _step2.value;
-                        _context2.next = 92;
+                        _context2.next = 93;
                         return message.channel.send(element);
 
-                      case 92:
-                        _context2.next = 88;
+                      case 93:
+                        _context2.next = 89;
                         break;
 
-                      case 94:
-                        _context2.next = 99;
+                      case 95:
+                        _context2.next = 100;
                         break;
 
-                      case 96:
-                        _context2.prev = 96;
-                        _context2.t2 = _context2["catch"](86);
+                      case 97:
+                        _context2.prev = 97;
+                        _context2.t2 = _context2["catch"](87);
 
                         _iterator2.e(_context2.t2);
 
-                      case 99:
-                        _context2.prev = 99;
+                      case 100:
+                        _context2.prev = 100;
 
                         _iterator2.f();
 
-                        return _context2.finish(99);
+                        return _context2.finish(100);
 
-                      case 102:
-                        _context2.next = 104;
+                      case 103:
+                        _context2.next = 105;
                         return message.channel.send({
                           embeds: [(0, _discord.tipMultipleSuccessMessage)(message, tipRecord.id, listOfUsersRained, userTipAmount, type)]
                         });
 
-                      case 104:
+                      case 105:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 105:
+                      case 106:
                       case "end":
                         return _context2.stop();
                     }
                   }
-                }, _callee, null, [[48, 71, 74, 77], [86, 96, 99, 102]]);
+                }, _callee, null, [[49, 72, 75, 78], [87, 97, 100, 103]]);
               }));
 
               return function (_x10) {
@@ -615,7 +610,7 @@ var tipCoinsToDiscordFaucet = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(t) {
-                var _yield$userWalletExis3, _yield$userWalletExis4, userExist, _yield$validateAmount3, _yield$validateAmount4, activityValiateAmount, amount, updatedBalance, userTipAmount, tipRecord, preActivity, finalActivity, faucet, updatedFaucet, listOfUsersRained, _iterator3, _step3, tipee, tiptipRecord, tipActivity, userIdReceivedRain;
+                var _yield$userWalletExis3, _yield$userWalletExis4, userExist, _yield$validateAmount3, _yield$validateAmount4, validAmount, activityValiateAmount, amount, updatedBalance, userTipAmount, tipRecord, preActivity, finalActivity, faucet, updatedFaucet, listOfUsersRained, _iterator3, _step3, tipee, tiptipRecord, tipActivity, userIdReceivedRain;
 
                 return _regenerator["default"].wrap(function _callee4$(_context5) {
                   while (1) {
@@ -677,20 +672,21 @@ var tipCoinsToDiscordFaucet = /*#__PURE__*/function () {
 
                       case 19:
                         _yield$validateAmount3 = _context5.sent;
-                        _yield$validateAmount4 = (0, _slicedToArray2["default"])(_yield$validateAmount3, 2);
-                        activityValiateAmount = _yield$validateAmount4[0];
-                        amount = _yield$validateAmount4[1];
+                        _yield$validateAmount4 = (0, _slicedToArray2["default"])(_yield$validateAmount3, 3);
+                        validAmount = _yield$validateAmount4[0];
+                        activityValiateAmount = _yield$validateAmount4[1];
+                        amount = _yield$validateAmount4[2];
 
-                        if (!activityValiateAmount) {
-                          _context5.next = 26;
+                        if (validAmount) {
+                          _context5.next = 27;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context5.abrupt("return");
 
-                      case 26:
-                        _context5.next = 28;
+                      case 27:
+                        _context5.next = 29;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -698,10 +694,10 @@ var tipCoinsToDiscordFaucet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 28:
+                      case 29:
                         updatedBalance = _context5.sent;
                         userTipAmount = Number(amount);
-                        _context5.next = 32;
+                        _context5.next = 33;
                         return _models["default"].tip.create({
                           feeAmount: 0,
                           amount: amount,
@@ -715,9 +711,9 @@ var tipCoinsToDiscordFaucet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 32:
+                      case 33:
                         tipRecord = _context5.sent;
-                        _context5.next = 35;
+                        _context5.next = 36;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'tip_faucet_s',
@@ -729,9 +725,9 @@ var tipCoinsToDiscordFaucet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 35:
+                      case 36:
                         preActivity = _context5.sent;
-                        _context5.next = 38;
+                        _context5.next = 39;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -747,18 +743,18 @@ var tipCoinsToDiscordFaucet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 38:
+                      case 39:
                         finalActivity = _context5.sent;
                         activity.unshift(finalActivity);
-                        _context5.next = 42;
+                        _context5.next = 43;
                         return _models["default"].faucet.findOne({
                           lock: t.LOCK.UPDATE,
                           transaction: t
                         });
 
-                      case 42:
+                      case 43:
                         faucet = _context5.sent;
-                        _context5.next = 45;
+                        _context5.next = 46;
                         return faucet.update({
                           amount: faucet.amount + Number(userTipAmount)
                         }, {
@@ -766,24 +762,24 @@ var tipCoinsToDiscordFaucet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 45:
+                      case 46:
                         updatedFaucet = _context5.sent;
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator3 = _createForOfIteratorHelper(usersToTip);
-                        _context5.prev = 48;
+                        _context5.prev = 49;
 
                         _iterator3.s();
 
-                      case 50:
+                      case 51:
                         if ((_step3 = _iterator3.n()).done) {
-                          _context5.next = 66;
+                          _context5.next = 67;
                           break;
                         }
 
                         tipee = _step3.value;
-                        _context5.next = 54;
+                        _context5.next = 55;
                         return _models["default"].tiptip.create({
                           amount: Number(userTipAmount),
                           userId: tipee.id,
@@ -795,11 +791,11 @@ var tipCoinsToDiscordFaucet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 54:
+                      case 55:
                         tiptipRecord = _context5.sent;
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context5.next = 58;
+                        _context5.next = 59;
                         return _models["default"].activity.create({
                           amount: Number(userTipAmount),
                           type: 'tiptip_faucet_s',
@@ -814,9 +810,9 @@ var tipCoinsToDiscordFaucet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 58:
+                      case 59:
                         tipActivity = _context5.sent;
-                        _context5.next = 61;
+                        _context5.next = 62;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -838,7 +834,7 @@ var tipCoinsToDiscordFaucet = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 61:
+                      case 62:
                         tipActivity = _context5.sent;
                         activity.unshift(tipActivity);
 
@@ -849,44 +845,44 @@ var tipCoinsToDiscordFaucet = /*#__PURE__*/function () {
                           listOfUsersRained.push("<@".concat(userIdReceivedRain, ">"));
                         }
 
-                      case 64:
-                        _context5.next = 50;
+                      case 65:
+                        _context5.next = 51;
                         break;
 
-                      case 66:
-                        _context5.next = 71;
+                      case 67:
+                        _context5.next = 72;
                         break;
 
-                      case 68:
-                        _context5.prev = 68;
-                        _context5.t0 = _context5["catch"](48);
+                      case 69:
+                        _context5.prev = 69;
+                        _context5.t0 = _context5["catch"](49);
 
                         _iterator3.e(_context5.t0);
 
-                      case 71:
-                        _context5.prev = 71;
+                      case 72:
+                        _context5.prev = 72;
 
                         _iterator3.f();
 
-                        return _context5.finish(71);
+                        return _context5.finish(72);
 
-                      case 74:
-                        _context5.next = 76;
+                      case 75:
+                        _context5.next = 77;
                         return message.channel.send({
                           embeds: [(0, _discord.tipFaucetSuccessMessage)(message, userTipAmount)]
                         });
 
-                      case 76:
+                      case 77:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 77:
+                      case 78:
                       case "end":
                         return _context5.stop();
                     }
                   }
-                }, _callee4, null, [[48, 68, 71, 74]]);
+                }, _callee4, null, [[49, 69, 72, 75]]);
               }));
 
               return function (_x21) {

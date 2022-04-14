@@ -56,7 +56,7 @@ var tipToTelegramUser = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _loop, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, updatedBalance, fee, userTipAmount, faucetWatered, tipRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, tipee, tipeeWallet, tiptipRecord, tipActivity, _yield$getUserToMenti, _yield$getUserToMenti2, userToMention, userId, cutStringListUsers, i, _i, _cutStringListUsers, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _loop, _yield$validateAmount, _yield$validateAmount2, validAmount, activityValiateAmount, amount, updatedBalance, fee, userTipAmount, faucetWatered, tipRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, tipee, tipeeWallet, tiptipRecord, tipActivity, _yield$getUserToMenti, _yield$getUserToMenti2, userToMention, userId, cutStringListUsers, i, _i, _cutStringListUsers, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context2) {
                   while (1) {
@@ -210,20 +210,21 @@ var tipToTelegramUser = /*#__PURE__*/function () {
 
                       case 21:
                         _yield$validateAmount = _context2.sent;
-                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
-                        activityValiateAmount = _yield$validateAmount2[0];
-                        amount = _yield$validateAmount2[1];
+                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 3);
+                        validAmount = _yield$validateAmount2[0];
+                        activityValiateAmount = _yield$validateAmount2[1];
+                        amount = _yield$validateAmount2[2];
 
-                        if (!activityValiateAmount) {
-                          _context2.next = 28;
+                        if (validAmount) {
+                          _context2.next = 29;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context2.abrupt("return");
 
-                      case 28:
-                        _context2.next = 30;
+                      case 29:
+                        _context2.next = 31;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -231,16 +232,16 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 30:
+                      case 31:
                         updatedBalance = _context2.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         userTipAmount = (amount - Number(fee)) / usersToTip.length;
-                        _context2.next = 35;
+                        _context2.next = 36;
                         return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
 
-                      case 35:
+                      case 36:
                         faucetWatered = _context2.sent;
-                        _context2.next = 38;
+                        _context2.next = 39;
                         return _models["default"].tip.create({
                           feeAmount: fee,
                           amount: amount,
@@ -253,9 +254,9 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 38:
+                      case 39:
                         tipRecord = _context2.sent;
-                        _context2.next = 41;
+                        _context2.next = 42;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'tip_s',
@@ -267,9 +268,9 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 41:
+                      case 42:
                         preActivity = _context2.sent;
-                        _context2.next = 44;
+                        _context2.next = 45;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -285,25 +286,25 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 44:
+                      case 45:
                         finalActivity = _context2.sent;
                         activity.unshift(finalActivity);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(usersToTip);
-                        _context2.prev = 48;
+                        _context2.prev = 49;
 
                         _iterator.s();
 
-                      case 50:
+                      case 51:
                         if ((_step = _iterator.n()).done) {
-                          _context2.next = 75;
+                          _context2.next = 76;
                           break;
                         }
 
                         tipee = _step.value;
-                        _context2.next = 54;
+                        _context2.next = 55;
                         return tipee.wallet.update({
                           available: tipee.wallet.available + Number(userTipAmount)
                         }, {
@@ -311,9 +312,9 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 54:
+                      case 55:
                         tipeeWallet = _context2.sent;
-                        _context2.next = 57;
+                        _context2.next = 58;
                         return _models["default"].tiptip.create({
                           amount: Number(userTipAmount),
                           userId: tipee.id,
@@ -324,11 +325,11 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 57:
+                      case 58:
                         tiptipRecord = _context2.sent;
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context2.next = 61;
+                        _context2.next = 62;
                         return _models["default"].activity.create({
                           amount: Number(userTipAmount),
                           type: 'tiptip_s',
@@ -343,9 +344,9 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 61:
+                      case 62:
                         tipActivity = _context2.sent;
-                        _context2.next = 64;
+                        _context2.next = 65;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -367,13 +368,13 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 64:
+                      case 65:
                         tipActivity = _context2.sent;
                         activity.unshift(tipActivity);
-                        _context2.next = 68;
+                        _context2.next = 69;
                         return (0, _userToMention.getUserToMentionFromDatabaseRecord)(tipee);
 
-                      case 68:
+                      case 69:
                         _yield$getUserToMenti = _context2.sent;
                         _yield$getUserToMenti2 = (0, _slicedToArray2["default"])(_yield$getUserToMenti, 2);
                         userToMention = _yield$getUserToMenti2[0];
@@ -385,54 +386,52 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                           listOfUsersRained.push("<a href=\"tg://user?id=".concat(userId, "\">").concat(userToMention, "</a>"));
                         }
 
-                      case 73:
-                        _context2.next = 50;
+                      case 74:
+                        _context2.next = 51;
                         break;
 
-                      case 75:
-                        _context2.next = 80;
+                      case 76:
+                        _context2.next = 81;
                         break;
 
-                      case 77:
-                        _context2.prev = 77;
-                        _context2.t1 = _context2["catch"](48);
+                      case 78:
+                        _context2.prev = 78;
+                        _context2.t1 = _context2["catch"](49);
 
                         _iterator.e(_context2.t1);
 
-                      case 80:
-                        _context2.prev = 80;
+                      case 81:
+                        _context2.prev = 81;
 
                         _iterator.f();
 
-                        return _context2.finish(80);
+                        return _context2.finish(81);
 
-                      case 83:
+                      case 84:
                         if (!(listOfUsersRained.length === 1)) {
-                          _context2.next = 92;
+                          _context2.next = 93;
                           break;
                         }
 
                         _context2.t2 = ctx;
-                        _context2.next = 87;
+                        _context2.next = 88;
                         return (0, _telegram.tipSingleSuccessMessage)(ctx, tipRecord.id, listOfUsersRained, userTipAmount);
 
-                      case 87:
+                      case 88:
                         _context2.t3 = _context2.sent;
-                        _context2.next = 90;
+                        _context2.next = 91;
                         return _context2.t2.replyWithHTML.call(_context2.t2, _context2.t3);
 
-                      case 90:
-                        _context2.next = 114;
+                      case 91:
+                        _context2.next = 115;
                         break;
 
-                      case 92:
+                      case 93:
                         if (!(listOfUsersRained.length > 1)) {
-                          _context2.next = 114;
+                          _context2.next = 115;
                           break;
                         }
 
-                        // const newStringListUsers = listOfUsersRained.join(", ");
-                        // const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
                         cutStringListUsers = [];
                         i = 0;
                         listOfUsersRained.forEach(function (word) {
@@ -448,48 +447,48 @@ var tipToTelegramUser = /*#__PURE__*/function () {
 
                         _i = 0, _cutStringListUsers = cutStringListUsers;
 
-                      case 97:
+                      case 98:
                         if (!(_i < _cutStringListUsers.length)) {
-                          _context2.next = 108;
+                          _context2.next = 109;
                           break;
                         }
 
                         element = _cutStringListUsers[_i];
                         _context2.t4 = ctx;
-                        _context2.next = 102;
+                        _context2.next = 103;
                         return (0, _telegram.userListMessage)(element);
 
-                      case 102:
+                      case 103:
                         _context2.t5 = _context2.sent;
-                        _context2.next = 105;
+                        _context2.next = 106;
                         return _context2.t4.replyWithHTML.call(_context2.t4, _context2.t5);
 
-                      case 105:
+                      case 106:
                         _i++;
-                        _context2.next = 97;
+                        _context2.next = 98;
                         break;
 
-                      case 108:
+                      case 109:
                         _context2.t6 = ctx;
-                        _context2.next = 111;
+                        _context2.next = 112;
                         return (0, _telegram.tipMultipleSuccessMessage)(ctx, tipRecord.id, listOfUsersRained, userTipAmount, type);
 
-                      case 111:
+                      case 112:
                         _context2.t7 = _context2.sent;
-                        _context2.next = 114;
+                        _context2.next = 115;
                         return _context2.t6.replyWithHTML.call(_context2.t6, _context2.t7);
 
-                      case 114:
+                      case 115:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 115:
+                      case 116:
                       case "end":
                         return _context2.stop();
                     }
                   }
-                }, _callee, null, [[48, 77, 80, 83]]);
+                }, _callee, null, [[49, 78, 81, 84]]);
               }));
 
               return function (_x10) {

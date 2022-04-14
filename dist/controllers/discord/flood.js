@@ -48,7 +48,7 @@ var discordFlood = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, members, onlineMembers, withoutBots, factivity, updatedBalance, fee, amountPerUser, faucetWatered, floodRecord, cactivity, activityCreate, listOfUsersRained, _iterator, _step, floodee, floodeeWallet, floodtipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, validAmount, activityValiateAmount, amount, members, onlineMembers, withoutBots, factivity, updatedBalance, fee, amountPerUser, faucetWatered, floodRecord, cactivity, activityCreate, listOfUsersRained, _iterator, _step, floodee, floodeeWallet, floodtipRecord, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -80,43 +80,44 @@ var discordFlood = /*#__PURE__*/function () {
 
                       case 11:
                         _yield$validateAmount = _context.sent;
-                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
-                        activityValiateAmount = _yield$validateAmount2[0];
-                        amount = _yield$validateAmount2[1];
+                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 3);
+                        validAmount = _yield$validateAmount2[0];
+                        activityValiateAmount = _yield$validateAmount2[1];
+                        amount = _yield$validateAmount2[2];
 
-                        if (!activityValiateAmount) {
-                          _context.next = 18;
+                        if (validAmount) {
+                          _context.next = 19;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 18:
-                        _context.next = 20;
+                      case 19:
+                        _context.next = 21;
                         return discordClient.guilds.cache.get(message.guildId).members.fetch({
                           withPresences: true
                         });
 
-                      case 20:
+                      case 21:
                         members = _context.sent;
                         onlineMembers = members.filter(function (member) {
                           // console.log(member.presence);
                           console.log('-');
                           return member;
                         });
-                        _context.next = 24;
+                        _context.next = 25;
                         return (0, _mapMembers.mapMembers)(message, t, filteredMessage[3], onlineMembers, setting);
 
-                      case 24:
+                      case 25:
                         withoutBots = _context.sent;
 
                         if (!(withoutBots.length < 2)) {
-                          _context.next = 33;
+                          _context.next = 34;
                           break;
                         }
 
-                        _context.next = 28;
+                        _context.next = 29;
                         return _models["default"].activity.create({
                           type: 'flood_f',
                           spenderId: user.id
@@ -125,19 +126,19 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 28:
+                      case 29:
                         factivity = _context.sent;
                         activity.unshift(factivity);
-                        _context.next = 32;
+                        _context.next = 33;
                         return message.channel.send({
                           embeds: [(0, _discord.notEnoughActiveUsersMessage)(message, 'Flood')]
                         });
 
-                      case 32:
+                      case 33:
                         return _context.abrupt("return");
 
-                      case 33:
-                        _context.next = 35;
+                      case 34:
+                        _context.next = 36;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -145,16 +146,16 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 35:
+                      case 36:
                         updatedBalance = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
-                        _context.next = 40;
+                        _context.next = 41;
                         return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
 
-                      case 40:
+                      case 41:
                         faucetWatered = _context.sent;
-                        _context.next = 43;
+                        _context.next = 44;
                         return _models["default"].flood.create({
                           feeAmount: fee,
                           amount: amount,
@@ -167,9 +168,9 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 43:
+                      case 44:
                         floodRecord = _context.sent;
-                        _context.next = 46;
+                        _context.next = 47;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'flood_s',
@@ -181,9 +182,9 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 46:
+                      case 47:
                         cactivity = _context.sent;
-                        _context.next = 49;
+                        _context.next = 50;
                         return _models["default"].activity.findOne({
                           where: {
                             id: cactivity.id
@@ -199,25 +200,25 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 49:
+                      case 50:
                         activityCreate = _context.sent;
                         activity.unshift(activityCreate);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(withoutBots);
-                        _context.prev = 53;
+                        _context.prev = 54;
 
                         _iterator.s();
 
-                      case 55:
+                      case 56:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 74;
+                          _context.next = 75;
                           break;
                         }
 
                         floodee = _step.value;
-                        _context.next = 59;
+                        _context.next = 60;
                         return floodee.wallet.update({
                           available: floodee.wallet.available + Number(amountPerUser)
                         }, {
@@ -225,9 +226,9 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 59:
+                      case 60:
                         floodeeWallet = _context.sent;
-                        _context.next = 62;
+                        _context.next = 63;
                         return _models["default"].floodtip.create({
                           amount: amountPerUser,
                           userId: floodee.id,
@@ -239,7 +240,7 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 62:
+                      case 63:
                         floodtipRecord = _context.sent;
 
                         if (floodee.ignoreMe) {
@@ -251,7 +252,7 @@ var discordFlood = /*#__PURE__*/function () {
 
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context.next = 67;
+                        _context.next = 68;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
                           type: 'floodtip_s',
@@ -266,9 +267,9 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 67:
+                      case 68:
                         tipActivity = _context.sent;
-                        _context.next = 70;
+                        _context.next = 71;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -290,89 +291,89 @@ var discordFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 70:
+                      case 71:
                         tipActivity = _context.sent;
                         activity.unshift(tipActivity);
 
-                      case 72:
-                        _context.next = 55;
+                      case 73:
+                        _context.next = 56;
                         break;
 
-                      case 74:
-                        _context.next = 79;
+                      case 75:
+                        _context.next = 80;
                         break;
 
-                      case 76:
-                        _context.prev = 76;
-                        _context.t0 = _context["catch"](53);
+                      case 77:
+                        _context.prev = 77;
+                        _context.t0 = _context["catch"](54);
 
                         _iterator.e(_context.t0);
 
-                      case 79:
-                        _context.prev = 79;
+                      case 80:
+                        _context.prev = 80;
 
                         _iterator.f();
 
-                        return _context.finish(79);
+                        return _context.finish(80);
 
-                      case 82:
+                      case 83:
                         newStringListUsers = listOfUsersRained.join(", ");
                         cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                        _context.prev = 85;
+                        _context.prev = 86;
 
                         _iterator2.s();
 
-                      case 87:
+                      case 88:
                         if ((_step2 = _iterator2.n()).done) {
-                          _context.next = 93;
+                          _context.next = 94;
                           break;
                         }
 
                         element = _step2.value;
-                        _context.next = 91;
+                        _context.next = 92;
                         return message.channel.send(element);
 
-                      case 91:
-                        _context.next = 87;
+                      case 92:
+                        _context.next = 88;
                         break;
 
-                      case 93:
-                        _context.next = 98;
+                      case 94:
+                        _context.next = 99;
                         break;
 
-                      case 95:
-                        _context.prev = 95;
-                        _context.t1 = _context["catch"](85);
+                      case 96:
+                        _context.prev = 96;
+                        _context.t1 = _context["catch"](86);
 
                         _iterator2.e(_context.t1);
 
-                      case 98:
-                        _context.prev = 98;
+                      case 99:
+                        _context.prev = 99;
 
                         _iterator2.f();
 
-                        return _context.finish(98);
+                        return _context.finish(99);
 
-                      case 101:
-                        _context.next = 103;
+                      case 102:
+                        _context.next = 104;
                         return message.channel.send({
                           embeds: [(0, _discord.AfterSuccessMessage)(message, floodRecord.id, amount, withoutBots, amountPerUser, 'Flood', 'flooded')]
                         });
 
-                      case 103:
+                      case 104:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 104:
+                      case 105:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[53, 76, 79, 82], [85, 95, 98, 101]]);
+                }, _callee, null, [[54, 77, 80, 83], [86, 96, 99, 102]]);
               }));
 
               return function (_x10) {

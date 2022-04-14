@@ -55,7 +55,7 @@ var telegramFlood = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, chatId, members, onlineMembers, withoutBots, factivity, updatedBalance, fee, amountPerUser, faucetWatered, floodRecord, cactivity, activityCreate, listOfUsersRained, _iterator, _step, floodee, floodeeWallet, floodtipRecord, _yield$getUserToMenti, _yield$getUserToMenti2, userToMention, userId, tipActivity, cutStringListUsers, i, _i, _cutStringListUsers, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, validAmount, activityValiateAmount, amount, chatId, members, onlineMembers, withoutBots, factivity, updatedBalance, fee, amountPerUser, faucetWatered, floodRecord, cactivity, activityCreate, listOfUsersRained, _iterator, _step, floodee, floodeeWallet, floodtipRecord, _yield$getUserToMenti, _yield$getUserToMenti2, userToMention, userId, tipActivity, cutStringListUsers, i, _i, _cutStringListUsers, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -87,19 +87,20 @@ var telegramFlood = /*#__PURE__*/function () {
 
                       case 11:
                         _yield$validateAmount = _context.sent;
-                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
-                        activityValiateAmount = _yield$validateAmount2[0];
-                        amount = _yield$validateAmount2[1];
+                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 3);
+                        validAmount = _yield$validateAmount2[0];
+                        activityValiateAmount = _yield$validateAmount2[1];
+                        amount = _yield$validateAmount2[2];
 
-                        if (!activityValiateAmount) {
-                          _context.next = 18;
+                        if (validAmount) {
+                          _context.next = 19;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 18:
+                      case 19:
                         // const membersCount = await axios.get(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/getChatMembersCount?chat_id=${ctx.message.chat.id}`);
                         // let i = 0;
                         // let members = [];
@@ -112,12 +113,12 @@ var telegramFlood = /*#__PURE__*/function () {
                         //  i += 2;
                         // }
                         chatId = Math.abs(ctx.message.chat.id).toString();
-                        _context.next = 21;
+                        _context.next = 22;
                         return telegramApiClient.getParticipants(chatId, {
                           limit: 200000
                         });
 
-                      case 21:
+                      case 22:
                         members = _context.sent;
                         onlineMembers = members.filter(function (member) {
                           console.log(member);
@@ -125,18 +126,18 @@ var telegramFlood = /*#__PURE__*/function () {
                           return !member.bot;
                         }); // console.log(onlineMembers);
 
-                        _context.next = 25;
+                        _context.next = 26;
                         return (0, _mapMembers.mapMembers)(ctx, t, onlineMembers, setting);
 
-                      case 25:
+                      case 26:
                         withoutBots = _context.sent;
 
                         if (!(withoutBots.length < 2)) {
-                          _context.next = 34;
+                          _context.next = 35;
                           break;
                         }
 
-                        _context.next = 29;
+                        _context.next = 30;
                         return _models["default"].activity.create({
                           type: 'flood_f',
                           spenderId: user.id
@@ -145,17 +146,17 @@ var telegramFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 29:
+                      case 30:
                         factivity = _context.sent;
                         activity.unshift(factivity);
-                        _context.next = 33;
+                        _context.next = 34;
                         return ctx.replyWithHTML((0, _telegram.notEnoughUsers)('Flood'));
 
-                      case 33:
+                      case 34:
                         return _context.abrupt("return");
 
-                      case 34:
-                        _context.next = 36;
+                      case 35:
+                        _context.next = 37;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -163,16 +164,16 @@ var telegramFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 36:
+                      case 37:
                         updatedBalance = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
-                        _context.next = 41;
+                        _context.next = 42;
                         return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
 
-                      case 41:
+                      case 42:
                         faucetWatered = _context.sent;
-                        _context.next = 44;
+                        _context.next = 45;
                         return _models["default"].flood.create({
                           feeAmount: fee,
                           amount: amount,
@@ -184,9 +185,9 @@ var telegramFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 44:
+                      case 45:
                         floodRecord = _context.sent;
-                        _context.next = 47;
+                        _context.next = 48;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'flood_s',
@@ -198,9 +199,9 @@ var telegramFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 47:
+                      case 48:
                         cactivity = _context.sent;
-                        _context.next = 50;
+                        _context.next = 51;
                         return _models["default"].activity.findOne({
                           where: {
                             id: cactivity.id
@@ -216,25 +217,25 @@ var telegramFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 50:
+                      case 51:
                         activityCreate = _context.sent;
                         activity.unshift(activityCreate);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(withoutBots);
-                        _context.prev = 54;
+                        _context.prev = 55;
 
                         _iterator.s();
 
-                      case 56:
+                      case 57:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 81;
+                          _context.next = 82;
                           break;
                         }
 
                         floodee = _step.value;
-                        _context.next = 60;
+                        _context.next = 61;
                         return floodee.wallet.update({
                           available: floodee.wallet.available + Number(amountPerUser)
                         }, {
@@ -242,9 +243,9 @@ var telegramFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 60:
+                      case 61:
                         floodeeWallet = _context.sent;
-                        _context.next = 63;
+                        _context.next = 64;
                         return _models["default"].floodtip.create({
                           amount: amountPerUser,
                           userId: floodee.id,
@@ -255,12 +256,12 @@ var telegramFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 63:
+                      case 64:
                         floodtipRecord = _context.sent;
-                        _context.next = 66;
+                        _context.next = 67;
                         return (0, _userToMention.getUserToMentionFromDatabaseRecord)(floodee);
 
-                      case 66:
+                      case 67:
                         _yield$getUserToMenti = _context.sent;
                         _yield$getUserToMenti2 = (0, _slicedToArray2["default"])(_yield$getUserToMenti, 2);
                         userToMention = _yield$getUserToMenti2[0];
@@ -274,7 +275,7 @@ var telegramFlood = /*#__PURE__*/function () {
 
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context.next = 74;
+                        _context.next = 75;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
                           type: 'floodtip_s',
@@ -289,9 +290,9 @@ var telegramFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 74:
+                      case 75:
                         tipActivity = _context.sent;
-                        _context.next = 77;
+                        _context.next = 78;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -313,32 +314,32 @@ var telegramFlood = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 77:
+                      case 78:
                         tipActivity = _context.sent;
                         activity.unshift(tipActivity);
 
-                      case 79:
-                        _context.next = 56;
+                      case 80:
+                        _context.next = 57;
                         break;
 
-                      case 81:
-                        _context.next = 86;
+                      case 82:
+                        _context.next = 87;
                         break;
 
-                      case 83:
-                        _context.prev = 83;
-                        _context.t0 = _context["catch"](54);
+                      case 84:
+                        _context.prev = 84;
+                        _context.t0 = _context["catch"](55);
 
                         _iterator.e(_context.t0);
 
-                      case 86:
-                        _context.prev = 86;
+                      case 87:
+                        _context.prev = 87;
 
                         _iterator.f();
 
-                        return _context.finish(86);
+                        return _context.finish(87);
 
-                      case 89:
+                      case 90:
                         // Soltion 1: doesn't work for telegram
                         // const newStringListUsers = listOfUsersRained.join(", ");
                         // const cutStringListUsers = newStringListUsers.match(/.{1,3500}(\s|$)/g);
@@ -368,48 +369,48 @@ var telegramFlood = /*#__PURE__*/function () {
 
                         _i = 0, _cutStringListUsers = cutStringListUsers;
 
-                      case 93:
+                      case 94:
                         if (!(_i < _cutStringListUsers.length)) {
-                          _context.next = 104;
+                          _context.next = 105;
                           break;
                         }
 
                         element = _cutStringListUsers[_i];
                         _context.t1 = ctx;
-                        _context.next = 98;
+                        _context.next = 99;
                         return (0, _telegram.userListMessage)(element);
 
-                      case 98:
+                      case 99:
                         _context.t2 = _context.sent;
-                        _context.next = 101;
+                        _context.next = 102;
                         return _context.t1.replyWithHTML.call(_context.t1, _context.t2);
 
-                      case 101:
+                      case 102:
                         _i++;
-                        _context.next = 93;
+                        _context.next = 94;
                         break;
 
-                      case 104:
+                      case 105:
                         _context.t3 = ctx;
-                        _context.next = 107;
+                        _context.next = 108;
                         return (0, _telegram.afterSuccessMessage)(ctx, floodRecord.id, amount, withoutBots.length, amountPerUser, 'Flood', 'flooded');
 
-                      case 107:
+                      case 108:
                         _context.t4 = _context.sent;
-                        _context.next = 110;
+                        _context.next = 111;
                         return _context.t3.replyWithHTML.call(_context.t3, _context.t4);
 
-                      case 110:
+                      case 111:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 111:
+                      case 112:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[54, 83, 86, 89]]);
+                }, _callee, null, [[55, 84, 87, 90]]);
               }));
 
               return function (_x10) {

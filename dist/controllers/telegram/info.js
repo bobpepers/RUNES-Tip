@@ -169,31 +169,60 @@ var fetchInfo = /*#__PURE__*/function () {
 
                         _logger["default"].error("info error: ".concat(err));
 
-                        _context2.prev = 10;
-                        _context2.t1 = ctx;
-                        _context2.next = 14;
-                        return (0, _telegram.errorMessage)('Info');
+                        if (!(err && err.response && err.response.error_code && err.response.error_code === 403)) {
+                          _context2.next = 25;
+                          break;
+                        }
 
-                      case 14:
+                        _context2.prev = 11;
+                        _context2.t1 = ctx;
+                        _context2.next = 15;
+                        return (0, _telegram.unableToDirectMessageErrorMessage)(ctx, 'Info');
+
+                      case 15:
                         _context2.t2 = _context2.sent;
-                        _context2.next = 17;
+                        _context2.next = 18;
                         return _context2.t1.replyWithHTML.call(_context2.t1, _context2.t2);
 
-                      case 17:
-                        _context2.next = 22;
+                      case 18:
+                        _context2.next = 23;
                         break;
 
-                      case 19:
-                        _context2.prev = 19;
-                        _context2.t3 = _context2["catch"](10);
+                      case 20:
+                        _context2.prev = 20;
+                        _context2.t3 = _context2["catch"](11);
                         console.log(_context2.t3);
 
-                      case 22:
+                      case 23:
+                        _context2.next = 37;
+                        break;
+
+                      case 25:
+                        _context2.prev = 25;
+                        _context2.t4 = ctx;
+                        _context2.next = 29;
+                        return (0, _telegram.errorMessage)('Info');
+
+                      case 29:
+                        _context2.t5 = _context2.sent;
+                        _context2.next = 32;
+                        return _context2.t4.replyWithHTML.call(_context2.t4, _context2.t5);
+
+                      case 32:
+                        _context2.next = 37;
+                        break;
+
+                      case 34:
+                        _context2.prev = 34;
+                        _context2.t6 = _context2["catch"](25);
+                        console.log(_context2.t6);
+
+                      case 37:
                       case "end":
                         return _context2.stop();
                     }
                   }
-                }, _callee2, null, [[0, 5], [10, 19]]);
+                }, _callee2, null, [[0, 5], [11, 20], [25, 34]]);
               }));
 
               return function (_x4) {

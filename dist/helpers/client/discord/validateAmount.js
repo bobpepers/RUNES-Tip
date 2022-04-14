@@ -50,7 +50,9 @@ var validateAmount = /*#__PURE__*/function () {
             _context.next = 7;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
-              spenderId: user.id
+              spenderId: user.id,
+              spender_balance: user.wallet.available,
+              failedAmount: 'No Amount Specified'
             }, {
               lock: t.LOCK.UPDATE,
               transaction: t
@@ -79,7 +81,7 @@ var validateAmount = /*#__PURE__*/function () {
             });
 
           case 13:
-            return _context.abrupt("return", [activity, amount]);
+            return _context.abrupt("return", [false, activity, amount]);
 
           case 14:
             if (preAmount.toLowerCase() === 'all') {
@@ -96,6 +98,7 @@ var validateAmount = /*#__PURE__*/function () {
             _context.next = 18;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
+              failedAmount: preAmount.toString().length < 4000 ? preAmount.toString() : 'out of range',
               spenderId: user.id,
               spender_balance: user.wallet.available
             }, {
@@ -126,7 +129,7 @@ var validateAmount = /*#__PURE__*/function () {
             });
 
           case 24:
-            return _context.abrupt("return", [activity, amount]);
+            return _context.abrupt("return", [false, activity, amount]);
 
           case 25:
             if (tipType === 'each' && preAmount.toLowerCase() !== 'all') {
@@ -141,6 +144,7 @@ var validateAmount = /*#__PURE__*/function () {
             _context.next = 29;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
+              failedAmount: preAmount.toString().length < 4000 ? preAmount.toString() : 'out of range',
               spenderId: user.id,
               spender_balance: user.wallet.available
             }, {
@@ -171,7 +175,7 @@ var validateAmount = /*#__PURE__*/function () {
             });
 
           case 35:
-            return _context.abrupt("return", [activity, amount]);
+            return _context.abrupt("return", [false, activity, amount]);
 
           case 36:
             if (!(amount <= 0)) {
@@ -196,7 +200,7 @@ var validateAmount = /*#__PURE__*/function () {
             });
 
           case 42:
-            return _context.abrupt("return", [activity, amount]);
+            return _context.abrupt("return", [false, activity, amount]);
 
           case 43:
             if (!(user.wallet.available < amount)) {
@@ -209,7 +213,7 @@ var validateAmount = /*#__PURE__*/function () {
               type: "".concat(type, "_i"),
               spenderId: user.id,
               spender_balance: user.wallet.available,
-              amount: amount
+              failedAmount: preAmount.toString().length < 4000 ? preAmount.toString() : 'out of range'
             }, {
               lock: t.LOCK.UPDATE,
               transaction: t
@@ -238,10 +242,10 @@ var validateAmount = /*#__PURE__*/function () {
             });
 
           case 52:
-            return _context.abrupt("return", [activity, amount]);
+            return _context.abrupt("return", [false, activity, amount]);
 
           case 53:
-            return _context.abrupt("return", [activity, amount]);
+            return _context.abrupt("return", [true, activity, amount]);
 
           case 54:
           case "end":

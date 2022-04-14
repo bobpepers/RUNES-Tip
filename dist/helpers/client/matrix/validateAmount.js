@@ -23,6 +23,10 @@ var validateAmount = /*#__PURE__*/function () {
         usersToTip,
         activity,
         amount,
+        noPreAmountActivity,
+        minAmountActivity,
+        invalidAmountActivity,
+        insufActivity,
         _args = arguments;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
@@ -33,28 +37,45 @@ var validateAmount = /*#__PURE__*/function () {
             amount = 0;
 
             if (preAmount) {
-              _context.next = 10;
+              _context.next = 13;
               break;
             }
 
             _context.next = 6;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
-              spenderId: user.id
+              spenderId: user.id,
+              spender_balance: user.wallet.available,
+              failedAmount: 'No Amount Specified'
             }, {
               lock: t.LOCK.UPDATE,
               transaction: t
             });
 
           case 6:
-            activity = _context.sent;
+            noPreAmountActivity = _context.sent;
             _context.next = 9;
-            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidAmountMessage)(message, type));
+            return _models["default"].activity.findOne({
+              where: {
+                id: noPreAmountActivity.id
+              },
+              include: [{
+                model: _models["default"].user,
+                as: 'spender'
+              }],
+              lock: t.LOCK.UPDATE,
+              transaction: t
+            });
 
           case 9:
-            return _context.abrupt("return", [activity, amount]);
+            activity = _context.sent;
+            _context.next = 12;
+            return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidAmountMessage)(message, type));
 
-          case 10:
+          case 12:
+            return _context.abrupt("return", [false, activity, amount]);
+
+          case 13:
             if (preAmount.toLowerCase() === 'all') {
               amount = user.wallet.available;
             } else {
@@ -62,61 +83,95 @@ var validateAmount = /*#__PURE__*/function () {
             }
 
             if (!(amount < setting.min)) {
-              _context.next = 18;
+              _context.next = 24;
               break;
             }
 
-            _context.next = 14;
+            _context.next = 17;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
-              spenderId: user.id
+              failedAmount: preAmount.toString().length < 4000 ? preAmount.toString() : 'out of range',
+              spenderId: user.id,
+              spender_balance: user.wallet.available
             }, {
               lock: t.LOCK.UPDATE,
               transaction: t
             });
 
-          case 14:
+          case 17:
+            minAmountActivity = _context.sent;
+            _context.next = 20;
+            return _models["default"].activity.findOne({
+              where: {
+                id: minAmountActivity.id
+              },
+              include: [{
+                model: _models["default"].user,
+                as: 'spender'
+              }],
+              lock: t.LOCK.UPDATE,
+              transaction: t
+            });
+
+          case 20:
             activity = _context.sent;
-            _context.next = 17;
+            _context.next = 23;
             return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.minimumMessage)(message, setting, type));
 
-          case 17:
-            return _context.abrupt("return", [activity, amount]);
+          case 23:
+            return _context.abrupt("return", [false, activity, amount]);
 
-          case 18:
+          case 24:
             if (tipType === 'each' && preAmount.toLowerCase() !== 'all') {
               amount *= usersToTip.length;
             }
 
             if (!(amount % 1 !== 0)) {
-              _context.next = 26;
+              _context.next = 35;
               break;
             }
 
-            _context.next = 22;
+            _context.next = 28;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
-              spenderId: user.id
+              failedAmount: preAmount.toString().length < 4000 ? preAmount.toString() : 'out of range',
+              spenderId: user.id,
+              spender_balance: user.wallet.available
             }, {
               lock: t.LOCK.UPDATE,
               transaction: t
             });
 
-          case 22:
+          case 28:
+            invalidAmountActivity = _context.sent;
+            _context.next = 31;
+            return _models["default"].activity.findOne({
+              where: {
+                id: invalidAmountActivity.id
+              },
+              include: [{
+                model: _models["default"].user,
+                as: 'spender'
+              }],
+              lock: t.LOCK.UPDATE,
+              transaction: t
+            });
+
+          case 31:
             activity = _context.sent;
-            _context.next = 25;
+            _context.next = 34;
             return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidAmountMessage)(message, type));
 
-          case 25:
-            return _context.abrupt("return", [activity, amount]);
+          case 34:
+            return _context.abrupt("return", [false, activity, amount]);
 
-          case 26:
+          case 35:
             if (!(amount <= 0)) {
-              _context.next = 33;
+              _context.next = 42;
               break;
             }
 
-            _context.next = 29;
+            _context.next = 38;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
               spenderId: user.id
@@ -125,42 +180,58 @@ var validateAmount = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 29:
+          case 38:
             activity = _context.sent;
-            _context.next = 32;
+            _context.next = 41;
             return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.invalidAmountMessage)(message, type));
 
-          case 32:
-            return _context.abrupt("return", [activity, amount]);
+          case 41:
+            return _context.abrupt("return", [false, activity, amount]);
 
-          case 33:
+          case 42:
             if (!(user.wallet.available < amount)) {
-              _context.next = 40;
+              _context.next = 52;
               break;
             }
 
-            _context.next = 36;
+            _context.next = 45;
             return _models["default"].activity.create({
               type: "".concat(type, "_i"),
               spenderId: user.id,
-              amount: amount
+              spender_balance: user.wallet.available,
+              failedAmount: preAmount.toString().length < 4000 ? preAmount.toString() : 'out of range'
             }, {
               lock: t.LOCK.UPDATE,
               transaction: t
             });
 
-          case 36:
+          case 45:
+            insufActivity = _context.sent;
+            _context.next = 48;
+            return _models["default"].activity.findOne({
+              where: {
+                id: insufActivity.id
+              },
+              include: [{
+                model: _models["default"].user,
+                as: 'spender'
+              }],
+              lock: t.LOCK.UPDATE,
+              transaction: t
+            });
+
+          case 48:
             activity = _context.sent;
-            _context.next = 39;
+            _context.next = 51;
             return matrixClient.sendEvent(message.sender.roomId, "m.room.message", (0, _matrix.insufficientBalanceMessage)(message, type));
 
-          case 39:
-            return _context.abrupt("return", [activity, amount]);
+          case 51:
+            return _context.abrupt("return", [false, activity, amount]);
 
-          case 40:
-            return _context.abrupt("return", [activity, amount]);
+          case 52:
+            return _context.abrupt("return", [true, activity, amount]);
 
-          case 41:
+          case 53:
           case "end":
             return _context.stop();
         }

@@ -19,6 +19,10 @@ var _telegram = require("../../messages/telegram");
 
 var _rclient = require("../../services/rclient");
 
+var _settings = _interopRequireDefault(require("../../config/settings"));
+
+var settings = (0, _settings["default"])();
+
 var createUpdateUser = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(ctx) {
     var userId, username, firstname, lastname, isNewUser;
@@ -229,7 +233,7 @@ var createUpdateUser = /*#__PURE__*/function () {
                             while (1) {
                               switch (_context.prev = _context.next) {
                                 case 0:
-                                  if (!isNewUser) {
+                                  if (!(isNewUser && settings.coin.setting !== 'Pirate')) {
                                     _context.next = 13;
                                     break;
                                   }

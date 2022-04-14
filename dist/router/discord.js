@@ -139,9 +139,8 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
       }
     }, _callee);
   })), 40000);
-  discordClient.on("presenceUpdate", function (oldMember, newMember) {
-    // const { username } = newMember.user;
-    console.log('presenceUpdate');
+  discordClient.on("presenceUpdate", function (oldMember, newMember) {// const { username } = newMember.user;
+    // console.log('presenceUpdate');
   });
   discordClient.on('voiceStateUpdate', /*#__PURE__*/function () {
     var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(oldMember, newMember) {
@@ -1212,7 +1211,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               return _context34.abrupt("return");
 
             case 190:
-              if (!(filteredMessageDiscord[1].substr(3).slice(0, -1) === discordClient.user.id)) {
+              if (!(filteredMessageDiscord[1].substr(2).slice(0, -1) === discordClient.user.id)) {
                 _context34.next = 195;
                 break;
               }
@@ -1312,7 +1311,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               }
 
               _context34.next = 220;
-              return (0, _rateLimit.myRateLimiter)(discordClient, message, 'discord', 'Fees');
+              return (0, _rateLimit.myRateLimiter)(discordClient, message, 'discord', 'Rain');
 
             case 220:
               _limited18 = _context34.sent;

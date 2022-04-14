@@ -17,8 +17,6 @@ var _sequelize = require("sequelize");
 
 var _telegram = require("telegram");
 
-var _dotenv = _interopRequireDefault(require("dotenv"));
-
 var _models = _interopRequireDefault(require("../../models"));
 
 var _telegram2 = require("../../messages/telegram");
@@ -54,7 +52,7 @@ var telegramRain = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, members, onlineMembers, withoutBots, fActivity, updatedBalance, fee, amountPerUser, faucetWatered, rainRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, rainee, raineeWallet, raintipRecord, _yield$getUserToMenti, _yield$getUserToMenti2, userToMention, userId, tipActivity, cutStringListUsers, i, _i, _cutStringListUsers, element;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, validAmount, activityValiateAmount, amount, members, onlineMembers, withoutBots, fActivity, updatedBalance, fee, amountPerUser, faucetWatered, rainRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, rainee, raineeWallet, raintipRecord, _yield$getUserToMenti, _yield$getUserToMenti2, userToMention, userId, tipActivity, cutStringListUsers, i, _i, _cutStringListUsers, element;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -86,26 +84,27 @@ var telegramRain = /*#__PURE__*/function () {
 
                       case 11:
                         _yield$validateAmount = _context.sent;
-                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
-                        activityValiateAmount = _yield$validateAmount2[0];
-                        amount = _yield$validateAmount2[1];
+                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 3);
+                        validAmount = _yield$validateAmount2[0];
+                        activityValiateAmount = _yield$validateAmount2[1];
+                        amount = _yield$validateAmount2[2];
 
-                        if (!activityValiateAmount) {
-                          _context.next = 18;
+                        if (validAmount) {
+                          _context.next = 19;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 18:
-                        _context.next = 20;
+                      case 19:
+                        _context.next = 21;
                         return telegramApiClient.getParticipants(ctx.message.chat.id, {
                           filter: _telegram.Api.ChannelParticipantsRecent,
                           limit: 200000
                         });
 
-                      case 20:
+                      case 21:
                         members = _context.sent;
                         console.log(members);
                         console.log('aftermembers');
@@ -113,19 +112,19 @@ var telegramRain = /*#__PURE__*/function () {
                           return !member.bot && member.status && member.status.className && member.status.className === 'UserStatusRecently';
                         }); // console.log(onlineMembers);
 
-                        _context.next = 26;
+                        _context.next = 27;
                         return (0, _mapMembers.mapMembers)(ctx, t, onlineMembers, setting);
 
-                      case 26:
+                      case 27:
                         withoutBots = _context.sent;
 
                         if (!(withoutBots.length < 2)) {
-                          _context.next = 36;
+                          _context.next = 37;
                           break;
                         }
 
                         console.log(withoutBots.length);
-                        _context.next = 31;
+                        _context.next = 32;
                         return _models["default"].activity.create({
                           type: 'rain_f',
                           spenderId: user.id
@@ -134,17 +133,17 @@ var telegramRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 31:
+                      case 32:
                         fActivity = _context.sent;
                         activity.unshift(fActivity);
-                        _context.next = 35;
+                        _context.next = 36;
                         return ctx.replyWithHTML((0, _telegram2.notEnoughUsers)('Rain'));
 
-                      case 35:
+                      case 36:
                         return _context.abrupt("return");
 
-                      case 36:
-                        _context.next = 38;
+                      case 37:
+                        _context.next = 39;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -152,16 +151,16 @@ var telegramRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 38:
+                      case 39:
                         updatedBalance = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
-                        _context.next = 43;
+                        _context.next = 44;
                         return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
 
-                      case 43:
+                      case 44:
                         faucetWatered = _context.sent;
-                        _context.next = 46;
+                        _context.next = 47;
                         return _models["default"].rain.create({
                           feeAmount: Number(fee),
                           amount: amount,
@@ -173,9 +172,9 @@ var telegramRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 46:
+                      case 47:
                         rainRecord = _context.sent;
-                        _context.next = 49;
+                        _context.next = 50;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'rain_s',
@@ -187,9 +186,9 @@ var telegramRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 49:
+                      case 50:
                         preActivity = _context.sent;
-                        _context.next = 52;
+                        _context.next = 53;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -205,25 +204,25 @@ var telegramRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 52:
+                      case 53:
                         finalActivity = _context.sent;
                         activity.unshift(finalActivity);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(withoutBots);
-                        _context.prev = 56;
+                        _context.prev = 57;
 
                         _iterator.s();
 
-                      case 58:
+                      case 59:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 83;
+                          _context.next = 84;
                           break;
                         }
 
                         rainee = _step.value;
-                        _context.next = 62;
+                        _context.next = 63;
                         return rainee.wallet.update({
                           available: rainee.wallet.available + Number(amountPerUser)
                         }, {
@@ -231,9 +230,9 @@ var telegramRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 62:
+                      case 63:
                         raineeWallet = _context.sent;
-                        _context.next = 65;
+                        _context.next = 66;
                         return _models["default"].raintip.create({
                           amount: amountPerUser,
                           userId: rainee.id,
@@ -244,12 +243,12 @@ var telegramRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 65:
+                      case 66:
                         raintipRecord = _context.sent;
-                        _context.next = 68;
+                        _context.next = 69;
                         return (0, _userToMention.getUserToMentionFromDatabaseRecord)(rainee);
 
-                      case 68:
+                      case 69:
                         _yield$getUserToMenti = _context.sent;
                         _yield$getUserToMenti2 = (0, _slicedToArray2["default"])(_yield$getUserToMenti, 2);
                         userToMention = _yield$getUserToMenti2[0];
@@ -263,7 +262,7 @@ var telegramRain = /*#__PURE__*/function () {
 
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context.next = 76;
+                        _context.next = 77;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
                           type: 'raintip_s',
@@ -278,9 +277,9 @@ var telegramRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 76:
+                      case 77:
                         tipActivity = _context.sent;
-                        _context.next = 79;
+                        _context.next = 80;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -302,32 +301,32 @@ var telegramRain = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 79:
+                      case 80:
                         tipActivity = _context.sent;
                         activity.unshift(tipActivity);
 
-                      case 81:
-                        _context.next = 58;
+                      case 82:
+                        _context.next = 59;
                         break;
 
-                      case 83:
-                        _context.next = 88;
+                      case 84:
+                        _context.next = 89;
                         break;
 
-                      case 85:
-                        _context.prev = 85;
-                        _context.t0 = _context["catch"](56);
+                      case 86:
+                        _context.prev = 86;
+                        _context.t0 = _context["catch"](57);
 
                         _iterator.e(_context.t0);
 
-                      case 88:
-                        _context.prev = 88;
+                      case 89:
+                        _context.prev = 89;
 
                         _iterator.f();
 
-                        return _context.finish(88);
+                        return _context.finish(89);
 
-                      case 91:
+                      case 92:
                         cutStringListUsers = [];
                         i = 0;
                         listOfUsersRained.forEach(function (word) {
@@ -343,48 +342,48 @@ var telegramRain = /*#__PURE__*/function () {
 
                         _i = 0, _cutStringListUsers = cutStringListUsers;
 
-                      case 95:
+                      case 96:
                         if (!(_i < _cutStringListUsers.length)) {
-                          _context.next = 106;
+                          _context.next = 107;
                           break;
                         }
 
                         element = _cutStringListUsers[_i];
                         _context.t1 = ctx;
-                        _context.next = 100;
+                        _context.next = 101;
                         return (0, _telegram2.userListMessage)(element);
 
-                      case 100:
+                      case 101:
                         _context.t2 = _context.sent;
-                        _context.next = 103;
+                        _context.next = 104;
                         return _context.t1.replyWithHTML.call(_context.t1, _context.t2);
 
-                      case 103:
+                      case 104:
                         _i++;
-                        _context.next = 95;
+                        _context.next = 96;
                         break;
 
-                      case 106:
+                      case 107:
                         _context.t3 = ctx;
-                        _context.next = 109;
+                        _context.next = 110;
                         return (0, _telegram2.afterSuccessMessage)(ctx, rainRecord.id, amount, withoutBots.length, amountPerUser, 'Rain', 'rained');
 
-                      case 109:
+                      case 110:
                         _context.t4 = _context.sent;
-                        _context.next = 112;
+                        _context.next = 113;
                         return _context.t3.replyWithHTML.call(_context.t3, _context.t4);
 
-                      case 112:
+                      case 113:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 113:
+                      case 114:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[56, 85, 88, 91]]);
+                }, _callee, null, [[57, 86, 89, 92]]);
               }));
 
               return function (_x10) {

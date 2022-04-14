@@ -900,7 +900,7 @@ var discordReactDrop = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref14 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee14(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, textTime, cutLastTimeLetter, cutNumberTime, isnum, timeFailActivity, _timeFailActivity, allEmojis, failEmojiActivity, timeDay, timeHour, timeMinute, timeSecond, dateObj, countDownDate, now, distance, randomAmount, i, randomX, shuffeledEmojisArray, findGroup, wallet, group, channel, fee, newReactDrop, sendReactDropMessage, newUpdatedReactDrop, preActivity, finalActivity, reactMessage, _iterator3, _step3, shufEmoji, updateMessage;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, validAmount, activityValiateAmount, amount, textTime, cutLastTimeLetter, cutNumberTime, isnum, timeFailActivity, _timeFailActivity, allEmojis, failEmojiActivity, timeDay, timeHour, timeMinute, timeSecond, dateObj, countDownDate, now, distance, randomAmount, i, randomX, shuffeledEmojisArray, findGroup, wallet, group, channel, fee, newReactDrop, sendReactDropMessage, newUpdatedReactDrop, preActivity, finalActivity, reactMessage, _iterator3, _step3, shufEmoji, updateMessage;
 
                 return _regenerator["default"].wrap(function _callee14$(_context14) {
                   while (1) {
@@ -932,19 +932,20 @@ var discordReactDrop = /*#__PURE__*/function () {
 
                       case 11:
                         _yield$validateAmount = _context14.sent;
-                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
-                        activityValiateAmount = _yield$validateAmount2[0];
-                        amount = _yield$validateAmount2[1];
+                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 3);
+                        validAmount = _yield$validateAmount2[0];
+                        activityValiateAmount = _yield$validateAmount2[1];
+                        amount = _yield$validateAmount2[2];
 
-                        if (!activityValiateAmount) {
-                          _context14.next = 18;
+                        if (validAmount) {
+                          _context14.next = 19;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context14.abrupt("return");
 
-                      case 18:
+                      case 19:
                         // Convert Message time to MS
                         textTime = '5m';
 
@@ -959,11 +960,11 @@ var discordReactDrop = /*#__PURE__*/function () {
 
                         if (!(!isnum // && Number(cutNumberTime) < 0
                         || cutLastTimeLetter !== 'd' && cutLastTimeLetter !== 'h' && cutLastTimeLetter !== 'm' && cutLastTimeLetter !== 's')) {
-                          _context14.next = 32;
+                          _context14.next = 33;
                           break;
                         }
 
-                        _context14.next = 26;
+                        _context14.next = 27;
                         return _models["default"].activity.create({
                           type: 'reactdrop_f',
                           spenderId: user.id
@@ -972,25 +973,25 @@ var discordReactDrop = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 26:
+                      case 27:
                         timeFailActivity = _context14.sent;
                         activity.unshift(timeFailActivity);
-                        _context14.next = 30;
+                        _context14.next = 31;
                         return message.channel.send({
                           embeds: [(0, _discord2.invalidTimeMessage)(message, 'Reactdrop')]
                         });
 
-                      case 30:
-                        _context14.next = 141;
+                      case 31:
+                        _context14.next = 142;
                         break;
 
-                      case 32:
+                      case 33:
                         if (!(cutLastTimeLetter === 's' && Number(cutNumberTime) < 60)) {
-                          _context14.next = 41;
+                          _context14.next = 42;
                           break;
                         }
 
-                        _context14.next = 35;
+                        _context14.next = 36;
                         return _models["default"].activity.create({
                           type: 'reactdrop_f',
                           spenderId: user.id
@@ -999,21 +1000,21 @@ var discordReactDrop = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 35:
+                      case 36:
                         _timeFailActivity = _context14.sent;
                         activity.unshift(_timeFailActivity);
-                        _context14.next = 39;
+                        _context14.next = 40;
                         return message.channel.send({
                           embeds: [(0, _discord2.minimumTimeReactDropMessage)(message)]
                         });
 
-                      case 39:
-                        _context14.next = 141;
+                      case 40:
+                        _context14.next = 142;
                         break;
 
-                      case 41:
+                      case 42:
                         allEmojis = _emoji["default"];
-                        _context14.next = 44;
+                        _context14.next = 45;
                         return message.guild.emojis.cache.forEach(function (customEmoji) {
                           if (customEmoji.animated) {
                             allEmojis.push("<a:".concat(customEmoji.name, ":").concat(customEmoji.id, ">"));
@@ -1022,18 +1023,18 @@ var discordReactDrop = /*#__PURE__*/function () {
                           }
                         });
 
-                      case 44:
+                      case 45:
                         if (!filteredMessage[4]) {
                           // eslint-disable-next-line no-param-reassign
                           filteredMessage[4] = _lodash["default"].sample(allEmojis);
                         }
 
                         if (allEmojis.includes(filteredMessage[4])) {
-                          _context14.next = 54;
+                          _context14.next = 55;
                           break;
                         }
 
-                        _context14.next = 48;
+                        _context14.next = 49;
                         return _models["default"].activity.create({
                           type: 'reactdrop_f',
                           spenderId: user.id
@@ -1042,42 +1043,42 @@ var discordReactDrop = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 48:
+                      case 49:
                         failEmojiActivity = _context14.sent;
                         activity.unshift(failEmojiActivity);
-                        _context14.next = 52;
+                        _context14.next = 53;
                         return message.channel.send({
                           embeds: [(0, _discord2.invalidEmojiMessage)(message, 'Reactdrop')]
                         });
 
-                      case 52:
-                        _context14.next = 141;
+                      case 53:
+                        _context14.next = 142;
                         break;
 
-                      case 54:
+                      case 55:
                         timeDay = Number(cutNumberTime) * 24 * 60 * 60 * 1000;
                         timeHour = Number(cutNumberTime) * 60 * 60 * 1000;
                         timeMinute = Number(cutNumberTime) * 60 * 1000;
                         timeSecond = Number(cutNumberTime) * 1000;
 
                         if (!(cutLastTimeLetter === 'd' && timeDay > 172800000 || cutLastTimeLetter === 'h' && timeHour > 172800000 || cutLastTimeLetter === 'm' && timeMinute > 172800000 || cutLastTimeLetter === 's' && timeSecond > 172800000)) {
-                          _context14.next = 62;
+                          _context14.next = 63;
                           break;
                         }
 
-                        _context14.next = 61;
+                        _context14.next = 62;
                         return message.channel.send({
                           embeds: [(0, _discord2.maxTimeReactdropMessage)(message)]
                         });
 
-                      case 61:
+                      case 62:
                         return _context14.abrupt("return");
 
-                      case 62:
-                        _context14.next = 64;
+                      case 63:
+                        _context14.next = 65;
                         return new Date().getTime();
 
-                      case 64:
+                      case 65:
                         dateObj = _context14.sent;
 
                         if (cutLastTimeLetter === 'd') {
@@ -1096,20 +1097,20 @@ var discordReactDrop = /*#__PURE__*/function () {
                           dateObj += timeSecond;
                         }
 
-                        _context14.next = 71;
+                        _context14.next = 72;
                         return new Date(dateObj);
 
-                      case 71:
+                      case 72:
                         dateObj = _context14.sent;
-                        _context14.next = 74;
+                        _context14.next = 75;
                         return dateObj.getTime();
 
-                      case 74:
+                      case 75:
                         countDownDate = _context14.sent;
-                        _context14.next = 77;
+                        _context14.next = 78;
                         return new Date().getTime();
 
-                      case 77:
+                      case 78:
                         now = _context14.sent;
                         distance = countDownDate - now;
                         randomAmount = Math.floor(Math.random() * 3) + 2;
@@ -1119,16 +1120,16 @@ var discordReactDrop = /*#__PURE__*/function () {
                           useEmojis.push(allEmojis[parseInt(randomX, 10)]);
                         }
 
-                        _context14.next = 83;
+                        _context14.next = 84;
                         return useEmojis.push(filteredMessage[4]);
 
-                      case 83:
-                        _context14.next = 85;
+                      case 84:
+                        _context14.next = 86;
                         return _lodash["default"].shuffle(useEmojis);
 
-                      case 85:
+                      case 86:
                         shuffeledEmojisArray = _context14.sent;
-                        _context14.next = 88;
+                        _context14.next = 89;
                         return _models["default"].group.findOne({
                           where: {
                             groupId: "discord-".concat(message.guildId)
@@ -1137,20 +1138,20 @@ var discordReactDrop = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 88:
+                      case 89:
                         findGroup = _context14.sent;
 
                         if (findGroup) {
-                          _context14.next = 93;
+                          _context14.next = 94;
                           break;
                         }
 
                         console.log('group not found');
-                        _context14.next = 141;
+                        _context14.next = 142;
                         break;
 
-                      case 93:
-                        _context14.next = 95;
+                      case 94:
+                        _context14.next = 96;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -1158,9 +1159,9 @@ var discordReactDrop = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 95:
+                      case 96:
                         wallet = _context14.sent;
-                        _context14.next = 98;
+                        _context14.next = 99;
                         return _models["default"].group.findOne({
                           where: {
                             groupId: "discord-".concat(message.guildId)
@@ -1169,9 +1170,9 @@ var discordReactDrop = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 98:
+                      case 99:
                         group = _context14.sent;
-                        _context14.next = 101;
+                        _context14.next = 102;
                         return _models["default"].channel.findOne({
                           where: {
                             channelId: "discord-".concat(message.channelId)
@@ -1180,10 +1181,10 @@ var discordReactDrop = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 101:
+                      case 102:
                         channel = _context14.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
-                        _context14.next = 105;
+                        _context14.next = 106;
                         return _models["default"].reactdrop.create({
                           feeAmount: Number(fee),
                           amount: amount,
@@ -1199,16 +1200,16 @@ var discordReactDrop = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 105:
+                      case 106:
                         newReactDrop = _context14.sent;
-                        _context14.next = 108;
+                        _context14.next = 109;
                         return message.channel.send({
                           embeds: [(0, _discord2.reactDropMessage)(newReactDrop.id, distance, message.author.id, filteredMessage[4], amount)]
                         });
 
-                      case 108:
+                      case 109:
                         sendReactDropMessage = _context14.sent;
-                        _context14.next = 111;
+                        _context14.next = 112;
                         return newReactDrop.update({
                           messageId: sendReactDropMessage.id
                         }, {
@@ -1216,9 +1217,9 @@ var discordReactDrop = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 111:
+                      case 112:
                         newUpdatedReactDrop = _context14.sent;
-                        _context14.next = 114;
+                        _context14.next = 115;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'reactdrop_s',
@@ -1230,9 +1231,9 @@ var discordReactDrop = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 114:
+                      case 115:
                         preActivity = _context14.sent;
-                        _context14.next = 117;
+                        _context14.next = 118;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -1248,54 +1249,54 @@ var discordReactDrop = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 117:
+                      case 118:
                         finalActivity = _context14.sent;
                         activity.unshift(finalActivity);
-                        _context14.next = 121;
+                        _context14.next = 122;
                         return discordClient.guilds.cache.get(sendReactDropMessage.guildId).channels.cache.get(sendReactDropMessage.channelId).messages.fetch(sendReactDropMessage.id);
 
-                      case 121:
+                      case 122:
                         reactMessage = _context14.sent;
                         listenReactDrop(reactMessage, distance, newUpdatedReactDrop, io, queue); // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator3 = _createForOfIteratorHelper(shuffeledEmojisArray);
-                        _context14.prev = 124;
+                        _context14.prev = 125;
 
                         _iterator3.s();
 
-                      case 126:
+                      case 127:
                         if ((_step3 = _iterator3.n()).done) {
-                          _context14.next = 132;
+                          _context14.next = 133;
                           break;
                         }
 
                         shufEmoji = _step3.value;
-                        _context14.next = 130;
+                        _context14.next = 131;
                         return reactMessage.react(shufEmoji);
 
-                      case 130:
-                        _context14.next = 126;
+                      case 131:
+                        _context14.next = 127;
                         break;
 
-                      case 132:
-                        _context14.next = 137;
+                      case 133:
+                        _context14.next = 138;
                         break;
 
-                      case 134:
-                        _context14.prev = 134;
-                        _context14.t0 = _context14["catch"](124);
+                      case 135:
+                        _context14.prev = 135;
+                        _context14.t0 = _context14["catch"](125);
 
                         _iterator3.e(_context14.t0);
 
-                      case 137:
-                        _context14.prev = 137;
+                      case 138:
+                        _context14.prev = 138;
 
                         _iterator3.f();
 
-                        return _context14.finish(137);
+                        return _context14.finish(138);
 
-                      case 140:
+                      case 141:
                         updateMessage = setInterval( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee13() {
                           return _regenerator["default"].wrap(function _callee13$(_context13) {
                             while (1) {
@@ -1321,17 +1322,17 @@ var discordReactDrop = /*#__PURE__*/function () {
                           }, _callee13);
                         })), 10000);
 
-                      case 141:
+                      case 142:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 142:
+                      case 143:
                       case "end":
                         return _context14.stop();
                     }
                   }
-                }, _callee14, null, [[124, 134, 137, 140]]);
+                }, _callee14, null, [[125, 135, 138, 141]]);
               }));
 
               return function (_x25) {

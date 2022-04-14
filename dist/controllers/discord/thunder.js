@@ -50,7 +50,7 @@ var discordThunder = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, members, onlineMembers, preWithoutBots, withoutBots, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, thunderRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, thunderee, thundereeWallet, thundertipRecord, userIdReceivedRain, tipActivity, _i, _listOfUsersRained, userThunder;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, validAmount, activityValiateAmount, amount, members, onlineMembers, preWithoutBots, withoutBots, failActivity, updatedBalance, fee, amountPerUser, faucetWatered, thunderRecord, preActivity, finalActivity, listOfUsersRained, _iterator, _step, thunderee, thundereeWallet, thundertipRecord, userIdReceivedRain, tipActivity, _i, _listOfUsersRained, userThunder;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -82,42 +82,43 @@ var discordThunder = /*#__PURE__*/function () {
 
                       case 11:
                         _yield$validateAmount = _context.sent;
-                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
-                        activityValiateAmount = _yield$validateAmount2[0];
-                        amount = _yield$validateAmount2[1];
+                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 3);
+                        validAmount = _yield$validateAmount2[0];
+                        activityValiateAmount = _yield$validateAmount2[1];
+                        amount = _yield$validateAmount2[2];
 
-                        if (!activityValiateAmount) {
-                          _context.next = 18;
+                        if (validAmount) {
+                          _context.next = 19;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 18:
-                        _context.next = 20;
+                      case 19:
+                        _context.next = 21;
                         return discordClient.guilds.cache.get(message.guildId).members.fetch({
                           withPresences: true
                         });
 
-                      case 20:
+                      case 21:
                         members = _context.sent;
                         onlineMembers = members.filter(function (member) {
                           return member.presence && member.presence.status && member.presence.status === "online";
                         });
-                        _context.next = 24;
+                        _context.next = 25;
                         return (0, _mapMembers.mapMembers)(message, t, filteredMessage[3], onlineMembers, setting);
 
-                      case 24:
+                      case 25:
                         preWithoutBots = _context.sent;
                         withoutBots = _lodash["default"].sampleSize(preWithoutBots, 1);
 
                         if (!(withoutBots.length < 1)) {
-                          _context.next = 34;
+                          _context.next = 35;
                           break;
                         }
 
-                        _context.next = 29;
+                        _context.next = 30;
                         return _models["default"].activity.create({
                           type: 'thunder_f',
                           spenderId: user.id
@@ -126,24 +127,24 @@ var discordThunder = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 29:
+                      case 30:
                         failActivity = _context.sent;
                         activity.unshift(failActivity);
-                        _context.next = 33;
+                        _context.next = 34;
                         return message.channel.send({
                           embeds: [(0, _discord.notEnoughActiveUsersMessage)(message, 'Thunder')]
                         });
 
-                      case 33:
+                      case 34:
                         return _context.abrupt("return");
 
-                      case 34:
+                      case 35:
                         if (!(withoutBots.length === 1)) {
-                          _context.next = 92;
+                          _context.next = 93;
                           break;
                         }
 
-                        _context.next = 37;
+                        _context.next = 38;
                         return user.wallet.update({
                           available: user.wallet.available - amount
                         }, {
@@ -151,16 +152,16 @@ var discordThunder = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 37:
+                      case 38:
                         updatedBalance = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
                         amountPerUser = ((amount - Number(fee)) / withoutBots.length).toFixed(0);
-                        _context.next = 42;
+                        _context.next = 43;
                         return (0, _waterFaucet.waterFaucet)(t, Number(fee), faucetSetting);
 
-                      case 42:
+                      case 43:
                         faucetWatered = _context.sent;
-                        _context.next = 45;
+                        _context.next = 46;
                         return _models["default"].thunder.create({
                           feeAmount: fee,
                           amount: amount,
@@ -173,9 +174,9 @@ var discordThunder = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 45:
+                      case 46:
                         thunderRecord = _context.sent;
-                        _context.next = 48;
+                        _context.next = 49;
                         return _models["default"].activity.create({
                           amount: amount,
                           type: 'thunder_s',
@@ -187,9 +188,9 @@ var discordThunder = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 48:
+                      case 49:
                         preActivity = _context.sent;
-                        _context.next = 51;
+                        _context.next = 52;
                         return _models["default"].activity.findOne({
                           where: {
                             id: preActivity.id
@@ -205,25 +206,25 @@ var discordThunder = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 51:
+                      case 52:
                         finalActivity = _context.sent;
                         activity.unshift(finalActivity);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
                         // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(withoutBots);
-                        _context.prev = 55;
+                        _context.prev = 56;
 
                         _iterator.s();
 
-                      case 57:
+                      case 58:
                         if ((_step = _iterator.n()).done) {
-                          _context.next = 76;
+                          _context.next = 77;
                           break;
                         }
 
                         thunderee = _step.value;
-                        _context.next = 61;
+                        _context.next = 62;
                         return thunderee.wallet.update({
                           available: thunderee.wallet.available + Number(amountPerUser)
                         }, {
@@ -231,9 +232,9 @@ var discordThunder = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 61:
+                      case 62:
                         thundereeWallet = _context.sent;
-                        _context.next = 64;
+                        _context.next = 65;
                         return _models["default"].thundertip.create({
                           amount: amountPerUser,
                           userId: thunderee.id,
@@ -245,7 +246,7 @@ var discordThunder = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 64:
+                      case 65:
                         thundertipRecord = _context.sent;
 
                         if (thunderee.ignoreMe) {
@@ -257,7 +258,7 @@ var discordThunder = /*#__PURE__*/function () {
 
                         tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                        _context.next = 69;
+                        _context.next = 70;
                         return _models["default"].activity.create({
                           amount: Number(amountPerUser),
                           type: 'thundertip_s',
@@ -272,9 +273,9 @@ var discordThunder = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 69:
+                      case 70:
                         tipActivity = _context.sent;
-                        _context.next = 72;
+                        _context.next = 73;
                         return _models["default"].activity.findOne({
                           where: {
                             id: tipActivity.id
@@ -296,62 +297,62 @@ var discordThunder = /*#__PURE__*/function () {
                           transaction: t
                         });
 
-                      case 72:
+                      case 73:
                         tipActivity = _context.sent;
                         activity.unshift(tipActivity);
 
-                      case 74:
-                        _context.next = 57;
+                      case 75:
+                        _context.next = 58;
                         break;
 
-                      case 76:
-                        _context.next = 81;
+                      case 77:
+                        _context.next = 82;
                         break;
 
-                      case 78:
-                        _context.prev = 78;
-                        _context.t0 = _context["catch"](55);
+                      case 79:
+                        _context.prev = 79;
+                        _context.t0 = _context["catch"](56);
 
                         _iterator.e(_context.t0);
 
-                      case 81:
-                        _context.prev = 81;
+                      case 82:
+                        _context.prev = 82;
 
                         _iterator.f();
 
-                        return _context.finish(81);
-
-                      case 84:
-                        _i = 0, _listOfUsersRained = listOfUsersRained;
+                        return _context.finish(82);
 
                       case 85:
+                        _i = 0, _listOfUsersRained = listOfUsersRained;
+
+                      case 86:
                         if (!(_i < _listOfUsersRained.length)) {
-                          _context.next = 92;
+                          _context.next = 93;
                           break;
                         }
 
                         userThunder = _listOfUsersRained[_i];
-                        _context.next = 89;
+                        _context.next = 90;
                         return message.channel.send({
                           embeds: [(0, _discord.AfterThunderSuccess)(message, thunderRecord.id, amount, userThunder)]
                         });
 
-                      case 89:
+                      case 90:
                         _i++;
-                        _context.next = 85;
+                        _context.next = 86;
                         break;
 
-                      case 92:
+                      case 93:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 93:
+                      case 94:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[55, 78, 81, 84]]);
+                }, _callee, null, [[56, 79, 82, 85]]);
               }));
 
               return function (_x10) {

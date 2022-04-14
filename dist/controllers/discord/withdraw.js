@@ -51,7 +51,7 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(t) {
-                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, activityValiateAmount, amount, userId, _yield$validateWithdr, _yield$validateWithdr2, isInvalidAddress, isNodeOffline, failWithdrawalActivity, isMyAddressActivity, memo, addressExternal, wallet, fee, transaction, activityCreate;
+                var _yield$userWalletExis, _yield$userWalletExis2, user, userActivity, _yield$validateAmount, _yield$validateAmount2, validAmount, activityValiateAmount, amount, userId, _yield$validateWithdr, _yield$validateWithdr2, isInvalidAddress, isNodeOffline, failWithdrawalActivity, isMyAddressActivity, memo, addressExternal, wallet, fee, transaction, activityCreate;
 
                 return _regenerator["default"].wrap(function _callee$(_context) {
                   while (1) {
@@ -83,24 +83,25 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
 
                       case 11:
                         _yield$validateAmount = _context.sent;
-                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 2);
-                        activityValiateAmount = _yield$validateAmount2[0];
-                        amount = _yield$validateAmount2[1];
+                        _yield$validateAmount2 = (0, _slicedToArray2["default"])(_yield$validateAmount, 3);
+                        validAmount = _yield$validateAmount2[0];
+                        activityValiateAmount = _yield$validateAmount2[1];
+                        amount = _yield$validateAmount2[2];
 
-                        if (!activityValiateAmount) {
-                          _context.next = 18;
+                        if (validAmount) {
+                          _context.next = 19;
                           break;
                         }
 
                         activity.unshift(activityValiateAmount);
                         return _context.abrupt("return");
 
-                      case 18:
+                      case 19:
                         userId = user.user_id.replace('discord-', '');
-                        _context.next = 21;
+                        _context.next = 22;
                         return (0, _validateWithdrawalAddress.validateWithdrawalAddress)(filteredMessage[2], user, t);
 
-                      case 21:
+                      case 22:
                         _yield$validateWithdr = _context.sent;
                         _yield$validateWithdr2 = (0, _slicedToArray2["default"])(_yield$validateWithdr, 3);
                         isInvalidAddress = _yield$validateWithdr2[0];
@@ -108,115 +109,115 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                         failWithdrawalActivity = _yield$validateWithdr2[2];
 
                         if (!isNodeOffline) {
-                          _context.next = 29;
+                          _context.next = 30;
                           break;
                         }
 
-                        _context.next = 29;
+                        _context.next = 30;
                         return message.author.send('Runebase node offline');
 
-                      case 29:
+                      case 30:
                         if (!isInvalidAddress) {
-                          _context.next = 32;
+                          _context.next = 33;
                           break;
                         }
 
-                        _context.next = 32;
+                        _context.next = 33;
                         return message.author.send({
                           embeds: [(0, _discord.invalidAddressMessage)(message)]
                         });
 
-                      case 32:
+                      case 33:
                         if (!(isInvalidAddress || isNodeOffline)) {
-                          _context.next = 36;
+                          _context.next = 37;
                           break;
                         }
 
                         if (!(message.channel.type !== 'DM')) {
-                          _context.next = 36;
+                          _context.next = 37;
                           break;
                         }
 
-                        _context.next = 36;
+                        _context.next = 37;
                         return message.channel.send({
                           embeds: [(0, _discord.warnDirectMessage)(userId, 'Withdraw')]
                         });
 
-                      case 36:
+                      case 37:
                         if (!failWithdrawalActivity) {
-                          _context.next = 39;
+                          _context.next = 40;
                           break;
                         }
 
                         activity.unshift(failWithdrawalActivity);
                         return _context.abrupt("return");
 
-                      case 39:
-                        _context.next = 41;
+                      case 40:
+                        _context.next = 42;
                         return (0, _disallowWithdrawToSelf.disallowWithdrawToSelf)(filteredMessage[2], user, t);
 
-                      case 41:
+                      case 42:
                         isMyAddressActivity = _context.sent;
 
                         if (!isMyAddressActivity) {
-                          _context.next = 50;
+                          _context.next = 51;
                           break;
                         }
 
-                        _context.next = 45;
+                        _context.next = 46;
                         return message.author.send({
                           embeds: [(0, _discord.unableToWithdrawToSelfMessage)(message)]
                         });
 
-                      case 45:
+                      case 46:
                         if (!(message.channel.type !== 'DM')) {
-                          _context.next = 48;
+                          _context.next = 49;
                           break;
                         }
 
-                        _context.next = 48;
+                        _context.next = 49;
                         return message.channel.send({
                           embeds: [(0, _discord.warnDirectMessage)(userId, 'Withdraw')]
                         });
 
-                      case 48:
+                      case 49:
                         activity.unshift(isMyAddressActivity);
                         return _context.abrupt("return");
 
-                      case 50:
+                      case 51:
                         memo = null;
 
                         if (!(settings.coin.setting === 'Pirate')) {
-                          _context.next = 59;
+                          _context.next = 60;
                           break;
                         }
 
-                        _context.next = 54;
+                        _context.next = 55;
                         return (0, _extractWithdrawMemo.extractWithdrawMemo)(message.content, filteredMessage);
 
-                      case 54:
+                      case 55:
                         memo = _context.sent;
 
                         if (!(memo.length > 512)) {
-                          _context.next = 59;
+                          _context.next = 60;
                           break;
                         }
 
-                        _context.next = 58;
+                        _context.next = 59;
                         return message.channel.send({
                           embeds: [(0, _discord.discordTransactionMemoTooLongMessage)(message, memo.length)]
                         });
 
-                      case 58:
+                      case 59:
                         return _context.abrupt("return");
 
-                      case 59:
-                        _context.next = 61;
+                      case 60:
+                        _context.next = 62;
                         return (0, _createOrUseExternalWithdrawAddress.createOrUseExternalWithdrawAddress)(filteredMessage[2], user, t);
 
-                      case 61:
+                      case 62:
                         addressExternal = _context.sent;
-                        _context.next = 64;
+                        _context.next = 65;
                         return user.wallet.update({
                           available: user.wallet.available - amount,
                           locked: user.wallet.locked + amount
@@ -225,10 +226,10 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 64:
+                      case 65:
                         wallet = _context.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0);
-                        _context.next = 68;
+                        _context.next = 69;
                         return _models["default"].transaction.create({
                           addressId: wallet.addresses[0].id,
                           addressExternalId: addressExternal.id,
@@ -244,9 +245,9 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 68:
+                      case 69:
                         transaction = _context.sent;
-                        _context.next = 71;
+                        _context.next = 72;
                         return _models["default"].activity.create({
                           spenderId: user.id,
                           type: 'withdrawRequested',
@@ -257,43 +258,43 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 71:
+                      case 72:
                         activityCreate = _context.sent;
                         activity.unshift(activityCreate);
 
                         if (!(message.channel.type === 'DM')) {
-                          _context.next = 76;
+                          _context.next = 77;
                           break;
                         }
 
-                        _context.next = 76;
+                        _context.next = 77;
                         return message.author.send({
                           embeds: [(0, _discord.reviewMessage)(message, transaction)]
                         });
 
-                      case 76:
+                      case 77:
                         if (!(message.channel.type === 'GUILD_TEXT')) {
-                          _context.next = 81;
+                          _context.next = 82;
                           break;
                         }
 
-                        _context.next = 79;
+                        _context.next = 80;
                         return message.author.send({
                           embeds: [(0, _discord.reviewMessage)(message, transaction)]
                         });
 
-                      case 79:
-                        _context.next = 81;
+                      case 80:
+                        _context.next = 82;
                         return message.channel.send({
                           embeds: [(0, _discord.warnDirectMessage)(userId, 'Withdraw')]
                         });
 
-                      case 81:
+                      case 82:
                         t.afterCommit(function () {
                           console.log('done');
                         });
 
-                      case 82:
+                      case 83:
                       case "end":
                         return _context.stop();
                     }

@@ -44,7 +44,9 @@ var validateAmount = /*#__PURE__*/function () {
             _context.next = 6;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
-              spenderId: user.id
+              spenderId: user.id,
+              spender_balance: user.wallet.available,
+              failedAmount: 'No Amount Specified'
             }, {
               lock: t.LOCK.UPDATE,
               transaction: t
@@ -77,7 +79,7 @@ var validateAmount = /*#__PURE__*/function () {
             return _context.t0.replyWithHTML.call(_context.t0, _context.t1);
 
           case 16:
-            return _context.abrupt("return", [activity, amount]);
+            return _context.abrupt("return", [false, activity, amount]);
 
           case 17:
             if (preAmount.toLowerCase() === 'all') {
@@ -94,6 +96,7 @@ var validateAmount = /*#__PURE__*/function () {
             _context.next = 21;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
+              failedAmount: preAmount.toString().length < 4000 ? preAmount.toString() : 'out of range',
               spenderId: user.id,
               spender_balance: user.wallet.available
             }, {
@@ -128,7 +131,7 @@ var validateAmount = /*#__PURE__*/function () {
             return _context.t2.replyWithHTML.call(_context.t2, _context.t3);
 
           case 31:
-            return _context.abrupt("return", [activity, amount]);
+            return _context.abrupt("return", [false, activity, amount]);
 
           case 32:
             if (tipType === 'each' && preAmount.toLowerCase() !== 'all' // Perhaps remove preAmount.toLowerCase() !== 'all and make tip amount invalidate when casting "all" and "each" instead of splitting up all available balance
@@ -144,6 +147,7 @@ var validateAmount = /*#__PURE__*/function () {
             _context.next = 36;
             return _models["default"].activity.create({
               type: "".concat(type, "_f"),
+              failedAmount: preAmount.toString().length < 4000 ? preAmount.toString() : 'out of range',
               spenderId: user.id,
               spender_balance: user.wallet.available
             }, {
@@ -178,7 +182,7 @@ var validateAmount = /*#__PURE__*/function () {
             return _context.t4.replyWithHTML.call(_context.t4, _context.t5);
 
           case 46:
-            return _context.abrupt("return", [activity, amount]);
+            return _context.abrupt("return", [false, activity, amount]);
 
           case 47:
             if (!(amount <= 0)) {
@@ -207,7 +211,7 @@ var validateAmount = /*#__PURE__*/function () {
             return _context.t6.replyWithHTML.call(_context.t6, _context.t7);
 
           case 57:
-            return _context.abrupt("return", [activity, amount]);
+            return _context.abrupt("return", [false, activity, amount]);
 
           case 58:
             if (!(user.wallet.available < amount)) {
@@ -220,7 +224,7 @@ var validateAmount = /*#__PURE__*/function () {
               type: "".concat(type, "_i"),
               spenderId: user.id,
               spender_balance: user.wallet.available,
-              amount: amount
+              failedAmount: preAmount.toString().length < 4000 ? preAmount.toString() : 'out of range'
             }, {
               lock: t.LOCK.UPDATE,
               transaction: t
@@ -253,10 +257,10 @@ var validateAmount = /*#__PURE__*/function () {
             return _context.t8.replyWithHTML.call(_context.t8, _context.t9);
 
           case 71:
-            return _context.abrupt("return", [activity, amount]);
+            return _context.abrupt("return", [false, activity, amount]);
 
           case 72:
-            return _context.abrupt("return", [activity, amount]);
+            return _context.abrupt("return", [true, activity, amount]);
 
           case 73:
           case "end":
