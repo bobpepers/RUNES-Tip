@@ -2,6 +2,10 @@ import { Transaction } from "sequelize";
 import db from '../../models';
 import { welcomeMessage } from '../../messages/telegram';
 import { getInstance } from "../../services/rclient";
+import getCoinSettings from '../../config/settings';
+import { coin } from "../../config/runebaseSettings";
+
+const settings = getCoinSettings();
 
 export const createUpdateUser = async (
   ctx,
@@ -155,7 +159,10 @@ export const createUpdateUser = async (
     }
 
     t.afterCommit(async () => {
-      if (isNewUser) {
+      if (
+        isNewUser
+        && settings.coin.setting !== 'Pirate'
+      ) {
         try {
           await ctx.replyWithHTML(
             await welcomeMessage(
