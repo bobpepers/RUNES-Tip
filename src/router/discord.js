@@ -539,7 +539,10 @@ export const discordRouter = (
         let AmountPositionEnded = false;
         while (!AmountPositionEnded) {
           AmountPosition += 1;
-          if (!filteredMessageDiscord[parseInt(AmountPosition, 10)].startsWith('<@')) {
+          if (
+            !filteredMessageDiscord[parseInt(AmountPosition, 10)]
+            || !filteredMessageDiscord[parseInt(AmountPosition, 10)].startsWith('<@')
+          ) {
             AmountPositionEnded = true;
           }
         }

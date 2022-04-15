@@ -22,8 +22,9 @@ export const executeTipFunction = async (
   let operationName;
   let userBeingTipped;
   if (
-    filteredMessageDiscord[1].startsWith('<@')
-    && !filteredMessageDiscord[2].startsWith('<@')
+    !filteredMessageDiscord[2]
+    || (filteredMessageDiscord[1].startsWith('<@')
+    && !filteredMessageDiscord[2].startsWith('<@'))
   ) {
     operationName = 'tip';
     userBeingTipped = filteredMessageDiscord[1];
