@@ -6,6 +6,111 @@ import getCoinSettings from '../../config/settings';
 
 const settings = getCoinSettings();
 
+export const generateUserWalletAndAddress = async (
+  userInfo,
+  t,
+) => {
+  let newAccount = false;
+  let user = await db.user.findOne(
+    {
+      where: {
+        user_id: `telegram-${userInfo.userId}`,
+      },
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    },
+  );
+  if (!user && userInfo.userId) {
+    user = await db.user.create({
+      user_id: `telegram-${userInfo.userId}`,
+      username: userInfo.username,
+      firstname: userInfo.firstname,
+      lastname: userInfo.lastname,
+    }, {
+      transaction: t,
+      lock: t.LOCK.UPDATE,
+    });
+  }
+  if (user) {
+    if (
+      user.firstname !== userInfo.firstname
+        || user.lastname !== userInfo.lastname
+        || user.username !== userInfo.username
+    ) {
+      user = await user.update(
+        {
+          firstname: userInfo.firstname,
+          lastnam: userInfo.lastname,
+          username: userInfo.username,
+        },
+        {
+          transaction: t,
+          lock: t.LOCK.UPDATE,
+        },
+      );
+    }
+    let wallet = await db.wallet.findOne(
+      {
+        where: {
+          userId: user.id,
+        },
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      },
+    );
+    if (!wallet) {
+      wallet = await db.wallet.create({
+        userId: user.id,
+        available: 0,
+        locked: 0,
+      }, {
+        transaction: t,
+        lock: t.LOCK.UPDATE,
+      });
+      newAccount = true;
+    }
+    if (wallet) {
+      let address = await db.address.findOne(
+        {
+          where: {
+            walletId: wallet.id,
+          },
+          transaction: t,
+          lock: t.LOCK.UPDATE,
+        },
+      );
+      if (!address) {
+        const newAddress = await getInstance().getNewAddress();
+        const addressAlreadyExist = await db.address.findOne(
+          {
+            where: {
+              address: newAddress,
+            },
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          },
+        );
+        if (!addressAlreadyExist) {
+          address = await db.address.create({
+            address: newAddress,
+            walletId: wallet.id,
+            type: 'deposit',
+            confirmed: true,
+          }, {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          });
+        }
+      }
+    }
+  }
+
+  return [
+    user,
+    newAccount,
+  ];
+};
+
 export const createUpdateUser = async (
   ctx,
 ) => {
@@ -13,7 +118,6 @@ export const createUpdateUser = async (
   let username = '';
   let firstname = '';
   let lastname = '';
-  let isNewUser = false;
   if (
     ctx
       && ctx.update
@@ -63,109 +167,30 @@ export const createUpdateUser = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    let user = await db.user.findOne(
-      {
-        where: {
-          user_id: `telegram-${userId}`,
-        },
-        transaction: t,
-        lock: t.LOCK.UPDATE,
-      },
+    const myNewUserInfo = {
+      userId: Number(userId),
+      username,
+      firstname,
+      lastname,
+    };
+    const [
+      newUser,
+      newAccount,
+    ] = await generateUserWalletAndAddress(
+      myNewUserInfo,
+      t,
     );
-    if (!user && userId) {
-      user = await db.user.create({
-        user_id: `telegram-${userId}`,
-        username,
-        firstname,
-        lastname,
-      }, {
-        transaction: t,
-        lock: t.LOCK.UPDATE,
-      });
-    }
-    if (user) {
-      if (
-        user.firstname !== firstname
-          || user.lastname !== lastname
-          || user.username !== username
-      ) {
-        user = await user.update(
-          {
-            firstname,
-            lastname,
-            username,
-          },
-          {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          },
-        );
-      }
-      let wallet = await db.wallet.findOne(
-        {
-          where: {
-            userId: user.id,
-          },
-          transaction: t,
-          lock: t.LOCK.UPDATE,
-        },
-      );
-      if (!wallet) {
-        wallet = await db.wallet.create({
-          userId: user.id,
-          available: 0,
-          locked: 0,
-        }, {
-          transaction: t,
-          lock: t.LOCK.UPDATE,
-        });
-        isNewUser = true;
-      }
-      if (wallet) {
-        let address = await db.address.findOne(
-          {
-            where: {
-              walletId: wallet.id,
-            },
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          },
-        );
-        if (!address) {
-          const newAddress = await getInstance().getNewAddress();
-          const addressAlreadyExist = await db.address.findOne(
-            {
-              where: {
-                address: newAddress,
-              },
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            },
-          );
-          if (!addressAlreadyExist) {
-            address = await db.address.create({
-              address: newAddress,
-              walletId: wallet.id,
-              type: 'deposit',
-              confirmed: true,
-            }, {
-              transaction: t,
-              lock: t.LOCK.UPDATE,
-            });
-          }
-        }
-      }
-    }
 
     t.afterCommit(async () => {
       if (
-        isNewUser
+        newAccount
         && settings.coin.setting !== 'Pirate'
+        && settings.coin.setting !== 'Komodo'
       ) {
         try {
           await ctx.replyWithHTML(
             await welcomeMessage(
-              user,
+              newUser,
             ),
           );
         } catch (e) {

@@ -2,6 +2,7 @@
 /* eslint-disable import/prefer-default-export */
 import _ from "lodash";
 import { Transaction, Op } from "sequelize";
+import { Api } from 'telegram';
 import db from '../../models';
 import {
   notEnoughUsers,
@@ -14,6 +15,7 @@ import { validateAmount } from "../../helpers/client/telegram/validateAmount";
 import { waterFaucet } from "../../helpers/waterFaucet";
 import { userWalletExist } from "../../helpers/client/telegram/userWalletExist";
 import { getUserToMentionFromDatabaseRecord } from "../../helpers/client/telegram/userToMention";
+import { generateUserWalletAndAddress } from "./user";
 
 import logger from "../../helpers/logger";
 
@@ -70,7 +72,7 @@ export const tipToTelegramUser = async (
                 {
                   model: db.address,
                   as: 'addresses',
-                  required: false,
+                  required: true,
                 },
               ],
             },
@@ -93,7 +95,7 @@ export const tipToTelegramUser = async (
                 {
                   model: db.address,
                   as: 'addresses',
-                  required: false,
+                  required: true,
                 },
               ],
             },
@@ -108,6 +110,123 @@ export const tipToTelegramUser = async (
         if (Number(userIdTest) !== ctx.update.message.from.id) {
           if (!usersToTip.find((o) => o.id === userExist.id)) {
             usersToTip.push(userExist);
+          }
+        }
+      } else if (!userExist) {
+        let newUserExist;
+        if (
+          ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].type === 'text_mention'
+          && !ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].user.is_bot
+        ) {
+          let newUserInfo;
+          try {
+            newUserInfo = await telegramApiClient.invoke(
+              new Api.users.GetFullUser({
+                id: `${ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].user.id}`,
+              }),
+            );
+          } catch (e) {
+            console.log(e);
+          }
+          if (
+            newUserInfo
+            && newUserInfo.users.length > 0
+            && !newUserInfo.users[0].bot
+          ) {
+            const myNewUserInfo = {
+              userId: Number(newUserInfo.users[0].id.value),
+              username: newUserInfo.users[0].username,
+              firstname: newUserInfo.users[0].firstName,
+              lastname: newUserInfo.users[0].lastName,
+            };
+            const [
+              newUser,
+              newAccount,
+            ] = await generateUserWalletAndAddress(
+              myNewUserInfo,
+              t,
+            );
+            newUserExist = await db.user.findOne({
+              where: {
+                user_id: `telegram-${ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].user.id}`,
+              },
+              include: [
+                {
+                  model: db.wallet,
+                  as: 'wallet',
+                  required: true,
+                  include: [
+                    {
+                      model: db.address,
+                      as: 'addresses',
+                      required: true,
+                    },
+                  ],
+                },
+              ],
+              lock: t.LOCK.UPDATE,
+              transaction: t,
+            });
+          }
+        } else if (ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].type === 'mention') {
+          let newUserInfo;
+          try {
+            newUserInfo = await telegramApiClient.invoke(
+              new Api.contacts.ResolveUsername({
+                username: `${filteredMessage[parseInt(AmountPosition, 10)].substring(1)}`,
+              }),
+            );
+          } catch (e) {
+            console.log(e);
+          }
+          if (
+            newUserInfo
+            && newUserInfo.users.length > 0
+            && !newUserInfo.users[0].bot
+          ) {
+            const myNewUserInfo = {
+              userId: Number(newUserInfo.users[0].id.value),
+              username: newUserInfo.users[0].username,
+              firstname: newUserInfo.users[0].firstName,
+              lastname: newUserInfo.users[0].lastName,
+            };
+            const [
+              newUser,
+              newAccount,
+            ] = await generateUserWalletAndAddress(
+              myNewUserInfo,
+              t,
+            );
+            newUserExist = await db.user.findOne({
+              where: {
+                username: `${filteredMessage[parseInt(AmountPosition, 10)].substring(1)}`,
+                user_id: { [Op.startsWith]: 'telegram-' },
+              },
+              include: [
+                {
+                  model: db.wallet,
+                  as: 'wallet',
+                  required: true,
+                  include: [
+                    {
+                      model: db.address,
+                      as: 'addresses',
+                      required: true,
+                    },
+                  ],
+                },
+              ],
+              lock: t.LOCK.UPDATE,
+              transaction: t,
+            });
+          }
+        }
+        if (newUserExist) {
+          const userIdTest = newUserExist.user_id.replace('telegram-', '');
+          if (Number(userIdTest) !== ctx.update.message.from.id) {
+            if (!usersToTip.find((o) => o.id === newUserExist.id)) {
+              usersToTip.push(newUserExist);
+            }
           }
         }
       }

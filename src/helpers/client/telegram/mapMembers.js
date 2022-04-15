@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import _ from 'lodash';
 import db from '../../../models';
-import { getInstance } from "../../../services/rclient";
+import { generateUserWalletAndAddress } from "../../../controllers/telegram/user";
 
 export const mapMembers = async (
   ctx,
@@ -68,67 +68,19 @@ export const mapMembers = async (
       }
     }
     if (!userExist) {
-      const user = await db.user.create({
-        user_id: `telegram-${Number(telegramUser.id)}`,
+      const myNewUserInfo = {
+        userId: Number(telegramUser.id),
         username: telegramUser.username,
         firstname: telegramUser.firstName,
         lastname: telegramUser.lastName,
-      }, {
-        transaction: t,
-        lock: t.LOCK.UPDATE,
-      });
-
-      let wallet = await db.wallet.findOne(
-        {
-          where: {
-            userId: user.id,
-          },
-          transaction: t,
-          lock: t.LOCK.UPDATE,
-        },
+      };
+      const [
+        newUser,
+        newAccount,
+      ] = await generateUserWalletAndAddress(
+        myNewUserInfo,
+        t,
       );
-      if (!wallet) {
-        wallet = await db.wallet.create({
-          userId: user.id,
-          available: 0,
-          locked: 0,
-        }, {
-          transaction: t,
-          lock: t.LOCK.UPDATE,
-        });
-      }
-      let address = await db.address.findOne(
-        {
-          where: {
-            walletId: wallet.id,
-          },
-          transaction: t,
-          lock: t.LOCK.UPDATE,
-        },
-      );
-      if (!address) {
-        const newAddress = await getInstance().getNewAddress();
-        const addressAlreadyExist = await db.address.findOne(
-          {
-            where: {
-              address: newAddress,
-            },
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          },
-        );
-        if (!addressAlreadyExist) {
-          address = await db.address.create({
-            address: newAddress,
-            walletId: wallet.id,
-            type: 'deposit',
-            confirmed: true,
-          }, {
-            transaction: t,
-            lock: t.LOCK.UPDATE,
-          });
-        }
-      }
 
       const userExistNew = await db.user.findOne({
         where: {
