@@ -1230,7 +1230,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               while (!AmountPositionEnded) {
                 AmountPosition += 1;
 
-                if (!filteredMessageDiscord[parseInt(AmountPosition, 10)].startsWith('<@')) {
+                if (!filteredMessageDiscord[parseInt(AmountPosition, 10)] || !filteredMessageDiscord[parseInt(AmountPosition, 10)].startsWith('<@')) {
                   AmountPositionEnded = true;
                 }
               }

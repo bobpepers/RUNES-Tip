@@ -22,7 +22,7 @@ var executeTipFunction = /*#__PURE__*/function () {
       while (1) {
         switch (_context5.prev = _context5.next) {
           case 0:
-            if (filteredMessageDiscord[1].startsWith('<@') && !filteredMessageDiscord[2].startsWith('<@')) {
+            if (!filteredMessageDiscord[2] || filteredMessageDiscord[1].startsWith('<@') && !filteredMessageDiscord[2].startsWith('<@')) {
               operationName = 'tip';
               userBeingTipped = filteredMessageDiscord[1];
             } else if (filteredMessageDiscord[1].startsWith('<@') && filteredMessageDiscord[2].startsWith('<@')) {

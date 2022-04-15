@@ -202,7 +202,7 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                                   // usersToTip.push(filteredMessage[AmountPosition]);
                                   AmountPosition += 1;
 
-                                  if (!filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@')) {
+                                  if (!filteredMessage[parseInt(AmountPosition, 10)] || !filteredMessage[parseInt(AmountPosition, 10)].startsWith('<@')) {
                                     AmountPositionEnded = true;
                                   }
 
