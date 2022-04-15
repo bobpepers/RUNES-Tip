@@ -9,13 +9,15 @@ exports.mapMembers = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
+var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
+
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
 var _lodash = _interopRequireDefault(require("lodash"));
 
 var _models = _interopRequireDefault(require("../../../models"));
 
-var _rclient = require("../../../services/rclient");
+var _user = require("../../../controllers/telegram/user");
 
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it["return"] != null) it["return"](); } finally { if (didErr) throw err; } } }; }
 
@@ -25,7 +27,7 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 var mapMembers = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(ctx, t, onlineMembers, setting) {
-    var mappedMembersArray, withoutBots, _iterator, _step, telegramUser, userExist, userIdTest, user, wallet, address, newAddress, addressAlreadyExist, userExistNew, _userIdTest, withoutBotsSorted;
+    var mappedMembersArray, withoutBots, _iterator, _step, telegramUser, userExist, userIdTest, myNewUserInfo, _yield$generateUserWa, _yield$generateUserWa2, newUser, newAccount, userExistNew, _userIdTest, withoutBotsSorted;
 
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
@@ -61,7 +63,7 @@ var mapMembers = /*#__PURE__*/function () {
 
           case 12:
             if ((_step = _iterator.n()).done) {
-              _context.next = 66;
+              _context.next = 49;
               break;
             }
 
@@ -133,109 +135,25 @@ var mapMembers = /*#__PURE__*/function () {
 
           case 29:
             if (userExist) {
-              _context.next = 64;
+              _context.next = 47;
               break;
             }
 
-            _context.next = 32;
-            return _models["default"].user.create({
-              user_id: "telegram-".concat(Number(telegramUser.id)),
+            myNewUserInfo = {
+              userId: Number(telegramUser.id),
               username: telegramUser.username,
               firstname: telegramUser.firstName,
               lastname: telegramUser.lastName
-            }, {
-              transaction: t,
-              lock: t.LOCK.UPDATE
-            });
+            };
+            _context.next = 33;
+            return (0, _user.generateUserWalletAndAddress)(myNewUserInfo, t);
 
-          case 32:
-            user = _context.sent;
-            _context.next = 35;
-            return _models["default"].wallet.findOne({
-              where: {
-                userId: user.id
-              },
-              transaction: t,
-              lock: t.LOCK.UPDATE
-            });
-
-          case 35:
-            wallet = _context.sent;
-
-            if (wallet) {
-              _context.next = 40;
-              break;
-            }
-
+          case 33:
+            _yield$generateUserWa = _context.sent;
+            _yield$generateUserWa2 = (0, _slicedToArray2["default"])(_yield$generateUserWa, 2);
+            newUser = _yield$generateUserWa2[0];
+            newAccount = _yield$generateUserWa2[1];
             _context.next = 39;
-            return _models["default"].wallet.create({
-              userId: user.id,
-              available: 0,
-              locked: 0
-            }, {
-              transaction: t,
-              lock: t.LOCK.UPDATE
-            });
-
-          case 39:
-            wallet = _context.sent;
-
-          case 40:
-            _context.next = 42;
-            return _models["default"].address.findOne({
-              where: {
-                walletId: wallet.id
-              },
-              transaction: t,
-              lock: t.LOCK.UPDATE
-            });
-
-          case 42:
-            address = _context.sent;
-
-            if (address) {
-              _context.next = 54;
-              break;
-            }
-
-            _context.next = 46;
-            return (0, _rclient.getInstance)().getNewAddress();
-
-          case 46:
-            newAddress = _context.sent;
-            _context.next = 49;
-            return _models["default"].address.findOne({
-              where: {
-                address: newAddress
-              },
-              transaction: t,
-              lock: t.LOCK.UPDATE
-            });
-
-          case 49:
-            addressAlreadyExist = _context.sent;
-
-            if (addressAlreadyExist) {
-              _context.next = 54;
-              break;
-            }
-
-            _context.next = 53;
-            return _models["default"].address.create({
-              address: newAddress,
-              walletId: wallet.id,
-              type: 'deposit',
-              confirmed: true
-            }, {
-              transaction: t,
-              lock: t.LOCK.UPDATE
-            });
-
-          case 53:
-            address = _context.sent;
-
-          case 54:
-            _context.next = 56;
             return _models["default"].user.findOne({
               where: {
                 user_id: "telegram-".concat(Number(telegramUser.id))
@@ -254,63 +172,63 @@ var mapMembers = /*#__PURE__*/function () {
               transaction: t
             });
 
-          case 56:
+          case 39:
             userExistNew = _context.sent;
 
             if (!userExistNew) {
-              _context.next = 64;
+              _context.next = 47;
               break;
             }
 
-            _context.next = 60;
+            _context.next = 43;
             return userExistNew.user_id.replace('telegram-', '');
 
-          case 60:
+          case 43:
             _userIdTest = _context.sent;
 
             if (!(_userIdTest !== ctx.update.message.from.id)) {
-              _context.next = 64;
+              _context.next = 47;
               break;
             }
 
-            _context.next = 64;
+            _context.next = 47;
             return withoutBots.push(userExistNew);
 
-          case 64:
+          case 47:
             _context.next = 12;
             break;
 
-          case 66:
-            _context.next = 71;
+          case 49:
+            _context.next = 54;
             break;
 
-          case 68:
-            _context.prev = 68;
+          case 51:
+            _context.prev = 51;
             _context.t0 = _context["catch"](10);
 
             _iterator.e(_context.t0);
 
-          case 71:
-            _context.prev = 71;
+          case 54:
+            _context.prev = 54;
 
             _iterator.f();
 
-            return _context.finish(71);
+            return _context.finish(54);
 
-          case 74:
-            _context.next = 76;
+          case 57:
+            _context.next = 59;
             return _lodash["default"].sortBy(withoutBots, 'createdAt');
 
-          case 76:
+          case 59:
             withoutBotsSorted = _context.sent;
             return _context.abrupt("return", withoutBotsSorted);
 
-          case 78:
+          case 61:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[10, 68, 71, 74]]);
+    }, _callee, null, [[10, 51, 54, 57]]);
   }));
 
   return function mapMembers(_x, _x2, _x3, _x4) {

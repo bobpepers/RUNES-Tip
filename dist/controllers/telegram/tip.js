@@ -19,9 +19,11 @@ var _lodash = _interopRequireDefault(require("lodash"));
 
 var _sequelize = require("sequelize");
 
+var _telegram = require("telegram");
+
 var _models = _interopRequireDefault(require("../../models"));
 
-var _telegram = require("../../messages/telegram");
+var _telegram2 = require("../../messages/telegram");
 
 var _validateAmount = require("../../helpers/client/telegram/validateAmount");
 
@@ -30,6 +32,8 @@ var _waterFaucet = require("../../helpers/waterFaucet");
 var _userWalletExist = require("../../helpers/client/telegram/userWalletExist");
 
 var _userToMention = require("../../helpers/client/telegram/userToMention");
+
+var _user = require("./user");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
@@ -84,7 +88,8 @@ var tipToTelegramUser = /*#__PURE__*/function () {
 
                       case 9:
                         _loop = /*#__PURE__*/_regenerator["default"].mark(function _loop() {
-                          var userExist, userIdTest;
+                          var userExist, userIdTest, newUserExist, newUserInfo, myNewUserInfo, _yield$generateUserWa, _yield$generateUserWa2, newUser, newAccount, _newUserInfo, _myNewUserInfo, _yield$generateUserWa3, _yield$generateUserWa4, _newUser, _newAccount, _userIdTest;
+
                           return _regenerator["default"].wrap(function _loop$(_context) {
                             while (1) {
                               switch (_context.prev = _context.next) {
@@ -108,7 +113,7 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                                       include: [{
                                         model: _models["default"].address,
                                         as: 'addresses',
-                                        required: false
+                                        required: true
                                       }]
                                     }],
                                     lock: t.LOCK.UPDATE,
@@ -139,7 +144,7 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                                       include: [{
                                         model: _models["default"].address,
                                         as: 'addresses',
-                                        required: false
+                                        required: true
                                       }]
                                     }],
                                     lock: t.LOCK.UPDATE,
@@ -150,30 +155,188 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                                   userExist = _context.sent;
 
                                 case 11:
-                                  if (userExist) {
-                                    userIdTest = userExist.user_id.replace('telegram-', '');
+                                  if (!userExist) {
+                                    _context.next = 16;
+                                    break;
+                                  }
 
-                                    if (Number(userIdTest) !== ctx.update.message.from.id) {
+                                  userIdTest = userExist.user_id.replace('telegram-', '');
+
+                                  if (Number(userIdTest) !== ctx.update.message.from.id) {
+                                    if (!usersToTip.find(function (o) {
+                                      return o.id === userExist.id;
+                                    })) {
+                                      usersToTip.push(userExist);
+                                    }
+                                  }
+
+                                  _context.next = 62;
+                                  break;
+
+                                case 16:
+                                  if (userExist) {
+                                    _context.next = 62;
+                                    break;
+                                  }
+
+                                  if (!(ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].type === 'text_mention' && !ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].user.is_bot)) {
+                                    _context.next = 40;
+                                    break;
+                                  }
+
+                                  _context.prev = 18;
+                                  _context.next = 21;
+                                  return telegramApiClient.invoke(new _telegram.Api.users.GetFullUser({
+                                    id: "".concat(ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].user.id)
+                                  }));
+
+                                case 21:
+                                  newUserInfo = _context.sent;
+                                  _context.next = 27;
+                                  break;
+
+                                case 24:
+                                  _context.prev = 24;
+                                  _context.t0 = _context["catch"](18);
+                                  console.log(_context.t0);
+
+                                case 27:
+                                  if (!(newUserInfo && newUserInfo.users.length > 0 && !newUserInfo.users[0].bot)) {
+                                    _context.next = 38;
+                                    break;
+                                  }
+
+                                  myNewUserInfo = {
+                                    userId: Number(newUserInfo.users[0].id.value),
+                                    username: newUserInfo.users[0].username,
+                                    firstname: newUserInfo.users[0].firstName,
+                                    lastname: newUserInfo.users[0].lastName
+                                  };
+                                  _context.next = 31;
+                                  return (0, _user.generateUserWalletAndAddress)(myNewUserInfo, t);
+
+                                case 31:
+                                  _yield$generateUserWa = _context.sent;
+                                  _yield$generateUserWa2 = (0, _slicedToArray2["default"])(_yield$generateUserWa, 2);
+                                  newUser = _yield$generateUserWa2[0];
+                                  newAccount = _yield$generateUserWa2[1];
+                                  _context.next = 37;
+                                  return _models["default"].user.findOne({
+                                    where: {
+                                      user_id: "telegram-".concat(ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].user.id)
+                                    },
+                                    include: [{
+                                      model: _models["default"].wallet,
+                                      as: 'wallet',
+                                      required: true,
+                                      include: [{
+                                        model: _models["default"].address,
+                                        as: 'addresses',
+                                        required: true
+                                      }]
+                                    }],
+                                    lock: t.LOCK.UPDATE,
+                                    transaction: t
+                                  });
+
+                                case 37:
+                                  newUserExist = _context.sent;
+
+                                case 38:
+                                  _context.next = 61;
+                                  break;
+
+                                case 40:
+                                  if (!(ctx.update.message.entities[parseInt(AmountPosition - 1, 10)].type === 'mention')) {
+                                    _context.next = 61;
+                                    break;
+                                  }
+
+                                  _context.prev = 41;
+                                  _context.next = 44;
+                                  return telegramApiClient.invoke(new _telegram.Api.contacts.ResolveUsername({
+                                    username: "".concat(filteredMessage[parseInt(AmountPosition, 10)].substring(1))
+                                  }));
+
+                                case 44:
+                                  _newUserInfo = _context.sent;
+                                  _context.next = 50;
+                                  break;
+
+                                case 47:
+                                  _context.prev = 47;
+                                  _context.t1 = _context["catch"](41);
+                                  console.log(_context.t1);
+
+                                case 50:
+                                  if (!(_newUserInfo && _newUserInfo.users.length > 0 && !_newUserInfo.users[0].bot)) {
+                                    _context.next = 61;
+                                    break;
+                                  }
+
+                                  _myNewUserInfo = {
+                                    userId: Number(_newUserInfo.users[0].id.value),
+                                    username: _newUserInfo.users[0].username,
+                                    firstname: _newUserInfo.users[0].firstName,
+                                    lastname: _newUserInfo.users[0].lastName
+                                  };
+                                  _context.next = 54;
+                                  return (0, _user.generateUserWalletAndAddress)(_myNewUserInfo, t);
+
+                                case 54:
+                                  _yield$generateUserWa3 = _context.sent;
+                                  _yield$generateUserWa4 = (0, _slicedToArray2["default"])(_yield$generateUserWa3, 2);
+                                  _newUser = _yield$generateUserWa4[0];
+                                  _newAccount = _yield$generateUserWa4[1];
+                                  _context.next = 60;
+                                  return _models["default"].user.findOne({
+                                    where: {
+                                      username: "".concat(filteredMessage[parseInt(AmountPosition, 10)].substring(1)),
+                                      user_id: (0, _defineProperty2["default"])({}, _sequelize.Op.startsWith, 'telegram-')
+                                    },
+                                    include: [{
+                                      model: _models["default"].wallet,
+                                      as: 'wallet',
+                                      required: true,
+                                      include: [{
+                                        model: _models["default"].address,
+                                        as: 'addresses',
+                                        required: true
+                                      }]
+                                    }],
+                                    lock: t.LOCK.UPDATE,
+                                    transaction: t
+                                  });
+
+                                case 60:
+                                  newUserExist = _context.sent;
+
+                                case 61:
+                                  if (newUserExist) {
+                                    _userIdTest = newUserExist.user_id.replace('telegram-', '');
+
+                                    if (Number(_userIdTest) !== ctx.update.message.from.id) {
                                       if (!usersToTip.find(function (o) {
-                                        return o.id === userExist.id;
+                                        return o.id === newUserExist.id;
                                       })) {
-                                        usersToTip.push(userExist);
+                                        usersToTip.push(newUserExist);
                                       }
                                     }
                                   }
 
+                                case 62:
                                   AmountPosition += 1;
 
                                   if (AmountPosition > ctx.update.message.entities.length) {
                                     AmountPositionEnded = true;
                                   }
 
-                                case 14:
+                                case 64:
                                 case "end":
                                   return _context.stop();
                               }
                             }
-                          }, _loop);
+                          }, _loop, null, [[18, 24], [41, 47]]);
                         });
 
                       case 10:
@@ -195,7 +358,7 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                         }
 
                         _context2.next = 17;
-                        return ctx.replyWithHTML((0, _telegram.notEnoughUsers)('Tip'));
+                        return ctx.replyWithHTML((0, _telegram2.notEnoughUsers)('Tip'));
 
                       case 17:
                         return _context2.abrupt("return");
@@ -415,7 +578,7 @@ var tipToTelegramUser = /*#__PURE__*/function () {
 
                         _context2.t2 = ctx;
                         _context2.next = 88;
-                        return (0, _telegram.tipSingleSuccessMessage)(ctx, tipRecord.id, listOfUsersRained, userTipAmount);
+                        return (0, _telegram2.tipSingleSuccessMessage)(ctx, tipRecord.id, listOfUsersRained, userTipAmount);
 
                       case 88:
                         _context2.t3 = _context2.sent;
@@ -456,7 +619,7 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                         element = _cutStringListUsers[_i];
                         _context2.t4 = ctx;
                         _context2.next = 103;
-                        return (0, _telegram.userListMessage)(element);
+                        return (0, _telegram2.userListMessage)(element);
 
                       case 103:
                         _context2.t5 = _context2.sent;
@@ -471,7 +634,7 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                       case 109:
                         _context2.t6 = ctx;
                         _context2.next = 112;
-                        return (0, _telegram.tipMultipleSuccessMessage)(ctx, tipRecord.id, listOfUsersRained, userTipAmount, type);
+                        return (0, _telegram2.tipMultipleSuccessMessage)(ctx, tipRecord.id, listOfUsersRained, userTipAmount, type);
 
                       case 112:
                         _context2.t7 = _context2.sent;
@@ -525,7 +688,7 @@ var tipToTelegramUser = /*#__PURE__*/function () {
                         _context3.prev = 10;
                         _context3.t1 = ctx;
                         _context3.next = 14;
-                        return (0, _telegram.errorMessage)('Tip');
+                        return (0, _telegram2.errorMessage)('Tip');
 
                       case 14:
                         _context3.t2 = _context3.sent;
