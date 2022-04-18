@@ -428,10 +428,11 @@ export const unableToDirectMessageErrorMessage = async (
     userToMention,
     userId,
   ] = await getUserToMentionCtx(ctx);
+  console.log(ctx);
   const result = `<b><u>${myFunctionName}</u></b>
 
 <a href="tg://user?id=${userId}">${userToMention}</a>, ${settings.bot.name} is unable to initiate a conversation with you.
-please manually initiate conversation with the bot first or check your privacy settings.
+please manually initiate conversation with @${ctx.botInfo.username} to allow full functionality.
 
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;

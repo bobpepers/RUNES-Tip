@@ -1,6 +1,6 @@
 {
   "name": "runes-tip",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Tipbot for coins with bitcoin codebase",
   "scripts": {
     "dev": "nodemon --exec babel-node --max-old-space-size=8192 src/index.js",
@@ -74,7 +74,7 @@
     "express-session": "^1.17.2",
     "lodash": "^4.17.21",
     "matrix-js-sdk": "^17.0.0",
-    "moment": "^2.29.2",
+    "moment": "^2.29.3",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
     "node-localstorage": "^2.2.1",
