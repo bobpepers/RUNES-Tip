@@ -13,6 +13,7 @@ import morgan from "morgan";
 import cors from "cors";
 import compression from "compression";
 import schedule from "node-schedule";
+import helmet from "helmet";
 import { config } from "dotenv";
 import passport from 'passport';
 import olm from '@matrix-org/olm';
@@ -110,6 +111,7 @@ const conditionalCSRF = function (
     cookie: false,
   });
 
+  app.use(helmet());
   app.use(compression());
   app.use(morgan('combined'));
   app.use(cors());
