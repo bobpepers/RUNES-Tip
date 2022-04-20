@@ -9,10 +9,14 @@ exports.generateVerificationToken = exports.generateHash = void 0;
 
 var _bcryptNodejs = _interopRequireDefault(require("bcrypt-nodejs"));
 
-var crypto = require('crypto');
+var _dotenv = require("dotenv");
+
+var _crypto = _interopRequireDefault(require("crypto"));
+
+(0, _dotenv.config)();
 
 var generateHash = function generateHash(a) {
-  return crypto.createHmac('sha256', 'SuperSexySecret').update(a).digest('hex');
+  return _crypto["default"].createHmac('sha256', process.env.SESSION_SECRET).update(a).digest('hex');
 }; // eslint-disable-next-line import/prefer-default-export
 
 
@@ -23,7 +27,7 @@ var generateVerificationToken = function generateVerificationToken(expireHours) 
     _bcryptNodejs["default"].genSalt(10, function (err, salt) {
       if (err) reject(err);
 
-      _bcryptNodejs["default"].hash('SuperSexySecret', salt, null, function (err, hash) {
+      _bcryptNodejs["default"].hash(process.env.SESSION_SECRET, salt, null, function (err, hash) {
         if (err) reject(err);
         var expires = new Date();
         expires.setHours(expires.getHours() + expireHours);

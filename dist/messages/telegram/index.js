@@ -778,10 +778,11 @@ var unableToDirectMessageErrorMessage = /*#__PURE__*/function () {
             _yield$getUserToMenti22 = (0, _slicedToArray2["default"])(_yield$getUserToMenti21, 2);
             userToMention = _yield$getUserToMenti22[0];
             userId = _yield$getUserToMenti22[1];
-            result = "<b><u>".concat(myFunctionName, "</u></b>\n\n<a href=\"tg://user?id=").concat(userId, "\">").concat(userToMention, "</a>, ").concat(settings.bot.name, " is unable to initiate a conversation with you.\nplease manually initiate conversation with the bot first or check your privacy settings.\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
+            console.log(ctx);
+            result = "<b><u>".concat(myFunctionName, "</u></b>\n\n<a href=\"tg://user?id=").concat(userId, "\">").concat(userToMention, "</a>, ").concat(settings.bot.name, " is unable to initiate a conversation with you.\nplease manually initiate conversation with @").concat(ctx.botInfo.username, " to allow full functionality.\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
             return _context23.abrupt("return", result);
 
-          case 8:
+          case 9:
           case "end":
             return _context23.stop();
         }
