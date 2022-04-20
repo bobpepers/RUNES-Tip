@@ -50,6 +50,8 @@ var _socket = _interopRequireDefault(require("socket.io"));
 
 var _localStorageCryptoStore = require("matrix-js-sdk/lib/crypto/store/localStorage-crypto-store");
 
+var _csurf = _interopRequireDefault(require("csurf"));
+
 var _router = require("./router");
 
 var _router2 = require("./dashboard/router");
@@ -85,6 +87,32 @@ var _logger = _interopRequireDefault(require("./helpers/logger"));
 /* eslint-disable import/first */
 global.Olm = _olm["default"];
 (0, _dotenv.config)();
+
+var checkCSRFRoute = function checkCSRFRoute(req) {
+  var hostmachine = req.headers.host.split(':')[0];
+
+  if (req.url === '/api/chaininfo/block' && (hostmachine === 'localhost' || hostmachine === '127.0.0.1') || req.url === '/api/rpc/walletnotify' && (hostmachine === 'localhost' || hostmachine === '127.0.0.1')) {
+    return true;
+  }
+
+  return false;
+};
+
+var conditionalCSRF = function conditionalCSRF(req, res, next) {
+  var shouldPass = checkCSRFRoute(req);
+
+  if (shouldPass) {
+    return next();
+  }
+
+  return (0, _csurf["default"])({
+    cookie: {
+      secure: true,
+      maxAge: 3600
+    }
+  })(req, res, next);
+};
+
 (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
   var localStorage, settings, queue, port, app, server, io, RedisStore, redisClient, sessionMiddleware, wrap, sockets, discordClient, telegramClient, matrixClient, matrixLoginCredentials, schedulePatchDeposits, _schedulePatchDeposits, _schedulePatchDeposits2, _schedulePatchDeposits3, scheduleUpdateConversionRatesFiat, scheduleUpdateConversionRatesCrypto, schedulePriceUpdate, scheduleWithdrawal;
 
@@ -140,6 +168,17 @@ global.Olm = _olm["default"];
             limit: '5mb'
           }));
           app.use(_bodyParser["default"].json());
+          app.use(conditionalCSRF);
+          app.use(function (req, res, next) {
+            var shouldPass = checkCSRFRoute(req);
+
+            if (shouldPass) {
+              return next();
+            }
+
+            res.cookie('XSRF-TOKEN', req.csrfToken());
+            next();
+          });
           app.use(sessionMiddleware);
           app.use(_passport["default"].initialize());
           app.use(_passport["default"].session());
@@ -196,22 +235,22 @@ global.Olm = _olm["default"];
           matrixClient = _matrixJsSdk["default"].createClient({
             baseUrl: "https://matrix.org"
           });
-          _context3.next = 33;
+          _context3.next = 35;
           return telegramClient.launch();
 
-        case 33:
-          _context3.next = 35;
+        case 35:
+          _context3.next = 37;
           return discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
 
-        case 35:
-          _context3.prev = 35;
-          _context3.next = 38;
+        case 37:
+          _context3.prev = 37;
+          _context3.next = 40;
           return matrixClient.login("m.login.password", {
             user: process.env.MATRIX_USER,
             password: process.env.MATRIX_PASS
           });
 
-        case 38:
+        case 40:
           matrixLoginCredentials = _context3.sent;
           matrixClient = _matrixJsSdk["default"].createClient({
             baseUrl: "https://matrix.org",
@@ -222,106 +261,106 @@ global.Olm = _olm["default"];
             deviceId: matrixLoginCredentials.device_id,
             timelineSupport: true
           });
-          _context3.next = 45;
+          _context3.next = 47;
           break;
 
-        case 42:
-          _context3.prev = 42;
-          _context3.t0 = _context3["catch"](35);
+        case 44:
+          _context3.prev = 44;
+          _context3.t0 = _context3["catch"](37);
           console.log(_context3.t0);
 
-        case 45:
-          _context3.next = 47;
+        case 47:
+          _context3.next = 49;
           return (0, _initDatabaseRecords.initDatabaseRecords)(discordClient, telegramClient, matrixClient);
 
-        case 47:
+        case 49:
           if (!(settings.coin.setting === 'Runebase')) {
-            _context3.next = 55;
+            _context3.next = 57;
             break;
           }
 
-          _context3.next = 50;
+          _context3.next = 52;
           return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, matrixClient, queue);
 
-        case 50:
-          _context3.next = 52;
+        case 52:
+          _context3.next = 54;
           return (0, _patcher.patchRunebaseDeposits)();
 
-        case 52:
+        case 54:
           schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher.patchRunebaseDeposits)();
           });
-          _context3.next = 76;
+          _context3.next = 78;
           break;
 
-        case 55:
+        case 57:
           if (!(settings.coin.setting === 'Pirate')) {
-            _context3.next = 63;
+            _context3.next = 65;
             break;
           }
 
-          _context3.next = 58;
+          _context3.next = 60;
           return (0, _syncPirate.startPirateSync)(discordClient, telegramClient, matrixClient, queue);
 
-        case 58:
-          _context3.next = 60;
+        case 60:
+          _context3.next = 62;
           return (0, _patcher2.patchPirateDeposits)();
 
-        case 60:
+        case 62:
           _schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher2.patchPirateDeposits)();
           });
-          _context3.next = 76;
+          _context3.next = 78;
           break;
 
-        case 63:
+        case 65:
           if (!(settings.coin.setting === 'Komodo')) {
-            _context3.next = 71;
+            _context3.next = 73;
             break;
           }
 
-          _context3.next = 66;
+          _context3.next = 68;
           return (0, _syncKomodo.startKomodoSync)(discordClient, telegramClient, matrixClient, queue);
 
-        case 66:
-          _context3.next = 68;
+        case 68:
+          _context3.next = 70;
           return (0, _patcher3.patchKomodoDeposits)();
 
-        case 68:
+        case 70:
           _schedulePatchDeposits2 = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher3.patchKomodoDeposits)();
           });
-          _context3.next = 76;
+          _context3.next = 78;
           break;
-
-        case 71:
-          _context3.next = 73;
-          return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, matrixClient, queue);
 
         case 73:
           _context3.next = 75;
-          return (0, _patcher.patchRunebaseDeposits)();
+          return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, matrixClient, queue);
 
         case 75:
+          _context3.next = 77;
+          return (0, _patcher.patchRunebaseDeposits)();
+
+        case 77:
           _schedulePatchDeposits3 = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher.patchRunebaseDeposits)();
           });
 
-        case 76:
+        case 78:
           (0, _router.router)(app, discordClient, telegramClient, matrixClient, io, settings, queue);
           (0, _router2.dashboardRouter)(app, io, discordClient, telegramClient, matrixClient);
-          _context3.next = 80;
-          return (0, _recover.recoverDiscordReactdrops)(discordClient, io, queue);
-
-        case 80:
           _context3.next = 82;
-          return (0, _recover.recoverDiscordTrivia)(discordClient, io, queue);
+          return (0, _recover.recoverDiscordReactdrops)(discordClient, io, queue);
 
         case 82:
           _context3.next = 84;
-          return (0, _recover.recoverMatrixReactdrops)(matrixClient, io, queue);
+          return (0, _recover.recoverDiscordTrivia)(discordClient, io, queue);
 
         case 84:
+          _context3.next = 86;
+          return (0, _recover.recoverMatrixReactdrops)(matrixClient, io, queue);
+
+        case 86:
           scheduleUpdateConversionRatesFiat = _nodeSchedule["default"].scheduleJob('0 */8 * * *', function () {
             // Update Fiat conversion rates every 8 hours
             (0, _updateConversionRates.updateConversionRatesFiat)();
@@ -366,12 +405,12 @@ global.Olm = _olm["default"];
           server.listen(port);
           console.log('server listening on:', port);
 
-        case 92:
+        case 94:
         case "end":
           return _context3.stop();
       }
     }
-  }, _callee3, null, [[35, 42]]);
+  }, _callee3, null, [[37, 44]]);
 }))();
 process.on('unhandledRejection', /*#__PURE__*/function () {
   var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(err, p) {
