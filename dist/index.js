@@ -28,6 +28,8 @@ var _compression = _interopRequireDefault(require("compression"));
 
 var _nodeSchedule = _interopRequireDefault(require("node-schedule"));
 
+var _helmet = _interopRequireDefault(require("helmet"));
+
 var _dotenv = require("dotenv");
 
 var _passport = _interopRequireDefault(require("passport"));
@@ -133,6 +135,7 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
             path: '/socket.io',
             cookie: false
           });
+          app.use((0, _helmet["default"])());
           app.use((0, _compression["default"])());
           app.use((0, _morgan["default"])('combined'));
           app.use((0, _cors["default"])());
@@ -142,10 +145,10 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
             database: 3,
             legacyMode: true
           });
-          _context3.next = 15;
+          _context3.next = 16;
           return redisClient.connect();
 
-        case 15:
+        case 16:
           sessionMiddleware = (0, _expressSession["default"])({
             secret: process.env.SESSION_SECRET,
             key: "connect.sid",
@@ -235,22 +238,22 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
           matrixClient = _matrixJsSdk["default"].createClient({
             baseUrl: "https://matrix.org"
           });
-          _context3.next = 35;
+          _context3.next = 36;
           return telegramClient.launch();
 
-        case 35:
-          _context3.next = 37;
+        case 36:
+          _context3.next = 38;
           return discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
 
-        case 37:
-          _context3.prev = 37;
-          _context3.next = 40;
+        case 38:
+          _context3.prev = 38;
+          _context3.next = 41;
           return matrixClient.login("m.login.password", {
             user: process.env.MATRIX_USER,
             password: process.env.MATRIX_PASS
           });
 
-        case 40:
+        case 41:
           matrixLoginCredentials = _context3.sent;
           matrixClient = _matrixJsSdk["default"].createClient({
             baseUrl: "https://matrix.org",
@@ -261,106 +264,106 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
             deviceId: matrixLoginCredentials.device_id,
             timelineSupport: true
           });
-          _context3.next = 47;
+          _context3.next = 48;
           break;
 
-        case 44:
-          _context3.prev = 44;
-          _context3.t0 = _context3["catch"](37);
+        case 45:
+          _context3.prev = 45;
+          _context3.t0 = _context3["catch"](38);
           console.log(_context3.t0);
 
-        case 47:
-          _context3.next = 49;
+        case 48:
+          _context3.next = 50;
           return (0, _initDatabaseRecords.initDatabaseRecords)(discordClient, telegramClient, matrixClient);
 
-        case 49:
+        case 50:
           if (!(settings.coin.setting === 'Runebase')) {
-            _context3.next = 57;
+            _context3.next = 58;
             break;
           }
 
-          _context3.next = 52;
+          _context3.next = 53;
           return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, matrixClient, queue);
 
-        case 52:
-          _context3.next = 54;
+        case 53:
+          _context3.next = 55;
           return (0, _patcher.patchRunebaseDeposits)();
 
-        case 54:
+        case 55:
           schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher.patchRunebaseDeposits)();
           });
-          _context3.next = 78;
+          _context3.next = 79;
           break;
 
-        case 57:
+        case 58:
           if (!(settings.coin.setting === 'Pirate')) {
-            _context3.next = 65;
+            _context3.next = 66;
             break;
           }
 
-          _context3.next = 60;
+          _context3.next = 61;
           return (0, _syncPirate.startPirateSync)(discordClient, telegramClient, matrixClient, queue);
 
-        case 60:
-          _context3.next = 62;
+        case 61:
+          _context3.next = 63;
           return (0, _patcher2.patchPirateDeposits)();
 
-        case 62:
+        case 63:
           _schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher2.patchPirateDeposits)();
           });
-          _context3.next = 78;
+          _context3.next = 79;
           break;
 
-        case 65:
+        case 66:
           if (!(settings.coin.setting === 'Komodo')) {
-            _context3.next = 73;
+            _context3.next = 74;
             break;
           }
 
-          _context3.next = 68;
+          _context3.next = 69;
           return (0, _syncKomodo.startKomodoSync)(discordClient, telegramClient, matrixClient, queue);
 
-        case 68:
-          _context3.next = 70;
+        case 69:
+          _context3.next = 71;
           return (0, _patcher3.patchKomodoDeposits)();
 
-        case 70:
+        case 71:
           _schedulePatchDeposits2 = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher3.patchKomodoDeposits)();
           });
-          _context3.next = 78;
+          _context3.next = 79;
           break;
 
-        case 73:
-          _context3.next = 75;
+        case 74:
+          _context3.next = 76;
           return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, matrixClient, queue);
 
-        case 75:
-          _context3.next = 77;
+        case 76:
+          _context3.next = 78;
           return (0, _patcher.patchRunebaseDeposits)();
 
-        case 77:
+        case 78:
           _schedulePatchDeposits3 = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher.patchRunebaseDeposits)();
           });
 
-        case 78:
+        case 79:
           (0, _router.router)(app, discordClient, telegramClient, matrixClient, io, settings, queue);
           (0, _router2.dashboardRouter)(app, io, discordClient, telegramClient, matrixClient);
-          _context3.next = 82;
+          _context3.next = 83;
           return (0, _recover.recoverDiscordReactdrops)(discordClient, io, queue);
 
-        case 82:
-          _context3.next = 84;
+        case 83:
+          _context3.next = 85;
           return (0, _recover.recoverDiscordTrivia)(discordClient, io, queue);
 
-        case 84:
-          _context3.next = 86;
+        case 85:
+          _context3.next = 87;
           return (0, _recover.recoverMatrixReactdrops)(matrixClient, io, queue);
 
-        case 86:
+        case 87:
           scheduleUpdateConversionRatesFiat = _nodeSchedule["default"].scheduleJob('0 */8 * * *', function () {
             // Update Fiat conversion rates every 8 hours
             (0, _updateConversionRates.updateConversionRatesFiat)();
@@ -405,12 +408,12 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
           server.listen(port);
           console.log('server listening on:', port);
 
-        case 94:
+        case 95:
         case "end":
           return _context3.stop();
       }
     }
-  }, _callee3, null, [[37, 44]]);
+  }, _callee3, null, [[38, 45]]);
 }))();
 process.on('unhandledRejection', /*#__PURE__*/function () {
   var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(err, p) {
