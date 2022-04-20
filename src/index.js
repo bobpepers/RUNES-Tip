@@ -24,6 +24,7 @@ import cookieParser from 'cookie-parser';
 import { createClient as createRedisClient } from 'redis';
 import socketIo from 'socket.io';
 import { LocalStorageCryptoStore } from 'matrix-js-sdk/lib/crypto/store/localStorage-crypto-store';
+import csurf from 'csurf';
 import { router } from "./router";
 import { dashboardRouter } from "./dashboard/router";
 import { updatePrice } from "./helpers/price/updatePrice";
@@ -46,7 +47,52 @@ import {
 import logger from "./helpers/logger";
 
 global.Olm = olm;
+
 config();
+
+const checkCSRFRoute = (req) => {
+  const hostmachine = req.headers.host.split(':')[0];
+  if (
+    (
+      req.url === '/api/chaininfo/block'
+      && (
+        hostmachine === 'localhost'
+        || hostmachine === '127.0.0.1'
+      )
+    )
+    || (
+      req.url === '/api/rpc/walletnotify'
+      && (
+        hostmachine === 'localhost'
+        || hostmachine === '127.0.0.1'
+      )
+    )
+  ) {
+    return true;
+  }
+  return false;
+};
+
+const conditionalCSRF = function (
+  req,
+  res,
+  next,
+) {
+  const shouldPass = checkCSRFRoute(req);
+  if (shouldPass) {
+    return next();
+  }
+  return csurf({
+    cookie: {
+      secure: true,
+      maxAge: 3600,
+    },
+  })(
+    req,
+    res,
+    next,
+  );
+};
 
 (async function () {
   const localStorage = new LocalStorage('./scratch');
@@ -94,15 +140,27 @@ config();
   });
 
   app.use(cookieParser());
+
   app.use(bodyParser.urlencoded({
     extended: false,
     limit: '5mb',
   }));
   app.use(bodyParser.json());
 
+  app.use(conditionalCSRF);
+  app.use((req, res, next) => {
+    const shouldPass = checkCSRFRoute(req);
+    if (shouldPass) {
+      return next();
+    }
+    res.cookie('XSRF-TOKEN', req.csrfToken());
+    next();
+  });
+
   app.use(sessionMiddleware);
   app.use(passport.initialize());
   app.use(passport.session());
+
   const wrap = (middleware) => (socket, next) => middleware(socket.request, {}, next);
 
   io.use(wrap(sessionMiddleware));
