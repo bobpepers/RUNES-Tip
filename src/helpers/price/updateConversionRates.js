@@ -5,7 +5,6 @@ import db from '../../models';
 import getCoinSettings from '../../config/settings';
 
 const settings = getCoinSettings();
-// import { Sequelize, Transaction, Op } from "sequelize";
 config();
 
 export const updateConversionRatesFiat = async () => {
@@ -26,7 +25,7 @@ export const updateConversionRatesFiat = async () => {
       }
     });
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 };
 
@@ -39,14 +38,18 @@ export const updateConversionRatesCrypto = async () => {
     });
 
     currencies.forEach(async (currency) => {
-      const fetchExchangeRatesData = await axios.get(`https://api.coinpaprika.com/v1/tickers/${currency.iso.toLowerCase()}-${currency.currency_name.toLowerCase()}`);
-      if (fetchExchangeRatesData) {
-        await currency.update({
-          conversionRate: (1 / Number(fetchExchangeRatesData.data.quotes.USD.price)).toFixed(8).toString(),
-        });
+      try {
+        const fetchExchangeRatesData = await axios.get(`https://api.coinpaprika.com/v1/tickers/${currency.iso.toLowerCase()}-${currency.currency_name.toLowerCase()}`);
+        if (fetchExchangeRatesData) {
+          await currency.update({
+            conversionRate: (1 / Number(fetchExchangeRatesData.data.quotes.USD.price)).toFixed(8).toString(),
+          });
+        }
+      } catch (e) {
+        console.log(e);
       }
     });
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 };

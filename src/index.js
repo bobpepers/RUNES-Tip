@@ -368,9 +368,11 @@ const conditionalCSRF = function (
 process.on('unhandledRejection', async (err, p) => {
   logger.error(`Error Application Unhandled Rejection: ${err}`);
   console.log(err, '\nUnhandled Rejection at Promise\n', p, '\n--------------------------------');
+  console.log(err.stack);
 });
 
 process.on('uncaughtException', async (err, p) => {
   logger.error(`Error Application Uncaught Exception: ${err}`);
   console.log(err, '\nUnhandled Exception at Promise\n', p, '\n--------------------------------');
+  console.log(err.stack);
 });

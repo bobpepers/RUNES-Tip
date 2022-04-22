@@ -4,8 +4,9 @@ import db from '../../models';
 import getCoinSettings from '../../config/settings';
 
 const settings = getCoinSettings();
-// import { Sequelize, Transaction, Op } from "sequelize";
+
 config();
+
 export const updatePrice = async () => {
   try {
     const data = await axios.get(`https://api.coinpaprika.com/v1/tickers/${settings.coin.ticker.toLowerCase()}-${settings.coin.name.toLowerCase()}`);
