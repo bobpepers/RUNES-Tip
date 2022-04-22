@@ -424,8 +424,9 @@ process.on('unhandledRejection', /*#__PURE__*/function () {
             _logger["default"].error("Error Application Unhandled Rejection: ".concat(err));
 
             console.log(err, '\nUnhandled Rejection at Promise\n', p, '\n--------------------------------');
+            console.log(err.stack);
 
-          case 2:
+          case 3:
           case "end":
             return _context4.stop();
         }
@@ -446,8 +447,9 @@ process.on('uncaughtException', /*#__PURE__*/function () {
             _logger["default"].error("Error Application Uncaught Exception: ".concat(err));
 
             console.log(err, '\nUnhandled Exception at Promise\n', p, '\n--------------------------------');
+            console.log(err.stack);
 
-          case 2:
+          case 3:
           case "end":
             return _context5.stop();
         }

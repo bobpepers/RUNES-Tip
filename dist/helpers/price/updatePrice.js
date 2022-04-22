@@ -19,8 +19,7 @@ var _models = _interopRequireDefault(require("../../models"));
 
 var _settings = _interopRequireDefault(require("../../config/settings"));
 
-var settings = (0, _settings["default"])(); // import { Sequelize, Transaction, Op } from "sequelize";
-
+var settings = (0, _settings["default"])();
 (0, _dotenv.config)();
 
 var updatePrice = /*#__PURE__*/function () {

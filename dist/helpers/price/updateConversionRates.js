@@ -21,8 +21,7 @@ var _models = _interopRequireDefault(require("../../models"));
 
 var _settings = _interopRequireDefault(require("../../config/settings"));
 
-var settings = (0, _settings["default"])(); // import { Sequelize, Transaction, Op } from "sequelize";
-
+var settings = (0, _settings["default"])();
 (0, _dotenv.config)();
 
 var updateConversionRatesFiat = /*#__PURE__*/function () {
@@ -81,7 +80,7 @@ var updateConversionRatesFiat = /*#__PURE__*/function () {
           case 10:
             _context2.prev = 10;
             _context2.t0 = _context2["catch"](0);
-            console.error(_context2.t0);
+            console.log(_context2.t0);
 
           case 13:
           case "end":
@@ -122,28 +121,38 @@ var updateConversionRatesCrypto = /*#__PURE__*/function () {
                   while (1) {
                     switch (_context3.prev = _context3.next) {
                       case 0:
-                        _context3.next = 2;
+                        _context3.prev = 0;
+                        _context3.next = 3;
                         return _axios["default"].get("https://api.coinpaprika.com/v1/tickers/".concat(currency.iso.toLowerCase(), "-").concat(currency.currency_name.toLowerCase()));
 
-                      case 2:
+                      case 3:
                         fetchExchangeRatesData = _context3.sent;
 
                         if (!fetchExchangeRatesData) {
-                          _context3.next = 6;
+                          _context3.next = 7;
                           break;
                         }
 
-                        _context3.next = 6;
+                        _context3.next = 7;
                         return currency.update({
                           conversionRate: (1 / Number(fetchExchangeRatesData.data.quotes.USD.price)).toFixed(8).toString()
                         });
 
-                      case 6:
+                      case 7:
+                        _context3.next = 12;
+                        break;
+
+                      case 9:
+                        _context3.prev = 9;
+                        _context3.t0 = _context3["catch"](0);
+                        console.log(_context3.t0);
+
+                      case 12:
                       case "end":
                         return _context3.stop();
                     }
                   }
-                }, _callee3);
+                }, _callee3, null, [[0, 9]]);
               }));
 
               return function (_x2) {
@@ -156,7 +165,7 @@ var updateConversionRatesCrypto = /*#__PURE__*/function () {
           case 7:
             _context4.prev = 7;
             _context4.t0 = _context4["catch"](0);
-            console.error(_context4.t0);
+            console.log(_context4.t0);
 
           case 10:
           case "end":
