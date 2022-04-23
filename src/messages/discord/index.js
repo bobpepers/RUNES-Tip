@@ -1415,11 +1415,8 @@ Displays your deposit address
 Displays fee schedule
 ${settings.coin.halving.enabled ? `
 \`${settings.bot.command.discord} halving\`
-Displays time left until next halving, etc
-` : ``}
-${settings.coin.name === 'Pirate' ? `\`${settings.bot.command.discord} mining\`
-Displays mining info
-` : ``}
+Displays time left until next halving, etc\n\n` : ``}${settings.coin.name === 'Pirate' ? `\`${settings.bot.command.discord} mining\`
+Displays mining info\n` : ``}
 \`${settings.bot.command.discord} publicstats\`
 Enable/Disable public statistics (determines if you want to be shown on the leaderboards)
 default: disabled
