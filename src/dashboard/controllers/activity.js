@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+import { Op, Sequelize, DataTypes } from 'sequelize';
 import db from '../../models';
 
 export const fetchActivity = async (
@@ -6,67 +6,57 @@ export const fetchActivity = async (
   res,
   next,
 ) => {
-  console.log(req.body);
-  const activityOptions = {};
-  let spenderOptions = {};
-  let earnerOptions = {};
+  // const spenderOptions = {};
+  // const earnerOptions = {};
 
-  if (req.body.id !== '') {
-    activityOptions.id = { [Op.like]: `%${Number(req.body.id)}%` };
-  }
-  if (req.body.type !== '') {
-    activityOptions.type = { [Op.like]: `%${req.body.type}%` };
-  }
-  if (req.body.spender !== '') {
-    spenderOptions = {
-      [Op.or]: [
-        {
-          username: {
-            [Op.like]: `%${req.body.spender}%`,
-          },
-        },
-        {
-          id: {
-            [Op.like]: `%${req.body.spender}%`,
-          },
-        },
-      ],
-    };
-  }
-  if (req.body.earner !== '') {
-    earnerOptions = {
-      [Op.or]: [
-        {
-          username: {
-            [Op.like]: `%${req.body.earner}%`,
-          },
-        },
-        {
-          id: {
-            [Op.like]: `%${req.body.earner}%`,
-          },
-        },
-      ],
-    };
-  }
-  console.log(earnerOptions);
+  const activityOptions = {
+    ...(
+      req.body.amount !== '' && {
+        amount: Number((Number(req.body.amount) * 1e8).toFixed(0)),
+      }
+    ),
+    ...(
+      req.body.type !== '' && {
+        type: { [Op.like]: `%${req.body.type}%` },
+      }
+    ),
+    ...(
+      req.body.id !== '' && {
+        [Op.or]: [
+          Sequelize.where(Sequelize.cast(Sequelize.col('activity.id'), 'CHAR'), 'LIKE', `%${req.body.id}%`),
+        ],
+      }
+    ),
+    ...(
+      (req.body.earner !== '' || req.body.spender !== '') && {
+        [Op.or]: [
+          { '$earner.user_id$': { [Op.like]: `%${req.body.earner !== '' ? req.body.earner : null}%` } },
+          { '$earner.username$': { [Op.like]: `%${req.body.earner !== '' ? req.body.earner : null}%` } },
+          { '$spender.user_id$': { [Op.like]: `%${req.body.spender !== '' ? req.body.spender : null}%` } },
+          { '$spender.username$': { [Op.like]: `%${req.body.spender !== '' ? req.body.spender : null}%` } },
+        ],
+      }
+    ),
+  };
+
   const options = {
     where: activityOptions,
     order: [
       ['id', 'DESC'],
     ],
-    limit: 300,
+    limit: req.body.limit,
+    offset: req.body.offset,
     include: [
       {
         model: db.user,
         as: 'spender',
-        where: spenderOptions,
+        // where: spenderOptions,
         required: false,
       },
       {
         model: db.user,
         as: 'earner',
-        where: earnerOptions,
+        // where: earnerOptions,
         required: false,
       },
       {
@@ -151,6 +141,8 @@ export const fetchActivity = async (
       },
     ],
   };
+
+  res.locals.count = await db.activity.count(options);
   res.locals.activity = await db.activity.findAll(options);
   next();
 };

@@ -59,7 +59,7 @@
   "dependencies": {
     "@matrix-org/olm": "^3.2.8",
     "algebraic-captcha": "^1.0.1",
-    "axios": "^0.26.1",
+    "axios": "^0.27.0",
     "bcrypt-nodejs": "^0.0.3",
     "bignumber.js": "^9.0.2",
     "bluebird": "^3.7.2",
@@ -92,7 +92,7 @@
     "redis": "^4.0.6",
     "sequelize": "^6.19.0",
     "sharp": "^0.30.4",
-    "socket.io": "^4.4.1",
+    "socket.io": "^4.5.0",
     "svg-captcha": "^1.4.0",
     "telegraf": "^4.7.0",
     "telegram": "^2.6.13",

@@ -405,10 +405,13 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
               }
             }, _callee2);
           })));
+          app.use(function (err, req, res, next) {
+            res.status(500).send(err.message);
+          });
           server.listen(port);
           console.log('server listening on:', port);
 
-        case 95:
+        case 96:
         case "end":
           return _context3.stop();
       }

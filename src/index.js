@@ -361,6 +361,10 @@ const conditionalCSRF = function (
     }
   });
 
+  app.use((err, req, res, next) => {
+    res.status(500).send(err.message);
+  });
+
   server.listen(port);
   console.log('server listening on:', port);
 }());

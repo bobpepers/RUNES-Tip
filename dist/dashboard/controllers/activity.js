@@ -17,31 +17,25 @@ var _sequelize = require("sequelize");
 
 var _models = _interopRequireDefault(require("../../models"));
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { (0, _defineProperty2["default"])(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+
 var fetchActivity = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
-    var activityOptions, spenderOptions, earnerOptions, options;
+    var spenderOptions, earnerOptions, activityOptions, options;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            console.log(req.body);
-            activityOptions = {};
             spenderOptions = {};
             earnerOptions = {};
-
-            if (req.body.id !== '') {
-              activityOptions.id = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(Number(req.body.id), "%"));
-            }
-
-            if (req.body.type !== '') {
-              activityOptions.type = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.type, "%"));
-            }
 
             if (req.body.spender !== '') {
               spenderOptions = (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
                 username: (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.spender, "%"))
               }, {
-                id: (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.spender, "%"))
+                user_id: (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.spender, "%"))
               }]);
             }
 
@@ -49,15 +43,20 @@ var fetchActivity = /*#__PURE__*/function () {
               earnerOptions = (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
                 username: (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.earner, "%"))
               }, {
-                id: (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.earner, "%"))
+                user_id: (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.earner, "%"))
               }]);
             }
 
-            console.log(earnerOptions);
+            activityOptions = _objectSpread(_objectSpread(_objectSpread({}, req.body.amount !== '' && {
+              amount: Number((Number(req.body.amount) * 1e8).toFixed(0))
+            }), req.body.type !== '' && {
+              type: (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.type, "%"))
+            }), req.body.id !== '' && (0, _defineProperty2["default"])({}, _sequelize.Op.or, [_sequelize.Sequelize.where(_sequelize.Sequelize.cast(_sequelize.Sequelize.col('activity.id'), 'CHAR'), 'LIKE', "%".concat(req.body.id, "%"))]));
             options = {
               where: activityOptions,
               order: [['id', 'DESC']],
-              limit: 300,
+              limit: req.body.limit,
+              offset: req.body.offset,
               include: [{
                 model: _models["default"].user,
                 as: 'spender',
@@ -134,14 +133,19 @@ var fetchActivity = /*#__PURE__*/function () {
                 required: false
               }]
             };
-            _context.next = 12;
+            _context.next = 8;
+            return _models["default"].activity.count(options);
+
+          case 8:
+            res.locals.count = _context.sent;
+            _context.next = 11;
             return _models["default"].activity.findAll(options);
 
-          case 12:
+          case 11:
             res.locals.activity = _context.sent;
             next();
 
-          case 14:
+          case 13:
           case "end":
             return _context.stop();
         }

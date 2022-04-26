@@ -9,7 +9,7 @@ import {
 } from './controllers/auth';
 
 import { isAdmin } from './controllers/admin';
-
+import { fetchUserInfo } from './controllers/userInfo';
 import { fetchFaucetBalance } from './controllers/faucet';
 import { fetchLiability } from './controllers/liability';
 import { fetchBalance } from './controllers/balance';
@@ -126,6 +126,8 @@ const IsAuthenticated = (req, res, next) => {
   }
 };
 
+const use = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
+
 export const dashboardRouter = (
   app,
   io,
@@ -221,7 +223,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    banUser,
+    use(banUser),
     (req, res) => {
       if (res.locals.user) {
         res.json({
@@ -242,7 +244,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    banChannel,
+    use(banChannel),
     (req, res) => {
       if (res.locals.channel) {
         res.json({
@@ -263,7 +265,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    banServer,
+    use(banServer),
     (req, res) => {
       if (res.locals.server) {
         res.json({
@@ -284,7 +286,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    fetchPriceCurrencies,
+    use(fetchPriceCurrencies),
     (req, res) => {
       if (res.locals.currencies) {
         res.json({
@@ -304,7 +306,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    removePriceCurrency,
+    use(removePriceCurrency),
     (req, res) => {
       if (res.locals.error) {
         res.status(401).send({
@@ -329,7 +331,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    updatePriceCurrency,
+    use(updatePriceCurrency),
     (req, res) => {
       if (res.locals.error) {
         res.status(401).send({
@@ -354,7 +356,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    addPriceCurrency,
+    use(addPriceCurrency),
     (req, res) => {
       if (res.locals.error) {
         res.status(401).send({
@@ -379,7 +381,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    updatePriceCurrencyPrices,
+    use(updatePriceCurrencyPrices),
     (req, res) => {
       if (res.locals.error) {
         res.status(401).send({
@@ -404,7 +406,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    removeFeature,
+    use(removeFeature),
     (req, res) => {
       if (res.locals.error) {
         res.status(401).send({
@@ -428,7 +430,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    updateFeature,
+    use(updateFeature),
     (req, res) => {
       if (res.locals.error) {
         res.status(401).send({
@@ -453,7 +455,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    addFeature,
+    use(addFeature),
     (req, res) => {
       if (res.locals.error) {
         res.status(401).send({
@@ -478,7 +480,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    fetchFeatures,
+    use(fetchFeatures),
     (req, res) => {
       if (res.locals.features) {
         res.json({
@@ -499,7 +501,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    updateBotSettings,
+    use(updateBotSettings),
     (req, res) => {
       if (res.locals.settings) {
         res.json({
@@ -520,7 +522,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    fetchBotSettings,
+    use(fetchBotSettings),
     (req, res) => {
       if (res.locals.settings) {
         res.json({
@@ -541,7 +543,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    fetchChannels,
+    use(fetchChannels),
     (req, res) => {
       if (
         res.locals.channels
@@ -566,7 +568,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    fetchTriviaQuestions,
+    use(fetchTriviaQuestions),
     (req, res) => {
       if (res.locals.error) {
         console.log('found error');
@@ -593,7 +595,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    switchTriviaQuestion,
+    use(switchTriviaQuestion),
     (req, res) => {
       if (res.locals.error) {
         console.log('found error');
@@ -620,7 +622,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    removeTriviaQuestion,
+    use(removeTriviaQuestion),
     (req, res) => {
       if (res.locals.error) {
         console.log('found error');
@@ -647,7 +649,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    insertTrivia,
+    use(insertTrivia),
     (req, res) => {
       if (res.locals.error) {
         console.log('found error');
@@ -674,7 +676,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    startSyncBlocks,
+    use(startSyncBlocks),
     (req, res) => {
       if (res.locals.sync) {
         res.json({
@@ -695,7 +697,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    fetchBlockNumber,
+    use(fetchBlockNumber),
     (req, res) => {
       console.log('after fetchblocknumber');
       if (res.locals.blockNumberNode && res.locals.blockNumberDb) {
@@ -722,11 +724,21 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    fetchActivity,
+    use(fetchActivity),
     (req, res) => {
-      if (res.locals.activity) {
+      if (
+        res.locals.count
+        && res.locals.activity.length > 0
+      ) {
         res.json({
+          count: res.locals.count,
           activity: res.locals.activity,
+        });
+      } else if (
+        res.locals.activity.length < 1
+      ) {
+        res.status(404).send({
+          error: "No records found",
         });
       } else {
         res.status(401).send({
@@ -743,15 +755,21 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    fetchWithdrawals,
+    use(fetchWithdrawals),
     (req, res) => {
       if (
         res.locals.count
-        && res.locals.withdrawals
+        && res.locals.withdrawals.length > 0
       ) {
         res.json({
           count: res.locals.count,
           withdrawals: res.locals.withdrawals,
+        });
+      } else if (
+        res.locals.withdrawals.length < 1
+      ) {
+        res.status(404).send({
+          error: "No withdrawal records found",
         });
       } else {
         res.status(401).send({
@@ -768,15 +786,21 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    fetchDeposits,
+    use(fetchDeposits),
     (req, res) => {
       if (
         res.locals.count
-        && res.locals.deposits
+        && res.locals.deposits.length > 0
       ) {
         res.json({
           count: res.locals.count,
           deposits: res.locals.deposits,
+        });
+      } else if (
+        res.locals.deposits.length < 1
+      ) {
+        res.status(404).send({
+          error: "No deposit records found",
         });
       } else {
         res.status(401).send({
@@ -793,7 +817,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    patchDeposits,
+    use(patchDeposits),
     (req, res) => {
       res.json({
         deposits: 'true',
@@ -808,7 +832,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    fetchUser,
+    use(fetchUser),
     (req, res, next) => {
       if (res.locals.error) {
         console.log(res.locals.error);
@@ -829,7 +853,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    fetchUsers,
+    use(fetchUsers),
     (req, res) => {
       if (
         res.locals.count
@@ -853,7 +877,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    fetchDashboardUsers,
+    use(fetchDashboardUsers),
     (req, res) => {
       if (res.locals.dashboardusers) {
         res.json({
@@ -874,7 +898,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    fetchServers,
+    use(fetchServers),
     (req, res) => {
       if (
         res.locals.servers
@@ -893,17 +917,50 @@ export const dashboardRouter = (
   );
 
   app.post(
+    '/api/userinfo',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    ensuretfa,
+    use(fetchUserInfo),
+    (req, res) => {
+      if (
+        res.locals.user
+      ) {
+        res.json({
+          user: res.locals.user,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
     '/api/errors',
     IsAuthenticated,
     isAdmin,
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    fetchErrors,
+    use(fetchErrors),
     (req, res) => {
-      if (res.locals.errors) {
+      if (
+        res.locals.count
+        && res.locals.errors.length > 0
+      ) {
         res.json({
+          count: res.locals.count,
           errors: res.locals.errors,
+        });
+      } else if (
+        res.locals.errors.length < 1
+      ) {
+        res.status(404).send({
+          error: "No records found",
         });
       } else {
         res.status(401).send({
@@ -920,9 +977,12 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    fetchNodeStatus,
+    use(fetchNodeStatus),
     (req, res) => {
-      if (res.locals.status && res.locals.peers) {
+      if (
+        res.locals.status
+        && res.locals.peers
+      ) {
         res.json({
           status: res.locals.status,
           peers: res.locals.peers,
@@ -941,7 +1001,7 @@ export const dashboardRouter = (
     isAdmin,
     isDashboardUserBanned,
     ensuretfa,
-    fetchBalance,
+    use(fetchBalance),
     (req, res) => {
       if (res.locals.error) {
         res.status(401).send({
@@ -966,7 +1026,7 @@ export const dashboardRouter = (
     isAdmin,
     isDashboardUserBanned,
     ensuretfa,
-    fetchFaucetBalance,
+    use(fetchFaucetBalance),
     (req, res) => {
       if (res.locals.error) {
         res.status(401).send({
@@ -991,7 +1051,7 @@ export const dashboardRouter = (
     isAdmin,
     isDashboardUserBanned,
     ensuretfa,
-    fetchLiability,
+    use(fetchLiability),
     (req, res) => {
       if (res.locals.error) {
         res.status(401).send({
@@ -1013,7 +1073,7 @@ export const dashboardRouter = (
   app.post(
     '/api/signup/verify-email',
     insertIp,
-    verifyEmail,
+    use(verifyEmail),
     (req, res) => {
       console.log(res.locals.error);
       if (res.locals.error === 'AUTH_TOKEN_EXPIRED') {
@@ -1048,7 +1108,7 @@ export const dashboardRouter = (
     // rateLimiterMiddlewarePhone,
     // ensuretfa,
     // updateLastSeen,
-    resendVerification,
+    use(resendVerification),
   );
 
   app.post(
@@ -1057,7 +1117,7 @@ export const dashboardRouter = (
     // insertIp,
     requireSignin,
     isDashboardUserBanned,
-    signin,
+    use(signin),
     (err, req, res, next) => {
       if (req.authErr === 'EMAIL_NOT_VERIFIED') {
         console.log('EMAIL_NOT_VERIFIED');
@@ -1086,7 +1146,7 @@ export const dashboardRouter = (
   app.post(
     '/api/reset-password',
     verifyMyCaptcha,
-    resetPassword,
+    use(resetPassword),
     (req, res) => {
       console.log(res.locals.error);
       if (res.locals.error) {
@@ -1104,7 +1164,7 @@ export const dashboardRouter = (
 
   app.post(
     '/api/reset-password/verify',
-    verifyResetPassword,
+    use(verifyResetPassword),
     (req, res) => {
       console.log(res.locals.error);
       if (res.locals.error) {
@@ -1122,7 +1182,7 @@ export const dashboardRouter = (
 
   app.post(
     '/api/reset-password/new',
-    resetPasswordNew,
+    use(resetPasswordNew),
     (req, res) => {
       console.log(res.locals.error);
       if (res.locals.error) {
@@ -1146,7 +1206,7 @@ export const dashboardRouter = (
     // storeIp,
     ensuretfa,
     // updateLastSeen,
-    enabletfa,
+    use(enabletfa),
     (req, res) => {
       if (res.locals.error) {
         res.status(401).send({
@@ -1167,7 +1227,7 @@ export const dashboardRouter = (
     // storeIp,
     ensuretfa,
     // updateLastSeen,
-    disabletfa,
+    use(disabletfa),
     (req, res) => {
       if (res.locals.error) {
         res.status(401).send({
@@ -1187,7 +1247,7 @@ export const dashboardRouter = (
     IsAuthenticated,
     isDashboardUserBanned,
     // storeIp,
-    unlocktfa,
+    use(unlocktfa),
     (req, res) => {
       if (res.locals.error) {
         res.status(401).send({
@@ -1207,7 +1267,7 @@ export const dashboardRouter = (
     '/api/logout',
     insertIp,
     // storeIp,
-    destroySession,
+    use(destroySession),
     (req, res) => {
       // io.emit('Activity', res.locals.activity);
       res.redirect("/");

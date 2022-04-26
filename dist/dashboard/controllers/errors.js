@@ -23,16 +23,23 @@ var fetchErrors = /*#__PURE__*/function () {
             userOptions = {};
             options = {
               order: [['id', 'DESC']],
+              limit: req.body.limit,
+              offset: req.body.offset,
               where: userOptions
             };
             _context.next = 4;
-            return _models["default"].error.findAll(options);
+            return _models["default"].error.count(options);
 
           case 4:
+            res.locals.count = _context.sent;
+            _context.next = 7;
+            return _models["default"].error.findAll(options);
+
+          case 7:
             res.locals.errors = _context.sent;
             next();
 
-          case 6:
+          case 9:
           case "end":
             return _context.stop();
         }
