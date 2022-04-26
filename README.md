@@ -123,3 +123,18 @@ zmqpubhashblock=tcp://127.0.0.1:29000
 rpcworkqueue=128
 
 ```
+
+## Read this
+
+https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository
+
+https://choosealicense.com/no-permission/
+
+## Contact
+
+If you want host this tipbot yourself, you must ask the developer for permission.
+
+If you want the developer to host this tipbot for your project and have your project integrated, you can apply in the appropriate channel on discord
+
+join the discord:
+https://discord.gg/CdUSaVfp8Q

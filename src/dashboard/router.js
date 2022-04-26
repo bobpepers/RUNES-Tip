@@ -37,6 +37,10 @@ import {
   declineWithdrawal,
 } from './controllers/withdrawals';
 
+import {
+  fetchWithdrawalAddress,
+  fetchWithdrawalAddresses,
+} from './controllers/withdrawalAddresses';
 import { fetchActivity } from './controllers/activity';
 import {
   fetchFeatures,
@@ -106,6 +110,11 @@ import {
 import {
   fetchUser,
 } from './controllers/user';
+
+import {
+  fetchRain,
+  fetchRains,
+} from './controllers/rain';
 
 // import storeIp from './helpers/storeIp';
 
@@ -870,6 +879,102 @@ export const dashboardRouter = (
       }
     },
   );
+  app.post(
+    '/api/rains',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    ensuretfa,
+    use(fetchRains),
+    (req, res) => {
+      if (
+        res.locals.count
+        && res.locals.rains
+      ) {
+        res.json({
+          count: res.locals.count,
+          rains: res.locals.rains,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/rain',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    ensuretfa,
+    use(fetchRain),
+    (req, res) => {
+      if (
+        res.locals.rain
+      ) {
+        res.json({
+          rain: res.locals.rain,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/withdrawaladdresses',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    ensuretfa,
+    use(fetchWithdrawalAddresses),
+    (req, res) => {
+      if (
+        res.locals.count
+        && res.locals.withdrawalAddresses
+      ) {
+        res.json({
+          count: res.locals.count,
+          withdrawalAddresses: res.locals.withdrawalAddresses,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
+  app.post(
+    '/api/withdrawaladdress',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    ensuretfa,
+    use(fetchWithdrawalAddress),
+    (req, res) => {
+      if (
+        res.locals.withdrawalAddress
+      ) {
+        res.json({
+          withdrawalAddress: res.locals.withdrawalAddress,
+        });
+      } else {
+        res.status(401).send({
+          error: "ERROR",
+        });
+      }
+    },
+  );
+
   app.post(
     '/api/dashboardusers',
     IsAuthenticated,
