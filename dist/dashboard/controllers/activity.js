@@ -23,35 +23,26 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 var fetchActivity = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
-    var spenderOptions, earnerOptions, activityOptions, options;
+    var activityOptions, options;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            spenderOptions = {};
-            earnerOptions = {};
-
-            if (req.body.spender !== '') {
-              spenderOptions = (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
-                username: (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.spender, "%"))
-              }, {
-                user_id: (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.spender, "%"))
-              }]);
-            }
-
-            if (req.body.earner !== '') {
-              earnerOptions = (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
-                username: (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.earner, "%"))
-              }, {
-                user_id: (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.earner, "%"))
-              }]);
-            }
-
-            activityOptions = _objectSpread(_objectSpread(_objectSpread({}, req.body.amount !== '' && {
+            // const spenderOptions = {};
+            // const earnerOptions = {};
+            activityOptions = _objectSpread(_objectSpread(_objectSpread(_objectSpread({}, req.body.amount !== '' && {
               amount: Number((Number(req.body.amount) * 1e8).toFixed(0))
             }), req.body.type !== '' && {
               type: (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.type, "%"))
-            }), req.body.id !== '' && (0, _defineProperty2["default"])({}, _sequelize.Op.or, [_sequelize.Sequelize.where(_sequelize.Sequelize.cast(_sequelize.Sequelize.col('activity.id'), 'CHAR'), 'LIKE', "%".concat(req.body.id, "%"))]));
+            }), req.body.id !== '' && (0, _defineProperty2["default"])({}, _sequelize.Op.or, [_sequelize.Sequelize.where(_sequelize.Sequelize.cast(_sequelize.Sequelize.col('activity.id'), 'CHAR'), 'LIKE', "%".concat(req.body.id, "%"))])), (req.body.earner !== '' || req.body.spender !== '') && (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
+              '$earner.user_id$': (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.earner !== '' ? req.body.earner : null, "%"))
+            }, {
+              '$earner.username$': (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.earner !== '' ? req.body.earner : null, "%"))
+            }, {
+              '$spender.user_id$': (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.spender !== '' ? req.body.spender : null, "%"))
+            }, {
+              '$spender.username$': (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.spender !== '' ? req.body.spender : null, "%"))
+            }]));
             options = {
               where: activityOptions,
               order: [['id', 'DESC']],
@@ -60,12 +51,12 @@ var fetchActivity = /*#__PURE__*/function () {
               include: [{
                 model: _models["default"].user,
                 as: 'spender',
-                where: spenderOptions,
+                // where: spenderOptions,
                 required: false
               }, {
                 model: _models["default"].user,
                 as: 'earner',
-                where: earnerOptions,
+                // where: earnerOptions,
                 required: false
               }, {
                 model: _models["default"].flood,
@@ -133,19 +124,19 @@ var fetchActivity = /*#__PURE__*/function () {
                 required: false
               }]
             };
-            _context.next = 8;
+            _context.next = 4;
             return _models["default"].activity.count(options);
 
-          case 8:
+          case 4:
             res.locals.count = _context.sent;
-            _context.next = 11;
+            _context.next = 7;
             return _models["default"].activity.findAll(options);
 
-          case 11:
+          case 7:
             res.locals.activity = _context.sent;
             next();
 
-          case 13:
+          case 9:
           case "end":
             return _context.stop();
         }

@@ -13,6 +13,8 @@ var _auth = require("./controllers/auth");
 
 var _admin = require("./controllers/admin");
 
+var _userInfo = require("./controllers/userInfo");
+
 var _faucet = require("./controllers/faucet");
 
 var _liability = require("./controllers/liability");
@@ -444,10 +446,14 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
     }
   });
   app.post('/api/withdrawals', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_withdrawals.fetchWithdrawals), function (req, res) {
-    if (res.locals.count && res.locals.withdrawals) {
+    if (res.locals.count && res.locals.withdrawals.length > 0) {
       res.json({
         count: res.locals.count,
         withdrawals: res.locals.withdrawals
+      });
+    } else if (res.locals.withdrawals.length < 1) {
+      res.status(404).send({
+        error: "No withdrawal records found"
       });
     } else {
       res.status(401).send({
@@ -456,10 +462,14 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
     }
   });
   app.post('/api/deposits', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_deposits.fetchDeposits), function (req, res) {
-    if (res.locals.count && res.locals.deposits) {
+    if (res.locals.count && res.locals.deposits.length > 0) {
       res.json({
         count: res.locals.count,
         deposits: res.locals.deposits
+      });
+    } else if (res.locals.deposits.length < 1) {
+      res.status(404).send({
+        error: "No deposit records found"
       });
     } else {
       res.status(401).send({
@@ -512,6 +522,17 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       res.json({
         count: res.locals.count,
         servers: res.locals.servers
+      });
+    } else {
+      res.status(401).send({
+        error: "ERROR"
+      });
+    }
+  });
+  app.post('/api/userinfo', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_userInfo.fetchUserInfo), function (req, res) {
+    if (res.locals.user) {
+      res.json({
+        user: res.locals.user
       });
     } else {
       res.status(401).send({
