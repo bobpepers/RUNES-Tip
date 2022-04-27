@@ -524,7 +524,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                                   isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
                                 }, /*#__PURE__*/function () {
                                   var _ref11 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee8(t) {
-                                    var endReactDrop, returnWallet, updatedWallet, faucetSetting, faucetWatered, amountEach, listOfUsersRained, withoutBotsSorted, _iterator, _step, receiver, earnerWallet, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element, initiator;
+                                    var endReactDrop, returnWallet, updatedWallet, faucetSetting, faucetWatered, amountEach, listOfUsersRained, withoutBotsSorted, _iterator, _step, receiver, updateReactDropTipAmount, earnerWallet, userIdReceivedRain, tipActivity, newStringListUsers, cutStringListUsers, _iterator2, _step2, element, initiator;
 
                                     return _regenerator["default"].wrap(function _callee8$(_context8) {
                                       while (1) {
@@ -569,7 +569,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                                             endReactDrop = _context8.sent;
 
                                             if (!endReactDrop) {
-                                              _context8.next = 79;
+                                              _context8.next = 82;
                                               break;
                                             }
 
@@ -614,7 +614,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                                             });
 
                                           case 15:
-                                            _context8.next = 79;
+                                            _context8.next = 82;
                                             break;
 
                                           case 17:
@@ -654,12 +654,22 @@ var listenReactDrop = /*#__PURE__*/function () {
 
                                           case 33:
                                             if ((_step = _iterator.n()).done) {
-                                              _context8.next = 49;
+                                              _context8.next = 52;
                                               break;
                                             }
 
                                             receiver = _step.value;
                                             _context8.next = 37;
+                                            return receiver.update({
+                                              amount: Number(amountEach)
+                                            }, {
+                                              lock: t.LOCK.UPDATE,
+                                              transaction: t
+                                            });
+
+                                          case 37:
+                                            updateReactDropTipAmount = _context8.sent;
+                                            _context8.next = 40;
                                             return receiver.user.wallet.update({
                                               available: receiver.user.wallet.available + Number(amountEach)
                                             }, {
@@ -667,7 +677,7 @@ var listenReactDrop = /*#__PURE__*/function () {
                                               transaction: t
                                             });
 
-                                          case 37:
+                                          case 40:
                                             earnerWallet = _context8.sent;
 
                                             if (receiver.user.ignoreMe) {
@@ -679,7 +689,7 @@ var listenReactDrop = /*#__PURE__*/function () {
 
                                             tipActivity = void 0; // eslint-disable-next-line no-await-in-loop
 
-                                            _context8.next = 42;
+                                            _context8.next = 45;
                                             return _models["default"].activity.create({
                                               amount: Number(amountEach),
                                               type: 'reactdroptip_s',
@@ -693,9 +703,9 @@ var listenReactDrop = /*#__PURE__*/function () {
                                               transaction: t
                                             });
 
-                                          case 42:
+                                          case 45:
                                             tipActivity = _context8.sent;
-                                            _context8.next = 45;
+                                            _context8.next = 48;
                                             return _models["default"].activity.findOne({
                                               where: {
                                                 id: tipActivity.id
@@ -717,90 +727,90 @@ var listenReactDrop = /*#__PURE__*/function () {
                                               transaction: t
                                             });
 
-                                          case 45:
+                                          case 48:
                                             tipActivity = _context8.sent;
                                             activity.unshift(tipActivity);
 
-                                          case 47:
+                                          case 50:
                                             _context8.next = 33;
                                             break;
 
-                                          case 49:
-                                            _context8.next = 54;
+                                          case 52:
+                                            _context8.next = 57;
                                             break;
 
-                                          case 51:
-                                            _context8.prev = 51;
+                                          case 54:
+                                            _context8.prev = 54;
                                             _context8.t0 = _context8["catch"](31);
 
                                             _iterator.e(_context8.t0);
 
-                                          case 54:
-                                            _context8.prev = 54;
+                                          case 57:
+                                            _context8.prev = 57;
 
                                             _iterator.f();
 
-                                            return _context8.finish(54);
+                                            return _context8.finish(57);
 
-                                          case 57:
+                                          case 60:
                                             newStringListUsers = listOfUsersRained.join(", ");
                                             cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
                                             // eslint-disable-next-line no-restricted-syntax
                                             _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
-                                            _context8.prev = 60;
+                                            _context8.prev = 63;
 
                                             _iterator2.s();
 
-                                          case 62:
+                                          case 65:
                                             if ((_step2 = _iterator2.n()).done) {
-                                              _context8.next = 68;
+                                              _context8.next = 71;
                                               break;
                                             }
 
                                             element = _step2.value;
-                                            _context8.next = 66;
+                                            _context8.next = 69;
                                             return reactMessage.channel.send(element);
 
-                                          case 66:
-                                            _context8.next = 62;
+                                          case 69:
+                                            _context8.next = 65;
                                             break;
 
-                                          case 68:
-                                            _context8.next = 73;
+                                          case 71:
+                                            _context8.next = 76;
                                             break;
-
-                                          case 70:
-                                            _context8.prev = 70;
-                                            _context8.t1 = _context8["catch"](60);
-
-                                            _iterator2.e(_context8.t1);
 
                                           case 73:
                                             _context8.prev = 73;
+                                            _context8.t1 = _context8["catch"](63);
+
+                                            _iterator2.e(_context8.t1);
+
+                                          case 76:
+                                            _context8.prev = 76;
 
                                             _iterator2.f();
 
-                                            return _context8.finish(73);
+                                            return _context8.finish(76);
 
-                                          case 76:
+                                          case 79:
                                             initiator = endReactDrop.user.user_id.replace('discord-', '');
-                                            _context8.next = 79;
+                                            _context8.next = 82;
                                             return reactMessage.channel.send({
                                               embeds: [(0, _discord2.AfterReactDropSuccessMessage)(endReactDrop, amountEach, initiator)]
                                             });
 
-                                          case 79:
+                                          case 82:
                                             t.afterCommit(function () {
                                               console.log('done');
                                             });
 
-                                          case 80:
+                                          case 83:
                                           case "end":
                                             return _context8.stop();
                                         }
                                       }
-                                    }, _callee8, null, [[31, 51, 54, 57], [60, 70, 73, 76]]);
+                                    }, _callee8, null, [[31, 54, 57, 60], [63, 73, 76, 79]]);
                                   }));
 
                                   return function (_x14) {
