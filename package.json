@@ -58,7 +58,7 @@
   "dependencies": {
     "@matrix-org/olm": "^3.2.8",
     "algebraic-captcha": "^1.0.1",
-    "axios": "^0.27.0",
+    "axios": "^0.27.1",
     "bcrypt-nodejs": "^0.0.3",
     "bignumber.js": "^9.0.2",
     "bluebird": "^3.7.2",
@@ -74,7 +74,7 @@
     "express-session": "^1.17.2",
     "helmet": "^5.0.2",
     "lodash": "^4.17.21",
-    "matrix-js-sdk": "^17.0.0",
+    "matrix-js-sdk": "^17.1.0",
     "moment": "^2.29.3",
     "morgan": "^1.10.0",
     "mysql2": "^2.3.3",
@@ -94,7 +94,7 @@
     "socket.io": "^4.5.0",
     "svg-captcha": "^1.4.0",
     "telegraf": "^4.7.0",
-    "telegram": "^2.6.13",
+    "telegram": "^2.6.21",
     "utf8": "^3.0.0",
     "winston": "^3.7.2"
   }
