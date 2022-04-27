@@ -1,4 +1,3 @@
-// import { parseDomain } from "parse-domain";
 import { Transaction, Op } from "sequelize";
 import db from '../../models';
 import {

@@ -1,4 +1,3 @@
-import { Op, Sequelize } from 'sequelize';
 import db from '../../models';
 
 export const fetchHurricanes = async (
@@ -6,21 +5,12 @@ export const fetchHurricanes = async (
   res,
   next,
 ) => {
-//   const userOptions = {};
-//   if (req.body.id !== '') {
-//     userOptions.id = { [Op.like]: `%${Number(req.body.id)}%` };
-//   }
-//   if (req.body.address !== '') {
-//     userOptions.address = { [Op.like]: `%${req.body.address}%` };
-//   }
-
   const options = {
     order: [
       ['id', 'DESC'],
     ],
     limit: req.body.limit,
     offset: req.body.offset,
-    // where: userOptions,
     include: [
       {
         model: db.user,
@@ -40,11 +30,6 @@ export const fetchHurricanes = async (
           'groupId',
         ],
       },
-    //   {
-    //     model: db.raintip,
-    //     as: 'raintips',
-    //     attributes: ['id'],
-    //   },
     ],
   };
 

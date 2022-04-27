@@ -25,7 +25,6 @@ export const fetchWithdrawalAddresses = async (
       {
         model: db.transaction,
         as: 'transactions',
-        // limit: 1,
         order: [['createdAt', 'DESC']],
         attributes: ['createdAt'],
       },
@@ -33,11 +32,8 @@ export const fetchWithdrawalAddresses = async (
         model: db.user,
         as: 'users',
         through: { attributes: [] },
-        // attributes: ['id'],
-        // required: false,
       },
     ],
-    // group: ['id'],
   };
 
   res.locals.name = 'withdrawalAddresses';
