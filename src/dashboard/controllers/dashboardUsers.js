@@ -34,7 +34,7 @@ export const fetchDashboardUsers = async (
     ],
     where: userOptions,
   };
-  res.locals.dashboardusers = await db.dashboardUser.findAll(options);
-  console.log(res.locals.dashboardusers);
+  res.locals.count = await db.dashboardUser.count(options);
+  res.locals.result = await db.dashboardUser.findAll(options);
   next();
 };

@@ -243,6 +243,13 @@ export const dashboardRouter = (
   telegramClient,
   matrixClient,
 ) => {
+  const attachResLocalsClients = (req, res, next) => {
+    res.locals.discordClient = discordClient;
+    res.locals.telegramClient = telegramClient;
+    res.locals.matrixClient = matrixClient;
+    next();
+  };
+
   app.get(
     '/api/authenticated',
     (req, res, next) => {
@@ -269,28 +276,9 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     ensuretfa,
     insertIp,
-    (req, res, next) => {
-      res.locals.discordClient = discordClient;
-      res.locals.telegramClient = telegramClient;
-      res.locals.matrixClient = matrixClient;
-      next();
-    },
+    attachResLocalsClients,
     acceptWithdrawal,
-    (req, res) => {
-      if (res.locals.error) {
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      } else if (res.locals.withdrawal) {
-        res.json({
-          withdrawal: res.locals.withdrawal,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -300,28 +288,9 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     ensuretfa,
     insertIp,
-    (req, res, next) => {
-      res.locals.discordClient = discordClient;
-      res.locals.telegramClient = telegramClient;
-      res.locals.matrixClient = matrixClient;
-      next();
-    },
+    attachResLocalsClients,
     declineWithdrawal,
-    (req, res) => {
-      if (res.locals.error) {
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      } else if (res.locals.withdrawal) {
-        res.json({
-          withdrawal: res.locals.withdrawal,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -574,11 +543,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(patchDeposits),
-    (req, res) => {
-      res.json({
-        deposits: 'true',
-      });
-    },
+    respondResult,
   );
 
   app.get(
@@ -886,17 +851,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchDashboardUsers),
-    (req, res) => {
-      if (res.locals.dashboardusers) {
-        res.json({
-          dashboardusers: res.locals.dashboardusers,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondCountAndResult,
   );
 
   app.post(
@@ -929,21 +884,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchNodeStatus),
-    (req, res) => {
-      if (
-        res.locals.status
-        && res.locals.peers
-      ) {
-        res.json({
-          status: res.locals.status,
-          peers: res.locals.peers,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.get(

@@ -189,8 +189,14 @@ total: <b>${total} ${settings.coin.ticker}</b>${settings.coin.setting === 'Pirat
 <pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
-export const telegramWithdrawalRejectedMessage = () => {
-  const result = `Withdrawal has been rejected`;
+export const telegramWithdrawalRejectedMessage = (
+  updatedTransaction,
+) => {
+  const result = `<u><b>Withdrawal #${updatedTransaction.id}</b></u>
+
+Withdrawal has been rejected
+
+<pre>${settings.bot.name} v${pjson.version}</pre>`;
   return result;
 };
 

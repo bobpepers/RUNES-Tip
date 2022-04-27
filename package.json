@@ -58,7 +58,7 @@
   "dependencies": {
     "@matrix-org/olm": "^3.2.8",
     "algebraic-captcha": "^1.0.1",
-    "axios": "^0.27.1",
+    "axios": "^0.27.2",
     "bcrypt-nodejs": "^0.0.3",
     "bignumber.js": "^9.0.2",
     "bluebird": "^3.7.2",

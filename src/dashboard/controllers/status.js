@@ -7,11 +7,16 @@ export const fetchNodeStatus = async (
 ) => {
   const connected = await getInstance().isConnected();
   const peers = await getInstance().getPeerInfo();
-  if (connected) {
-    res.locals.status = connected;
+
+  if (
+    connected
+    && peers
+  ) {
+    res.locals.result = {
+      peers,
+      status: connected,
+    };
   }
-  if (peers) {
-    res.locals.peers = peers;
-  }
+
   next();
 };

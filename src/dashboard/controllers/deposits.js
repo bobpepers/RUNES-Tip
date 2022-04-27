@@ -22,6 +22,7 @@ export const patchDeposits = async (
   } else {
     await patchRunebaseDeposits();
   }
+  res.locals.result = 'true';
   next();
 };
 
@@ -30,7 +31,6 @@ export const fetchDeposits = async (
   res,
   next,
 ) => {
-  console.log(req.body);
   const transactionOptions = {
     type: 'receive',
   };

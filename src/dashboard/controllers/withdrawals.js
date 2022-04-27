@@ -5,7 +5,7 @@ import {
   discordWithdrawalRejectedMessage,
 } from "../../messages/discord";
 import {
-  withdrawalAcceptedAdminMessage,
+  // withdrawalAcceptedAdminMessage,
   withdrawalAcceptedMessage,
   telegramWithdrawalRejectedMessage,
 } from "../../messages/telegram";
@@ -17,10 +17,10 @@ export const acceptWithdrawal = async (
   res,
   next,
 ) => {
+  let updatedTrans;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    let updatedTrans;
     const transaction = await db.transaction.findOne({
       where: {
         id: req.body.id,
@@ -46,8 +46,7 @@ export const acceptWithdrawal = async (
       lock: t.LOCK.UPDATE,
     });
     if (!transaction) {
-      res.locals.error = "Transaction not found";
-      next();
+      throw new Error("transaction not found");
     }
     const settings = await db.features.findOne({
       where: {
@@ -56,8 +55,7 @@ export const acceptWithdrawal = async (
       },
     });
     if (!settings) {
-      res.locals.error = "settings not found";
-      next();
+      throw new Error("settings not found");
     }
     if (transaction) {
       const [
@@ -120,20 +118,61 @@ export const acceptWithdrawal = async (
         if (transaction.address.wallet.user.user_id.startsWith('discord-')) {
           const userDiscordId = transaction.address.wallet.user.user_id.replace('discord-', '');
           const myClient = await res.locals.discordClient.users.fetch(userDiscordId, false);
-          await myClient.send({ embeds: [discordWithdrawalAcceptedMessage(res.locals.withdrawal)] });
+          await myClient.send({
+            embeds: [
+              discordWithdrawalAcceptedMessage(
+                res.locals.withdrawal,
+              ),
+            ],
+          });
         }
         if (transaction.address.wallet.user.user_id.startsWith('telegram-')) {
           const userTelegramId = transaction.address.wallet.user.user_id.replace('telegram-', '');
-          res.locals.telegramClient.telegram.sendMessage(userTelegramId, withdrawalAcceptedMessage(transaction, res.locals.withdrawal));
-          // bot.telegram.sendMessage(runesGroup, withdrawalAcceptedMessage(transaction, updatedTrans));
+          await res.locals.telegramClient.telegram.sendMessage(
+            userTelegramId,
+            await withdrawalAcceptedMessage(
+              transaction,
+              res.locals.withdrawal,
+            ),
+            {
+              parse_mode: 'HTML',
+            },
+          );
         }
-        // res.locals.telegramClient.telegram.sendMessage(adminTelegramId, withdrawalAcceptedAdminMessage(updatedTrans));
+        if (transaction.address.wallet.user.user_id.startsWith('matrix-')) {
+          const userMatrixId = transaction.address.wallet.user.user_id.replace('matrix-', '');
+          // TODO: SEND A WITHDRAWAL DECLINED MESSAGE TO USER ON MATRIX
+          // res.locals.matrixClient has matrixclient attached
+        }
       }
-      next();
     });
   }).catch((err) => {
-    // res.locals.telegramClient.telegram.sendMessage(adminTelegramId, `Something went wrong`);
+    console.log(err);
+    return next("Something went wrong");
   });
+  try {
+    const newTransaction = await db.transaction.findOne({
+      where: {
+        id: req.body.id,
+        phase: 'confirming',
+      },
+
+      include: [
+        {
+          model: db.user,
+          as: 'user',
+        },
+        {
+          model: db.address,
+          as: 'address',
+        },
+      ],
+    });
+    res.locals.result = newTransaction;
+    next();
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 export const declineWithdrawal = async (
@@ -141,6 +180,7 @@ export const declineWithdrawal = async (
   res,
   next,
 ) => {
+  let updatedTransaction;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -166,9 +206,9 @@ export const declineWithdrawal = async (
     });
 
     if (!transaction) {
-      res.locals.error = "transaction not found";
+      throw new Error("transaction not found");
     }
-    console.log("123");
+
     if (transaction) {
       const wallet = await db.wallet.findOne({
         where: {
@@ -179,7 +219,7 @@ export const declineWithdrawal = async (
       });
 
       if (!wallet) {
-        res.locals.error = "Wallet not found";
+        throw new Error("Wallet not found");
       }
       if (wallet) {
         const updatedWallet = await wallet.update({
@@ -189,7 +229,7 @@ export const declineWithdrawal = async (
           transaction: t,
           lock: t.LOCK.UPDATE,
         });
-        const updatedTransaction = await transaction.update(
+        updatedTransaction = await transaction.update(
           {
             phase: 'rejected',
           },
@@ -198,7 +238,6 @@ export const declineWithdrawal = async (
             lock: t.LOCK.UPDATE,
           },
         );
-        console.log('beforeActivity');
         const activity = await db.activity.create(
           {
             spenderId: transaction.address.wallet.userId,
@@ -210,53 +249,70 @@ export const declineWithdrawal = async (
             lock: t.LOCK.UPDATE,
           },
         );
-        if (transaction.address.wallet.user.user_id.startsWith('discord-')) {
-          // await myClient.send({ embeds: [discordUserWithdrawalRejectMessage()] });
-          const userDiscordId = transaction.address.wallet.user.user_id.replace('discord-', '');
-          const myClient = await res.locals.discordClient.users.fetch(userDiscordId, false);
-          await myClient.send({ embeds: [discordWithdrawalRejectedMessage(updatedTransaction)] });
-        }
-        if (transaction.address.wallet.user.user_id.startsWith('telegram-')) {
-          const userTelegramId = transaction.address.wallet.user.user_id.replace('telegram-', '');
-          res.locals.telegramClient.telegram.sendMessage(userTelegramId, telegramWithdrawalRejectedMessage(updatedTransaction));
-          // bot.telegram.sendMessage(runesGroup, `${transaction.address.wallet.user.username}'s withdrawal has been rejected`);
-        }
-        // bot.telegram.sendMessage(adminTelegramId, `Withdrawal Rejected`);
       }
     }
 
-    t.afterCommit(() => {
-      console.log("done");
+    t.afterCommit(async () => {
+      try {
+        if (transaction.address.wallet.user.user_id.startsWith('discord-')) {
+          const userDiscordId = transaction.address.wallet.user.user_id.replace('discord-', '');
+          const myClient = await res.locals.discordClient.users.fetch(userDiscordId, false);
+          await myClient.send({
+            embeds: [
+              discordWithdrawalRejectedMessage(
+                updatedTransaction,
+              ),
+            ],
+          });
+        }
+        if (transaction.address.wallet.user.user_id.startsWith('telegram-')) {
+          const userTelegramId = transaction.address.wallet.user.user_id.replace('telegram-', '');
+          await res.locals.telegramClient.telegram.sendMessage(
+            userTelegramId,
+            await telegramWithdrawalRejectedMessage(
+              updatedTransaction,
+            ),
+            {
+              parse_mode: 'HTML',
+            },
+          );
+        }
+        if (transaction.address.wallet.user.user_id.startsWith('matrix-')) {
+          const userMatrixId = transaction.address.wallet.user.user_id.replace('matrix-', '');
+          // TODO: SEND A WITHDRAWAL DECLINED MESSAGE TO USER ON MATRIX
+          // res.locals.matrixClient has matrixclient attached
+        }
+      } catch (error) {
+        console.log(error);
+      }
     });
   }).catch((err) => {
     console.log(err);
-    res.locals.error = "Something went wrong";
-    next();
+    return next("Something went wrong");
   });
-  const newTransaction = await db.transaction.findOne({
-    where: {
-      id: req.body.id,
-      phase: 'rejected',
-    },
-    include: [
-      {
-        model: db.address,
-        as: 'address',
-        include: [
-          {
-            model: db.wallet,
-            as: 'wallet',
-            include: [{
-              model: db.user,
-              as: 'user',
-            }],
-          },
-        ],
+  try {
+    const newTransaction = await db.transaction.findOne({
+      where: {
+        id: req.body.id,
+        phase: 'rejected',
       },
-    ],
-  });
-  res.locals.withdrawal = newTransaction;
-  next();
+
+      include: [
+        {
+          model: db.user,
+          as: 'user',
+        },
+        {
+          model: db.address,
+          as: 'address',
+        },
+      ],
+    });
+    res.locals.result = newTransaction;
+    next();
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 export const fetchWithdrawals = async (

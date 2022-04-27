@@ -778,10 +778,13 @@ export const notEnoughActiveUsersMessage = (message, title) => {
   return result;
 };
 
-export const discordWithdrawalRejectedMessage = () => {
+export const discordWithdrawalRejectedMessage = (
+  updatedTransaction,
+) => {
+  console.log(updatedTransaction);
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
-    .setTitle("Withdraw")
+    .setTitle(`Withdraw #${updatedTransaction.id}`)
     .setDescription(`Your withdrawal has been rejected`)
     .setTimestamp()
     .setFooter({
