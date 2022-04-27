@@ -139,3 +139,104 @@ export const insertTrivia = async (
   console.log(res.locals.result);
   next();
 };
+
+export const fetchTrivias = async (
+  req,
+  res,
+  next,
+) => {
+  const options = {
+    order: [
+      ['id', 'DESC'],
+    ],
+    limit: req.body.limit,
+    offset: req.body.offset,
+    include: [
+      {
+        model: db.user,
+        as: 'user',
+        attributes: [
+          'id',
+          'username',
+          'user_id',
+        ],
+      },
+      {
+        model: db.group,
+        as: 'group',
+        attributes: [
+          'id',
+          'groupName',
+          'groupId',
+        ],
+      },
+    ],
+  };
+
+  res.locals.name = 'trivia';
+  res.locals.count = await db.trivia.count(options);
+  res.locals.result = await db.trivia.findAll(options);
+  next();
+};
+
+export const fetchTrivia = async (
+  req,
+  res,
+  next,
+) => {
+  const options = {
+    where: {
+      id: req.body.id,
+    },
+    include: [
+      {
+        model: db.group,
+        as: 'group',
+        required: false,
+      },
+      {
+        model: db.channel,
+        as: 'channel',
+        required: false,
+      },
+      {
+        model: db.user,
+        as: 'user',
+      },
+      {
+        model: db.triviaquestion,
+        as: 'triviaquestion',
+        include: [
+          {
+            model: db.triviaanswer,
+            as: 'triviaanswers',
+          },
+        ],
+      },
+      {
+        model: db.triviatip,
+        as: 'triviatips',
+        include: [
+          {
+            model: db.triviaanswer,
+            as: 'triviaanswer',
+          },
+          {
+            model: db.user,
+            as: 'user',
+            include: [
+              {
+                model: db.wallet,
+                as: 'wallet',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  };
+
+  res.locals.name = 'trivia';
+  res.locals.result = await db.trivia.findOne(options);
+  next();
+};

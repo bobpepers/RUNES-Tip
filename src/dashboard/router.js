@@ -70,6 +70,8 @@ import {
   removeTriviaQuestion,
   fetchTriviaQuestions,
   switchTriviaQuestion,
+  fetchTrivia,
+  fetchTrivias,
 } from './controllers/trivia';
 
 import {
@@ -785,6 +787,28 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchHurricane),
+    respondResult,
+  );
+
+  app.post(
+    '/api/functions/trivias',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    ensuretfa,
+    use(fetchTrivias),
+    respondCountAndResult,
+  );
+
+  app.post(
+    '/api/functions/trivia',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    ensuretfa,
+    use(fetchTrivia),
     respondResult,
   );
 
