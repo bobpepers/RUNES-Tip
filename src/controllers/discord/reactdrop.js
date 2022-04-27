@@ -370,7 +370,14 @@ export const listenReactDrop = async (
             const withoutBotsSorted = await _.sortBy(endReactDrop.reactdroptips, 'createdAt');
             // eslint-disable-next-line no-restricted-syntax
             for (const receiver of withoutBotsSorted) {
-            // eslint-disable-next-line no-await-in-loop
+              // eslint-disable-next-line no-await-in-loop
+              const updateReactDropTipAmount = await receiver.update({
+                amount: Number(amountEach),
+              }, {
+                lock: t.LOCK.UPDATE,
+                transaction: t,
+              });
+              // eslint-disable-next-line no-await-in-loop
               const earnerWallet = await receiver.user.wallet.update({
                 available: receiver.user.wallet.available + Number(amountEach),
               }, {
