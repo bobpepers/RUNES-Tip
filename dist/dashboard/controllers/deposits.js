@@ -77,9 +77,10 @@ var patchDeposits = /*#__PURE__*/function () {
             return (0, _patcher2.patchRunebaseDeposits)();
 
           case 17:
+            res.locals.result = 'true';
             next();
 
-          case 18:
+          case 19:
           case "end":
             return _context.stop();
         }
@@ -101,7 +102,6 @@ var fetchDeposits = /*#__PURE__*/function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            console.log(req.body);
             transactionOptions = {
               type: 'receive'
             };
@@ -145,6 +145,7 @@ var fetchDeposits = /*#__PURE__*/function () {
                 }]
               }]
             };
+            res.locals.name = 'deposit';
             _context2.next = 11;
             return _models["default"].transaction.count(options);
 
@@ -154,7 +155,7 @@ var fetchDeposits = /*#__PURE__*/function () {
             return _models["default"].transaction.findAll(options);
 
           case 14:
-            res.locals.deposits = _context2.sent;
+            res.locals.result = _context2.sent;
             next();
 
           case 16:

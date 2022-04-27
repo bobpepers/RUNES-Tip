@@ -520,8 +520,9 @@ var notEnoughActiveUsersMessage = function notEnoughActiveUsersMessage(message, 
 
 exports.notEnoughActiveUsersMessage = notEnoughActiveUsersMessage;
 
-var discordWithdrawalRejectedMessage = function discordWithdrawalRejectedMessage() {
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Withdraw").setDescription("Your withdrawal has been rejected").setTimestamp().setFooter({
+var discordWithdrawalRejectedMessage = function discordWithdrawalRejectedMessage(updatedTransaction) {
+  console.log(updatedTransaction);
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Withdraw #".concat(updatedTransaction.id)).setDescription("Your withdrawal has been rejected").setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });

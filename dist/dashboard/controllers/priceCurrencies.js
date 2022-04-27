@@ -25,51 +25,61 @@ var updatePriceCurrency = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            if (!req.body.type) {
-              res.locals.error = "type is required";
-              next();
+            if (req.body.type) {
+              _context.next = 2;
+              break;
             }
 
-            if (!req.body.name) {
-              res.locals.error = "name is required";
-              next();
+            throw new Error("type is required");
+
+          case 2:
+            if (req.body.name) {
+              _context.next = 4;
+              break;
             }
 
-            if (!req.body.iso) {
-              res.locals.error = "iso is required";
-              next();
+            throw new Error("name is required");
+
+          case 4:
+            if (req.body.iso) {
+              _context.next = 6;
+              break;
             }
 
-            _context.next = 5;
+            throw new Error("iso is required");
+
+          case 6:
+            _context.next = 8;
             return _models["default"].currency.findOne({
               where: {
                 id: req.body.id
               }
             });
 
-          case 5:
+          case 8:
             currency = _context.sent;
-            _context.next = 8;
+            _context.next = 11;
             return currency.update({
               currency_name: req.body.name,
               iso: req.body.iso,
               type: req.body.type
             });
 
-          case 8:
+          case 11:
             updatedCurrency = _context.sent;
-            _context.next = 11;
+            res.locals.name = 'updatePriceCurrency';
+            _context.next = 15;
             return _models["default"].currency.findOne({
               where: {
                 id: updatedCurrency.id
               }
             });
 
-          case 11:
-            res.locals.currency = _context.sent;
+          case 15:
+            res.locals.result = _context.sent;
             next();
 
-          case 13:
+          case 17:
           case "end":
             return _context.stop();
         }
@@ -90,36 +100,30 @@ var updatePriceCurrencyPrices = /*#__PURE__*/function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.prev = 0;
-            _context2.next = 3;
+            _context2.next = 2;
             return (0, _updateConversionRates.updateConversionRatesCrypto)();
 
-          case 3:
-            _context2.next = 5;
+          case 2:
+            _context2.next = 4;
             return (0, _updateConversionRates.updateConversionRatesFiat)();
 
-          case 5:
-            _context2.next = 7;
+          case 4:
+            _context2.next = 6;
             return (0, _updatePrice.updatePrice)();
 
-          case 7:
-            res.locals.currency = true;
-            next();
-            _context2.next = 15;
-            break;
-
-          case 11:
-            _context2.prev = 11;
-            _context2.t0 = _context2["catch"](0);
-            res.locals.error = "ERROR UPDATING PRICES";
+          case 6:
+            res.locals.name = 'updatePriceCurrencyPrice';
+            res.locals.result = {
+              success: true
+            };
             next();
 
-          case 15:
+          case 9:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[0, 11]]);
+    }, _callee2);
   }));
 
   return function updatePriceCurrencyPrices(_x4, _x5, _x6) {
@@ -145,11 +149,12 @@ var removePriceCurrency = /*#__PURE__*/function () {
 
           case 2:
             currency = _context3.sent;
-            res.locals.currency = currency;
+            res.locals.name = 'removePriceCurrency';
+            res.locals.result = currency;
             currency.destroy();
             next();
 
-          case 6:
+          case 7:
           case "end":
             return _context3.stop();
         }
@@ -174,14 +179,20 @@ var fetchPriceCurrencies = /*#__PURE__*/function () {
             options = {
               order: [['id', 'DESC']]
             };
-            _context4.next = 3;
+            res.locals.name = 'priceCurrencies';
+            _context4.next = 4;
+            return _models["default"].currency.count(options);
+
+          case 4:
+            res.locals.count = _context4.sent;
+            _context4.next = 7;
             return _models["default"].currency.findAll(options);
 
-          case 3:
-            res.locals.currencies = _context4.sent;
+          case 7:
+            res.locals.result = _context4.sent;
             next();
 
-          case 5:
+          case 9:
           case "end":
             return _context4.stop();
         }
@@ -205,56 +216,61 @@ var addPriceCurrency = /*#__PURE__*/function () {
           case 0:
             console.log(req.body);
 
-            if (!req.body.name) {
-              res.locals.error = 'Name is required';
-              next();
+            if (req.body.name) {
+              _context5.next = 3;
+              break;
             }
 
-            if (!req.body.iso) {
-              res.locals.error = 'Iso is required';
-              next();
+            throw new Error("Name is required");
+
+          case 3:
+            if (req.body.iso) {
+              _context5.next = 5;
+              break;
             }
 
-            if (!req.body.type) {
-              res.locals.error = 'Type is required';
-              next();
+            throw new Error("Iso is required");
+
+          case 5:
+            if (req.body.type) {
+              _context5.next = 7;
+              break;
             }
 
-            _context5.next = 6;
+            throw new Error("Type is required");
+
+          case 7:
+            _context5.next = 9;
             return _models["default"].currency.findOne({
               where: {
                 iso: req.body.iso
               }
             });
 
-          case 6:
+          case 9:
             currency = _context5.sent;
 
-            if (currency) {
-              res.locals.error = "Already Exists";
-              next();
-            }
-
-            if (currency) {
-              _context5.next = 13;
+            if (!currency) {
+              _context5.next = 12;
               break;
             }
 
-            _context5.next = 11;
+            throw new Error("Already Exists");
+
+          case 12:
+            res.locals.name = 'addPriceCurrency';
+            _context5.next = 15;
             return _models["default"].currency.create({
               type: req.body.type,
               currency_name: req.body.name,
               iso: req.body.iso
             });
 
-          case 11:
-            res.locals.currency = _context5.sent;
+          case 15:
+            res.locals.result = _context5.sent;
             next();
 
-          case 13:
-            next();
-
-          case 14:
+          case 17:
           case "end":
             return _context5.stop();
         }

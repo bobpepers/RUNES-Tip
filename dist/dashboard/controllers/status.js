@@ -31,17 +31,16 @@ var fetchNodeStatus = /*#__PURE__*/function () {
           case 5:
             peers = _context.sent;
 
-            if (connected) {
-              res.locals.status = connected;
-            }
-
-            if (peers) {
-              res.locals.peers = peers;
+            if (connected && peers) {
+              res.locals.result = {
+                peers: peers,
+                status: connected
+              };
             }
 
             next();
 
-          case 9:
+          case 8:
           case "end":
             return _context.stop();
         }

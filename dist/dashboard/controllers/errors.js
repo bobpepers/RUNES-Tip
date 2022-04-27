@@ -27,19 +27,20 @@ var fetchErrors = /*#__PURE__*/function () {
               offset: req.body.offset,
               where: userOptions
             };
-            _context.next = 4;
+            res.locals.name = 'error';
+            _context.next = 5;
             return _models["default"].error.count(options);
 
-          case 4:
+          case 5:
             res.locals.count = _context.sent;
-            _context.next = 7;
+            _context.next = 8;
             return _models["default"].error.findAll(options);
 
-          case 7:
-            res.locals.errors = _context.sent;
+          case 8:
+            res.locals.result = _context.sent;
             next();
 
-          case 9:
+          case 10:
           case "end":
             return _context.stop();
         }

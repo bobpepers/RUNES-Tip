@@ -5,15 +5,17 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.fetchRains = exports.fetchRain = void 0;
+exports.fetchVoicerains = exports.fetchVoicerain = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _sequelize = require("sequelize");
+
 var _models = _interopRequireDefault(require("../../models"));
 
-var fetchRains = /*#__PURE__*/function () {
+var fetchVoicerains = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
     var options;
     return _regenerator["default"].wrap(function _callee$(_context) {
@@ -34,14 +36,14 @@ var fetchRains = /*#__PURE__*/function () {
                 attributes: ['id', 'groupName', 'groupId']
               }]
             };
-            res.locals.name = 'rain';
+            res.locals.name = 'voicerain';
             _context.next = 4;
-            return _models["default"].rain.count(options);
+            return _models["default"].voicerain.count(options);
 
           case 4:
             res.locals.count = _context.sent;
             _context.next = 7;
-            return _models["default"].rain.findAll(options);
+            return _models["default"].voicerain.findAll(options);
 
           case 7:
             res.locals.result = _context.sent;
@@ -55,14 +57,14 @@ var fetchRains = /*#__PURE__*/function () {
     }, _callee);
   }));
 
-  return function fetchRains(_x, _x2, _x3) {
+  return function fetchVoicerains(_x, _x2, _x3) {
     return _ref.apply(this, arguments);
   };
 }();
 
-exports.fetchRains = fetchRains;
+exports.fetchVoicerains = fetchVoicerains;
 
-var fetchRain = /*#__PURE__*/function () {
+var fetchVoicerain = /*#__PURE__*/function () {
   var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(req, res, next) {
     var options;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
@@ -85,8 +87,8 @@ var fetchRain = /*#__PURE__*/function () {
                 model: _models["default"].user,
                 as: 'user'
               }, {
-                model: _models["default"].raintip,
-                as: 'raintips',
+                model: _models["default"].voiceraintip,
+                as: 'voiceraintips',
                 include: [{
                   model: _models["default"].user,
                   as: 'user',
@@ -97,9 +99,9 @@ var fetchRain = /*#__PURE__*/function () {
                 }]
               }]
             };
-            res.locals.name = 'rain';
+            res.locals.name = 'voicerain';
             _context2.next = 4;
-            return _models["default"].rain.findOne(options);
+            return _models["default"].voicerain.findOne(options);
 
           case 4:
             res.locals.result = _context2.sent;
@@ -113,9 +115,9 @@ var fetchRain = /*#__PURE__*/function () {
     }, _callee2);
   }));
 
-  return function fetchRain(_x4, _x5, _x6) {
+  return function fetchVoicerain(_x4, _x5, _x6) {
     return _ref2.apply(this, arguments);
   };
 }();
 
-exports.fetchRain = fetchRain;
+exports.fetchVoicerain = fetchVoicerain;

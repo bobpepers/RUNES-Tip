@@ -24,8 +24,7 @@ var banUser = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.prev = 0;
-            _context.next = 3;
+            _context.next = 2;
             return _models["default"].user.findOne({
               where: {
                 id: req.body.id
@@ -36,8 +35,9 @@ var banUser = /*#__PURE__*/function () {
               }]
             });
 
-          case 3:
+          case 2:
             user = _context.sent;
+            res.locals.name = 'banUser';
             _context.next = 6;
             return user.update({
               banned: !user.banned,
@@ -45,25 +45,15 @@ var banUser = /*#__PURE__*/function () {
             });
 
           case 6:
-            res.locals.user = _context.sent;
-            _context.next = 13;
-            break;
-
-          case 9:
-            _context.prev = 9;
-            _context.t0 = _context["catch"](0);
-            res.locals.error = _context.t0;
-            console.log(_context.t0);
-
-          case 13:
+            res.locals.result = _context.sent;
             next();
 
-          case 14:
+          case 8:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 9]]);
+    }, _callee);
   }));
 
   return function banUser(_x, _x2, _x3) {
@@ -114,8 +104,6 @@ var fetchUsers = /*#__PURE__*/function () {
               }
             }
 
-            console.log(req.body.limit);
-            console.log(req.body.offset);
             options = {
               order: [['id', 'DESC']],
               limit: req.body.limit,
@@ -126,20 +114,20 @@ var fetchUsers = /*#__PURE__*/function () {
                 as: 'wallet'
               }]
             };
-            _context2.next = 11;
+            res.locals.name = 'user';
+            _context2.next = 10;
             return _models["default"].user.count(options);
 
-          case 11:
+          case 10:
             res.locals.count = _context2.sent;
-            _context2.next = 14;
+            _context2.next = 13;
             return _models["default"].user.findAll(options);
 
-          case 14:
-            res.locals.users = _context2.sent;
-            // console.log(res.locals.users);
+          case 13:
+            res.locals.result = _context2.sent;
             next();
 
-          case 16:
+          case 15:
           case "end":
             return _context2.stop();
         }

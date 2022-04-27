@@ -7,6 +7,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.dashboardRouter = void 0;
 
+var _typeof2 = _interopRequireDefault(require("@babel/runtime/helpers/typeof"));
+
 var _passport = _interopRequireDefault(require("passport"));
 
 var _auth = require("./controllers/auth");
@@ -32,6 +34,8 @@ var _errors = require("./controllers/errors");
 var _status = require("./controllers/status");
 
 var _withdrawals = require("./controllers/withdrawals");
+
+var _withdrawalAddresses = require("./controllers/withdrawalAddresses");
 
 var _activity = require("./controllers/activity");
 
@@ -63,6 +67,26 @@ var _tfa = require("./controllers/tfa");
 
 var _user = require("./controllers/user");
 
+var _rain = require("./controllers/rain");
+
+var _soak = require("./controllers/soak");
+
+var _flood = require("./controllers/flood");
+
+var _thunder = require("./controllers/thunder");
+
+var _thunderstorm = require("./controllers/thunderstorm");
+
+var _sleet = require("./controllers/sleet");
+
+var _voicerain = require("./controllers/voicerain");
+
+var _hurricane = require("./controllers/hurricane");
+
+var _reactdrop = require("./controllers/reactdrop");
+
+var _tip = require("./controllers/tip");
+
 // import storeIp from './helpers/storeIp';
 var requireSignin = _passport["default"].authenticate('local', {
   session: true,
@@ -87,7 +111,54 @@ var use = function use(fn) {
   };
 };
 
+var respondCountAndResult = function respondCountAndResult(req, res) {
+  if (res.locals.count && res.locals.result && res.locals.result.length > 0) {
+    res.json({
+      count: res.locals.count,
+      result: res.locals.result
+    });
+  } else if (res.locals.result.length < 1) {
+    res.status(404).send({
+      error: "No ".concat(res.locals.name, " records found")
+    });
+  } else {
+    res.status(401).send({
+      error: "ERROR"
+    });
+  }
+};
+
+var respondResult = function respondResult(req, res) {
+  console.log(res.locals.result);
+  console.log(res.locals.result.length);
+
+  if (res.locals.result && res.locals.result.length > 0) {
+    res.json({
+      result: res.locals.result
+    });
+  } else if ((0, _typeof2["default"])(res.locals.result) === 'object' && Object.keys(res.locals.result).length > 0 && res.locals.result !== null) {
+    res.json({
+      result: res.locals.result
+    });
+  } else if (res.locals.result.length < 1) {
+    res.status(404).send({
+      error: "No ".concat(res.locals.name, " records found")
+    });
+  } else {
+    res.status(401).send({
+      error: "ERROR"
+    });
+  }
+};
+
 var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramClient, matrixClient) {
+  var attachResLocalsClients = function attachResLocalsClients(req, res, next) {
+    res.locals.discordClient = discordClient;
+    res.locals.telegramClient = telegramClient;
+    res.locals.matrixClient = matrixClient;
+    next();
+  };
+
   app.get('/api/authenticated', function (req, res, next) {
     if (req.isAuthenticated()) {
       next();
@@ -98,527 +169,67 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
     }
   }, _tfa.istfa);
   app.post('/api/signup', _recaptcha.verifyMyCaptcha, _ip.insertIp, _auth.signup);
-  app.post('/api/withdrawal/accept', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, _ip.insertIp, function (req, res, next) {
-    res.locals.discordClient = discordClient;
-    res.locals.telegramClient = telegramClient;
-    res.locals.matrixClient = matrixClient;
-    next();
-  }, _withdrawals.acceptWithdrawal, function (req, res) {
-    if (res.locals.error) {
-      res.status(401).send({
-        error: res.locals.error
-      });
-    } else if (res.locals.withdrawal) {
-      res.json({
-        withdrawal: res.locals.withdrawal
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/withdrawal/decline', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, _ip.insertIp, function (req, res, next) {
-    res.locals.discordClient = discordClient;
-    res.locals.telegramClient = telegramClient;
-    res.locals.matrixClient = matrixClient;
-    next();
-  }, _withdrawals.declineWithdrawal, function (req, res) {
-    if (res.locals.error) {
-      res.status(401).send({
-        error: res.locals.error
-      });
-    } else if (res.locals.withdrawal) {
-      res.json({
-        withdrawal: res.locals.withdrawal
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/ban/user', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_users.banUser), function (req, res) {
-    if (res.locals.user) {
-      res.json({
-        user: res.locals.user
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/ban/channel', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_channels.banChannel), function (req, res) {
-    if (res.locals.channel) {
-      res.json({
-        channel: res.locals.channel
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/ban/server', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_servers.banServer), function (req, res) {
-    if (res.locals.server) {
-      res.json({
-        server: res.locals.server
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/pricecurrencies', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_priceCurrencies.fetchPriceCurrencies), function (req, res) {
-    if (res.locals.currencies) {
-      res.json({
-        currencies: res.locals.currencies
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/pricecurrencies/remove', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_priceCurrencies.removePriceCurrency), function (req, res) {
-    if (res.locals.error) {
-      res.status(401).send({
-        error: res.locals.error
-      });
-    } else if (res.locals.currency) {
-      res.json({
-        currency: res.locals.currency
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/pricecurrencies/update', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_priceCurrencies.updatePriceCurrency), function (req, res) {
-    if (res.locals.error) {
-      res.status(401).send({
-        error: res.locals.error
-      });
-    } else if (res.locals.currency) {
-      res.json({
-        currency: res.locals.currency
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/pricecurrencies/add', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_priceCurrencies.addPriceCurrency), function (req, res) {
-    if (res.locals.error) {
-      res.status(401).send({
-        error: res.locals.error
-      });
-    } else if (res.locals.currency) {
-      res.json({
-        currency: res.locals.currency
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/pricecurrencies/updateprice', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_priceCurrencies.updatePriceCurrencyPrices), function (req, res) {
-    if (res.locals.error) {
-      res.status(401).send({
-        error: res.locals.error
-      });
-    } else if (res.locals.currency) {
-      res.json({
-        currency: true
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/feature/remove', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_features.removeFeature), function (req, res) {
-    if (res.locals.error) {
-      res.status(401).send({
-        error: res.locals.error
-      });
-    } else if (res.locals.feature) {
-      res.json({
-        feature: res.locals.feature
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/feature/update', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_features.updateFeature), function (req, res) {
-    if (res.locals.error) {
-      res.status(401).send({
-        error: res.locals.error
-      });
-    } else if (res.locals.feature) {
-      res.json({
-        feature: res.locals.feature
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/feature/add', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_features.addFeature), function (req, res) {
-    if (res.locals.error) {
-      res.status(401).send({
-        error: res.locals.error
-      });
-    } else if (res.locals.feature) {
-      res.json({
-        feature: res.locals.feature
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/features', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_features.fetchFeatures), function (req, res) {
-    if (res.locals.features) {
-      res.json({
-        features: res.locals.features
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/bot/settings/update', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_bots.updateBotSettings), function (req, res) {
-    if (res.locals.settings) {
-      res.json({
-        settings: res.locals.settings
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/bot/settings', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_bots.fetchBotSettings), function (req, res) {
-    if (res.locals.settings) {
-      res.json({
-        settings: res.locals.settings
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/channels', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_channels.fetchChannels), function (req, res) {
-    if (res.locals.channels && res.locals.count >= 0) {
-      res.json({
-        count: res.locals.count,
-        channels: res.locals.channels
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.get('/api/triviaquestions', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_trivia.fetchTriviaQuestions), function (req, res) {
-    if (res.locals.error) {
-      console.log('found error');
-      console.log(res.locals.error);
-      res.status(401).send({
-        error: res.locals.error
-      });
-    } else if (res.locals.trivia) {
-      res.json({
-        trivia: res.locals.trivia
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/trivia/switch', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_trivia.switchTriviaQuestion), function (req, res) {
-    if (res.locals.error) {
-      console.log('found error');
-      console.log(res.locals.error);
-      res.status(401).send({
-        error: res.locals.error
-      });
-    } else if (res.locals.trivia) {
-      res.json({
-        trivia: res.locals.trivia
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/trivia/remove', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_trivia.removeTriviaQuestion), function (req, res) {
-    if (res.locals.error) {
-      console.log('found error');
-      console.log(res.locals.error);
-      res.status(401).send({
-        error: res.locals.error
-      });
-    } else if (res.locals.trivia) {
-      res.json({
-        trivia: res.locals.trivia
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/trivia/insert', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_trivia.insertTrivia), function (req, res) {
-    if (res.locals.error) {
-      console.log('found error');
-      console.log(res.locals.error);
-      res.status(401).send({
-        error: res.locals.error
-      });
-    } else if (res.locals.trivia) {
-      res.json({
-        trivia: res.locals.trivia
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.get('/api/sync/blocks', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_sync.startSyncBlocks), function (req, res) {
-    if (res.locals.sync) {
-      res.json({
-        sync: res.locals.sync
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.get('/api/blocknumber', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_blockNumber.fetchBlockNumber), function (req, res) {
-    console.log('after fetchblocknumber');
-
-    if (res.locals.blockNumberNode && res.locals.blockNumberDb) {
-      console.log('res.locals.blockNumberNode');
-      console.log(res.locals.blockNumberNode);
-      res.json({
-        blockNumber: {
-          node: res.locals.blockNumberNode,
-          db: res.locals.blockNumberDb
-        }
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/activity', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_activity.fetchActivity), function (req, res) {
-    if (res.locals.count && res.locals.activity.length > 0) {
-      res.json({
-        count: res.locals.count,
-        activity: res.locals.activity
-      });
-    } else if (res.locals.activity.length < 1) {
-      res.status(404).send({
-        error: "No records found"
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/withdrawals', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_withdrawals.fetchWithdrawals), function (req, res) {
-    if (res.locals.count && res.locals.withdrawals.length > 0) {
-      res.json({
-        count: res.locals.count,
-        withdrawals: res.locals.withdrawals
-      });
-    } else if (res.locals.withdrawals.length < 1) {
-      res.status(404).send({
-        error: "No withdrawal records found"
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/deposits', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_deposits.fetchDeposits), function (req, res) {
-    if (res.locals.count && res.locals.deposits.length > 0) {
-      res.json({
-        count: res.locals.count,
-        deposits: res.locals.deposits
-      });
-    } else if (res.locals.deposits.length < 1) {
-      res.status(404).send({
-        error: "No deposit records found"
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/deposits/patch', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_deposits.patchDeposits), function (req, res) {
-    res.json({
-      deposits: 'true'
-    });
-  });
-  app.get('/api/user', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_user.fetchUser), function (req, res, next) {
-    if (res.locals.error) {
-      console.log(res.locals.error);
-      res.status(401).send({
-        error: res.locals.error
-      });
-    }
-
-    if (res.locals.user) {
-      res.json(res.locals.user);
-    }
-  });
-  app.post('/api/users', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_users.fetchUsers), function (req, res) {
-    if (res.locals.count && res.locals.users) {
-      res.json({
-        count: res.locals.count,
-        users: res.locals.users
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/dashboardusers', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_dashboardUsers.fetchDashboardUsers), function (req, res) {
-    if (res.locals.dashboardusers) {
-      res.json({
-        dashboardusers: res.locals.dashboardusers
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/servers', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_servers.fetchServers), function (req, res) {
-    if (res.locals.servers && res.locals.count) {
-      res.json({
-        count: res.locals.count,
-        servers: res.locals.servers
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/userinfo', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_userInfo.fetchUserInfo), function (req, res) {
-    if (res.locals.user) {
-      res.json({
-        user: res.locals.user
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.post('/api/errors', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_errors.fetchErrors), function (req, res) {
-    if (res.locals.count && res.locals.errors.length > 0) {
-      res.json({
-        count: res.locals.count,
-        errors: res.locals.errors
-      });
-    } else if (res.locals.errors.length < 1) {
-      res.status(404).send({
-        error: "No records found"
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.get('/api/status', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_status.fetchNodeStatus), function (req, res) {
-    if (res.locals.status && res.locals.peers) {
-      res.json({
-        status: res.locals.status,
-        peers: res.locals.peers
-      });
-    } else {
-      res.status(401).send({
-        error: "ERROR"
-      });
-    }
-  });
-  app.get('/api/balance', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, use(_balance.fetchBalance), function (req, res) {
-    if (res.locals.error) {
-      res.status(401).send({
-        error: {
-          message: res.locals.error,
-          resend: false
-        }
-      });
-    }
-
-    if (res.locals.balance) {
-      console.log(res.locals.balance);
-      res.json({
-        balance: res.locals.balance
-      });
-    }
-  });
-  app.get('/api/faucet/balance', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, use(_faucet.fetchFaucetBalance), function (req, res) {
-    if (res.locals.error) {
-      res.status(401).send({
-        error: {
-          message: res.locals.error,
-          resend: false
-        }
-      });
-    }
-
-    if (res.locals.balance) {
-      console.log(res.locals.balance);
-      res.json({
-        balance: res.locals.balance
-      });
-    }
-  });
-  app.get('/api/liability', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, use(_liability.fetchLiability), function (req, res) {
-    if (res.locals.error) {
-      res.status(401).send({
-        error: {
-          message: res.locals.error,
-          resend: false
-        }
-      });
-    }
-
-    if (res.locals.liability) {
-      console.log(res.locals.liability);
-      res.json({
-        liability: res.locals.liability
-      });
-    }
-  });
+  app.post('/api/functions/withdrawal/accept', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, _ip.insertIp, attachResLocalsClients, _withdrawals.acceptWithdrawal, respondResult);
+  app.post('/api/functions/withdrawal/decline', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, _ip.insertIp, attachResLocalsClients, _withdrawals.declineWithdrawal, respondResult);
+  app.post('/api/management/user/ban', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_users.banUser), respondResult);
+  app.post('/api/management/channel/ban', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_channels.banChannel), respondResult);
+  app.post('/api/management/server/ban', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_servers.banServer), respondResult);
+  app.post('/api/management/pricecurrencies', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_priceCurrencies.fetchPriceCurrencies), respondCountAndResult);
+  app.post('/api/management/pricecurrencies/remove', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_priceCurrencies.removePriceCurrency), respondResult);
+  app.post('/api/management/pricecurrencies/update', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_priceCurrencies.updatePriceCurrency), respondResult);
+  app.post('/api/management/pricecurrencies/add', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_priceCurrencies.addPriceCurrency), respondResult);
+  app.post('/api/management/pricecurrencies/updateprice', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_priceCurrencies.updatePriceCurrencyPrices), respondResult);
+  app.post('/api/management/feature/remove', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_features.removeFeature), respondResult);
+  app.post('/api/management/feature/update', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_features.updateFeature), respondResult);
+  app.post('/api/management/feature/add', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_features.addFeature), respondResult);
+  app.post('/api/management/features', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_features.fetchFeatures), respondCountAndResult);
+  app.post('/api/management/bot/settings/update', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_bots.updateBotSettings), respondResult);
+  app.post('/api/management/bot/settings', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_bots.fetchBotSettings), respondCountAndResult);
+  app.post('/api/management/channels', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_channels.fetchChannels), respondCountAndResult);
+  app.get('/api/management/triviaquestions', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_trivia.fetchTriviaQuestions), respondCountAndResult);
+  app.post('/api/management/trivia/switch', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_trivia.switchTriviaQuestion), respondResult);
+  app.post('/api/management/trivia/remove', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_trivia.removeTriviaQuestion), respondResult);
+  app.post('/api/management/trivia/insert', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_trivia.insertTrivia), respondResult);
+  app.get('/api/sync/blocks', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_sync.startSyncBlocks), respondResult);
+  app.get('/api/blocknumber', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_blockNumber.fetchBlockNumber), respondResult);
+  app.post('/api/activity', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_activity.fetchActivity), respondCountAndResult);
+  app.post('/api/deposits/patch', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_deposits.patchDeposits), respondResult);
+  app.get('/api/user', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_user.fetchUser), respondResult);
+  app.post('/api/management/users', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_users.fetchUsers), respondCountAndResult);
+  app.post('/api/functions/withdrawals', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_withdrawals.fetchWithdrawals), respondCountAndResult);
+  app.post('/api/functions/deposits', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_deposits.fetchDeposits), respondCountAndResult);
+  app.post('/api/functions/rains', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_rain.fetchRains), respondCountAndResult);
+  app.post('/api/functions/rain', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_rain.fetchRain), respondResult);
+  app.post('/api/functions/floods', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_flood.fetchFloods), respondCountAndResult);
+  app.post('/api/functions/flood', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_flood.fetchFlood), respondResult);
+  app.post('/api/functions/sleets', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_sleet.fetchSleets), respondCountAndResult);
+  app.post('/api/functions/sleet', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_sleet.fetchSleet), respondResult);
+  app.post('/api/functions/soaks', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_soak.fetchSoaks), respondCountAndResult);
+  app.post('/api/functions/soak', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_soak.fetchSoak), respondResult);
+  app.post('/api/functions/thunders', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_thunder.fetchThunders), respondCountAndResult);
+  app.post('/api/functions/thunder', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_thunder.fetchThunder), respondResult);
+  app.post('/api/functions/reactdrops', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_reactdrop.fetchReactdrops), respondCountAndResult);
+  app.post('/api/functions/reactdrop', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_reactdrop.fetchReactdrop), respondResult);
+  app.post('/api/functions/tips', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_tip.fetchTips), respondCountAndResult);
+  app.post('/api/functions/tip', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_tip.fetchTip), respondResult);
+  app.post('/api/functions/thunderstorms', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_thunderstorm.fetchThunderstorms), respondCountAndResult);
+  app.post('/api/functions/thunderstorm', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_thunderstorm.fetchThunderstorm), respondResult);
+  app.post('/api/functions/hurricanes', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_hurricane.fetchHurricanes), respondCountAndResult);
+  app.post('/api/functions/hurricane', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_hurricane.fetchHurricane), respondResult);
+  app.post('/api/functions/trivias', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_trivia.fetchTrivias), respondCountAndResult);
+  app.post('/api/functions/trivia', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_trivia.fetchTrivia), respondResult);
+  app.post('/api/functions/voicerains', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_voicerain.fetchVoicerains), respondCountAndResult);
+  app.post('/api/functions/voicerain', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_voicerain.fetchVoicerain), respondResult);
+  app.post('/api/functions/errors', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_errors.fetchErrors), respondCountAndResult);
+  app.post('/api/management/withdrawaladdresses', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_withdrawalAddresses.fetchWithdrawalAddresses), respondCountAndResult);
+  app.post('/api/management/withdrawaladdress', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_withdrawalAddresses.fetchWithdrawalAddress), respondResult);
+  app.post('/api/management/dashboardusers', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_dashboardUsers.fetchDashboardUsers), respondCountAndResult);
+  app.post('/api/management/servers', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_servers.fetchServers), respondCountAndResult);
+  app.post('/api/management/userinfo', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_userInfo.fetchUserInfo), respondResult);
+  app.get('/api/status', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_status.fetchNodeStatus), respondResult);
+  app.get('/api/balance', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, use(_balance.fetchBalance), respondResult);
+  app.get('/api/faucet/balance', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, use(_faucet.fetchFaucetBalance), respondResult);
+  app.get('/api/liability', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, use(_liability.fetchLiability), respondResult);
   app.post('/api/signup/verify-email', _ip.insertIp, use(_auth.verifyEmail), function (req, res) {
     console.log(res.locals.error);
 
@@ -672,9 +283,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       res.json({
         username: req.user.username
       });
-    } // console.log('Login Successful');
-    // console.log(req.user.username);
-
+    }
   });
   app.post('/api/reset-password', _recaptcha.verifyMyCaptcha, use(_resetPassword.resetPassword), function (req, res) {
     console.log(res.locals.error);
@@ -769,7 +378,6 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
   });
   app.get('/api/logout', _ip.insertIp, // storeIp,
   use(_auth.destroySession), function (req, res) {
-    // io.emit('Activity', res.locals.activity);
     res.redirect("/");
   });
 };

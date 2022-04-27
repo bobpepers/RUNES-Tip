@@ -124,19 +124,20 @@ var fetchActivity = /*#__PURE__*/function () {
                 required: false
               }]
             };
-            _context.next = 4;
+            res.locals.name = 'activities';
+            _context.next = 5;
             return _models["default"].activity.count(options);
 
-          case 4:
+          case 5:
             res.locals.count = _context.sent;
-            _context.next = 7;
+            _context.next = 8;
             return _models["default"].activity.findAll(options);
 
-          case 7:
-            res.locals.activity = _context.sent;
+          case 8:
+            res.locals.result = _context.sent;
             next();
 
-          case 9:
+          case 10:
           case "end":
             return _context.stop();
         }

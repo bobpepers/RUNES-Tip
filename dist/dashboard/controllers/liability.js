@@ -31,22 +31,21 @@ var fetchLiability = /*#__PURE__*/function () {
             unconfirmedDeposits = 0;
             unconfirmledWithdrawals = 0;
             faucetAmount = 0;
-            _context.prev = 7;
-            _context.next = 10;
+            _context.next = 9;
             return _models["default"].wallet.findAll({
               attributes: [[_sequelize.Sequelize.fn('sum', _sequelize.Sequelize.col('available')), 'total_available']]
             });
 
-          case 10:
+          case 9:
             sumAvailable = _context.sent;
-            _context.next = 13;
+            _context.next = 12;
             return _models["default"].wallet.findAll({
               attributes: [[_sequelize.Sequelize.fn('sum', _sequelize.Sequelize.col('locked')), 'total_locked']]
             });
 
-          case 13:
+          case 12:
             sumLocked = _context.sent;
-            _context.next = 16;
+            _context.next = 15;
             return _models["default"].transaction.findAll({
               attributes: [[_sequelize.Sequelize.fn('sum', _sequelize.Sequelize.col('amount')), 'total_amount']],
               where: (0, _defineProperty2["default"])({}, _sequelize.Op.and, [{
@@ -56,9 +55,9 @@ var fetchLiability = /*#__PURE__*/function () {
               }])
             });
 
-          case 16:
+          case 15:
             sumUnconfirmedDeposits = _context.sent;
-            _context.next = 19;
+            _context.next = 18;
             return _models["default"].transaction.findAll({
               attributes: [[_sequelize.Sequelize.fn('sum', _sequelize.Sequelize.col('amount')), 'total_amount']],
               where: (0, _defineProperty2["default"])({}, _sequelize.Op.and, [{
@@ -68,9 +67,9 @@ var fetchLiability = /*#__PURE__*/function () {
               }])
             });
 
-          case 19:
+          case 18:
             sumUnconfirmedWithdrawals = _context.sent;
-            _context.next = 22;
+            _context.next = 21;
             return _models["default"].reactdrop.findAll({
               attributes: [[_sequelize.Sequelize.fn('sum', _sequelize.Sequelize.col('amount')), 'total_amount']],
               where: (0, _defineProperty2["default"])({}, _sequelize.Op.and, [{
@@ -78,9 +77,9 @@ var fetchLiability = /*#__PURE__*/function () {
               }])
             });
 
-          case 22:
+          case 21:
             sumRunningReactdrops = _context.sent;
-            _context.next = 25;
+            _context.next = 24;
             return _models["default"].trivia.findAll({
               attributes: [[_sequelize.Sequelize.fn('sum', _sequelize.Sequelize.col('amount')), 'total_amount']],
               where: (0, _defineProperty2["default"])({}, _sequelize.Op.and, [{
@@ -88,12 +87,12 @@ var fetchLiability = /*#__PURE__*/function () {
               }])
             });
 
-          case 25:
+          case 24:
             sumRunningTrivia = _context.sent;
-            _context.next = 28;
+            _context.next = 27;
             return _models["default"].faucet.findOne();
 
-          case 28:
+          case 27:
             faucet = _context.sent;
             faucetAmount = faucet.amount ? faucet.amount : 0;
             available = sumAvailable[0].dataValues.total_available ? sumAvailable[0].dataValues.total_available : 0;
@@ -102,24 +101,18 @@ var fetchLiability = /*#__PURE__*/function () {
             unconfirmledWithdrawals = sumUnconfirmedWithdrawals[0].dataValues.total_amount ? sumUnconfirmedWithdrawals[0].dataValues.total_amount : 0;
             runningReactdrops = sumRunningReactdrops[0].dataValues.total_amount ? sumRunningReactdrops[0].dataValues.total_amount : 0;
             runningTrivia = sumRunningTrivia[0].dataValues.total_amount ? sumRunningTrivia[0].dataValues.total_amount : 0;
-            res.locals.liability = Number(available) + Number(locked) + Number(unconfirmedDeposits) - Number(unconfirmledWithdrawals) + Number(runningTrivia) + Number(runningReactdrops) + Number(faucetAmount);
-            next();
-            _context.next = 45;
-            break;
-
-          case 40:
-            _context.prev = 40;
-            _context.t0 = _context["catch"](7);
-            console.log(_context.t0);
-            res.locals.error = _context.t0;
+            res.locals.name = "liability";
+            res.locals.result = {
+              amount: Number(available) + Number(locked) + Number(unconfirmedDeposits) - Number(unconfirmledWithdrawals) + Number(runningTrivia) + Number(runningReactdrops) + Number(faucetAmount)
+            };
             next();
 
-          case 45:
+          case 38:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[7, 40]]);
+    }, _callee);
   }));
 
   return function fetchLiability(_x, _x2, _x3) {

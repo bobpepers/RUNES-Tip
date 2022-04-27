@@ -21,7 +21,8 @@ var fetchUser = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.next = 2;
+            res.locals.name = 'fetchUser';
+            _context.next = 3;
             return _models["default"].dashboardUser.findOne({
               where: {
                 id: req.user.id
@@ -31,11 +32,11 @@ var fetchUser = /*#__PURE__*/function () {
               }
             });
 
-          case 2:
-            res.locals.user = _context.sent;
+          case 3:
+            res.locals.result = _context.sent;
             next();
 
-          case 4:
+          case 5:
           case "end":
             return _context.stop();
         }

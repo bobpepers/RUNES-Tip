@@ -24,43 +24,32 @@ var banServer = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            console.log('ban server');
-            _context.prev = 1;
-            _context.next = 4;
+            _context.next = 2;
             return _models["default"].group.findOne({
               where: {
                 id: req.body.id
               }
             });
 
-          case 4:
+          case 2:
             group = _context.sent;
-            _context.next = 7;
+            res.locals.name = 'banServer';
+            _context.next = 6;
             return group.update({
               banned: !group.banned,
               banMessage: req.body.banMessage
             });
 
-          case 7:
-            res.locals.server = _context.sent;
-            _context.next = 14;
-            break;
-
-          case 10:
-            _context.prev = 10;
-            _context.t0 = _context["catch"](1);
-            res.locals.error = _context.t0;
-            console.log(_context.t0);
-
-          case 14:
+          case 6:
+            res.locals.result = _context.sent;
             next();
 
-          case 15:
+          case 8:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[1, 10]]);
+    }, _callee);
   }));
 
   return function banServer(_x, _x2, _x3) {
@@ -103,19 +92,20 @@ var fetchServers = /*#__PURE__*/function () {
               offset: req.body.offset,
               where: userOptions
             };
-            _context2.next = 7;
+            res.locals.name = 'server';
+            _context2.next = 8;
             return _models["default"].group.count(options);
 
-          case 7:
+          case 8:
             res.locals.count = _context2.sent;
-            _context2.next = 10;
+            _context2.next = 11;
             return _models["default"].group.findAll(options);
 
-          case 10:
-            res.locals.servers = _context2.sent;
+          case 11:
+            res.locals.result = _context2.sent;
             next();
 
-          case 12:
+          case 13:
           case "end":
             return _context2.stop();
         }

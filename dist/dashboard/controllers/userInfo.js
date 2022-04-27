@@ -33,8 +33,8 @@ var fetchUserInfo = /*#__PURE__*/function () {
             });
 
           case 2:
-            res.locals.user = _context.sent;
-            console.log(res.locals.user);
+            res.locals.result = _context.sent;
+            res.locals.name = 'user';
             next();
 
           case 5:

@@ -20,24 +20,24 @@ var banChannel = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.prev = 0;
-            _context.next = 3;
+            _context.next = 2;
             return _models["default"].channel.findOne({
               where: {
                 id: req.body.id
               }
             });
 
-          case 3:
+          case 2:
             channel = _context.sent;
-            _context.next = 6;
+            _context.next = 5;
             return channel.update({
               banned: !channel.banned,
               banMessage: req.body.banMessage
             });
 
-          case 6:
+          case 5:
             updatedChannel = _context.sent;
+            res.locals.name = 'banChannel';
             _context.next = 9;
             return _models["default"].channel.findOne({
               where: {
@@ -50,26 +50,15 @@ var banChannel = /*#__PURE__*/function () {
             });
 
           case 9:
-            res.locals.channel = _context.sent;
-            _context.next = 16;
-            break;
-
-          case 12:
-            _context.prev = 12;
-            _context.t0 = _context["catch"](0);
-            res.locals.error = _context.t0;
-            console.log(_context.t0);
-
-          case 16:
-            // console.log(res.locals.channel);
+            res.locals.result = _context.sent;
             next();
 
-          case 17:
+          case 11:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 12]]);
+    }, _callee);
   }));
 
   return function banChannel(_x, _x2, _x3) {
@@ -114,19 +103,20 @@ var fetchChannels = /*#__PURE__*/function () {
                 as: 'group'
               }]
             };
-            _context2.next = 8;
+            res.locals.name = 'channel';
+            _context2.next = 9;
             return _models["default"].channel.count(options);
 
-          case 8:
+          case 9:
             res.locals.count = _context2.sent;
-            _context2.next = 11;
+            _context2.next = 12;
             return _models["default"].channel.findAll(options);
 
-          case 11:
-            res.locals.channels = _context2.sent;
+          case 12:
+            res.locals.result = _context2.sent;
             next();
 
-          case 13:
+          case 14:
           case "end":
             return _context2.stop();
         }

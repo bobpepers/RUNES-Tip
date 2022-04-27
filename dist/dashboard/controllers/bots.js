@@ -30,22 +30,26 @@ var updateBotSettings = /*#__PURE__*/function () {
           case 2:
             settings = _context.sent;
 
-            if (!settings) {
-              res.locals.error = "Settings doesn't Exists";
-              next();
+            if (settings) {
+              _context.next = 5;
+              break;
             }
 
-            _context.next = 6;
+            throw new Error("Settings doesn't Exists");
+
+          case 5:
+            res.locals.name = "updateBotSettings";
+            _context.next = 8;
             return settings.update({
               enabled: req.body.enabled,
               maintenance: req.body.maintenance
             });
 
-          case 6:
-            res.locals.settings = _context.sent;
+          case 8:
+            res.locals.result = _context.sent;
             next();
 
-          case 8:
+          case 10:
           case "end":
             return _context.stop();
         }
@@ -66,14 +70,20 @@ var fetchBotSettings = /*#__PURE__*/function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.next = 2;
+            res.locals.name = 'botSettings';
+            _context2.next = 3;
+            return _models["default"].bots.count();
+
+          case 3:
+            res.locals.count = _context2.sent;
+            _context2.next = 6;
             return _models["default"].bots.findAll();
 
-          case 2:
-            res.locals.settings = _context2.sent;
+          case 6:
+            res.locals.result = _context2.sent;
             next();
 
-          case 4:
+          case 8:
           case "end":
             return _context2.stop();
         }

@@ -376,8 +376,8 @@ var reviewMessage = /*#__PURE__*/function () {
 
 exports.reviewMessage = reviewMessage;
 
-var telegramWithdrawalRejectedMessage = function telegramWithdrawalRejectedMessage() {
-  var result = "Withdrawal has been rejected";
+var telegramWithdrawalRejectedMessage = function telegramWithdrawalRejectedMessage(updatedTransaction) {
+  var result = "<u><b>Withdrawal #".concat(updatedTransaction.id, "</b></u>\n\nWithdrawal has been rejected\n\n<pre>").concat(settings.bot.name, " v").concat(_package["default"].version, "</pre>");
   return result;
 };
 

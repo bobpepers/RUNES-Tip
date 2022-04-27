@@ -24,7 +24,7 @@ var fetchBalance = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.prev = 0;
+            res.locals.name = 'balance';
 
             if (!(settings.coin.setting === 'Runebase')) {
               _context.next = 8;
@@ -36,7 +36,9 @@ var fetchBalance = /*#__PURE__*/function () {
 
           case 4:
             response = _context.sent;
-            res.locals.balance = response.balance;
+            res.locals.result = {
+              amount: response.balance
+            };
             _context.next = 19;
             break;
 
@@ -51,10 +53,12 @@ var fetchBalance = /*#__PURE__*/function () {
 
           case 11:
             response = _context.sent;
-            res.locals.balance = response.reduce(function (n, _ref2) {
-              var balance = _ref2.balance;
-              return n + balance;
-            }, 0);
+            res.locals.result = {
+              amount: response.reduce(function (n, _ref2) {
+                var balance = _ref2.balance;
+                return n + balance;
+              }, 0)
+            };
             _context.next = 19;
             break;
 
@@ -64,26 +68,19 @@ var fetchBalance = /*#__PURE__*/function () {
 
           case 17:
             response = _context.sent;
-            res.locals.balance = response.balance;
+            res.locals.result = {
+              amount: response.balance
+            };
 
           case 19:
             next();
-            _context.next = 27;
-            break;
 
-          case 22:
-            _context.prev = 22;
-            _context.t0 = _context["catch"](0);
-            console.log(_context.t0);
-            res.locals.error = _context.t0;
-            next();
-
-          case 27:
+          case 20:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 22]]);
+    }, _callee);
   }));
 
   return function fetchBalance(_x, _x2, _x3) {

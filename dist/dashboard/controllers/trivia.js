@@ -5,7 +5,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.switchTriviaQuestion = exports.removeTriviaQuestion = exports.insertTrivia = exports.fetchTriviaQuestions = void 0;
+exports.switchTriviaQuestion = exports.removeTriviaQuestion = exports.insertTrivia = exports.fetchTrivias = exports.fetchTriviaQuestions = exports.fetchTrivia = void 0;
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 
@@ -28,43 +28,36 @@ var removeTriviaQuestion = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.prev = 0;
-            _context.next = 3;
+            _context.next = 2;
             return _models["default"].triviaanswer.destroy({
               where: {
                 triviaquestionId: req.body.id
               }
             });
 
-          case 3:
+          case 2:
             removeAnswers = _context.sent;
-            _context.next = 6;
+            _context.next = 5;
             return _models["default"].triviaquestion.destroy({
               where: {
                 id: req.body.id
               }
             });
 
-          case 6:
-            res.locals.trivia = _context.sent;
-            console.log(res.locals.trivia);
-            next();
-            _context.next = 16;
-            break;
-
-          case 11:
-            _context.prev = 11;
-            _context.t0 = _context["catch"](0);
-            console.log(_context.t0);
-            res.locals.error = _context.t0;
+          case 5:
+            res.locals.removeQuestion = _context.sent;
+            res.locals.name = 'removeTriviaQuestion';
+            res.locals.result = {
+              id: req.body.id
+            };
             next();
 
-          case 16:
+          case 9:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 11]]);
+    }, _callee);
   }));
 
   return function removeTriviaQuestion(_x, _x2, _x3) {
@@ -81,22 +74,22 @@ var switchTriviaQuestion = /*#__PURE__*/function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.prev = 0;
-            _context2.next = 3;
+            _context2.next = 2;
             return _models["default"].triviaquestion.findOne({
               where: {
                 id: req.body.id
               }
             });
 
-          case 3:
+          case 2:
             findTriviaQuestion = _context2.sent;
-            _context2.next = 6;
+            _context2.next = 5;
             return findTriviaQuestion.update({
               enabled: !findTriviaQuestion.enabled
             });
 
-          case 6:
+          case 5:
+            res.locals.name = 'switchTriviaQuestion';
             _context2.next = 8;
             return _models["default"].triviaquestion.findOne({
               where: {
@@ -113,25 +106,15 @@ var switchTriviaQuestion = /*#__PURE__*/function () {
             });
 
           case 8:
-            res.locals.trivia = _context2.sent;
-            console.log(res.locals.trivia);
-            next();
-            _context2.next = 18;
-            break;
-
-          case 13:
-            _context2.prev = 13;
-            _context2.t0 = _context2["catch"](0);
-            console.log(_context2.t0);
-            res.locals.error = _context2.t0;
+            res.locals.result = _context2.sent;
             next();
 
-          case 18:
+          case 10:
           case "end":
             return _context2.stop();
         }
       }
-    }, _callee2, null, [[0, 13]]);
+    }, _callee2);
   }));
 
   return function switchTriviaQuestion(_x4, _x5, _x6) {
@@ -147,7 +130,7 @@ var fetchTriviaQuestions = /*#__PURE__*/function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            _context3.prev = 0;
+            res.locals.name = 'fetchTriviaQuestions';
             _context3.next = 3;
             return _models["default"].triviaquestion.findAll({
               order: [['id', 'DESC']],
@@ -162,25 +145,20 @@ var fetchTriviaQuestions = /*#__PURE__*/function () {
             });
 
           case 3:
-            res.locals.trivia = _context3.sent;
-            console.log(res.locals.trivia);
+            res.locals.result = _context3.sent;
+            _context3.next = 6;
+            return _models["default"].triviaquestion.count();
+
+          case 6:
+            res.locals.count = _context3.sent;
             next();
-            _context3.next = 13;
-            break;
 
           case 8:
-            _context3.prev = 8;
-            _context3.t0 = _context3["catch"](0);
-            console.log(_context3.t0);
-            res.locals.error = _context3.t0;
-            next();
-
-          case 13:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[0, 8]]);
+    }, _callee3);
   }));
 
   return function fetchTriviaQuestions(_x7, _x8, _x9) {
@@ -199,101 +177,93 @@ var insertTrivia = /*#__PURE__*/function () {
         switch (_context4.prev = _context4.next) {
           case 0:
             if (!(req.body.question.question === '')) {
+              _context4.next = 2;
+              break;
+            }
+
+            throw new Error("question cannot be empty");
+
+          case 2:
+            if (!(req.body.question.answers.length < 2)) {
               _context4.next = 4;
               break;
             }
 
-            console.log('question cannot be empty');
-            res.locals.error = 'question cannot be empty';
-            return _context4.abrupt("return", next());
+            throw new Error("must have more then 2 answers");
 
           case 4:
-            if (!(req.body.question.answers.length < 2)) {
+            if (!(req.body.question.answers.length > 5)) {
+              _context4.next = 6;
+              break;
+            }
+
+            throw new Error("maximum is 5 answers");
+
+          case 6:
+            if (_lodash["default"].find(req.body.question.answers, {
+              correct: 'true'
+            })) {
               _context4.next = 8;
               break;
             }
 
-            console.log('must have more then 2 answers');
-            res.locals.error = 'must have more then 2 answers';
-            return _context4.abrupt("return", next());
+            throw new Error("must have a correct answer");
 
           case 8:
-            if (!(req.body.question.answers.length > 5)) {
-              _context4.next = 12;
-              break;
-            }
-
-            console.log('maximum is 5 answers');
-            res.locals.error = 'maximum is 5 answers';
-            return _context4.abrupt("return", next());
-
-          case 12:
-            if (_lodash["default"].find(req.body.question.answers, {
-              correct: 'true'
-            })) {
-              _context4.next = 16;
-              break;
-            }
-
-            console.log('must have a correct answer');
-            res.locals.error = 'must have a correct answer';
-            return _context4.abrupt("return", next());
-
-          case 16:
-            _context4.prev = 16;
-            _context4.next = 19;
+            _context4.next = 10;
             return _models["default"].triviaquestion.create({
               question: req.body.question.question
             });
 
-          case 19:
+          case 10:
             question = _context4.sent;
             _iterator = _createForOfIteratorHelper(req.body.question.answers);
-            _context4.prev = 21;
+            _context4.prev = 12;
 
             _iterator.s();
 
-          case 23:
+          case 14:
             if ((_step = _iterator.n()).done) {
-              _context4.next = 31;
+              _context4.next = 22;
               break;
             }
 
             answer = _step.value;
             console.log(answer);
-            _context4.next = 28;
+            _context4.next = 19;
             return _models["default"].triviaanswer.create({
               triviaquestionId: question.id,
               correct: answer.correct === 'true',
               answer: answer.answer
             });
 
-          case 28:
+          case 19:
             newAnswer = _context4.sent;
 
-          case 29:
-            _context4.next = 23;
+          case 20:
+            _context4.next = 14;
             break;
 
-          case 31:
-            _context4.next = 36;
+          case 22:
+            _context4.next = 27;
             break;
 
-          case 33:
-            _context4.prev = 33;
-            _context4.t0 = _context4["catch"](21);
+          case 24:
+            _context4.prev = 24;
+            _context4.t0 = _context4["catch"](12);
 
             _iterator.e(_context4.t0);
 
-          case 36:
-            _context4.prev = 36;
+          case 27:
+            _context4.prev = 27;
 
             _iterator.f();
 
-            return _context4.finish(36);
+            return _context4.finish(27);
 
-          case 39:
-            _context4.next = 41;
+          case 30:
+            res.locals.name = 'insertTrivia';
+            _context4.next = 33;
             return _models["default"].triviaquestion.findOne({
               where: {
                 id: question.id
@@ -308,26 +278,17 @@ var insertTrivia = /*#__PURE__*/function () {
               }]
             });
 
-          case 41:
-            res.locals.trivia = _context4.sent;
-            console.log(res.locals.trivia);
-            next();
-            _context4.next = 51;
-            break;
-
-          case 46:
-            _context4.prev = 46;
-            _context4.t1 = _context4["catch"](16);
-            console.log(_context4.t1);
-            res.locals.error = _context4.t1;
+          case 33:
+            res.locals.result = _context4.sent;
+            console.log(res.locals.result);
             next();
 
-          case 51:
+          case 36:
           case "end":
             return _context4.stop();
         }
       }
-    }, _callee4, null, [[16, 46], [21, 33, 36, 39]]);
+    }, _callee4, null, [[12, 24, 27, 30]]);
   }));
 
   return function insertTrivia(_x10, _x11, _x12) {
@@ -336,3 +297,120 @@ var insertTrivia = /*#__PURE__*/function () {
 }();
 
 exports.insertTrivia = insertTrivia;
+
+var fetchTrivias = /*#__PURE__*/function () {
+  var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(req, res, next) {
+    var options;
+    return _regenerator["default"].wrap(function _callee5$(_context5) {
+      while (1) {
+        switch (_context5.prev = _context5.next) {
+          case 0:
+            options = {
+              order: [['id', 'DESC']],
+              limit: req.body.limit,
+              offset: req.body.offset,
+              include: [{
+                model: _models["default"].user,
+                as: 'user',
+                attributes: ['id', 'username', 'user_id']
+              }, {
+                model: _models["default"].group,
+                as: 'group',
+                attributes: ['id', 'groupName', 'groupId']
+              }]
+            };
+            res.locals.name = 'trivia';
+            _context5.next = 4;
+            return _models["default"].trivia.count(options);
+
+          case 4:
+            res.locals.count = _context5.sent;
+            _context5.next = 7;
+            return _models["default"].trivia.findAll(options);
+
+          case 7:
+            res.locals.result = _context5.sent;
+            next();
+
+          case 9:
+          case "end":
+            return _context5.stop();
+        }
+      }
+    }, _callee5);
+  }));
+
+  return function fetchTrivias(_x13, _x14, _x15) {
+    return _ref5.apply(this, arguments);
+  };
+}();
+
+exports.fetchTrivias = fetchTrivias;
+
+var fetchTrivia = /*#__PURE__*/function () {
+  var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(req, res, next) {
+    var options;
+    return _regenerator["default"].wrap(function _callee6$(_context6) {
+      while (1) {
+        switch (_context6.prev = _context6.next) {
+          case 0:
+            options = {
+              where: {
+                id: req.body.id
+              },
+              include: [{
+                model: _models["default"].group,
+                as: 'group',
+                required: false
+              }, {
+                model: _models["default"].channel,
+                as: 'channel',
+                required: false
+              }, {
+                model: _models["default"].user,
+                as: 'user'
+              }, {
+                model: _models["default"].triviaquestion,
+                as: 'triviaquestion',
+                include: [{
+                  model: _models["default"].triviaanswer,
+                  as: 'triviaanswers'
+                }]
+              }, {
+                model: _models["default"].triviatip,
+                as: 'triviatips',
+                include: [{
+                  model: _models["default"].triviaanswer,
+                  as: 'triviaanswer'
+                }, {
+                  model: _models["default"].user,
+                  as: 'user',
+                  include: [{
+                    model: _models["default"].wallet,
+                    as: 'wallet'
+                  }]
+                }]
+              }]
+            };
+            res.locals.name = 'trivia';
+            _context6.next = 4;
+            return _models["default"].trivia.findOne(options);
+
+          case 4:
+            res.locals.result = _context6.sent;
+            next();
+
+          case 6:
+          case "end":
+            return _context6.stop();
+        }
+      }
+    }, _callee6);
+  }));
+
+  return function fetchTrivia(_x16, _x17, _x18) {
+    return _ref6.apply(this, arguments);
+  };
+}();
+
+exports.fetchTrivia = fetchTrivia;

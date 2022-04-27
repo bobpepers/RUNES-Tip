@@ -27,26 +27,21 @@ var startSyncBlocks = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            try {
-              if (settings.coin.setting === 'Runebase') {
-                (0, _syncRunebase.startRunebaseSync)();
-              } else if (settings.coin.setting === 'Pirate') {
-                (0, _syncPirate.startPirateSync)();
-              } else if (settings.coin.setting === 'Dust') {
-                (0, _syncKomodo.startKomodoSync)();
-              } else {
-                (0, _syncRunebase.startRunebaseSync)();
-              }
-
-              res.locals.sync = 'TRUE';
-              next();
-            } catch (error) {
-              console.log(error);
-              res.locals.error = error;
-              next();
+            if (settings.coin.setting === 'Runebase') {
+              (0, _syncRunebase.startRunebaseSync)();
+            } else if (settings.coin.setting === 'Pirate') {
+              (0, _syncPirate.startPirateSync)();
+            } else if (settings.coin.setting === 'Dust') {
+              (0, _syncKomodo.startKomodoSync)();
+            } else {
+              (0, _syncRunebase.startRunebaseSync)();
             }
 
-          case 1:
+            res.locals.name = 'sync';
+            res.locals.result = 'TRUE';
+            next();
+
+          case 4:
           case "end":
             return _context.stop();
         }

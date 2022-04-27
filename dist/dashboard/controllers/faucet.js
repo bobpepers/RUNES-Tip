@@ -20,30 +20,23 @@ var fetchFaucetBalance = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.prev = 0;
-            _context.next = 3;
+            _context.next = 2;
             return _models["default"].faucet.findOne();
 
-          case 3:
+          case 2:
             faucet = _context.sent;
-            res.locals.balance = faucet.amount;
-            next();
-            _context.next = 13;
-            break;
-
-          case 8:
-            _context.prev = 8;
-            _context.t0 = _context["catch"](0);
-            console.log(_context.t0);
-            res.locals.error = _context.t0;
+            res.locals.name = 'faucet';
+            res.locals.result = {
+              amount: faucet.amount
+            };
             next();
 
-          case 13:
+          case 6:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 8]]);
+    }, _callee);
   }));
 
   return function fetchFaucetBalance(_x, _x2, _x3) {

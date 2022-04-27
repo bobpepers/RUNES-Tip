@@ -57,14 +57,18 @@ var fetchDashboardUsers = /*#__PURE__*/function () {
               where: userOptions
             };
             _context.next = 9;
-            return _models["default"].dashboardUser.findAll(options);
+            return _models["default"].dashboardUser.count(options);
 
           case 9:
-            res.locals.dashboardusers = _context.sent;
-            console.log(res.locals.dashboardusers);
-            next();
+            res.locals.count = _context.sent;
+            _context.next = 12;
+            return _models["default"].dashboardUser.findAll(options);
 
           case 12:
+            res.locals.result = _context.sent;
+            next();
+
+          case 14:
           case "end":
             return _context.stop();
         }

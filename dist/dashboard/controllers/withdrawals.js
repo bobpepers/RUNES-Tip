@@ -25,9 +25,9 @@ var _telegram = require("../../messages/telegram");
 
 var _processWithdrawal = require("../../services/processWithdrawal");
 
-// import { parseDomain } from "parse-domain";
 var acceptWithdrawal = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(req, res, next) {
+    var updatedTrans, newTransaction;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
         switch (_context3.prev = _context3.next) {
@@ -37,7 +37,7 @@ var acceptWithdrawal = /*#__PURE__*/function () {
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(t) {
-                var updatedTrans, transaction, settings, _yield$processWithdra, _yield$processWithdra2, response, responseStatus, activityF, activity;
+                var transaction, settings, _yield$processWithdra, _yield$processWithdra2, response, responseStatus, activityF, activity;
 
                 return _regenerator["default"].wrap(function _callee2$(_context2) {
                   while (1) {
@@ -68,12 +68,15 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                       case 2:
                         transaction = _context2.sent;
 
-                        if (!transaction) {
-                          res.locals.error = "Transaction not found";
-                          next();
+                        if (transaction) {
+                          _context2.next = 5;
+                          break;
                         }
 
-                        _context2.next = 6;
+                        throw new Error("transaction not found");
+
+                      case 5:
+                        _context2.next = 7;
                         return _models["default"].features.findOne({
                           where: {
                             type: 'global',
@@ -81,34 +84,37 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                           }
                         });
 
-                      case 6:
+                      case 7:
                         settings = _context2.sent;
 
-                        if (!settings) {
-                          res.locals.error = "settings not found";
-                          next();
-                        }
-
-                        if (!transaction) {
-                          _context2.next = 30;
+                        if (settings) {
+                          _context2.next = 10;
                           break;
                         }
 
-                        _context2.next = 11;
+                        throw new Error("settings not found");
+
+                      case 10:
+                        if (!transaction) {
+                          _context2.next = 32;
+                          break;
+                        }
+
+                        _context2.next = 13;
                         return (0, _processWithdrawal.processWithdrawal)(transaction);
 
-                      case 11:
+                      case 13:
                         _yield$processWithdra = _context2.sent;
                         _yield$processWithdra2 = (0, _slicedToArray2["default"])(_yield$processWithdra, 2);
                         response = _yield$processWithdra2[0];
                         responseStatus = _yield$processWithdra2[1];
 
                         if (!(responseStatus === 500)) {
-                          _context2.next = 23;
+                          _context2.next = 25;
                           break;
                         }
 
-                        _context2.next = 18;
+                        _context2.next = 20;
                         return transaction.update({
                           // txid: response,
                           phase: 'failed',
@@ -118,9 +124,9 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 18:
+                      case 20:
                         updatedTrans = _context2.sent;
-                        _context2.next = 21;
+                        _context2.next = 23;
                         return _models["default"].activity.create({
                           spenderId: transaction.address.wallet.userId,
                           type: 'withdraw_f',
@@ -130,17 +136,17 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 21:
+                      case 23:
                         activityF = _context2.sent;
                         return _context2.abrupt("return");
 
-                      case 23:
+                      case 25:
                         if (!response) {
-                          _context2.next = 30;
+                          _context2.next = 32;
                           break;
                         }
 
-                        _context2.next = 26;
+                        _context2.next = 28;
                         return transaction.update({
                           txid: response,
                           phase: 'confirming',
@@ -150,9 +156,9 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 26:
+                      case 28:
                         res.locals.withdrawal = _context2.sent;
-                        _context2.next = 29;
+                        _context2.next = 31;
                         return _models["default"].activity.create({
                           spenderId: transaction.address.wallet.userId,
                           type: 'withdrawAccepted',
@@ -162,18 +168,18 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 29:
+                      case 31:
                         activity = _context2.sent;
 
-                      case 30:
+                      case 32:
                         t.afterCommit( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee() {
-                          var userDiscordId, myClient, userTelegramId;
+                          var userDiscordId, myClient, userTelegramId, userMatrixId;
                           return _regenerator["default"].wrap(function _callee$(_context) {
                             while (1) {
                               switch (_context.prev = _context.next) {
                                 case 0:
                                   if (!transaction) {
-                                    _context.next = 9;
+                                    _context.next = 19;
                                     break;
                                   }
 
@@ -194,16 +200,32 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                                   });
 
                                 case 8:
-                                  if (transaction.address.wallet.user.user_id.startsWith('telegram-')) {
-                                    userTelegramId = transaction.address.wallet.user.user_id.replace('telegram-', '');
-                                    res.locals.telegramClient.telegram.sendMessage(userTelegramId, (0, _telegram.withdrawalAcceptedMessage)(transaction, res.locals.withdrawal)); // bot.telegram.sendMessage(runesGroup, withdrawalAcceptedMessage(transaction, updatedTrans));
-                                  } // res.locals.telegramClient.telegram.sendMessage(adminTelegramId, withdrawalAcceptedAdminMessage(updatedTrans));
+                                  if (!transaction.address.wallet.user.user_id.startsWith('telegram-')) {
+                                    _context.next = 18;
+                                    break;
+                                  }
 
+                                  userTelegramId = transaction.address.wallet.user.user_id.replace('telegram-', '');
+                                  _context.t0 = res.locals.telegramClient.telegram;
+                                  _context.t1 = userTelegramId;
+                                  _context.next = 14;
+                                  return (0, _telegram.withdrawalAcceptedMessage)(transaction, res.locals.withdrawal);
 
-                                case 9:
-                                  next();
+                                case 14:
+                                  _context.t2 = _context.sent;
+                                  _context.t3 = {
+                                    parse_mode: 'HTML'
+                                  };
+                                  _context.next = 18;
+                                  return _context.t0.sendMessage.call(_context.t0, _context.t1, _context.t2, _context.t3);
 
-                                case 10:
+                                case 18:
+                                  if (transaction.address.wallet.user.user_id.startsWith('matrix-')) {
+                                    userMatrixId = transaction.address.wallet.user.user_id.replace('matrix-', ''); // TODO: SEND A WITHDRAWAL DECLINED MESSAGE TO USER ON MATRIX
+                                    // res.locals.matrixClient has matrixclient attached
+                                  }
+
+                                case 19:
                                 case "end":
                                   return _context.stop();
                               }
@@ -211,7 +233,7 @@ var acceptWithdrawal = /*#__PURE__*/function () {
                           }, _callee);
                         })));
 
-                      case 31:
+                      case 33:
                       case "end":
                         return _context2.stop();
                     }
@@ -222,15 +244,46 @@ var acceptWithdrawal = /*#__PURE__*/function () {
               return function (_x4) {
                 return _ref2.apply(this, arguments);
               };
-            }())["catch"](function (err) {// res.locals.telegramClient.telegram.sendMessage(adminTelegramId, `Something went wrong`);
+            }())["catch"](function (err) {
+              console.log(err);
+              return next("Something went wrong");
             });
 
           case 2:
+            _context3.prev = 2;
+            _context3.next = 5;
+            return _models["default"].transaction.findOne({
+              where: {
+                id: req.body.id,
+                phase: 'confirming'
+              },
+              include: [{
+                model: _models["default"].user,
+                as: 'user'
+              }, {
+                model: _models["default"].address,
+                as: 'address'
+              }]
+            });
+
+          case 5:
+            newTransaction = _context3.sent;
+            res.locals.result = newTransaction;
+            next();
+            _context3.next = 13;
+            break;
+
+          case 10:
+            _context3.prev = 10;
+            _context3.t0 = _context3["catch"](2);
+            console.log(_context3.t0);
+
+          case 13:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3);
+    }, _callee3, null, [[2, 10]]);
   }));
 
   return function acceptWithdrawal(_x, _x2, _x3) {
@@ -241,23 +294,23 @@ var acceptWithdrawal = /*#__PURE__*/function () {
 exports.acceptWithdrawal = acceptWithdrawal;
 
 var declineWithdrawal = /*#__PURE__*/function () {
-  var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(req, res, next) {
-    var newTransaction;
-    return _regenerator["default"].wrap(function _callee5$(_context5) {
+  var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(req, res, next) {
+    var updatedTransaction, newTransaction;
+    return _regenerator["default"].wrap(function _callee6$(_context6) {
       while (1) {
-        switch (_context5.prev = _context5.next) {
+        switch (_context6.prev = _context6.next) {
           case 0:
-            _context5.next = 2;
+            _context6.next = 2;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
-              var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(t) {
-                var transaction, wallet, updatedWallet, updatedTransaction, activity, userDiscordId, myClient, userTelegramId;
-                return _regenerator["default"].wrap(function _callee4$(_context4) {
+              var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(t) {
+                var transaction, wallet, updatedWallet, activity;
+                return _regenerator["default"].wrap(function _callee5$(_context5) {
                   while (1) {
-                    switch (_context4.prev = _context4.next) {
+                    switch (_context5.prev = _context5.next) {
                       case 0:
-                        _context4.next = 2;
+                        _context5.next = 2;
                         return _models["default"].transaction.findOne({
                           where: {
                             id: req.body.id,
@@ -280,20 +333,22 @@ var declineWithdrawal = /*#__PURE__*/function () {
                         });
 
                       case 2:
-                        transaction = _context4.sent;
+                        transaction = _context5.sent;
 
-                        if (!transaction) {
-                          res.locals.error = "transaction not found";
-                        }
-
-                        console.log("123");
-
-                        if (!transaction) {
-                          _context4.next = 29;
+                        if (transaction) {
+                          _context5.next = 5;
                           break;
                         }
 
-                        _context4.next = 8;
+                        throw new Error("transaction not found");
+
+                      case 5:
+                        if (!transaction) {
+                          _context5.next = 21;
+                          break;
+                        }
+
+                        _context5.next = 8;
                         return _models["default"].wallet.findOne({
                           where: {
                             userId: transaction.address.wallet.userId
@@ -303,18 +358,22 @@ var declineWithdrawal = /*#__PURE__*/function () {
                         });
 
                       case 8:
-                        wallet = _context4.sent;
+                        wallet = _context5.sent;
 
-                        if (!wallet) {
-                          res.locals.error = "Wallet not found";
-                        }
-
-                        if (!wallet) {
-                          _context4.next = 29;
+                        if (wallet) {
+                          _context5.next = 11;
                           break;
                         }
 
-                        _context4.next = 13;
+                        throw new Error("Wallet not found");
+
+                      case 11:
+                        if (!wallet) {
+                          _context5.next = 21;
+                          break;
+                        }
+
+                        _context5.next = 14;
                         return wallet.update({
                           available: wallet.available + transaction.amount,
                           locked: wallet.locked - transaction.amount
@@ -323,9 +382,9 @@ var declineWithdrawal = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 13:
-                        updatedWallet = _context4.sent;
-                        _context4.next = 16;
+                      case 14:
+                        updatedWallet = _context5.sent;
+                        _context5.next = 17;
                         return transaction.update({
                           phase: 'rejected'
                         }, {
@@ -333,10 +392,9 @@ var declineWithdrawal = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 16:
-                        updatedTransaction = _context4.sent;
-                        console.log('beforeActivity');
-                        _context4.next = 20;
+                      case 17:
+                        updatedTransaction = _context5.sent;
+                        _context5.next = 20;
                         return _models["default"].activity.create({
                           spenderId: transaction.address.wallet.userId,
                           type: 'withdrawRejected',
@@ -347,43 +405,81 @@ var declineWithdrawal = /*#__PURE__*/function () {
                         });
 
                       case 20:
-                        activity = _context4.sent;
+                        activity = _context5.sent;
 
-                        if (!transaction.address.wallet.user.user_id.startsWith('discord-')) {
-                          _context4.next = 28;
-                          break;
-                        }
+                      case 21:
+                        t.afterCommit( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4() {
+                          var userDiscordId, myClient, userTelegramId, userMatrixId;
+                          return _regenerator["default"].wrap(function _callee4$(_context4) {
+                            while (1) {
+                              switch (_context4.prev = _context4.next) {
+                                case 0:
+                                  _context4.prev = 0;
 
-                        // await myClient.send({ embeds: [discordUserWithdrawalRejectMessage()] });
-                        userDiscordId = transaction.address.wallet.user.user_id.replace('discord-', '');
-                        _context4.next = 25;
-                        return res.locals.discordClient.users.fetch(userDiscordId, false);
+                                  if (!transaction.address.wallet.user.user_id.startsWith('discord-')) {
+                                    _context4.next = 8;
+                                    break;
+                                  }
 
-                      case 25:
-                        myClient = _context4.sent;
-                        _context4.next = 28;
-                        return myClient.send({
-                          embeds: [(0, _discord.discordWithdrawalRejectedMessage)(updatedTransaction)]
-                        });
+                                  userDiscordId = transaction.address.wallet.user.user_id.replace('discord-', '');
+                                  _context4.next = 5;
+                                  return res.locals.discordClient.users.fetch(userDiscordId, false);
 
-                      case 28:
-                        if (transaction.address.wallet.user.user_id.startsWith('telegram-')) {
-                          userTelegramId = transaction.address.wallet.user.user_id.replace('telegram-', '');
-                          res.locals.telegramClient.telegram.sendMessage(userTelegramId, (0, _telegram.telegramWithdrawalRejectedMessage)(updatedTransaction)); // bot.telegram.sendMessage(runesGroup, `${transaction.address.wallet.user.username}'s withdrawal has been rejected`);
-                        } // bot.telegram.sendMessage(adminTelegramId, `Withdrawal Rejected`);
+                                case 5:
+                                  myClient = _context4.sent;
+                                  _context4.next = 8;
+                                  return myClient.send({
+                                    embeds: [(0, _discord.discordWithdrawalRejectedMessage)(updatedTransaction)]
+                                  });
 
+                                case 8:
+                                  if (!transaction.address.wallet.user.user_id.startsWith('telegram-')) {
+                                    _context4.next = 18;
+                                    break;
+                                  }
 
-                      case 29:
-                        t.afterCommit(function () {
-                          console.log("done");
-                        });
+                                  userTelegramId = transaction.address.wallet.user.user_id.replace('telegram-', '');
+                                  _context4.t0 = res.locals.telegramClient.telegram;
+                                  _context4.t1 = userTelegramId;
+                                  _context4.next = 14;
+                                  return (0, _telegram.telegramWithdrawalRejectedMessage)(updatedTransaction);
 
-                      case 30:
+                                case 14:
+                                  _context4.t2 = _context4.sent;
+                                  _context4.t3 = {
+                                    parse_mode: 'HTML'
+                                  };
+                                  _context4.next = 18;
+                                  return _context4.t0.sendMessage.call(_context4.t0, _context4.t1, _context4.t2, _context4.t3);
+
+                                case 18:
+                                  if (transaction.address.wallet.user.user_id.startsWith('matrix-')) {
+                                    userMatrixId = transaction.address.wallet.user.user_id.replace('matrix-', ''); // TODO: SEND A WITHDRAWAL DECLINED MESSAGE TO USER ON MATRIX
+                                    // res.locals.matrixClient has matrixclient attached
+                                  }
+
+                                  _context4.next = 24;
+                                  break;
+
+                                case 21:
+                                  _context4.prev = 21;
+                                  _context4.t4 = _context4["catch"](0);
+                                  console.log(_context4.t4);
+
+                                case 24:
+                                case "end":
+                                  return _context4.stop();
+                              }
+                            }
+                          }, _callee4, null, [[0, 21]]);
+                        })));
+
+                      case 22:
                       case "end":
-                        return _context4.stop();
+                        return _context5.stop();
                     }
                   }
-                }, _callee4);
+                }, _callee5);
               }));
 
               return function (_x8) {
@@ -391,42 +487,44 @@ var declineWithdrawal = /*#__PURE__*/function () {
               };
             }())["catch"](function (err) {
               console.log(err);
-              res.locals.error = "Something went wrong";
-              next();
+              return next("Something went wrong");
             });
 
           case 2:
-            _context5.next = 4;
+            _context6.prev = 2;
+            _context6.next = 5;
             return _models["default"].transaction.findOne({
               where: {
                 id: req.body.id,
                 phase: 'rejected'
               },
               include: [{
+                model: _models["default"].user,
+                as: 'user'
+              }, {
                 model: _models["default"].address,
-                as: 'address',
-                include: [{
-                  model: _models["default"].wallet,
-                  as: 'wallet',
-                  include: [{
-                    model: _models["default"].user,
-                    as: 'user'
-                  }]
-                }]
+                as: 'address'
               }]
             });
 
-          case 4:
-            newTransaction = _context5.sent;
-            res.locals.withdrawal = newTransaction;
+          case 5:
+            newTransaction = _context6.sent;
+            res.locals.result = newTransaction;
             next();
+            _context6.next = 13;
+            break;
 
-          case 7:
+          case 10:
+            _context6.prev = 10;
+            _context6.t0 = _context6["catch"](2);
+            console.log(_context6.t0);
+
+          case 13:
           case "end":
-            return _context5.stop();
+            return _context6.stop();
         }
       }
-    }, _callee5);
+    }, _callee6, null, [[2, 10]]);
   }));
 
   return function declineWithdrawal(_x5, _x6, _x7) {
@@ -437,11 +535,11 @@ var declineWithdrawal = /*#__PURE__*/function () {
 exports.declineWithdrawal = declineWithdrawal;
 
 var fetchWithdrawals = /*#__PURE__*/function () {
-  var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(req, res, next) {
+  var _ref7 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee7(req, res, next) {
     var transactionOptions, userOptions, options;
-    return _regenerator["default"].wrap(function _callee6$(_context6) {
+    return _regenerator["default"].wrap(function _callee7$(_context7) {
       while (1) {
-        switch (_context6.prev = _context6.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
             transactionOptions = {
               type: 'send'
@@ -489,28 +587,29 @@ var fetchWithdrawals = /*#__PURE__*/function () {
                 }]
               }]
             };
-            _context6.next = 11;
+            res.locals.name = 'withdrawal';
+            _context7.next = 12;
             return _models["default"].transaction.count(options);
 
-          case 11:
-            res.locals.count = _context6.sent;
-            _context6.next = 14;
+          case 12:
+            res.locals.count = _context7.sent;
+            _context7.next = 15;
             return _models["default"].transaction.findAll(options);
 
-          case 14:
-            res.locals.withdrawals = _context6.sent;
+          case 15:
+            res.locals.result = _context7.sent;
             next();
 
-          case 16:
+          case 17:
           case "end":
-            return _context6.stop();
+            return _context7.stop();
         }
       }
-    }, _callee6);
+    }, _callee7);
   }));
 
   return function fetchWithdrawals(_x9, _x10, _x11) {
-    return _ref6.apply(this, arguments);
+    return _ref7.apply(this, arguments);
   };
 }();
 
