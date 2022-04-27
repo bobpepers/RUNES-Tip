@@ -116,6 +116,11 @@ import {
   fetchRains,
 } from './controllers/rain';
 
+import {
+  fetchSoak,
+  fetchSoaks,
+} from './controllers/soak';
+
 // import storeIp from './helpers/storeIp';
 
 const requireSignin = passport.authenticate('local', {
@@ -136,6 +141,60 @@ const IsAuthenticated = (req, res, next) => {
 };
 
 const use = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
+
+const respondCountAndResult = (req, res) => {
+  if (
+    res.locals.count
+    && res.locals.result
+    && res.locals.result.length > 0
+  ) {
+    res.json({
+      count: res.locals.count,
+      result: res.locals.result,
+    });
+  } else if (
+    res.locals.result.length < 1
+  ) {
+    res.status(404).send({
+      error: `No ${res.locals.name} records found`,
+    });
+  } else {
+    res.status(401).send({
+      error: "ERROR",
+    });
+  }
+};
+
+const respondResult = (req, res) => {
+  console.log(res.locals.result);
+  console.log(res.locals.result.length);
+  if (
+    res.locals.result
+    && res.locals.result.length > 0
+  ) {
+    res.json({
+      result: res.locals.result,
+    });
+  } else if (
+    typeof res.locals.result === 'object'
+    && Object.keys(res.locals.result).length > 0
+    && res.locals.result !== null
+  ) {
+    res.json({
+      result: res.locals.result,
+    });
+  } else if (
+    res.locals.result.length < 1
+  ) {
+    res.status(404).send({
+      error: `No ${res.locals.name} records found`,
+    });
+  } else {
+    res.status(401).send({
+      error: "ERROR",
+    });
+  }
+};
 
 export const dashboardRouter = (
   app,
@@ -233,17 +292,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(banUser),
-    (req, res) => {
-      if (res.locals.user) {
-        res.json({
-          user: res.locals.user,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -254,17 +303,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(banChannel),
-    (req, res) => {
-      if (res.locals.channel) {
-        res.json({
-          channel: res.locals.channel,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -275,17 +314,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(banServer),
-    (req, res) => {
-      if (res.locals.server) {
-        res.json({
-          server: res.locals.server,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -296,18 +325,9 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchPriceCurrencies),
-    (req, res) => {
-      if (res.locals.currencies) {
-        res.json({
-          currencies: res.locals.currencies,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondCountAndResult,
   );
+
   app.post(
     '/api/pricecurrencies/remove',
     IsAuthenticated,
@@ -316,21 +336,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(removePriceCurrency),
-    (req, res) => {
-      if (res.locals.error) {
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      } else if (res.locals.currency) {
-        res.json({
-          currency: res.locals.currency,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -341,21 +347,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(updatePriceCurrency),
-    (req, res) => {
-      if (res.locals.error) {
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      } else if (res.locals.currency) {
-        res.json({
-          currency: res.locals.currency,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -366,21 +358,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(addPriceCurrency),
-    (req, res) => {
-      if (res.locals.error) {
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      } else if (res.locals.currency) {
-        res.json({
-          currency: res.locals.currency,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -391,21 +369,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(updatePriceCurrencyPrices),
-    (req, res) => {
-      if (res.locals.error) {
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      } else if (res.locals.currency) {
-        res.json({
-          currency: true,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -416,22 +380,9 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(removeFeature),
-    (req, res) => {
-      if (res.locals.error) {
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      } else if (res.locals.feature) {
-        res.json({
-          feature: res.locals.feature,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
+
   app.post(
     '/api/feature/update',
     IsAuthenticated,
@@ -440,21 +391,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(updateFeature),
-    (req, res) => {
-      if (res.locals.error) {
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      } else if (res.locals.feature) {
-        res.json({
-          feature: res.locals.feature,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -465,21 +402,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(addFeature),
-    (req, res) => {
-      if (res.locals.error) {
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      } else if (res.locals.feature) {
-        res.json({
-          feature: res.locals.feature,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -490,17 +413,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchFeatures),
-    (req, res) => {
-      if (res.locals.features) {
-        res.json({
-          features: res.locals.features,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondCountAndResult,
   );
 
   app.post(
@@ -511,17 +424,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(updateBotSettings),
-    (req, res) => {
-      if (res.locals.settings) {
-        res.json({
-          settings: res.locals.settings,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -532,17 +435,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchBotSettings),
-    (req, res) => {
-      if (res.locals.settings) {
-        res.json({
-          settings: res.locals.settings,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondCountAndResult,
   );
 
   app.post(
@@ -553,21 +446,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchChannels),
-    (req, res) => {
-      if (
-        res.locals.channels
-        && res.locals.count >= 0
-      ) {
-        res.json({
-          count: res.locals.count,
-          channels: res.locals.channels,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondCountAndResult,
   );
 
   app.get(
@@ -578,23 +457,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchTriviaQuestions),
-    (req, res) => {
-      if (res.locals.error) {
-        console.log('found error');
-        console.log(res.locals.error);
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      } else if (res.locals.trivia) {
-        res.json({
-          trivia: res.locals.trivia,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondCountAndResult,
   );
 
   app.post(
@@ -605,23 +468,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(switchTriviaQuestion),
-    (req, res) => {
-      if (res.locals.error) {
-        console.log('found error');
-        console.log(res.locals.error);
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      } else if (res.locals.trivia) {
-        res.json({
-          trivia: res.locals.trivia,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -632,23 +479,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(removeTriviaQuestion),
-    (req, res) => {
-      if (res.locals.error) {
-        console.log('found error');
-        console.log(res.locals.error);
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      } else if (res.locals.trivia) {
-        res.json({
-          trivia: res.locals.trivia,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -659,23 +490,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(insertTrivia),
-    (req, res) => {
-      if (res.locals.error) {
-        console.log('found error');
-        console.log(res.locals.error);
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      } else if (res.locals.trivia) {
-        res.json({
-          trivia: res.locals.trivia,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.get(
@@ -686,17 +501,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(startSyncBlocks),
-    (req, res) => {
-      if (res.locals.sync) {
-        res.json({
-          sync: res.locals.sync,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.get(
@@ -707,23 +512,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchBlockNumber),
-    (req, res) => {
-      console.log('after fetchblocknumber');
-      if (res.locals.blockNumberNode && res.locals.blockNumberDb) {
-        console.log('res.locals.blockNumberNode');
-        console.log(res.locals.blockNumberNode);
-        res.json({
-          blockNumber: {
-            node: res.locals.blockNumberNode,
-            db: res.locals.blockNumberDb,
-          },
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -734,27 +523,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchActivity),
-    (req, res) => {
-      if (
-        res.locals.count
-        && res.locals.activity.length > 0
-      ) {
-        res.json({
-          count: res.locals.count,
-          activity: res.locals.activity,
-        });
-      } else if (
-        res.locals.activity.length < 1
-      ) {
-        res.status(404).send({
-          error: "No records found",
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondCountAndResult,
   );
 
   app.post(
@@ -765,27 +534,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchWithdrawals),
-    (req, res) => {
-      if (
-        res.locals.count
-        && res.locals.withdrawals.length > 0
-      ) {
-        res.json({
-          count: res.locals.count,
-          withdrawals: res.locals.withdrawals,
-        });
-      } else if (
-        res.locals.withdrawals.length < 1
-      ) {
-        res.status(404).send({
-          error: "No withdrawal records found",
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondCountAndResult,
   );
 
   app.post(
@@ -796,27 +545,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchDeposits),
-    (req, res) => {
-      if (
-        res.locals.count
-        && res.locals.deposits.length > 0
-      ) {
-        res.json({
-          count: res.locals.count,
-          deposits: res.locals.deposits,
-        });
-      } else if (
-        res.locals.deposits.length < 1
-      ) {
-        res.status(404).send({
-          error: "No deposit records found",
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondCountAndResult,
   );
 
   app.post(
@@ -842,17 +571,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchUser),
-    (req, res, next) => {
-      if (res.locals.error) {
-        console.log(res.locals.error);
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      }
-      if (res.locals.user) {
-        res.json(res.locals.user);
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -863,22 +582,9 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchUsers),
-    (req, res) => {
-      if (
-        res.locals.count
-        && res.locals.users
-      ) {
-        res.json({
-          count: res.locals.count,
-          users: res.locals.users,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondCountAndResult,
   );
+
   app.post(
     '/api/rains',
     IsAuthenticated,
@@ -887,21 +593,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchRains),
-    (req, res) => {
-      if (
-        res.locals.count
-        && res.locals.rains
-      ) {
-        res.json({
-          count: res.locals.count,
-          rains: res.locals.rains,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondCountAndResult,
   );
 
   app.post(
@@ -912,19 +604,29 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchRain),
-    (req, res) => {
-      if (
-        res.locals.rain
-      ) {
-        res.json({
-          rain: res.locals.rain,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
+  );
+
+  app.post(
+    '/api/soaks',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    ensuretfa,
+    use(fetchSoaks),
+    respondCountAndResult,
+  );
+
+  app.post(
+    '/api/soak',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    ensuretfa,
+    use(fetchSoak),
+    respondResult,
   );
 
   app.post(
@@ -935,21 +637,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchWithdrawalAddresses),
-    (req, res) => {
-      if (
-        res.locals.count
-        && res.locals.withdrawalAddresses
-      ) {
-        res.json({
-          count: res.locals.count,
-          withdrawalAddresses: res.locals.withdrawalAddresses,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondCountAndResult,
   );
 
   app.post(
@@ -960,19 +648,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchWithdrawalAddress),
-    (req, res) => {
-      if (
-        res.locals.withdrawalAddress
-      ) {
-        res.json({
-          withdrawalAddress: res.locals.withdrawalAddress,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -1004,21 +680,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchServers),
-    (req, res) => {
-      if (
-        res.locals.servers
-        && res.locals.count
-      ) {
-        res.json({
-          count: res.locals.count,
-          servers: res.locals.servers,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondCountAndResult,
   );
 
   app.post(
@@ -1029,19 +691,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchUserInfo),
-    (req, res) => {
-      if (
-        res.locals.user
-      ) {
-        res.json({
-          user: res.locals.user,
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -1052,27 +702,7 @@ export const dashboardRouter = (
     insertIp,
     ensuretfa,
     use(fetchErrors),
-    (req, res) => {
-      if (
-        res.locals.count
-        && res.locals.errors.length > 0
-      ) {
-        res.json({
-          count: res.locals.count,
-          errors: res.locals.errors,
-        });
-      } else if (
-        res.locals.errors.length < 1
-      ) {
-        res.status(404).send({
-          error: "No records found",
-        });
-      } else {
-        res.status(401).send({
-          error: "ERROR",
-        });
-      }
-    },
+    respondCountAndResult,
   );
 
   app.get(
@@ -1107,22 +737,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     ensuretfa,
     use(fetchBalance),
-    (req, res) => {
-      if (res.locals.error) {
-        res.status(401).send({
-          error: {
-            message: res.locals.error,
-            resend: false,
-          },
-        });
-      }
-      if (res.locals.balance) {
-        console.log(res.locals.balance);
-        res.json({
-          balance: res.locals.balance,
-        });
-      }
-    },
+    respondResult,
   );
 
   app.get(
@@ -1132,22 +747,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     ensuretfa,
     use(fetchFaucetBalance),
-    (req, res) => {
-      if (res.locals.error) {
-        res.status(401).send({
-          error: {
-            message: res.locals.error,
-            resend: false,
-          },
-        });
-      }
-      if (res.locals.balance) {
-        console.log(res.locals.balance);
-        res.json({
-          balance: res.locals.balance,
-        });
-      }
-    },
+    respondResult,
   );
 
   app.get(
@@ -1157,22 +757,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     ensuretfa,
     use(fetchLiability),
-    (req, res) => {
-      if (res.locals.error) {
-        res.status(401).send({
-          error: {
-            message: res.locals.error,
-            resend: false,
-          },
-        });
-      }
-      if (res.locals.liability) {
-        console.log(res.locals.liability);
-        res.json({
-          liability: res.locals.liability,
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -1243,8 +828,6 @@ export const dashboardRouter = (
           username: req.user.username,
         });
       }
-      // console.log('Login Successful');
-      // console.log(req.user.username);
     },
   );
 
@@ -1374,7 +957,6 @@ export const dashboardRouter = (
     // storeIp,
     use(destroySession),
     (req, res) => {
-      // io.emit('Activity', res.locals.activity);
       res.redirect("/");
     },
   );

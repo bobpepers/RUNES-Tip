@@ -1,7 +1,7 @@
 import { Op, Sequelize } from 'sequelize';
 import db from '../../models';
 
-export const fetchRains = async (
+export const fetchSoaks = async (
   req,
   res,
   next,
@@ -14,7 +14,6 @@ export const fetchRains = async (
 //     userOptions.address = { [Op.like]: `%${req.body.address}%` };
 //   }
 
-  console.log('fetchRains');
   const options = {
     order: [
       ['id', 'DESC'],
@@ -49,13 +48,13 @@ export const fetchRains = async (
     ],
   };
 
-  res.locals.name = 'rain';
-  res.locals.count = await db.rain.count(options);
-  res.locals.result = await db.rain.findAll(options);
+  res.locals.name = 'soak';
+  res.locals.count = await db.soak.count(options);
+  res.locals.result = await db.soak.findAll(options);
   next();
 };
 
-export const fetchRain = async (
+export const fetchSoak = async (
   req,
   res,
   next,
@@ -80,8 +79,8 @@ export const fetchRain = async (
         as: 'user',
       },
       {
-        model: db.raintip,
-        as: 'raintips',
+        model: db.soaktip,
+        as: 'soaktips',
         include: [
           {
             model: db.user,
@@ -98,7 +97,7 @@ export const fetchRain = async (
     ],
   };
 
-  res.locals.name = 'rain';
-  res.locals.result = await db.rain.findOne(options);
+  res.locals.name = 'soak';
+  res.locals.result = await db.soak.findOne(options);
   next();
 };

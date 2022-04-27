@@ -12,10 +12,11 @@ export const updateBotSettings = async (
   });
 
   if (!settings) {
-    res.locals.error = "Settings doesn't Exists";
-    next();
+    throw new Error("Settings doesn't Exists");
   }
-  res.locals.settings = await settings.update({
+
+  res.locals.name = "updateBotSettings";
+  res.locals.result = await settings.update({
     enabled: req.body.enabled,
     maintenance: req.body.maintenance,
   });
@@ -27,6 +28,8 @@ export const fetchBotSettings = async (
   res,
   next,
 ) => {
-  res.locals.settings = await db.bots.findAll();
+  res.locals.name = 'botSettings';
+  res.locals.count = await db.bots.count();
+  res.locals.result = await db.bots.findAll();
   next();
 };

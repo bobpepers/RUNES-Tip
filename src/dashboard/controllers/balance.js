@@ -8,22 +8,23 @@ export const fetchBalance = async (
   res,
   next,
 ) => {
-  try {
-    let response;
-    if (settings.coin.setting === 'Runebase') {
-      response = await getInstance().getWalletInfo();
-      res.locals.balance = response.balance;
-    } else if (settings.coin.setting === 'Pirate') {
-      response = await getInstance().zGetBalances();
-      res.locals.balance = response.reduce((n, { balance }) => n + balance, 0);
-    } else {
-      response = await getInstance().getWalletInfo();
-      res.locals.balance = response.balance;
-    }
-    next();
-  } catch (error) {
-    console.log(error);
-    res.locals.error = error;
-    next();
+  let response;
+  res.locals.name = 'balance';
+  if (settings.coin.setting === 'Runebase') {
+    response = await getInstance().getWalletInfo();
+    res.locals.result = {
+      amount: response.balance,
+    };
+  } else if (settings.coin.setting === 'Pirate') {
+    response = await getInstance().zGetBalances();
+    res.locals.result = {
+      amount: response.reduce((n, { balance }) => n + balance, 0),
+    };
+  } else {
+    response = await getInstance().getWalletInfo();
+    res.locals.result = {
+      amount: response.balance,
+    };
   }
+  next();
 };

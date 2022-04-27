@@ -5,13 +5,10 @@ export const fetchFaucetBalance = async (
   res,
   next,
 ) => {
-  try {
-    const faucet = await db.faucet.findOne();
-    res.locals.balance = faucet.amount;
-    next();
-  } catch (error) {
-    console.log(error);
-    res.locals.error = error;
-    next();
-  }
+  const faucet = await db.faucet.findOne();
+  res.locals.name = 'faucet';
+  res.locals.result = {
+    amount: faucet.amount,
+  };
+  next();
 };

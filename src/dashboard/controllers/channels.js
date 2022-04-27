@@ -5,33 +5,28 @@ export const banChannel = async (
   res,
   next,
 ) => {
-  try {
-    const channel = await db.channel.findOne({
-      where: {
-        id: req.body.id,
+  const channel = await db.channel.findOne({
+    where: {
+      id: req.body.id,
+    },
+  });
+  const updatedChannel = await channel.update({
+    banned: !channel.banned,
+    banMessage: req.body.banMessage,
+  });
+  res.locals.name = 'banChannel';
+  res.locals.result = await db.channel.findOne({
+    where: {
+      id: req.body.id,
+    },
+    include: [
+      {
+        model: db.group,
+        as: 'group',
       },
-    });
-    const updatedChannel = await channel.update({
-      banned: !channel.banned,
-      banMessage: req.body.banMessage,
-    });
+    ],
+  });
 
-    res.locals.channel = await db.channel.findOne({
-      where: {
-        id: req.body.id,
-      },
-      include: [
-        {
-          model: db.group,
-          as: 'group',
-        },
-      ],
-    });
-  } catch (err) {
-    res.locals.error = err;
-    console.log(err);
-  }
-  // console.log(res.locals.channel);
   next();
 };
 
@@ -69,8 +64,9 @@ export const fetchChannels = async (
     ],
   };
 
+  res.locals.name = 'channel';
   res.locals.count = await db.channel.count(options);
-  res.locals.channels = await db.channel.findAll(options);
+  res.locals.result = await db.channel.findAll(options);
 
   next();
 };

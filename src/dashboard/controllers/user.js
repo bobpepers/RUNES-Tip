@@ -6,7 +6,8 @@ export const fetchUser = async (
   res,
   next,
 ) => {
-  res.locals.user = await db.dashboardUser.findOne({
+  res.locals.name = 'fetchUser';
+  res.locals.result = await db.dashboardUser.findOne({
     where: {
       id: req.user.id,
     },

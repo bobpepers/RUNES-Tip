@@ -328,7 +328,9 @@ export const fetchWithdrawals = async (
       },
     ],
   };
+
+  res.locals.name = 'withdrawal';
   res.locals.count = await db.transaction.count(options);
-  res.locals.withdrawals = await db.transaction.findAll(options);
+  res.locals.result = await db.transaction.findAll(options);
   next();
 };

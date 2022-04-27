@@ -15,7 +15,9 @@ export const fetchErrors = async (
     offset: req.body.offset,
     where: userOptions,
   };
+
+  res.locals.name = 'error';
   res.locals.count = await db.error.count(options);
-  res.locals.errors = await db.error.findAll(options);
+  res.locals.result = await db.error.findAll(options);
   next();
 };

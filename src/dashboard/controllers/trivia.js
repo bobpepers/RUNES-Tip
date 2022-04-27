@@ -8,24 +8,23 @@ export const removeTriviaQuestion = async (
   res,
   next,
 ) => {
-  try {
-    const removeAnswers = await db.triviaanswer.destroy({
-      where: {
-        triviaquestionId: req.body.id,
-      },
-    });
-    res.locals.trivia = await db.triviaquestion.destroy({
-      where: {
-        id: req.body.id,
-      },
-    });
-    console.log(res.locals.trivia);
-    next();
-  } catch (error) {
-    console.log(error);
-    res.locals.error = error;
-    next();
-  }
+  const removeAnswers = await db.triviaanswer.destroy({
+    where: {
+      triviaquestionId: req.body.id,
+    },
+  });
+
+  res.locals.removeQuestion = await db.triviaquestion.destroy({
+    where: {
+      id: req.body.id,
+    },
+  });
+
+  res.locals.name = 'removeTriviaQuestion';
+  res.locals.result = {
+    id: req.body.id,
+  };
+  next();
 };
 
 export const switchTriviaQuestion = async (
@@ -33,38 +32,33 @@ export const switchTriviaQuestion = async (
   res,
   next,
 ) => {
-  try {
-    const findTriviaQuestion = await db.triviaquestion.findOne({
-      where: {
-        id: req.body.id,
+  const findTriviaQuestion = await db.triviaquestion.findOne({
+    where: {
+      id: req.body.id,
+    },
+  });
+  await findTriviaQuestion.update({
+    enabled: !findTriviaQuestion.enabled,
+  });
+  res.locals.name = 'switchTriviaQuestion';
+  res.locals.result = await db.triviaquestion.findOne({
+    where: {
+      id: findTriviaQuestion.id,
+    },
+    include: [
+      {
+        model: db.trivia,
+        as: 'trivia',
+        attributes: ['id'],
       },
-    });
-    await findTriviaQuestion.update({
-      enabled: !findTriviaQuestion.enabled,
-    });
-    res.locals.trivia = await db.triviaquestion.findOne({
-      where: {
-        id: findTriviaQuestion.id,
+      {
+        model: db.triviaanswer,
+        as: 'triviaanswers',
       },
-      include: [
-        {
-          model: db.trivia,
-          as: 'trivia',
-          attributes: ['id'],
-        },
-        {
-          model: db.triviaanswer,
-          as: 'triviaanswers',
-        },
-      ],
-    });
-    console.log(res.locals.trivia);
-    next();
-  } catch (error) {
-    console.log(error);
-    res.locals.error = error;
-    next();
-  }
+    ],
+  });
+
+  next();
 };
 
 export const fetchTriviaQuestions = async (
@@ -72,30 +66,25 @@ export const fetchTriviaQuestions = async (
   res,
   next,
 ) => {
-  try {
-    res.locals.trivia = await db.triviaquestion.findAll({
-      order: [
-        ['id', 'DESC'],
-      ],
-      include: [
-        {
-          model: db.trivia,
-          as: 'trivia',
-          attributes: ['id'],
-        },
-        {
-          model: db.triviaanswer,
-          as: 'triviaanswers',
-        },
-      ],
-    });
-    console.log(res.locals.trivia);
-    next();
-  } catch (error) {
-    console.log(error);
-    res.locals.error = error;
-    next();
-  }
+  res.locals.name = 'fetchTriviaQuestions';
+  res.locals.result = await db.triviaquestion.findAll({
+    order: [
+      ['id', 'DESC'],
+    ],
+    include: [
+      {
+        model: db.trivia,
+        as: 'trivia',
+        attributes: ['id'],
+      },
+      {
+        model: db.triviaanswer,
+        as: 'triviaanswers',
+      },
+    ],
+  });
+  res.locals.count = await db.triviaquestion.count();
+  next();
 };
 
 export const insertTrivia = async (
@@ -103,63 +92,50 @@ export const insertTrivia = async (
   res,
   next,
 ) => {
-  // console.log(req.body);
   if (req.body.question.question === '') {
-    console.log('question cannot be empty');
-    res.locals.error = 'question cannot be empty';
-    return next();
+    throw new Error("question cannot be empty");
   }
   if (req.body.question.answers.length < 2) {
-    console.log('must have more then 2 answers');
-    res.locals.error = 'must have more then 2 answers';
-    return next();
+    throw new Error("must have more then 2 answers");
   }
   if (req.body.question.answers.length > 5) {
-    console.log('maximum is 5 answers');
-    res.locals.error = 'maximum is 5 answers';
-    return next();
+    throw new Error("maximum is 5 answers");
   }
   if (!_.find(req.body.question.answers, { correct: 'true' })) {
-    console.log('must have a correct answer');
-    res.locals.error = 'must have a correct answer';
-    return next();
+    throw new Error("must have a correct answer");
   }
 
-  try {
-    const question = await db.triviaquestion.create({
-      question: req.body.question.question,
+  const question = await db.triviaquestion.create({
+    question: req.body.question.question,
+  });
+
+  for (const answer of req.body.question.answers) {
+    console.log(answer);
+    const newAnswer = await db.triviaanswer.create({
+      triviaquestionId: question.id,
+      correct: answer.correct === 'true',
+      answer: answer.answer,
     });
+  }
 
-    for (const answer of req.body.question.answers) {
-      console.log(answer);
-      const newAnswer = await db.triviaanswer.create({
-        triviaquestionId: question.id,
-        correct: answer.correct === 'true',
-        answer: answer.answer,
-      });
-    }
-
-    res.locals.trivia = await db.triviaquestion.findOne({
-      where: {
-        id: question.id,
+  res.locals.name = 'insertTrivia';
+  res.locals.result = await db.triviaquestion.findOne({
+    where: {
+      id: question.id,
+    },
+    include: [
+      {
+        model: db.trivia,
+        as: 'trivia',
+        attributes: ['id'],
       },
-      include: [
-        {
-          model: db.trivia,
-          as: 'trivia',
-          attributes: ['id'],
-        },
-        {
-          model: db.triviaanswer,
-          as: 'triviaanswers',
-        },
-      ],
-    });
-    console.log(res.locals.trivia);
-    next();
-  } catch (error) {
-    console.log(error);
-    res.locals.error = error;
-    next();
-  }
+      {
+        model: db.triviaanswer,
+        as: 'triviaanswers',
+      },
+    ],
+  });
+
+  console.log(res.locals.result);
+  next();
 };

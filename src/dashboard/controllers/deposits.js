@@ -77,7 +77,9 @@ export const fetchDeposits = async (
       },
     ],
   };
+
+  res.locals.name = 'deposit';
   res.locals.count = await db.transaction.count(options);
-  res.locals.deposits = await db.transaction.findAll(options);
+  res.locals.result = await db.transaction.findAll(options);
   next();
 };

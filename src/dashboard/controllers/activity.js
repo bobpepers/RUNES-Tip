@@ -142,7 +142,8 @@ export const fetchActivity = async (
     ],
   };
 
+  res.locals.name = 'activities';
   res.locals.count = await db.activity.count(options);
-  res.locals.activity = await db.activity.findAll(options);
+  res.locals.result = await db.activity.findAll(options);
   next();
 };

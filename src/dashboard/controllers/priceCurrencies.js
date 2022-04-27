@@ -1,7 +1,10 @@
 // import BigNumber from "bignumber.js";
 import db from '../../models';
 import { updatePrice } from "../../helpers/price/updatePrice";
-import { updateConversionRatesFiat, updateConversionRatesCrypto } from "../../helpers/price/updateConversionRates";
+import {
+  updateConversionRatesFiat,
+  updateConversionRatesCrypto,
+} from "../../helpers/price/updateConversionRates";
 
 export const updatePriceCurrency = async (
   req,
@@ -9,16 +12,13 @@ export const updatePriceCurrency = async (
   next,
 ) => {
   if (!req.body.type) {
-    res.locals.error = "type is required";
-    next();
+    throw new Error("type is required");
   }
   if (!req.body.name) {
-    res.locals.error = "name is required";
-    next();
+    throw new Error("name is required");
   }
   if (!req.body.iso) {
-    res.locals.error = "iso is required";
-    next();
+    throw new Error("iso is required");
   }
   const currency = await db.currency.findOne({
     where: {
@@ -30,7 +30,8 @@ export const updatePriceCurrency = async (
     iso: req.body.iso,
     type: req.body.type,
   });
-  res.locals.currency = await db.currency.findOne({
+  res.locals.name = 'updatePriceCurrency';
+  res.locals.result = await db.currency.findOne({
     where: {
       id: updatedCurrency.id,
     },
@@ -43,16 +44,12 @@ export const updatePriceCurrencyPrices = async (
   res,
   next,
 ) => {
-  try {
-    await updateConversionRatesCrypto();
-    await updateConversionRatesFiat();
-    await updatePrice();
-    res.locals.currency = true;
-    next();
-  } catch (e) {
-    res.locals.error = "ERROR UPDATING PRICES";
-    next();
-  }
+  await updateConversionRatesCrypto();
+  await updateConversionRatesFiat();
+  await updatePrice();
+  res.locals.name = 'updatePriceCurrencyPrice';
+  res.locals.result = { success: true };
+  next();
 };
 
 export const removePriceCurrency = async (
@@ -65,7 +62,8 @@ export const removePriceCurrency = async (
       id: req.body.id,
     },
   });
-  res.locals.currency = currency;
+  res.locals.name = 'removePriceCurrency';
+  res.locals.result = currency;
   currency.destroy();
   next();
 };
@@ -80,7 +78,9 @@ export const fetchPriceCurrencies = async (
       ['id', 'DESC'],
     ],
   };
-  res.locals.currencies = await db.currency.findAll(options);
+  res.locals.name = 'priceCurrencies';
+  res.locals.count = await db.currency.count(options);
+  res.locals.result = await db.currency.findAll(options);
   next();
 };
 
@@ -91,16 +91,13 @@ export const addPriceCurrency = async (
 ) => {
   console.log(req.body);
   if (!req.body.name) {
-    res.locals.error = 'Name is required';
-    next();
+    throw new Error("Name is required");
   }
   if (!req.body.iso) {
-    res.locals.error = 'Iso is required';
-    next();
+    throw new Error("Iso is required");
   }
   if (!req.body.type) {
-    res.locals.error = 'Type is required';
-    next();
+    throw new Error("Type is required");
   }
 
   const currency = await db.currency.findOne({
@@ -110,18 +107,15 @@ export const addPriceCurrency = async (
   });
 
   if (currency) {
-    res.locals.error = "Already Exists";
-    next();
+    throw new Error("Already Exists");
   }
 
-  if (!currency) {
-    res.locals.currency = await db.currency.create({
-      type: req.body.type,
-      currency_name: req.body.name,
-      iso: req.body.iso,
-    });
-    next();
-  }
+  res.locals.name = 'addPriceCurrency';
+  res.locals.result = await db.currency.create({
+    type: req.body.type,
+    currency_name: req.body.name,
+    iso: req.body.iso,
+  });
 
   next();
 };

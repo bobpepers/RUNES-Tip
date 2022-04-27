@@ -10,21 +10,16 @@ export const startSyncBlocks = async (
   res,
   next,
 ) => {
-  try {
-    if (settings.coin.setting === 'Runebase') {
-      startRunebaseSync();
-    } else if (settings.coin.setting === 'Pirate') {
-      startPirateSync();
-    } else if (settings.coin.setting === 'Dust') {
-      startKomodoSync();
-    } else {
-      startRunebaseSync();
-    }
-    res.locals.sync = 'TRUE';
-    next();
-  } catch (error) {
-    console.log(error);
-    res.locals.error = error;
-    next();
+  if (settings.coin.setting === 'Runebase') {
+    startRunebaseSync();
+  } else if (settings.coin.setting === 'Pirate') {
+    startPirateSync();
+  } else if (settings.coin.setting === 'Dust') {
+    startKomodoSync();
+  } else {
+    startRunebaseSync();
   }
+  res.locals.name = 'sync';
+  res.locals.result = 'TRUE';
+  next();
 };

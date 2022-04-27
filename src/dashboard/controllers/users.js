@@ -6,26 +6,22 @@ export const banUser = async (
   res,
   next,
 ) => {
-  try {
-    const user = await db.user.findOne({
-      where: {
-        id: req.body.id,
+  const user = await db.user.findOne({
+    where: {
+      id: req.body.id,
+    },
+    include: [
+      {
+        model: db.wallet,
+        as: 'wallet',
       },
-      include: [
-        {
-          model: db.wallet,
-          as: 'wallet',
-        },
-      ],
-    });
-    res.locals.user = await user.update({
-      banned: !user.banned,
-      banMessage: req.body.banMessage,
-    });
-  } catch (err) {
-    res.locals.error = err;
-    console.log(err);
-  }
+    ],
+  });
+  res.locals.name = 'banUser';
+  res.locals.result = await user.update({
+    banned: !user.banned,
+    banMessage: req.body.banMessage,
+  });
   next();
 };
 
@@ -57,8 +53,6 @@ export const fetchUsers = async (req, res, next) => {
     }
   }
 
-  console.log(req.body.limit);
-  console.log(req.body.offset);
   const options = {
     order: [
       ['id', 'DESC'],
@@ -74,8 +68,8 @@ export const fetchUsers = async (req, res, next) => {
     ],
   };
 
+  res.locals.name = 'user';
   res.locals.count = await db.user.count(options);
-  res.locals.users = await db.user.findAll(options);
-  // console.log(res.locals.users);
+  res.locals.result = await db.user.findAll(options);
   next();
 };

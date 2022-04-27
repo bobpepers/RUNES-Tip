@@ -40,10 +40,9 @@ export const fetchWithdrawalAddresses = async (
     // group: ['id'],
   };
 
+  res.locals.name = 'withdrawalAddresses';
   res.locals.count = await db.addressExternal.count(options);
-  res.locals.withdrawalAddresses = await db.addressExternal.findAll(options);
-  console.log('res.locals.withdrawalAddresses');
-  console.log(res.locals.withdrawalAddresses);
+  res.locals.result = await db.addressExternal.findAll(options);
   next();
 };
 
@@ -82,9 +81,8 @@ export const fetchWithdrawalAddress = async (
     ],
   };
 
+  res.locals.name = 'withdrawalAddress';
   res.locals.count = await db.addressExternal.count(options);
-  res.locals.withdrawalAddress = await db.addressExternal.findOne(options);
-  console.log('res.locals.withdrawalAddresses');
-  console.log(res.locals.withdrawalAddress);
+  res.locals.result = await db.addressExternal.findOne(options);
   next();
 };

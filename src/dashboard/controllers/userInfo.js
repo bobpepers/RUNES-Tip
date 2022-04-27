@@ -6,7 +6,7 @@ export const fetchUserInfo = async (
   res,
   next,
 ) => {
-  res.locals.user = await db.user.findOne({
+  res.locals.result = await db.user.findOne({
     where: {
       id: req.body.id,
     },
@@ -17,6 +17,6 @@ export const fetchUserInfo = async (
       },
     ],
   });
-  console.log(res.locals.user);
+  res.locals.name = 'user';
   next();
 };

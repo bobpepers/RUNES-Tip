@@ -6,21 +6,17 @@ export const banServer = async (
   res,
   next,
 ) => {
-  console.log('ban server');
-  try {
-    const group = await db.group.findOne({
-      where: {
-        id: req.body.id,
-      },
-    });
-    res.locals.server = await group.update({
-      banned: !group.banned,
-      banMessage: req.body.banMessage,
-    });
-  } catch (err) {
-    res.locals.error = err;
-    console.log(err);
-  }
+  const group = await db.group.findOne({
+    where: {
+      id: req.body.id,
+    },
+  });
+  res.locals.name = 'banServer';
+  res.locals.result = await group.update({
+    banned: !group.banned,
+    banMessage: req.body.banMessage,
+  });
+
   next();
 };
 
@@ -49,7 +45,9 @@ export const fetchServers = async (req, res, next) => {
     offset: req.body.offset,
     where: userOptions,
   };
+
+  res.locals.name = 'server';
   res.locals.count = await db.group.count(options);
-  res.locals.servers = await db.group.findAll(options);
+  res.locals.result = await db.group.findAll(options);
   next();
 };
