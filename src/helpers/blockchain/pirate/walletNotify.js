@@ -15,6 +15,7 @@ const walletNotifyPirate = async (
   res,
   next,
 ) => {
+  res.locals.activity = [];
   const txId = req.body.payload;
 
   await db.sequelize.transaction({
@@ -92,6 +93,7 @@ const walletNotifyPirate = async (
                 transaction: t,
                 lock: t.LOCK.UPDATE,
               });
+              res.locals.activity.unshift(activity[0]);
               res.locals.detail[parseInt(i, 10)].amount = detail.value;
               logger.info(`deposit detected for addressid: ${res.locals.detail[parseInt(i, 10)].transaction[0].addressId} and txid: ${res.locals.detail[parseInt(i, 10)].transaction[0].txid}`);
             }

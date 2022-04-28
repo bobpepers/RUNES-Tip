@@ -356,7 +356,6 @@ export const fetchWithdrawals = async (
       [Op.like]: `%${req.body.username}%`,
     };
   }
-  console.log(req.body.userId);
 
   const options = {
     where: transactionOptions,

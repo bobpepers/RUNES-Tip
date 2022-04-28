@@ -29,6 +29,7 @@ export const notifyRouter = (
   discordClient,
   telegramClient,
   matrixClient,
+  io,
   settings,
   queue,
 ) => {
@@ -91,6 +92,15 @@ export const notifyRouter = (
             }
           }
         }
+        if (res.locals.activity) {
+          try {
+            io.to('admin').emit('updateActivity', {
+              activity: res.locals.activity,
+            });
+          } catch (e) {
+            console.log(e);
+          }
+        }
         res.sendStatus(200);
       },
     );
@@ -115,6 +125,15 @@ export const notifyRouter = (
                 detail,
               );
             }
+          }
+        }
+        if (res.locals.activity) {
+          try {
+            io.to('admin').emit('updateActivity', {
+              activity: res.locals.activity,
+            });
+          } catch (e) {
+            console.log(e);
           }
         }
         res.sendStatus(200);
@@ -143,6 +162,15 @@ export const notifyRouter = (
             }
           }
         }
+        if (res.locals.activity) {
+          try {
+            io.to('admin').emit('updateActivity', {
+              activity: res.locals.activity,
+            });
+          } catch (e) {
+            console.log(e);
+          }
+        }
         res.sendStatus(200);
       },
     );
@@ -167,6 +195,15 @@ export const notifyRouter = (
                 detail,
               );
             }
+          }
+        }
+        if (res.locals.activity) {
+          try {
+            io.to('admin').emit('updateActivity', {
+              activity: res.locals.activity,
+            });
+          } catch (e) {
+            console.log(e);
           }
         }
         res.sendStatus(200);

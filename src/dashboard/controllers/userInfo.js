@@ -1,4 +1,4 @@
-import { Transaction } from 'sequelize';
+// import { Transaction } from 'sequelize';
 import db from '../../models';
 
 export const fetchUserInfo = async (

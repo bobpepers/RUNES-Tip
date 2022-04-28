@@ -1,7 +1,6 @@
-import nodemailer from 'nodemailer';
+// import nodemailer from 'nodemailer';
 import {
   Sequelize,
-  Transaction,
   Op,
 } from 'sequelize';
 import db from '../../models';

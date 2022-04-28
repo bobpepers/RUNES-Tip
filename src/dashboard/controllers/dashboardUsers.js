@@ -16,7 +16,7 @@ export const fetchDashboardUsers = async (
   if (req.body.email !== '') {
     userOptions.email = { [Op.like]: `%${req.body.email}%` };
   }
-  if (req.body.role !== 'all') {
+  if (req.body.role !== 'All') {
     userOptions.role = req.body.role;
   }
   if (req.body.banned !== 'all') {
@@ -34,7 +34,10 @@ export const fetchDashboardUsers = async (
     ],
     where: userOptions,
   };
+  console.log(options);
+  res.locals.name = 'dashboardUsers';
   res.locals.count = await db.dashboardUser.count(options);
   res.locals.result = await db.dashboardUser.findAll(options);
+  console.log(res.locals.result);
   next();
 };

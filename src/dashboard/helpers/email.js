@@ -18,9 +18,9 @@ const transporter = nodemailer.createTransport({
 });
 
 transporter.sendMail({
-  from: 'noreply@runesx.com',
+  from: process.env.MAIL_USER,
   to: 'bagostra@gmail.com',
-  subject: 'test',
+  subject: 'Nodejs application restarted',
   html: 'test',
 }).then(() => {
   console.log('Email sent successfully');
@@ -29,15 +29,7 @@ transporter.sendMail({
   console.error(err);
 });
 
-const from = process.env.MAIL_FROM;
-
 export function sendVerificationEmail(email, token) {
-  console.log('send verification email');
-  console.log(email);
-  console.log(process.env.MAIL_HOST);
-  console.log(process.env.MAIL_PORT);
-  console.log(process.env.MAIL_USER);
-  console.log(process.env.MAIL_PASS);
   const html = "<div style='margin: 0; padding: 0; width: 100%; font-family: Trebuchet MS, sans-serif;'>"
     + "<div style='background-color: #f2f2f2; padding: 45px;'>"
     + "<div style='background-color: #ffffff; padding: 40px; text-align: center;'>"
@@ -66,13 +58,6 @@ export function sendVerificationEmail(email, token) {
     console.log('Failed to send email');
     console.error(err);
   });
-
-  // transporter.sendMail({
-  //  from,
-  //  to: email,
-  //  subject: 'Verify Email',
-  //  html,
-  // }, (err) => { if (err) { return err; } });
 }
 
 export function sendResetPassword(
@@ -88,7 +73,6 @@ export function sendResetPassword(
     + "<a href='" + process.env.ROOT_URL + "/reset-password/new?email=" + email + "&token=" + token + "' style='background-color: #288feb; color: #fff; padding: 14px; text-decoration: none; border-radius: 5px; margin-top: 20px; display: inline-block;'>Click here to reset your password</a>"
     + "</div></div></div>";
 
-  console.log('sent');
   transporter.verify((error, success) => {
     if (error) {
       console.log(error);

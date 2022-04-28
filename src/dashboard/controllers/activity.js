@@ -1,4 +1,4 @@
-import { Op, Sequelize, DataTypes } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import db from '../../models';
 
 export const fetchActivity = async (

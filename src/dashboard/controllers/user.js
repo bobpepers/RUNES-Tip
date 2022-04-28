@@ -45,7 +45,6 @@ export const updateLastSeen = async (
         lock: t.LOCK.UPDATE,
       },
     );
-    console.log(user);
     if (!user) {
       throw new Error('USER_NOT_FOUND');
     }

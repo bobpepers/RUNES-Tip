@@ -1,7 +1,5 @@
 import bcrypt from 'bcrypt-nodejs';
 import {
-  Sequelize,
-  Transaction,
   Op,
 } from 'sequelize';
 import { sendResetPassword } from '../helpers/email';

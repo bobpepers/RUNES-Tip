@@ -10,6 +10,7 @@ import logger from "../../logger";
  * Notify New Transaction From Komodo Node
  */
 const walletNotifyKomodo = async (req, res, next) => {
+  res.locals.activity = [];
   const txId = req.body.payload;
   const transaction = await getInstance().getTransaction(txId);
 
@@ -87,6 +88,7 @@ const walletNotifyKomodo = async (req, res, next) => {
                 transaction: t,
                 lock: t.LOCK.UPDATE,
               });
+              res.locals.activity.unshift(activity[0]);
               res.locals.detail[parseInt(i, 10)].amount = detail.amount;
               logger.info(`deposit detected for addressid: ${res.locals.detail[parseInt(i, 10)].transaction[0].addressId} and txid: ${res.locals.detail[parseInt(i, 10)].transaction[0].txid}`);
             }
