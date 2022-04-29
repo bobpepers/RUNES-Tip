@@ -406,7 +406,9 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
             }, _callee2);
           })));
           app.use(function (err, req, res, next) {
-            res.status(500).send(err.message);
+            res.status(500).send({
+              error: err.message
+            });
           });
           server.listen(port);
           console.log('server listening on:', port);

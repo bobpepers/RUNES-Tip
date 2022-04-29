@@ -14,7 +14,7 @@ var _matrix = require("./matrix");
 var _notify = require("./notify");
 
 var router = function router(app, discordClient, telegramClient, matrixClient, io, settings, queue) {
-  (0, _notify.notifyRouter)(app, discordClient, telegramClient, matrixClient, settings, queue);
+  (0, _notify.notifyRouter)(app, discordClient, telegramClient, matrixClient, io, settings, queue);
 
   if (settings.bot.enabled.discord) {
     (0, _discord.discordRouter)(discordClient, queue, io, settings);

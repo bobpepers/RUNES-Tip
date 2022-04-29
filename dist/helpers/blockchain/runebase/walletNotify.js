@@ -33,13 +33,14 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
+            res.locals.activity = [];
             txId = req.body.payload;
-            _context2.next = 3;
+            _context2.next = 4;
             return (0, _rclient.getInstance)().getTransaction(txId);
 
-          case 3:
+          case 4:
             transaction = _context2.sent;
-            _context2.next = 6;
+            _context2.next = 7;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -54,7 +55,7 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
                         res.locals.detail = [];
 
                         if (!(transaction.details && transaction.details.length > 0)) {
-                          _context.next = 49;
+                          _context.next = 50;
                           break;
                         }
 
@@ -69,14 +70,14 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
 
                       case 9:
                         if (!(_iteratorAbruptCompletion = !(_step = _context.sent).done)) {
-                          _context.next = 33;
+                          _context.next = 34;
                           break;
                         }
 
                         detail = _step.value;
 
                         if (!(detail.category === 'receive')) {
-                          _context.next = 30;
+                          _context.next = 31;
                           break;
                         }
 
@@ -101,7 +102,7 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
                         address = _context.sent;
 
                         if (!address) {
-                          _context.next = 30;
+                          _context.next = 31;
                           break;
                         }
 
@@ -120,8 +121,7 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
                         if (address.wallet.user.user_id.startsWith('matrix')) {
                           res.locals.detail[parseInt(i, 10)].platform = 'matrix';
                           res.locals.detail[parseInt(i, 10)].userId = address.wallet.user.user_id.replace('matrix-', '');
-                        } // console.log(transaction);
-
+                        }
 
                         _context.next = 22;
                         return _models["default"].transaction.findOrCreate({
@@ -146,7 +146,7 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
                         res.locals.detail[parseInt(i, 10)].transaction = _context.sent;
 
                         if (!res.locals.detail[parseInt(i, 10)].transaction[1]) {
-                          _context.next = 29;
+                          _context.next = 30;
                           break;
                         }
 
@@ -167,68 +167,69 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
 
                       case 26:
                         activity = _context.sent;
+                        res.locals.activity.unshift(activity[0]);
                         res.locals.detail[parseInt(i, 10)].amount = detail.amount;
 
                         _logger["default"].info("deposit detected for addressid: ".concat(res.locals.detail[parseInt(i, 10)].transaction[0].addressId, " and txid: ").concat(res.locals.detail[parseInt(i, 10)].transaction[0].txid));
 
-                      case 29:
+                      case 30:
                         i += 1;
 
-                      case 30:
+                      case 31:
                         _iteratorAbruptCompletion = false;
                         _context.next = 7;
                         break;
 
-                      case 33:
-                        _context.next = 39;
+                      case 34:
+                        _context.next = 40;
                         break;
 
-                      case 35:
-                        _context.prev = 35;
+                      case 36:
+                        _context.prev = 36;
                         _context.t0 = _context["catch"](5);
                         _didIteratorError = true;
                         _iteratorError = _context.t0;
 
-                      case 39:
-                        _context.prev = 39;
+                      case 40:
                         _context.prev = 40;
+                        _context.prev = 41;
 
                         if (!(_iteratorAbruptCompletion && _iterator["return"] != null)) {
-                          _context.next = 44;
+                          _context.next = 45;
                           break;
                         }
 
-                        _context.next = 44;
+                        _context.next = 45;
                         return _iterator["return"]();
 
-                      case 44:
-                        _context.prev = 44;
+                      case 45:
+                        _context.prev = 45;
 
                         if (!_didIteratorError) {
-                          _context.next = 47;
+                          _context.next = 48;
                           break;
                         }
 
                         throw _iteratorError;
 
-                      case 47:
-                        return _context.finish(44);
-
                       case 48:
-                        return _context.finish(39);
+                        return _context.finish(45);
 
                       case 49:
+                        return _context.finish(40);
+
+                      case 50:
                         t.afterCommit(function () {
                           console.log('commited');
                           next();
                         });
 
-                      case 50:
+                      case 51:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[5, 35, 39, 49], [40,, 44, 48]]);
+                }, _callee, null, [[5, 36, 40, 50], [41,, 45, 49]]);
               }));
 
               return function (_x4) {
@@ -236,7 +237,7 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
               };
             }());
 
-          case 6:
+          case 7:
           case "end":
             return _context2.stop();
         }

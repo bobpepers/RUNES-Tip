@@ -38,7 +38,7 @@ var fetchDashboardUsers = /*#__PURE__*/function () {
               userOptions.email = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.email, "%"));
             }
 
-            if (req.body.role !== 'all') {
+            if (req.body.role !== 'All') {
               userOptions.role = req.body.role;
             }
 
@@ -56,19 +56,22 @@ var fetchDashboardUsers = /*#__PURE__*/function () {
               order: [['id', 'DESC']],
               where: userOptions
             };
-            _context.next = 9;
+            console.log(options);
+            res.locals.name = 'dashboardUsers';
+            _context.next = 11;
             return _models["default"].dashboardUser.count(options);
 
-          case 9:
+          case 11:
             res.locals.count = _context.sent;
-            _context.next = 12;
+            _context.next = 14;
             return _models["default"].dashboardUser.findAll(options);
 
-          case 12:
+          case 14:
             res.locals.result = _context.sent;
+            console.log(res.locals.result);
             next();
 
-          case 14:
+          case 17:
           case "end":
             return _context.stop();
         }

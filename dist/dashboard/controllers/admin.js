@@ -13,14 +13,13 @@ var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/de
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _nodemailer = _interopRequireDefault(require("nodemailer"));
-
 var _sequelize = require("sequelize");
 
 var _models = _interopRequireDefault(require("../../models"));
 
 var _rclient = require("../../services/rclient");
 
+// import nodemailer from 'nodemailer';
 var fetchAdminLiability = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
     var available, locked, unconfirmedDeposits, unconfirmledWithdrawals, sumAvailable, sumLocked, sumUnconfirmedDeposits, sumUnconfirmedWithdrawals;

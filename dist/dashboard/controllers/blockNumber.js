@@ -82,7 +82,6 @@ var fetchBlockNumber = /*#__PURE__*/function () {
 
           case 23:
             dbBlockNumber = _context.sent;
-            // res.locals.blockNumberDb = dbBlockNumber.id;
             res.locals.name = 'blockNumber';
             res.locals.result = {
               blockNumberNode: response,

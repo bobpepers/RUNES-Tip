@@ -39,7 +39,7 @@ var localhostOnly = function localhostOnly(req, res, next) {
   next();
 };
 
-var notifyRouter = function notifyRouter(app, discordClient, telegramClient, matrixClient, settings, queue) {
+var notifyRouter = function notifyRouter(app, discordClient, telegramClient, matrixClient, io, settings, queue) {
   app.post('/api/chaininfo/block', localhostOnly, function (req, res) {
     if (settings.coin.setting === 'Runebase') {
       (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, matrixClient, queue);
@@ -147,9 +147,19 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, mat
                 return _context.finish(25);
 
               case 35:
+                if (res.locals.activity) {
+                  try {
+                    io.to('admin').emit('updateActivity', {
+                      activity: res.locals.activity
+                    });
+                  } catch (e) {
+                    console.log(e);
+                  }
+                }
+
                 res.sendStatus(200);
 
-              case 36:
+              case 37:
               case "end":
                 return _context.stop();
             }
@@ -254,9 +264,19 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, mat
                 return _context2.finish(25);
 
               case 35:
+                if (res.locals.activity) {
+                  try {
+                    io.to('admin').emit('updateActivity', {
+                      activity: res.locals.activity
+                    });
+                  } catch (e) {
+                    console.log(e);
+                  }
+                }
+
                 res.sendStatus(200);
 
-              case 36:
+              case 37:
               case "end":
                 return _context2.stop();
             }
@@ -361,9 +381,19 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, mat
                 return _context3.finish(25);
 
               case 35:
+                if (res.locals.activity) {
+                  try {
+                    io.to('admin').emit('updateActivity', {
+                      activity: res.locals.activity
+                    });
+                  } catch (e) {
+                    console.log(e);
+                  }
+                }
+
                 res.sendStatus(200);
 
-              case 36:
+              case 37:
               case "end":
                 return _context3.stop();
             }
@@ -468,9 +498,19 @@ var notifyRouter = function notifyRouter(app, discordClient, telegramClient, mat
                 return _context4.finish(25);
 
               case 35:
+                if (res.locals.activity) {
+                  try {
+                    io.to('admin').emit('updateActivity', {
+                      activity: res.locals.activity
+                    });
+                  } catch (e) {
+                    console.log(e);
+                  }
+                }
+
                 res.sendStatus(200);
 
-              case 36:
+              case 37:
               case "end":
                 return _context4.stop();
             }

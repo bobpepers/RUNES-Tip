@@ -78,17 +78,16 @@ var updateLastSeen = /*#__PURE__*/function () {
 
                       case 2:
                         user = _context2.sent;
-                        console.log(user);
 
                         if (user) {
-                          _context2.next = 6;
+                          _context2.next = 5;
                           break;
                         }
 
                         throw new Error('USER_NOT_FOUND');
 
-                      case 6:
-                        _context2.next = 8;
+                      case 5:
+                        _context2.next = 7;
                         return user.update({
                           lastSeen: new Date(Date.now())
                         }, {
@@ -96,13 +95,13 @@ var updateLastSeen = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 8:
+                      case 7:
                         updatedUser = _context2.sent;
                         t.afterCommit(function () {
                           next();
                         });
 
-                      case 10:
+                      case 9:
                       case "end":
                         return _context2.stop();
                     }

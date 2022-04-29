@@ -21,23 +21,32 @@ var fetchUserInfo = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            _context.next = 2;
+            res.locals.name = 'user';
+            _context.next = 3;
             return _models["default"].user.findOne({
               where: {
                 id: req.body.id
               },
+              attributes: {
+                include: [[_sequelize.Sequelize.fn('sum', _sequelize.Sequelize.literal("CASE WHEN reactdroptips.status = 'success' THEN 1 ELSE 0 END")), 'reactdrop_success_count'], [_sequelize.Sequelize.fn('sum', _sequelize.Sequelize.literal("CASE WHEN reactdroptips.status = 'failed' THEN 1 ELSE 0 END")), 'reactdrop_failed_count']]
+              },
+              group: ['wallet.id'],
               include: [{
                 model: _models["default"].wallet,
                 as: 'wallet'
+              }, {
+                model: _models["default"].reactdroptip,
+                as: 'reactdroptips',
+                attributes: []
               }]
             });
 
-          case 2:
+          case 3:
             res.locals.result = _context.sent;
-            res.locals.name = 'user';
+            console.log(res.locals.result);
             next();
 
-          case 5:
+          case 6:
           case "end":
             return _context.stop();
         }

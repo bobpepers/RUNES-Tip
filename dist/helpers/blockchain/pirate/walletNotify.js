@@ -37,8 +37,9 @@ var walletNotifyPirate = /*#__PURE__*/function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
+            res.locals.activity = [];
             txId = req.body.payload;
-            _context2.next = 3;
+            _context2.next = 4;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -58,7 +59,7 @@ var walletNotifyPirate = /*#__PURE__*/function () {
                         transaction = _context.sent;
 
                         if (!(transaction.received && transaction.received.length > 0)) {
-                          _context.next = 52;
+                          _context.next = 53;
                           break;
                         }
 
@@ -73,14 +74,14 @@ var walletNotifyPirate = /*#__PURE__*/function () {
 
                       case 12:
                         if (!(_iteratorAbruptCompletion = !(_step = _context.sent).done)) {
-                          _context.next = 36;
+                          _context.next = 37;
                           break;
                         }
 
                         detail = _step.value;
 
                         if (!(detail.address !== process.env.PIRATE_MAIN_ADDRESS)) {
-                          _context.next = 33;
+                          _context.next = 34;
                           break;
                         }
 
@@ -105,7 +106,7 @@ var walletNotifyPirate = /*#__PURE__*/function () {
                         address = _context.sent;
 
                         if (!address) {
-                          _context.next = 33;
+                          _context.next = 34;
                           break;
                         }
 
@@ -149,7 +150,7 @@ var walletNotifyPirate = /*#__PURE__*/function () {
                         res.locals.detail[parseInt(i, 10)].transaction = _context.sent;
 
                         if (!res.locals.detail[parseInt(i, 10)].transaction[1]) {
-                          _context.next = 32;
+                          _context.next = 33;
                           break;
                         }
 
@@ -170,68 +171,69 @@ var walletNotifyPirate = /*#__PURE__*/function () {
 
                       case 29:
                         activity = _context.sent;
+                        res.locals.activity.unshift(activity[0]);
                         res.locals.detail[parseInt(i, 10)].amount = detail.value;
 
                         _logger["default"].info("deposit detected for addressid: ".concat(res.locals.detail[parseInt(i, 10)].transaction[0].addressId, " and txid: ").concat(res.locals.detail[parseInt(i, 10)].transaction[0].txid));
 
-                      case 32:
+                      case 33:
                         i += 1;
 
-                      case 33:
+                      case 34:
                         _iteratorAbruptCompletion = false;
                         _context.next = 10;
                         break;
 
-                      case 36:
-                        _context.next = 42;
+                      case 37:
+                        _context.next = 43;
                         break;
 
-                      case 38:
-                        _context.prev = 38;
+                      case 39:
+                        _context.prev = 39;
                         _context.t0 = _context["catch"](8);
                         _didIteratorError = true;
                         _iteratorError = _context.t0;
 
-                      case 42:
-                        _context.prev = 42;
+                      case 43:
                         _context.prev = 43;
+                        _context.prev = 44;
 
                         if (!(_iteratorAbruptCompletion && _iterator["return"] != null)) {
-                          _context.next = 47;
+                          _context.next = 48;
                           break;
                         }
 
-                        _context.next = 47;
+                        _context.next = 48;
                         return _iterator["return"]();
 
-                      case 47:
-                        _context.prev = 47;
+                      case 48:
+                        _context.prev = 48;
 
                         if (!_didIteratorError) {
-                          _context.next = 50;
+                          _context.next = 51;
                           break;
                         }
 
                         throw _iteratorError;
 
-                      case 50:
-                        return _context.finish(47);
-
                       case 51:
-                        return _context.finish(42);
+                        return _context.finish(48);
 
                       case 52:
+                        return _context.finish(43);
+
+                      case 53:
                         t.afterCommit(function () {
                           console.log('commited');
                           next();
                         });
 
-                      case 53:
+                      case 54:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[8, 38, 42, 52], [43,, 47, 51]]);
+                }, _callee, null, [[8, 39, 43, 53], [44,, 48, 52]]);
               }));
 
               return function (_x4) {
@@ -239,7 +241,7 @@ var walletNotifyPirate = /*#__PURE__*/function () {
               };
             }());
 
-          case 3:
+          case 4:
           case "end":
             return _context2.stop();
         }

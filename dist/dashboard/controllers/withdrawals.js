@@ -568,7 +568,6 @@ var fetchWithdrawals = /*#__PURE__*/function () {
               userOptions.username = (0, _defineProperty2["default"])({}, _sequelize.Op.like, "%".concat(req.body.username, "%"));
             }
 
-            console.log(req.body.userId);
             options = {
               where: transactionOptions,
               limit: req.body.limit,
@@ -588,19 +587,19 @@ var fetchWithdrawals = /*#__PURE__*/function () {
               }]
             };
             res.locals.name = 'withdrawal';
-            _context7.next = 12;
+            _context7.next = 11;
             return _models["default"].transaction.count(options);
 
-          case 12:
+          case 11:
             res.locals.count = _context7.sent;
-            _context7.next = 15;
+            _context7.next = 14;
             return _models["default"].transaction.findAll(options);
 
-          case 15:
+          case 14:
             res.locals.result = _context7.sent;
             next();
 
-          case 17:
+          case 16:
           case "end":
             return _context7.stop();
         }
