@@ -22,7 +22,7 @@ export const fetchBlockNumber = async (
 
   const dbBlockNumber = await db.block.findOne({
     order: [['id', 'DESC']],
-  });s
+  });
 
   res.locals.name = 'blockNumber';
   res.locals.result = {
