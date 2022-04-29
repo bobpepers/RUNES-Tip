@@ -550,7 +550,7 @@ export const dashboardRouter = (
     respondResult,
   );
 
-  app.get(
+  app.post(
     '/api/user',
     IsAuthenticated,
     isAdmin,
@@ -1021,18 +1021,7 @@ export const dashboardRouter = (
     ensuretfa,
     // updateLastSeen,
     use(enabletfa),
-    (req, res) => {
-      if (res.locals.error) {
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      }
-      if (res.locals.tfa) {
-        res.json({
-          data: res.locals.tfa,
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -1042,18 +1031,7 @@ export const dashboardRouter = (
     ensuretfa,
     // updateLastSeen,
     use(disabletfa),
-    (req, res) => {
-      if (res.locals.error) {
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      }
-      if (res.locals.success) {
-        res.json({
-          data: res.locals.tfa,
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -1062,19 +1040,7 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     // storeIp,
     use(unlocktfa),
-    (req, res) => {
-      if (res.locals.error) {
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      }
-      if (res.locals.success) {
-        res.json({
-          success: true,
-          tfaLocked: false,
-        });
-      }
-    },
+    respondResult,
   );
 
   app.get(

@@ -40,10 +40,13 @@ export const disabletfa = async (
     });
     res.locals.tfa = updatedUser.tfa;
     res.locals.success = true;
+    res.locals.result = {
+      tfa: updatedUser.tfa,
+      success: true,
+    };
     return next();
   }
-  res.locals.error = 'Wrong TFA Number';
-  return next();
+  throw new Error("Wrong TFA Number");
 };
 
 export const enabletfa = async (
@@ -75,15 +78,13 @@ export const enabletfa = async (
     verified !== 0
     && user
   ) {
-    res.locals.error = 'Invalid token or secret';
-    return next();
+    throw new Error("Invalid token or secret");
   }
   if (
     verified === 0
     && !user
   ) {
-    res.locals.error = 'User does not exist';
-    return next();
+    throw new Error("User does not exist");
   }
   if (
     verified === 0
@@ -95,6 +96,9 @@ export const enabletfa = async (
       tfa_secret: req.body.secret,
     });
     res.locals.tfa = updatedUser.tfa;
+    res.locals.result = {
+      tfa: updatedUser.tfa,
+    };
     return next();
   }
   next();
@@ -125,15 +129,19 @@ export const istfa = (
   if (req.session.tfa === true) {
     console.log('TFA IS LOCKED');
     res.json({
-      success: true,
-      tfaLocked: true,
+      result: {
+        success: true,
+        tfaLocked: true,
+      },
     });
   }
   if (req.session.tfa === false) {
     console.log('TFA IS UNLOCKED');
     res.json({
-      success: true,
-      tfaLocked: false,
+      result: {
+        success: true,
+        tfaLocked: false,
+      },
     });
   }
 };
@@ -159,13 +167,14 @@ export const unlocktfa = (
 
   if (verified === 0) {
     req.session.tfa = false;
-    console.log(req.session);
-    res.locals.success = true;
+    res.locals.result = {
+      success: true,
+      tfaLocked: false,
+    };
     return next();
   }
 
   if (!verified) {
-    res.locals.error = 'Wrong TFA Number';
-    return next();
+    throw new Error("Wrong TFA Number");
   }
 };

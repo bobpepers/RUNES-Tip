@@ -254,7 +254,10 @@ export const verifyEmail = (
   res,
   next,
 ) => {
-  const { email, token } = req.body;
+  const {
+    email,
+    token,
+  } = req.body;
 
   db.dashboardUser.findOne({
     where: {
