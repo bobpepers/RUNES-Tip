@@ -17,19 +17,58 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-transporter.sendMail({
-  from: process.env.MAIL_USER,
-  to: 'bagostra@gmail.com',
-  subject: 'Nodejs application restarted',
-  html: 'test',
-}).then(() => {
-  console.log('Email sent successfully');
-}).catch((err) => {
-  console.log('Failed to send email');
-  console.error(err);
+// transporter.sendMail({
+//   from: process.env.MAIL_USER,
+//   to: 'bagostra@gmail.com',
+//   subject: 'Nodejs application restarted',
+//   html: 'test',
+// }).then(() => {
+//   console.log('Email sent successfully');
+// }).catch((err) => {
+//   console.log('Failed to send email');
+//   console.error(err);
+// });
+
+const sendEmail = (
+  from,
+  to,
+  subject,
+  html,
+) => new Promise((resolve, reject) => {
+  transporter.sendMail({
+    from,
+    to,
+    subject,
+    html,
+  }, (error, info) => {
+    if (error) {
+      console.log("error is " + error);
+      resolve(false);
+    } else {
+      console.log('Email sent: ' + info.response);
+      resolve(true);
+    }
+  });
 });
 
-export function sendVerificationEmail(email, token) {
+const verifySend = () => new Promise((resolve, reject) => {
+  transporter.verify((
+    error,
+    success,
+  ) => {
+    if (error) {
+      resolve(false);
+      console.log(error);
+    } else {
+      resolve(true);
+    }
+  });
+});
+
+export const sendVerificationEmail = async (
+  email,
+  token,
+) => {
   const html = "<div style='margin: 0; padding: 0; width: 100%; font-family: Trebuchet MS, sans-serif;'>"
     + "<div style='background-color: #f2f2f2; padding: 45px;'>"
     + "<div style='background-color: #ffffff; padding: 40px; text-align: center;'>"
@@ -38,33 +77,25 @@ export function sendVerificationEmail(email, token) {
     + "<a href='" + process.env.ROOT_URL + "/register/verify-email?email=" + email + "&token=" + token + "' style='background-color: #288feb; color: #fff; padding: 14px; text-decoration: none; border-radius: 5px; margin-top: 20px; display: inline-block;'>Activate Account</a>"
     + "</div></div></div>";
 
-  transporter.verify((error, success) => {
-    if (error) {
-      console.log('failed to verify');
-      console.log(error);
-    } else {
-      console.log("Server is ready to take our messages");
-    }
-  });
+  const waitForVerify = await verifySend();
+  if (!waitForVerify) {
+    return false;
+  }
 
-  transporter.sendMail({
-    from: process.env.MAIL_USER,
-    to: email,
-    subject: 'Verify Email',
+  const waitForEmail = await sendEmail(
+    process.env.MAIL_USER,
+    email,
+    'Verify Email',
     html,
-  }).then(() => {
-    console.log('Email sent successfully');
-  }).catch((err) => {
-    console.log('Failed to send email');
-    console.error(err);
-  });
-}
+  );
+  return waitForEmail;
+};
 
-export function sendResetPassword(
+export const sendResetPassword = async (
   email,
   firstName,
   token,
-) {
+) => {
   const html = "<div style='margin: 0; padding: 0; width: 100%; font-family: Trebuchet MS, sans-serif;'>"
     + "<div style='background-color: #f2f2f2; padding: 45px;'>"
     + "<div style='background-color: #ffffff; padding: 40px; text-align: center;'>"
@@ -73,23 +104,16 @@ export function sendResetPassword(
     + "<a href='" + process.env.ROOT_URL + "/reset-password/new?email=" + email + "&token=" + token + "' style='background-color: #288feb; color: #fff; padding: 14px; text-decoration: none; border-radius: 5px; margin-top: 20px; display: inline-block;'>Click here to reset your password</a>"
     + "</div></div></div>";
 
-  transporter.verify((error, success) => {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log("Server is ready to take our messages");
-    }
-  });
+  const waitForVerify = await verifySend();
+  if (!waitForVerify) {
+    return false;
+  }
 
-  transporter.sendMail({
-    from: process.env.MAIL_USER,
-    to: email,
-    subject: 'Password Reset',
+  const waitForEmail = await sendEmail(
+    process.env.MAIL_USER,
+    email,
+    'Password Reset',
     html,
-  }).then(() => {
-    console.log('Email sent successfully');
-  }).catch((err) => {
-    console.log('Failed to send email');
-    console.error(err);
-  });
-}
+  );
+  return waitForEmail;
+};

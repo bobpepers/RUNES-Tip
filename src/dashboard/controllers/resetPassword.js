@@ -12,35 +12,36 @@ import db from '../../models';
  * Reset password
  */
 export const resetPassword = async (req, res, next) => {
-  console.log(req.body);
-  console.log("initiate reset password");
-  try {
-    const { email } = req.body;
-    const user = await db.dashboardUser.findOne({
-      where: {
-        [Op.or]: [
-          { email },
-        ],
-      },
+  console.log('resetPassword');
+  const { email } = req.body;
+  const user = await db.dashboardUser.findOne({
+    where: {
+      [Op.or]: [
+        { email },
+      ],
+    },
+  });
+  if (!user) {
+    throw new Error("email doesn't exists");
+  }
+  if (user) {
+    const verificationToken = await generateVerificationToken(1);
+    const updatedUser = await user.update({
+      resetpassexpires: verificationToken.expires,
+      resetpasstoken: verificationToken.token,
+      resetpassused: false,
     });
-    if (!user) {
-      res.locals.error = "email doesn't exists";
-      return next();
-      // return res.status(422).send({ error: "email doesn't exists" });
+    const successSend = await sendResetPassword(
+      email,
+      updatedUser.username,
+      updatedUser.resetpasstoken,
+    );
+    if (!successSend) {
+      throw new Error("Failed to send email");
     }
-    if (user) {
-      const verificationToken = await generateVerificationToken(1);
-      const updatedUser = await user.update({
-        resetpassexpires: verificationToken.expires,
-        resetpasstoken: verificationToken.token,
-        resetpassused: false,
-      });
-      sendResetPassword(email, updatedUser.username, updatedUser.resetpasstoken);
-      res.locals.resetPassword = true;
-      return next();
-    }
-  } catch (e) {
-    res.locals.error = e;
+    res.locals.result = {
+      success: true,
+    };
     return next();
   }
 };
@@ -53,42 +54,35 @@ export const verifyResetPassword = async (
   res,
   next,
 ) => {
-  try {
-    const {
-      email,
-      token,
-    } = req.body;
+  const {
+    email,
+    token,
+  } = req.body;
 
-    const user = await db.dashboardUser.findOne({
-      where: {
-        [Op.or]: [
-          { email },
-        ],
-      },
-    });
+  const user = await db.dashboardUser.findOne({
+    where: {
+      [Op.or]: [
+        { email },
+      ],
+    },
+  });
 
-    if (!user) {
-      res.locals.error = "email doesn't exists";
-      return next();
+  if (!user) {
+    throw new Error("email doesn't exists");
+  }
+  if (user) {
+    if (user.resetpassused) {
+      throw new Error("link already used, please request reset password again");
     }
-    if (user) {
-      if (user.resetpassused) {
-        res.locals.error = "link already used, please request reset password again";
-        return next();
-      }
-      if (new Date() > user.resetpassexpires) {
-        res.locals.error = "link already expired, please request reset password again";
-        return next();
-      }
-      if (!timingSafeEqual(token, user.resetpasstoken)) {
-        res.locals.error = "something has gone wrong, please request reset password again";
-        return next();
-      }
-      res.locals.resetPasswordVerify = true;
-      return next();
+    if (new Date() > user.resetpassexpires) {
+      throw new Error("link already expired, please request reset password again");
     }
-  } catch (e) {
-    res.locals.error = e;
+    if (!timingSafeEqual(token, user.resetpasstoken)) {
+      throw new Error("something has gone wrong, please request reset password again");
+    }
+    res.locals.result = {
+      success: true,
+    };
     return next();
   }
 };
@@ -101,69 +95,62 @@ export const resetPasswordNew = async (
   res,
   next,
 ) => {
-  try {
-    const {
-      email,
-      newpassword,
-      token,
-    } = req.body;
+  const {
+    email,
+    newpassword,
+    token,
+  } = req.body;
 
-    const user = await db.dashboardUser.findOne({
-      where: {
-        [Op.or]: [
-          { email },
-        ],
-      },
-    });
-    if (!user) {
-      res.locals.error = "email doesn't exists";
-      return next();
+  const user = await db.dashboardUser.findOne({
+    where: {
+      [Op.or]: [
+        { email },
+      ],
+    },
+  });
+  if (!user) {
+    throw new Error("email doesn't exists");
+  }
+  if (user) {
+    if (user.resetpassused) {
+      throw new Error("link already used, please request reset password again");
     }
-    if (user) {
-      if (user.resetpassused) {
-        res.locals.error = "link already used, please request reset password again";
-        return next();
+    if (new Date() > user.resetpassexpires) {
+      throw new Error("link already expired, please request reset password again");
+    }
+    if (!timingSafeEqual(token, user.resetpasstoken)) {
+      throw new Error("something has gone wrong, please request reset password again");
+    }
+    bcrypt.genSalt(10, (err, salt) => {
+      console.log(salt);
+      if (err) {
+        throw new Error(err);
       }
-      if (new Date() > user.resetpassexpires) {
-        res.locals.error = "link already expired, please request reset password again";
-        return next();
-      }
-      if (!timingSafeEqual(token, user.resetpasstoken)) {
-        res.locals.error = "something has gone wrong, please request reset password again";
-        return next();
-      }
-      bcrypt.genSalt(10, (err, salt) => {
-        console.log(salt);
+
+      bcrypt.hash(newpassword, salt, null, (err, hash) => {
         if (err) {
-          res.locals.error = err;
-          return next();
+          throw new Error(err);
         }
 
-        bcrypt.hash(newpassword, salt, null, (err, hash) => {
-          if (err) {
-            res.locals.error = err;
-            return next();
-          }
-
-          user.update({
-            password: hash,
-            resetpassused: true,
-          }).then((updatedUser) => {
-            const {
-              username,
-              email,
-            } = updatedUser;
-            res.locals.username = username;
-            res.locals.email = email;
-            next();
-          }).catch((err) => {
-            next(err);
-          });
+        user.update({
+          password: hash,
+          resetpassused: true,
+        }).then((updatedUser) => {
+          const {
+            username,
+            email,
+          } = updatedUser;
+            // res.locals.username = username;
+            // res.locals.email = email;
+          res.locals.result = {
+            username,
+            email,
+          };
+          next();
+        }).catch((err) => {
+          throw new Error(err);
         });
       });
-    }
-  } catch (e) {
-    res.locals.error = e;
-    return next();
+    });
   }
 };

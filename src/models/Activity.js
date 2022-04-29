@@ -113,6 +113,9 @@ module.exports = (sequelize, DataTypes) => {
         'halving_f',
         'mining_s',
         'mining_f',
+        'login_s',
+        'login_f',
+        'logout_s',
       ],
     },
     amount: {
@@ -142,6 +145,10 @@ module.exports = (sequelize, DataTypes) => {
   const ActivityModel = sequelize.define('activity', modelDefinition, modelOptions);
 
   ActivityModel.associate = (model) => {
+    ActivityModel.belongsTo(model.dashboardUser, {
+      as: 'dashboardUser',
+      foreignKey: 'dashboardUserId',
+    });
     ActivityModel.belongsTo(model.user, {
       as: 'spender',
       foreignKey: 'spenderId',

@@ -36,82 +36,70 @@ export const signin = async (
   next,
 ) => {
   const ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  let activity;
   if (req.authErr === 'USER_NOT_EXIST') {
-    return next('USER_NOT_EXIST', false);
+    throw new Error("User doesn't exist");
   }
-  // console.log(req.authErr);
   if (req.authErr === 'EMAIL_NOT_VERIFIED') {
-    console.log('EMAIL_NOT_VERIFIED');
-    const email = req.user_email;
     res.locals.email = req.user_email;
-    db.dashboardUser.findOne({
+    const user = await db.dashboardUser.findOne({
       where: {
         [Op.or]: [
           {
-            email: email.toLowerCase(),
+            email: req.user_email.toLowerCase(),
           },
         ],
       },
-    }).then(async (user) => {
+    });
+    if (user) {
       const verificationToken = await generateVerificationToken(24);
       if (user.authused === true) {
-        return next(req.authErr, false);
+        throw new Error("Authentication token already used");
       }
-      user.update({
+      const updatedUser = await user.update({
         authexpires: verificationToken.tomorrow,
         authtoken: verificationToken.authtoken,
-      }).then((updatedUser) => {
-        const {
-          email,
-          authtoken,
-        } = updatedUser;
-        sendVerificationEmail(email, authtoken);
-        console.log('EMAIL_SENT');
-        return next(req.authErr, false);
-      }).catch((err) => next(err, false));
-    }).catch((err) => next(err, false));
-  } else {
-    // const activity = await db.activity.create({
-    //  earnerId: req.user.id,
-    //  type: 'login',
-    //  ipId: res.locals.ip[0].id,
-    // });
-    // res.locals.activity = await db.activity.findOne({
-    //  where: {
-    //    id: activity.id,
-    //  },
-    //  attributes: [
-    //    'createdAt',
-    //    'type',
-    //  ],
-    // include: [
-    //   {
-    //     model: db.user,
-    //    as: 'earner',
-    //      required: false,
-    //     attributes: ['username'],
-    //   },
-    // ],
-    // });
-    console.log(req.authErr);
-    if (req.authErr === 'EMAIL_NOT_VERIFIED') {
-      console.log('EMAIL_NOT_VERIFIED');
+      });
+      const {
+        email,
+        authtoken,
+      } = updatedUser;
+      sendVerificationEmail(email, authtoken);
       req.session.destroy();
       res.status(401).send({
         error: req.authErr,
         email: res.locals.email,
       });
-    } else if (req.authErr) {
-      console.log('LOGIN_ERROR');
-      req.session.destroy();
-      res.status(401).send({
-        error: 'LOGIN_ERROR',
-      });
-    } else {
-      res.json({
-        username: req.user.username,
-      });
+      throw new Error(req.authErr);
     }
+  } else if (req.authErr) {
+    req.session.destroy();
+    throw new Error("LOGIN_ERROR");
+  } else {
+    const activity = await db.activity.create({
+      dashboardUserId: req.user.id,
+      type: 'login_s',
+      //  ipId: res.locals.ip[0].id,
+    });
+    res.locals.activity = await db.activity.findOne({
+      where: {
+        id: activity.id,
+      },
+      attributes: [
+        'createdAt',
+        'type',
+      ],
+      include: [
+        {
+          model: db.dashboardUser,
+          as: 'dashboardUser',
+          required: false,
+          attributes: ['username'],
+        },
+      ],
+    });
+    res.locals.result = req.user.username;
+    return next();
   }
 };
 
@@ -120,32 +108,33 @@ export const destroySession = async (
   res,
   next,
 ) => {
-  // const activity = await db.activity.create(
-  //   {
-  //     earnerId: req.user.id,
-  //     type: 'logout',
-  //     ipId: res.locals.ip[0].id,
-  //   },
-  // );
-  // res.locals.activity = await db.activity.findOne({
-  //   where: {
-  //     id: activity.id,
-  //   },
-  //   attributes: [
-  //     'createdAt',
-  //     'type',
-  //   ],
-  //   include: [
-  //     {
-  //       model: db.user,
-  //       as: 'earner',
-  //       required: false,
-  //       attributes: ['username'],
-  //     },
-  //   ],
-  // });
+  const activity = await db.activity.create(
+    {
+      dashboardUserId: req.user.id,
+      type: 'logout',
+      //     ipId: res.locals.ip[0].id,
+    },
+  );
+  res.locals.activity = await db.activity.findOne({
+    where: {
+      id: activity.id,
+    },
+    attributes: [
+      'createdAt',
+      'type',
+    ],
+    include: [
+      {
+        model: db.dashboardUser,
+        as: 'dashboardUser',
+        required: false,
+        attributes: ['username'],
+      },
+    ],
+  });
   req.logOut();
   req.session.destroy();
+  res.redirect("/");
   next();
 };
 
@@ -160,14 +149,16 @@ export const signup = async (req, res, next) => {
   } = req.body.props;
 
   if (!email || !password || !username) {
-    return res.status(422).send({ error: "all fields are required" });
+    throw new Error("all fields are required");
+    // return res.status(422).send({ error: "all fields are required" });
   }
 
   const textCharacters = new RegExp("^[a-zA-Z0-9]*$");
   if (!textCharacters.test(username)) {
-    return res.status(401).send({
-      error: 'USERNAME_NO_SPACES_OR_SPECIAL_CHARACTERS_ALLOWED',
-    });
+    throw new Error("USERNAME_NO_SPACES_OR_SPECIAL_CHARACTERS_ALLOWED");
+    // return res.status(401).send({
+    //   error: 'USERNAME_NO_SPACES_OR_SPECIAL_CHARACTERS_ALLOWED',
+    // });
   }
 
   const User = await db.dashboardUser.findOne({
@@ -184,14 +175,10 @@ export const signup = async (req, res, next) => {
   });
 
   if (User && User.username.toLowerCase() === username.toLowerCase()) {
-    return res.status(401).send({
-      error: 'USERNAME_ALREADY_EXIST',
-    });
+    throw new Error("USERNAME_ALREADY_EXIST");
   }
   if (User && User.email.toLowerCase() === email.toLowerCase()) {
-    return res.status(401).send({
-      error: 'EMAIL_ALREADY_EXIST',
-    });
+    throw new Error("EMAIL_ALREADY_EXIST");
   }
 
   await db.sequelize.transaction({

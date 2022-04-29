@@ -258,7 +258,9 @@ export const dashboardRouter = (
       if (req.isAuthenticated()) {
         next();
       } else {
-        res.json({ success: false });
+        res.json({
+          success: false,
+        });
       }
     },
     istfa,
@@ -989,83 +991,26 @@ export const dashboardRouter = (
     requireSignin,
     isDashboardUserBanned,
     use(signin),
-    (err, req, res, next) => {
-      if (req.authErr === 'EMAIL_NOT_VERIFIED') {
-        console.log('EMAIL_NOT_VERIFIED');
-        req.session.destroy();
-        res.status(401).send({
-          error: req.authErr,
-          email: res.locals.email,
-        });
-      } else if (req.authErr) {
-        console.log(req.authErr);
-        console.log('LOGIN_ERROR');
-        req.session.destroy();
-        res.status(401).send({
-          error: 'LOGIN_ERROR',
-        });
-      } else {
-        res.json({
-          username: req.user.username,
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
     '/api/reset-password',
     verifyMyCaptcha,
     use(resetPassword),
-    (req, res) => {
-      console.log(res.locals.error);
-      if (res.locals.error) {
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      }
-      if (res.locals.resetPassword) {
-        res.json({
-          success: true,
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
     '/api/reset-password/verify',
     use(verifyResetPassword),
-    (req, res) => {
-      console.log(res.locals.error);
-      if (res.locals.error) {
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      }
-      if (res.locals.resetPasswordVerify) {
-        res.json({
-          success: true,
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
     '/api/reset-password/new',
     use(resetPasswordNew),
-    (req, res) => {
-      console.log(res.locals.error);
-      if (res.locals.error) {
-        res.status(401).send({
-          error: res.locals.error,
-        });
-      }
-      if (res.locals.email && res.locals.username) {
-        res.json({
-          username: res.locals.username,
-          email: res.locals.email,
-        });
-      }
-    },
+    respondResult,
   );
 
   app.post(
@@ -1137,8 +1082,5 @@ export const dashboardRouter = (
     insertIp,
     // storeIp,
     use(destroySession),
-    (req, res) => {
-      res.redirect("/");
-    },
   );
 };
