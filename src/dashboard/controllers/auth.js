@@ -111,7 +111,7 @@ export const destroySession = async (
   const activity = await db.activity.create(
     {
       dashboardUserId: req.user.id,
-      type: 'logout',
+      type: 'logout_s',
       //     ipId: res.locals.ip[0].id,
     },
   );

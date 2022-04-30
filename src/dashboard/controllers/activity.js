@@ -48,6 +48,11 @@ export const fetchActivity = async (
     offset: req.body.offset,
     include: [
       {
+        model: db.dashboardUser,
+        as: 'dashboardUser',
+        required: false,
+      },
+      {
         model: db.user,
         as: 'spender',
         // where: spenderOptions,

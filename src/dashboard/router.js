@@ -259,7 +259,10 @@ export const dashboardRouter = (
         next();
       } else {
         res.json({
-          success: false,
+          result: {
+            tfaLocked: false,
+            success: false,
+          },
         });
       }
     },

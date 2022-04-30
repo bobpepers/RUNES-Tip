@@ -108,7 +108,7 @@ module.exports = {
           'mining_f',
           'login_s',
           'login_f',
-          'logout',
+          'logout_s',
         ),
       });
   },
