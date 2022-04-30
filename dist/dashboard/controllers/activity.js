@@ -49,6 +49,10 @@ var fetchActivity = /*#__PURE__*/function () {
               limit: req.body.limit,
               offset: req.body.offset,
               include: [{
+                model: _models["default"].dashboardUser,
+                as: 'dashboardUser',
+                required: false
+              }, {
                 model: _models["default"].user,
                 as: 'spender',
                 // where: spenderOptions,

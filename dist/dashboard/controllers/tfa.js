@@ -56,7 +56,7 @@ var disabletfa = /*#__PURE__*/function () {
             });
 
             if (!(verified === 0 && user && user.tfa === true)) {
-              _context.next = 12;
+              _context.next = 13;
               break;
             }
 
@@ -70,11 +70,14 @@ var disabletfa = /*#__PURE__*/function () {
             updatedUser = _context.sent;
             res.locals.tfa = updatedUser.tfa;
             res.locals.success = true;
+            res.locals.result = {
+              tfa: updatedUser.tfa,
+              success: true
+            };
             return _context.abrupt("return", next());
 
-          case 12:
-            res.locals.error = 'Wrong TFA Number';
-            return _context.abrupt("return", next());
+          case 13:
+            throw new Error("Wrong TFA Number");
 
           case 14:
           case "end":
@@ -122,43 +125,44 @@ var enabletfa = /*#__PURE__*/function () {
             user = _context2.sent;
 
             if (!(verified !== 0 && user)) {
-              _context2.next = 8;
+              _context2.next = 7;
               break;
             }
 
-            res.locals.error = 'Invalid token or secret';
-            return _context2.abrupt("return", next());
+            throw new Error("Invalid token or secret");
 
-          case 8:
+          case 7:
             if (!(verified === 0 && !user)) {
-              _context2.next = 11;
+              _context2.next = 9;
               break;
             }
 
-            res.locals.error = 'User does not exist';
-            return _context2.abrupt("return", next());
+            throw new Error("User does not exist");
 
-          case 11:
+          case 9:
             if (!(verified === 0 && user && user.tfa === false)) {
-              _context2.next = 17;
+              _context2.next = 16;
               break;
             }
 
-            _context2.next = 14;
+            _context2.next = 12;
             return user.update({
               tfa: true,
               tfa_secret: req.body.secret
             });
 
-          case 14:
+          case 12:
             updatedUser = _context2.sent;
             res.locals.tfa = updatedUser.tfa;
+            res.locals.result = {
+              tfa: updatedUser.tfa
+            };
             return _context2.abrupt("return", next());
 
-          case 17:
+          case 16:
             next();
 
-          case 18:
+          case 17:
           case "end":
             return _context2.stop();
         }
@@ -193,16 +197,20 @@ var istfa = function istfa(req, res, next) {
   if (req.session.tfa === true) {
     console.log('TFA IS LOCKED');
     res.json({
-      success: true,
-      tfaLocked: true
+      result: {
+        success: true,
+        tfaLocked: true
+      }
     });
   }
 
   if (req.session.tfa === false) {
     console.log('TFA IS UNLOCKED');
     res.json({
-      success: true,
-      tfaLocked: false
+      result: {
+        success: true,
+        tfaLocked: false
+      }
     });
   }
 };
@@ -226,14 +234,15 @@ var unlocktfa = function unlocktfa(req, res, next) {
 
   if (verified === 0) {
     req.session.tfa = false;
-    console.log(req.session);
-    res.locals.success = true;
+    res.locals.result = {
+      success: true,
+      tfaLocked: false
+    };
     return next();
   }
 
   if (!verified) {
-    res.locals.error = 'Wrong TFA Number';
-    return next();
+    throw new Error("Wrong TFA Number");
   }
 };
 

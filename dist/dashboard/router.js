@@ -164,7 +164,10 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       next();
     } else {
       res.json({
-        success: false
+        result: {
+          tfaLocked: false,
+          success: false
+        }
       });
     }
   }, _tfa.istfa);
@@ -194,7 +197,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
   app.get('/api/blocknumber', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_blockNumber.fetchBlockNumber), respondResult);
   app.post('/api/activity', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_activity.fetchActivity), respondCountAndResult);
   app.post('/api/deposits/patch', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_deposits.patchDeposits), respondResult);
-  app.get('/api/user', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_user.fetchUser), respondResult);
+  app.post('/api/user', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_user.fetchUser), respondResult);
   app.post('/api/management/users', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_users.fetchUsers), respondCountAndResult);
   app.post('/api/functions/withdrawals', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_withdrawals.fetchWithdrawals), respondCountAndResult);
   app.post('/api/functions/deposits', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_deposits.fetchDeposits), respondCountAndResult);
@@ -264,122 +267,20 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
   // updateLastSeen,
   use(_auth.resendVerification));
   app.post('/api/signin', _recaptcha.verifyMyCaptcha, // insertIp,
-  requireSignin, _auth.isDashboardUserBanned, use(_auth.signin), function (err, req, res, next) {
-    if (req.authErr === 'EMAIL_NOT_VERIFIED') {
-      console.log('EMAIL_NOT_VERIFIED');
-      req.session.destroy();
-      res.status(401).send({
-        error: req.authErr,
-        email: res.locals.email
-      });
-    } else if (req.authErr) {
-      console.log(req.authErr);
-      console.log('LOGIN_ERROR');
-      req.session.destroy();
-      res.status(401).send({
-        error: 'LOGIN_ERROR'
-      });
-    } else {
-      res.json({
-        username: req.user.username
-      });
-    }
-  });
-  app.post('/api/reset-password', _recaptcha.verifyMyCaptcha, use(_resetPassword.resetPassword), function (req, res) {
-    console.log(res.locals.error);
-
-    if (res.locals.error) {
-      res.status(401).send({
-        error: res.locals.error
-      });
-    }
-
-    if (res.locals.resetPassword) {
-      res.json({
-        success: true
-      });
-    }
-  });
-  app.post('/api/reset-password/verify', use(_resetPassword.verifyResetPassword), function (req, res) {
-    console.log(res.locals.error);
-
-    if (res.locals.error) {
-      res.status(401).send({
-        error: res.locals.error
-      });
-    }
-
-    if (res.locals.resetPasswordVerify) {
-      res.json({
-        success: true
-      });
-    }
-  });
-  app.post('/api/reset-password/new', use(_resetPassword.resetPasswordNew), function (req, res) {
-    console.log(res.locals.error);
-
-    if (res.locals.error) {
-      res.status(401).send({
-        error: res.locals.error
-      });
-    }
-
-    if (res.locals.email && res.locals.username) {
-      res.json({
-        username: res.locals.username,
-        email: res.locals.email
-      });
-    }
-  });
+  requireSignin, _auth.isDashboardUserBanned, use(_auth.signin), respondResult);
+  app.post('/api/reset-password', _recaptcha.verifyMyCaptcha, use(_resetPassword.resetPassword), respondResult);
+  app.post('/api/reset-password/verify', use(_resetPassword.verifyResetPassword), respondResult);
+  app.post('/api/reset-password/new', use(_resetPassword.resetPasswordNew), respondResult);
   app.post('/api/2fa/enable', IsAuthenticated, _auth.isDashboardUserBanned, // storeIp,
   _tfa.ensuretfa, // updateLastSeen,
-  use(_tfa.enabletfa), function (req, res) {
-    if (res.locals.error) {
-      res.status(401).send({
-        error: res.locals.error
-      });
-    }
-
-    if (res.locals.tfa) {
-      res.json({
-        data: res.locals.tfa
-      });
-    }
-  });
+  use(_tfa.enabletfa), respondResult);
   app.post('/api/2fa/disable', IsAuthenticated, // storeIp,
   _tfa.ensuretfa, // updateLastSeen,
-  use(_tfa.disabletfa), function (req, res) {
-    if (res.locals.error) {
-      res.status(401).send({
-        error: res.locals.error
-      });
-    }
-
-    if (res.locals.success) {
-      res.json({
-        data: res.locals.tfa
-      });
-    }
-  });
+  use(_tfa.disabletfa), respondResult);
   app.post('/api/2fa/unlock', IsAuthenticated, _auth.isDashboardUserBanned, // storeIp,
-  use(_tfa.unlocktfa), function (req, res) {
-    if (res.locals.error) {
-      res.status(401).send({
-        error: res.locals.error
-      });
-    }
-
-    if (res.locals.success) {
-      res.json({
-        success: true,
-        tfaLocked: false
-      });
-    }
-  });
+  use(_tfa.unlocktfa), respondResult);
   app.get('/api/logout', _ip.insertIp, // storeIp,
-  use(_auth.destroySession), function (req, res) {
-    res.redirect("/");
-  });
+  use(_auth.destroySession));
 };
 
 exports.dashboardRouter = dashboardRouter;

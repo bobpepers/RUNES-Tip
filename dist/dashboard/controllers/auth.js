@@ -63,131 +63,123 @@ var isDashboardUserBanned = /*#__PURE__*/function () {
 exports.isDashboardUserBanned = isDashboardUserBanned;
 
 var signin = /*#__PURE__*/function () {
-  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(req, res, next) {
-    var ip, email;
-    return _regenerator["default"].wrap(function _callee3$(_context3) {
+  var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(req, res, next) {
+    var ip, activity, user, verificationToken, updatedUser, email, authtoken, _activity;
+
+    return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context2.prev = _context2.next) {
           case 0:
             ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
             if (!(req.authErr === 'USER_NOT_EXIST')) {
-              _context3.next = 3;
+              _context2.next = 3;
               break;
             }
 
-            return _context3.abrupt("return", next('USER_NOT_EXIST', false));
+            throw new Error("User doesn't exist");
 
           case 3:
-            // console.log(req.authErr);
-            if (req.authErr === 'EMAIL_NOT_VERIFIED') {
-              console.log('EMAIL_NOT_VERIFIED');
-              email = req.user_email;
-              res.locals.email = req.user_email;
-
-              _models["default"].dashboardUser.findOne({
-                where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
-                  email: email.toLowerCase()
-                }])
-              }).then( /*#__PURE__*/function () {
-                var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(user) {
-                  var verificationToken;
-                  return _regenerator["default"].wrap(function _callee2$(_context2) {
-                    while (1) {
-                      switch (_context2.prev = _context2.next) {
-                        case 0:
-                          _context2.next = 2;
-                          return (0, _generate.generateVerificationToken)(24);
-
-                        case 2:
-                          verificationToken = _context2.sent;
-
-                          if (!(user.authused === true)) {
-                            _context2.next = 5;
-                            break;
-                          }
-
-                          return _context2.abrupt("return", next(req.authErr, false));
-
-                        case 5:
-                          user.update({
-                            authexpires: verificationToken.tomorrow,
-                            authtoken: verificationToken.authtoken
-                          }).then(function (updatedUser) {
-                            var email = updatedUser.email,
-                                authtoken = updatedUser.authtoken;
-                            (0, _email.sendVerificationEmail)(email, authtoken);
-                            console.log('EMAIL_SENT');
-                            return next(req.authErr, false);
-                          })["catch"](function (err) {
-                            return next(err, false);
-                          });
-
-                        case 6:
-                        case "end":
-                          return _context2.stop();
-                      }
-                    }
-                  }, _callee2);
-                }));
-
-                return function (_x7) {
-                  return _ref3.apply(this, arguments);
-                };
-              }())["catch"](function (err) {
-                return next(err, false);
-              });
-            } else {
-              // const activity = await db.activity.create({
-              //  earnerId: req.user.id,
-              //  type: 'login',
-              //  ipId: res.locals.ip[0].id,
-              // });
-              // res.locals.activity = await db.activity.findOne({
-              //  where: {
-              //    id: activity.id,
-              //  },
-              //  attributes: [
-              //    'createdAt',
-              //    'type',
-              //  ],
-              // include: [
-              //   {
-              //     model: db.user,
-              //    as: 'earner',
-              //      required: false,
-              //     attributes: ['username'],
-              //   },
-              // ],
-              // });
-              console.log(req.authErr);
-
-              if (req.authErr === 'EMAIL_NOT_VERIFIED') {
-                console.log('EMAIL_NOT_VERIFIED');
-                req.session.destroy();
-                res.status(401).send({
-                  error: req.authErr,
-                  email: res.locals.email
-                });
-              } else if (req.authErr) {
-                console.log('LOGIN_ERROR');
-                req.session.destroy();
-                res.status(401).send({
-                  error: 'LOGIN_ERROR'
-                });
-              } else {
-                res.json({
-                  username: req.user.username
-                });
-              }
+            if (!(req.authErr === 'EMAIL_NOT_VERIFIED')) {
+              _context2.next = 24;
+              break;
             }
 
-          case 4:
+            res.locals.email = req.user_email;
+            _context2.next = 7;
+            return _models["default"].dashboardUser.findOne({
+              where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
+                email: req.user_email.toLowerCase()
+              }])
+            });
+
+          case 7:
+            user = _context2.sent;
+
+            if (!user) {
+              _context2.next = 22;
+              break;
+            }
+
+            _context2.next = 11;
+            return (0, _generate.generateVerificationToken)(24);
+
+          case 11:
+            verificationToken = _context2.sent;
+
+            if (!(user.authused === true)) {
+              _context2.next = 14;
+              break;
+            }
+
+            throw new Error("Authentication token already used");
+
+          case 14:
+            _context2.next = 16;
+            return user.update({
+              authexpires: verificationToken.tomorrow,
+              authtoken: verificationToken.authtoken
+            });
+
+          case 16:
+            updatedUser = _context2.sent;
+            email = updatedUser.email, authtoken = updatedUser.authtoken;
+            (0, _email.sendVerificationEmail)(email, authtoken);
+            req.session.destroy();
+            res.status(401).send({
+              error: req.authErr,
+              email: res.locals.email
+            });
+            throw new Error(req.authErr);
+
+          case 22:
+            _context2.next = 37;
+            break;
+
+          case 24:
+            if (!req.authErr) {
+              _context2.next = 29;
+              break;
+            }
+
+            req.session.destroy();
+            throw new Error("LOGIN_ERROR");
+
+          case 29:
+            _context2.next = 31;
+            return _models["default"].activity.create({
+              dashboardUserId: req.user.id,
+              type: 'login_s' //  ipId: res.locals.ip[0].id,
+
+            });
+
+          case 31:
+            _activity = _context2.sent;
+            _context2.next = 34;
+            return _models["default"].activity.findOne({
+              where: {
+                id: _activity.id
+              },
+              attributes: ['createdAt', 'type'],
+              include: [{
+                model: _models["default"].dashboardUser,
+                as: 'dashboardUser',
+                required: false,
+                attributes: ['username']
+              }]
+            });
+
+          case 34:
+            res.locals.activity = _context2.sent;
+            res.locals.result = req.user.username;
+            return _context2.abrupt("return", next());
+
+          case 37:
           case "end":
-            return _context3.stop();
+            return _context2.stop();
         }
       }
-    }, _callee3);
+    }, _callee2);
   }));
 
   return function signin(_x4, _x5, _x6) {
@@ -198,49 +190,52 @@ var signin = /*#__PURE__*/function () {
 exports.signin = signin;
 
 var destroySession = /*#__PURE__*/function () {
-  var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(req, res, next) {
-    return _regenerator["default"].wrap(function _callee4$(_context4) {
+  var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(req, res, next) {
+    var activity;
+    return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context4.prev = _context4.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
-            // const activity = await db.activity.create(
-            //   {
-            //     earnerId: req.user.id,
-            //     type: 'logout',
-            //     ipId: res.locals.ip[0].id,
-            //   },
-            // );
-            // res.locals.activity = await db.activity.findOne({
-            //   where: {
-            //     id: activity.id,
-            //   },
-            //   attributes: [
-            //     'createdAt',
-            //     'type',
-            //   ],
-            //   include: [
-            //     {
-            //       model: db.user,
-            //       as: 'earner',
-            //       required: false,
-            //       attributes: ['username'],
-            //     },
-            //   ],
-            // });
+            _context3.next = 2;
+            return _models["default"].activity.create({
+              dashboardUserId: req.user.id,
+              type: 'logout_s' //     ipId: res.locals.ip[0].id,
+
+            });
+
+          case 2:
+            activity = _context3.sent;
+            _context3.next = 5;
+            return _models["default"].activity.findOne({
+              where: {
+                id: activity.id
+              },
+              attributes: ['createdAt', 'type'],
+              include: [{
+                model: _models["default"].dashboardUser,
+                as: 'dashboardUser',
+                required: false,
+                attributes: ['username']
+              }]
+            });
+
+          case 5:
+            res.locals.activity = _context3.sent;
             req.logOut();
             req.session.destroy();
+            res.redirect("/");
             next();
 
-          case 3:
+          case 10:
           case "end":
-            return _context4.stop();
+            return _context3.stop();
         }
       }
-    }, _callee4);
+    }, _callee3);
   }));
 
-  return function destroySession(_x8, _x9, _x10) {
-    return _ref4.apply(this, arguments);
+  return function destroySession(_x7, _x8, _x9) {
+    return _ref3.apply(this, arguments);
   };
 }();
 /**
@@ -251,38 +246,34 @@ var destroySession = /*#__PURE__*/function () {
 exports.destroySession = destroySession;
 
 var signup = /*#__PURE__*/function () {
-  var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(req, res, next) {
+  var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(req, res, next) {
     var _req$body$props, email, password, username, textCharacters, User;
 
-    return _regenerator["default"].wrap(function _callee6$(_context6) {
+    return _regenerator["default"].wrap(function _callee5$(_context5) {
       while (1) {
-        switch (_context6.prev = _context6.next) {
+        switch (_context5.prev = _context5.next) {
           case 0:
             _req$body$props = req.body.props, email = _req$body$props.email, password = _req$body$props.password, username = _req$body$props.username;
 
             if (!(!email || !password || !username)) {
-              _context6.next = 3;
+              _context5.next = 3;
               break;
             }
 
-            return _context6.abrupt("return", res.status(422).send({
-              error: "all fields are required"
-            }));
+            throw new Error("all fields are required");
 
           case 3:
             textCharacters = new RegExp("^[a-zA-Z0-9]*$");
 
             if (textCharacters.test(username)) {
-              _context6.next = 6;
+              _context5.next = 6;
               break;
             }
 
-            return _context6.abrupt("return", res.status(401).send({
-              error: 'USERNAME_NO_SPACES_OR_SPECIAL_CHARACTERS_ALLOWED'
-            }));
+            throw new Error("USERNAME_NO_SPACES_OR_SPECIAL_CHARACTERS_ALLOWED");
 
           case 6:
-            _context6.next = 8;
+            _context5.next = 8;
             return _models["default"].dashboardUser.findOne({
               where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
                 username: username
@@ -292,44 +283,40 @@ var signup = /*#__PURE__*/function () {
             });
 
           case 8:
-            User = _context6.sent;
+            User = _context5.sent;
 
             if (!(User && User.username.toLowerCase() === username.toLowerCase())) {
-              _context6.next = 11;
+              _context5.next = 11;
               break;
             }
 
-            return _context6.abrupt("return", res.status(401).send({
-              error: 'USERNAME_ALREADY_EXIST'
-            }));
+            throw new Error("USERNAME_ALREADY_EXIST");
 
           case 11:
             if (!(User && User.email.toLowerCase() === email.toLowerCase())) {
-              _context6.next = 13;
+              _context5.next = 13;
               break;
             }
 
-            return _context6.abrupt("return", res.status(401).send({
-              error: 'EMAIL_ALREADY_EXIST'
-            }));
+            throw new Error("EMAIL_ALREADY_EXIST");
 
           case 13:
-            _context6.next = 15;
+            _context5.next = 15;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
-              var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(t) {
+              var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(t) {
                 var verificationToken, newUser;
-                return _regenerator["default"].wrap(function _callee5$(_context5) {
+                return _regenerator["default"].wrap(function _callee4$(_context4) {
                   while (1) {
-                    switch (_context5.prev = _context5.next) {
+                    switch (_context4.prev = _context4.next) {
                       case 0:
-                        _context5.next = 2;
+                        _context4.next = 2;
                         return (0, _generate.generateVerificationToken)(24);
 
                       case 2:
-                        verificationToken = _context5.sent;
-                        _context5.next = 5;
+                        verificationToken = _context4.sent;
+                        _context4.next = 5;
                         return _models["default"].dashboardUser.create({
                           username: username,
                           password: password,
@@ -343,7 +330,7 @@ var signup = /*#__PURE__*/function () {
                         });
 
                       case 5:
-                        newUser = _context5.sent;
+                        newUser = _context4.sent;
                         t.afterCommit(function () {
                           (0, _email.sendVerificationEmail)(email.toLowerCase(), newUser.authtoken);
                           return res.json({
@@ -353,27 +340,27 @@ var signup = /*#__PURE__*/function () {
 
                       case 7:
                       case "end":
-                        return _context5.stop();
+                        return _context4.stop();
                     }
                   }
-                }, _callee5);
+                }, _callee4);
               }));
 
-              return function (_x14) {
-                return _ref6.apply(this, arguments);
+              return function (_x13) {
+                return _ref5.apply(this, arguments);
               };
             }());
 
           case 15:
           case "end":
-            return _context6.stop();
+            return _context5.stop();
         }
       }
-    }, _callee6);
+    }, _callee5);
   }));
 
-  return function signup(_x11, _x12, _x13) {
-    return _ref5.apply(this, arguments);
+  return function signup(_x10, _x11, _x12) {
+    return _ref4.apply(this, arguments);
   };
 }();
 /**
@@ -384,11 +371,11 @@ var signup = /*#__PURE__*/function () {
 exports.signup = signup;
 
 var resendVerification = /*#__PURE__*/function () {
-  var _ref7 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee8(req, res, next) {
+  var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee7(req, res, next) {
     var email;
-    return _regenerator["default"].wrap(function _callee8$(_context8) {
+    return _regenerator["default"].wrap(function _callee7$(_context7) {
       while (1) {
-        switch (_context8.prev = _context8.next) {
+        switch (_context7.prev = _context7.next) {
           case 0:
             console.log('resend verification');
             email = req.body.email;
@@ -398,27 +385,27 @@ var resendVerification = /*#__PURE__*/function () {
                 email: email.toLowerCase()
               }])
             }).then( /*#__PURE__*/function () {
-              var _ref8 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee7(user) {
+              var _ref7 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(user) {
                 var verificationToken;
-                return _regenerator["default"].wrap(function _callee7$(_context7) {
+                return _regenerator["default"].wrap(function _callee6$(_context6) {
                   while (1) {
-                    switch (_context7.prev = _context7.next) {
+                    switch (_context6.prev = _context6.next) {
                       case 0:
-                        _context7.next = 2;
+                        _context6.next = 2;
                         return (0, _generate.generateVerificationToken)(24);
 
                       case 2:
-                        verificationToken = _context7.sent;
+                        verificationToken = _context6.sent;
 
                         if (!(user.authused === true)) {
-                          _context7.next = 6;
+                          _context6.next = 6;
                           break;
                         }
 
                         res.json({
                           success: false
                         });
-                        return _context7.abrupt("return", next('Auth Already Used'));
+                        return _context6.abrupt("return", next('Auth Already Used'));
 
                       case 6:
                         user.update({
@@ -437,14 +424,14 @@ var resendVerification = /*#__PURE__*/function () {
 
                       case 7:
                       case "end":
-                        return _context7.stop();
+                        return _context6.stop();
                     }
                   }
-                }, _callee7);
+                }, _callee6);
               }));
 
-              return function (_x18) {
-                return _ref8.apply(this, arguments);
+              return function (_x17) {
+                return _ref7.apply(this, arguments);
               };
             }())["catch"](function (err) {
               next(err);
@@ -452,14 +439,14 @@ var resendVerification = /*#__PURE__*/function () {
 
           case 3:
           case "end":
-            return _context8.stop();
+            return _context7.stop();
         }
       }
-    }, _callee8);
+    }, _callee7);
   }));
 
-  return function resendVerification(_x15, _x16, _x17) {
-    return _ref7.apply(this, arguments);
+  return function resendVerification(_x14, _x15, _x16) {
+    return _ref6.apply(this, arguments);
   };
 }();
 /**
@@ -499,24 +486,24 @@ var verifyEmail = function verifyEmail(req, res, next) {
       authused: true,
       role: 1
     }).then( /*#__PURE__*/function () {
-      var _ref9 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee9(updatedUser) {
-        return _regenerator["default"].wrap(function _callee9$(_context9) {
+      var _ref8 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee8(updatedUser) {
+        return _regenerator["default"].wrap(function _callee8$(_context8) {
           while (1) {
-            switch (_context9.prev = _context9.next) {
+            switch (_context8.prev = _context8.next) {
               case 0:
                 res.locals.user = updatedUser;
                 next();
 
               case 2:
               case "end":
-                return _context9.stop();
+                return _context8.stop();
             }
           }
-        }, _callee9);
+        }, _callee8);
       }));
 
-      return function (_x19) {
-        return _ref9.apply(this, arguments);
+      return function (_x18) {
+        return _ref8.apply(this, arguments);
       };
     }())["catch"](function (err) {
       res.locals.error = err.message;
