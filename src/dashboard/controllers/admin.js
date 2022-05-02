@@ -1,4 +1,3 @@
-// import nodemailer from 'nodemailer';
 import {
   Sequelize,
   Op,

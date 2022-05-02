@@ -3,7 +3,6 @@ import {
   Op,
 } from 'sequelize';
 import { sendResetPassword } from '../helpers/email';
-// import { tokenForUser } from '../helpers/token';
 import { generateVerificationToken } from '../helpers/generate';
 import timingSafeEqual from '../helpers/timingSafeEqual';
 import db from '../../models';

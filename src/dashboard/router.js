@@ -13,6 +13,7 @@ import { fetchUserInfo } from './controllers/userInfo';
 import { fetchFaucetBalance } from './controllers/faucet';
 import { fetchLiability } from './controllers/liability';
 import { fetchBalance } from './controllers/balance';
+import { healthCheck } from './controllers/health';
 import {
   fetchBotSettings,
   updateBotSettings,
@@ -208,8 +209,6 @@ const respondCountAndResult = (req, res) => {
 };
 
 const respondResult = (req, res) => {
-  console.log(res.locals.result);
-  console.log(res.locals.result.length);
   if (
     res.locals.result
     && res.locals.result.length > 0
@@ -251,6 +250,12 @@ export const dashboardRouter = (
     res.locals.matrixClient = matrixClient;
     next();
   };
+
+  app.get(
+    '/api/health',
+    use(healthCheck),
+    respondResult,
+  );
 
   app.get(
     '/api/authenticated',
