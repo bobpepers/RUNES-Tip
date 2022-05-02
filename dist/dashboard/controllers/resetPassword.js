@@ -25,8 +25,6 @@ var _timingSafeEqual = _interopRequireDefault(require("../helpers/timingSafeEqua
 
 var _models = _interopRequireDefault(require("../../models"));
 
-// import { tokenForUser } from '../helpers/token';
-
 /**
  * Reset password
  */

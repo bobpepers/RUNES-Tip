@@ -19,7 +19,6 @@ var _models = _interopRequireDefault(require("../../models"));
 
 var _rclient = require("../../services/rclient");
 
-// import nodemailer from 'nodemailer';
 var fetchAdminLiability = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(req, res, next) {
     var available, locked, unconfirmedDeposits, unconfirmledWithdrawals, sumAvailable, sumLocked, sumUnconfirmedDeposits, sumUnconfirmedWithdrawals;

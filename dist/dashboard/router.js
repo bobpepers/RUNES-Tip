@@ -23,6 +23,8 @@ var _liability = require("./controllers/liability");
 
 var _balance = require("./controllers/balance");
 
+var _health = require("./controllers/health");
+
 var _bots = require("./controllers/bots");
 
 var _ip = require("./controllers/ip");
@@ -129,9 +131,6 @@ var respondCountAndResult = function respondCountAndResult(req, res) {
 };
 
 var respondResult = function respondResult(req, res) {
-  console.log(res.locals.result);
-  console.log(res.locals.result.length);
-
   if (res.locals.result && res.locals.result.length > 0) {
     res.json({
       result: res.locals.result
@@ -159,6 +158,7 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
     next();
   };
 
+  app.get('/api/health', use(_health.healthCheck), respondResult);
   app.get('/api/authenticated', function (req, res, next) {
     if (req.isAuthenticated()) {
       next();
