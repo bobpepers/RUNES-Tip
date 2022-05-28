@@ -229,7 +229,6 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
   app.post('/api/management/withdrawaladdress', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_withdrawalAddresses.fetchWithdrawalAddress), respondResult);
   app.post('/api/management/dashboardusers', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_dashboardUsers.fetchDashboardUsers), respondCountAndResult);
   app.post('/api/management/servers', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, attachResLocalsClients, use(_servers.fetchServers), respondCountAndResult);
-  app.post('/api/management/servers', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, attachResLocalsClients, use(_servers.fetchServers), respondCountAndResult);
   app.post('/api/management/server/leave', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, attachResLocalsClients, use(_servers.leaveServer), respondResult);
   app.get('/api/status', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_status.fetchNodeStatus), respondResult);
   app.get('/api/balance', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, use(_balance.fetchBalance), respondResult);

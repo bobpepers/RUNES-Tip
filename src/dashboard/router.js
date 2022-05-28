@@ -904,18 +904,6 @@ export const dashboardRouter = (
   );
 
   app.post(
-    '/api/management/servers',
-    IsAuthenticated,
-    isAdmin,
-    isDashboardUserBanned,
-    insertIp,
-    ensuretfa,
-    attachResLocalsClients,
-    use(fetchServers),
-    respondCountAndResult,
-  );
-
-  app.post(
     '/api/management/server/leave',
     IsAuthenticated,
     isAdmin,
