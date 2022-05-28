@@ -5,6 +5,8 @@ import {
 } from "discord.js";
 import _ from 'lodash';
 import { Telegraf } from "telegraf";
+import { TelegramClient } from 'telegram';
+import { StoreSession } from 'telegram/sessions';
 import PQueue from 'p-queue';
 import express from "express";
 import http from "http";
@@ -172,21 +174,22 @@ const conditionalCSRF = function (
   const sockets = {};
 
   io.on("connection", async (socket) => {
-    const userId = socket.request.session.passport ? socket.request.session.passport.user : '';
+    // const userId = socket.request.session.passport ? socket.request.session.passport.user : '';
     if (
       socket.request.user
     && (socket.request.user.role === 4
       || socket.request.user.role === 8)
     ) {
       socket.join('admin');
-      sockets[parseInt(userId, 10)] = socket;
+      // sockets[parseInt(userId, 10)] = socket;
     }
     // console.log(Object.keys(sockets).length);
     socket.on("disconnect", () => {
-      delete sockets[parseInt(userId, 10)];
+      // delete sockets[parseInt(userId, 10)];
     });
   });
 
+  // Discord
   const discordClient = new Client({
     intents: [
       Intents.FLAGS.GUILDS,
@@ -208,15 +211,35 @@ const conditionalCSRF = function (
     //  GuildEmoji: 5000, // This is default
     // }),
   });
+  await discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
 
+  // telegraf client
   const telegramClient = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
+  await telegramClient.launch();
 
+  // gram.js
+  const storeSession = new StoreSession("telegram_session");
+
+  const telegramApiClient = new TelegramClient(
+    storeSession,
+    Number(process.env.TELEGRAM_API_ID),
+    process.env.TELEGRAM_API_HASH,
+    {
+      connectionRetries: 5,
+    },
+  );
+  await telegramApiClient.start({
+    botAuthToken: process.env.TELEGRAM_BOT_TOKEN,
+    onError: (err) => console.log(err),
+  });
+  await telegramApiClient.session.save();
+  await telegramApiClient.connect();
+
+  // matrix
   let matrixClient = sdk.createClient({
     baseUrl: `https://matrix.org`,
   });
 
-  await telegramClient.launch();
-  await discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
   try {
     const matrixLoginCredentials = await matrixClient.login("m.login.password", {
       user: process.env.MATRIX_USER,
@@ -235,6 +258,7 @@ const conditionalCSRF = function (
     console.log(e);
   }
 
+  // Init Database
   await initDatabaseRecords(
     discordClient,
     telegramClient,
@@ -300,6 +324,7 @@ const conditionalCSRF = function (
     app,
     discordClient,
     telegramClient,
+    telegramApiClient,
     matrixClient,
     io,
     settings,
@@ -311,6 +336,7 @@ const conditionalCSRF = function (
     io,
     discordClient,
     telegramClient,
+    telegramApiClient,
     matrixClient,
   );
 

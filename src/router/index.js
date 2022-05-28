@@ -7,6 +7,7 @@ export const router = (
   app,
   discordClient,
   telegramClient,
+  telegramApiClient,
   matrixClient,
   io,
   settings,
@@ -34,6 +35,7 @@ export const router = (
   if (settings.bot.enabled.telegram) {
     telegramRouter(
       telegramClient,
+      telegramApiClient,
       queue,
       io,
       settings,

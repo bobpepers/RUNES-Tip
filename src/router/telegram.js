@@ -1,6 +1,5 @@
 import { config } from "dotenv";
-import { TelegramClient } from 'telegram';
-import { StoreSession } from 'telegram/sessions';
+
 import { fetchHelp } from '../controllers/telegram/help';
 import { fetchInfo } from '../controllers/telegram/info';
 import { telegramFaucetClaim } from '../controllers/telegram/faucet';
@@ -38,32 +37,15 @@ import {
 
 config();
 
-const storeSession = new StoreSession("telegram_session");
-
-const telegramApiClient = new TelegramClient(
-  storeSession,
-  Number(process.env.TELEGRAM_API_ID),
-  process.env.TELEGRAM_API_HASH,
-  {
-    connectionRetries: 5,
-  },
-);
-
 // const runesGroup = process.env.TELEGRAM_RUNES_GROUP;
 
 export const telegramRouter = async (
   telegramClient,
+  telegramApiClient,
   queue,
   io,
   settings,
 ) => {
-  await telegramApiClient.start({
-    botAuthToken: process.env.TELEGRAM_BOT_TOKEN,
-    onError: (err) => console.log(err),
-  });
-  await telegramApiClient.session.save();
-  await telegramApiClient.connect();
-
   telegramClient.command('help', async (ctx) => {
     let groupTask;
     let lastSeen;

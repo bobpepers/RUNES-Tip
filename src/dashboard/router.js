@@ -24,6 +24,7 @@ import { insertIp } from './controllers/ip';
 import {
   fetchServers,
   banServer,
+  leaveServer,
 } from './controllers/servers';
 
 import {
@@ -242,11 +243,13 @@ export const dashboardRouter = (
   io,
   discordClient,
   telegramClient,
+  telegramApiClient,
   matrixClient,
 ) => {
   const attachResLocalsClients = (req, res, next) => {
     res.locals.discordClient = discordClient;
     res.locals.telegramClient = telegramClient;
+    res.locals.telegramApiClient = telegramApiClient;
     res.locals.matrixClient = matrixClient;
     next();
   };
@@ -895,18 +898,32 @@ export const dashboardRouter = (
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
+    attachResLocalsClients,
     use(fetchServers),
     respondCountAndResult,
   );
 
   app.post(
-    '/api/management/userinfo',
+    '/api/management/servers',
     IsAuthenticated,
     isAdmin,
     isDashboardUserBanned,
     insertIp,
     ensuretfa,
-    use(fetchUserInfo),
+    attachResLocalsClients,
+    use(fetchServers),
+    respondCountAndResult,
+  );
+
+  app.post(
+    '/api/management/server/leave',
+    IsAuthenticated,
+    isAdmin,
+    isDashboardUserBanned,
+    insertIp,
+    ensuretfa,
+    attachResLocalsClients,
+    use(leaveServer),
     respondResult,
   );
 
