@@ -197,7 +197,6 @@ var discordStats = /*#__PURE__*/function () {
                         dateObj = _context.sent;
                         childWhereOptions.createdAt = (0, _defineProperty2["default"])({}, _sequelize.Op.gte, dateObj); // childWhereOptionsTrivia.createdAt = { [Op.gte]: dateObj };
 
-                        // childWhereOptionsTrivia.createdAt = { [Op.gte]: dateObj };
                         childWhereOptionsTriviaTips.createdAt = (0, _defineProperty2["default"])({}, _sequelize.Op.gte, dateObj);
 
                       case 35:
@@ -447,7 +446,6 @@ var discordStats = /*#__PURE__*/function () {
                           groupedSleets = userWithIncludes.sleets ? groupGlobal(userWithIncludes.sleets, 'spend', 'sleets') : {};
                           groupedTrivia = userWithIncludes.trivias ? groupGlobal(userWithIncludes.trivias, 'spend', 'trivias') : {}; // earned
 
-                          // earned
                           groupedTipTips = userWithIncludes.tiptips ? groupGlobal(userWithIncludes.tiptips, 'earned', 'tips') : {};
                           groupedReactdropTips = userWithIncludes.reactdroptips ? groupGlobal(userWithIncludes.reactdroptips, 'earned', 'reactdrops') : {};
                           groupedFloodTips = userWithIncludes.floodtips ? groupGlobal(userWithIncludes.floodtips, 'earned', 'floods') : {};
@@ -471,7 +469,6 @@ var discordStats = /*#__PURE__*/function () {
                           groupedSleets = userWithIncludes.sleets ? group(userWithIncludes.sleets, 'spend', 'sleets') : {};
                           groupedTrivia = userWithIncludes.trivias ? group(userWithIncludes.trivias, 'spend', 'trivias') : {}; // earned
 
-                          // earned
                           groupedTipTips = userWithIncludes.tiptips ? group(userWithIncludes.tiptips, 'earned', 'tips') : {};
                           groupedReactdropTips = userWithIncludes.reactdroptips ? group(userWithIncludes.reactdroptips, 'earned', 'reactdrops') : {};
                           groupedFloodTips = userWithIncludes.floodtips ? group(userWithIncludes.floodtips, 'earned', 'floods') : {};
@@ -484,7 +481,6 @@ var discordStats = /*#__PURE__*/function () {
                         } // merge results into a single object
 
 
-                        // merge results into a single object
                         mergedObject = _lodash["default"].merge( // Spend
                         groupedTips, groupedReactdrops, groupedFloods, groupedSoaks, groupedHurricanes, groupedThunderStorms, groupedThunders, groupedSleets, groupedTrivia, // Earned
                         groupedTipTips, groupedReactdropTips, groupedFloodTips, groupedSoakTips, groupedHurricaneTips, groupedThunderStormTips, groupedThunderTips, groupedSleetTips, groupedTriviaTips);
@@ -515,7 +511,6 @@ var discordStats = /*#__PURE__*/function () {
                         console.log(serverObj);
                         console.log('serverObj'); // Spend
 
-                        // Spend
                         spendTips = mergedObject["".concat(serverObj)].spend && mergedObject["".concat(serverObj)].spend.tips && "".concat(mergedObject["".concat(serverObj)].spend.tips.length, " tips for ").concat(mergedObject["".concat(serverObj)].spend.tips.reduce(function (a, b) {
                           return +a + +b.amount;
                         }, 0) / 1e8, " ").concat(settings.coin.ticker);
@@ -561,7 +556,6 @@ var discordStats = /*#__PURE__*/function () {
                           return +a + +b.amount;
                         }, 0) / 1e8 : 0); // Earned
 
-                        // Earned
                         earnedTips = mergedObject["".concat(serverObj)].earned && mergedObject["".concat(serverObj)].earned.tips && "".concat(mergedObject["".concat(serverObj)].earned.tips.length, " tips for ").concat(mergedObject["".concat(serverObj)].earned.tips.reduce(function (a, b) {
                           return +a + +b.amount;
                         }, 0) / 1e8, " ").concat(settings.coin.ticker);

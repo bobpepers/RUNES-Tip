@@ -222,7 +222,6 @@ var telegramFlood = /*#__PURE__*/function () {
                         activity.unshift(activityCreate);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(withoutBots);
                         _context.prev = 55;
 

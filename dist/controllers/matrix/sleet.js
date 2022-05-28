@@ -144,7 +144,6 @@ var matrixSleet = /*#__PURE__*/function () {
                       case 34:
                         lastSeenOptions = (0, _defineProperty2["default"])({}, _sequelize.Op.gte, new Date(Date.now() - 15 * 60 * 1000)); // Optional Timer
 
-                        // Optional Timer
                         if (filteredMessage[3]) {
                           // eslint-disable-next-line prefer-destructuring
                           textTime = filteredMessage[3];
@@ -338,7 +337,6 @@ var matrixSleet = /*#__PURE__*/function () {
                         activity.push(finalActivity);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(usersToRain);
                         _context.prev = 90;
 
@@ -452,7 +450,6 @@ var matrixSleet = /*#__PURE__*/function () {
                         newStringListUsers = listOfUsersRained.join(", ");
                         cutStringListUsers = newStringListUsers.match(/.{1,6999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
                         _context.prev = 122;
 

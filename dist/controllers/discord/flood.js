@@ -205,7 +205,6 @@ var discordFlood = /*#__PURE__*/function () {
                         activity.unshift(activityCreate);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(withoutBots);
                         _context.prev = 54;
 
@@ -320,7 +319,6 @@ var discordFlood = /*#__PURE__*/function () {
                         newStringListUsers = listOfUsersRained.join(", ");
                         cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
                         _context.prev = 86;
 

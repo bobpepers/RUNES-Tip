@@ -132,7 +132,6 @@ var discordSleet = /*#__PURE__*/function () {
                       case 30:
                         lastSeenOptions = (0, _defineProperty2["default"])({}, _sequelize.Op.gte, new Date(Date.now() - 15 * 60 * 1000)); // Optional Timer
 
-                        // Optional Timer
                         if (filteredMessage[3]) {
                           // eslint-disable-next-line prefer-destructuring
                           textTime = filteredMessage[3];
@@ -331,7 +330,6 @@ var discordSleet = /*#__PURE__*/function () {
                         activity.push(finalActivity);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(usersToRain);
                         _context.prev = 86;
 
@@ -446,7 +444,6 @@ var discordSleet = /*#__PURE__*/function () {
                         newStringListUsers = listOfUsersRained.join(", ");
                         cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
                         _context.prev = 118;
 

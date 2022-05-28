@@ -594,10 +594,8 @@ var listenTrivia = /*#__PURE__*/function () {
                                           case 71:
                                             newStringListUsers = listOfUsersRained.join(", "); // console.log(newStringListUsers);
 
-                                            // console.log(newStringListUsers);
                                             cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
-                                            // eslint-disable-next-line no-restricted-syntax
                                             _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
                                             _context5.prev = 74;
 
@@ -807,7 +805,6 @@ var discordTrivia = /*#__PURE__*/function () {
 
                         isnumPeople = /^\d+$/.test(totalPeople); // Convert Message time to MS
 
-                        // Convert Message time to MS
                         textTime = '5m';
 
                         if (filteredMessage[4]) {
@@ -816,7 +813,6 @@ var discordTrivia = /*#__PURE__*/function () {
                         } // const textTime = filteredMessage[3];
 
 
-                        // const textTime = filteredMessage[3];
                         cutLastTimeLetter = textTime.substring(textTime.length - 1, textTime.length).toLowerCase();
                         cutNumberTime = textTime.substring(0, textTime.length - 1);
                         isnum = /^\d+$/.test(cutNumberTime);
@@ -1067,11 +1063,9 @@ var discordTrivia = /*#__PURE__*/function () {
                         channel = _context11.sent;
                         fee = (amount / 100 * (setting.fee / 1e2)).toFixed(0); // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
                         _iterator3 = _createForOfIteratorHelper(answers);
 
                         try {
-                          // eslint-disable-next-line no-restricted-syntax
                           for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
                             answer = _step3.value;
                             row.addComponents(new _discord.MessageButton().setCustomId(answer.answer).setLabel(alphabet[parseInt(positionAlphabet, 10)]).setStyle('PRIMARY'));

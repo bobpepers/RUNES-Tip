@@ -333,7 +333,6 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                         activity.unshift(finalActivity);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(usersToTip);
                         _context2.prev = 49;
 
@@ -467,7 +466,6 @@ var tipRunesToDiscordUser = /*#__PURE__*/function () {
                         newStringListUsers = listOfUsersRained.join(", ");
                         cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
                         _context2.prev = 87;
 
@@ -766,7 +764,6 @@ var tipCoinsToDiscordFaucet = /*#__PURE__*/function () {
                         updatedFaucet = _context5.sent;
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
                         _iterator3 = _createForOfIteratorHelper(usersToTip);
                         _context5.prev = 49;
 

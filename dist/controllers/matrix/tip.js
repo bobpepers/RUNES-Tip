@@ -102,7 +102,6 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                                   if (filteredMessage[parseInt(AmountPosition, 10)].startsWith('<a')) {
                                     linkRx = /<a[^>]*href=["']([^"']*)["']/g; // const link = filteredMessage[AmountPosition].match(linkRx);
 
-                                    // const link = filteredMessage[AmountPosition].match(linkRx);
                                     link = linkRx.exec(filteredMessage[parseInt(AmountPosition, 10)]);
                                     matrixId = link[1].split("/").pop();
                                   }
@@ -193,7 +192,6 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                         } // verify amount
 
 
-                        // verify amount
                         console.log(filteredMessage[parseInt(AmountPosition, 10)]);
                         _context2.next = 28;
                         return (0, _validateAmount.validateAmount)(matrixClient, message, t, filteredMessage[parseInt(AmountPosition, 10)], user, setting, 'tip', type, usersToTip);
@@ -281,7 +279,6 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                         activity.unshift(finalActivity);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(usersToTip);
                         _context2.prev = 56;
 
@@ -412,7 +409,6 @@ var tipRunesToMatrixUser = /*#__PURE__*/function () {
                         newStringListUsers = listOfUsersRained.join(", ");
                         cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
                         _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
                         _context2.prev = 94;
 

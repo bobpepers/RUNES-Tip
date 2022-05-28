@@ -150,10 +150,11 @@ var respondResult = function respondResult(req, res) {
   }
 };
 
-var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramClient, matrixClient) {
+var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramClient, telegramApiClient, matrixClient) {
   var attachResLocalsClients = function attachResLocalsClients(req, res, next) {
     res.locals.discordClient = discordClient;
     res.locals.telegramClient = telegramClient;
+    res.locals.telegramApiClient = telegramApiClient;
     res.locals.matrixClient = matrixClient;
     next();
   };
@@ -227,8 +228,9 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
   app.post('/api/management/withdrawaladdresses', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_withdrawalAddresses.fetchWithdrawalAddresses), respondCountAndResult);
   app.post('/api/management/withdrawaladdress', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_withdrawalAddresses.fetchWithdrawalAddress), respondResult);
   app.post('/api/management/dashboardusers', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_dashboardUsers.fetchDashboardUsers), respondCountAndResult);
-  app.post('/api/management/servers', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_servers.fetchServers), respondCountAndResult);
-  app.post('/api/management/userinfo', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_userInfo.fetchUserInfo), respondResult);
+  app.post('/api/management/servers', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, attachResLocalsClients, use(_servers.fetchServers), respondCountAndResult);
+  app.post('/api/management/servers', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, attachResLocalsClients, use(_servers.fetchServers), respondCountAndResult);
+  app.post('/api/management/server/leave', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, attachResLocalsClients, use(_servers.leaveServer), respondResult);
   app.get('/api/status', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _ip.insertIp, _tfa.ensuretfa, use(_status.fetchNodeStatus), respondResult);
   app.get('/api/balance', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, use(_balance.fetchBalance), respondResult);
   app.get('/api/faucet/balance', IsAuthenticated, _admin.isAdmin, _auth.isDashboardUserBanned, _tfa.ensuretfa, use(_faucet.fetchFaucetBalance), respondResult);

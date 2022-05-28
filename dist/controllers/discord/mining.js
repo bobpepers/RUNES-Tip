@@ -81,8 +81,6 @@ var discordMining = /*#__PURE__*/function () {
                         networkMSOL = miningInfo.networksolps / 1e6; // const expectBlocksPerDay = ((100 / ((1e6 / miningInfo.difficulty) * 100)) / 1440);
                         // const expectBlocksPerDay = (86400 / ((miningInfo.networksolps / 1e6) * 60));
 
-                        // const expectBlocksPerDay = ((100 / ((1e6 / miningInfo.difficulty) * 100)) / 1440);
-                        // const expectBlocksPerDay = (86400 / ((miningInfo.networksolps / 1e6) * 60));
                         expectBlocksPerDay = 1440 / (miningInfo.networksolps / 1e6);
                         title = 'Privatebay Powder Monkey';
                         nextBlockHalving = 0;

@@ -209,7 +209,6 @@ var telegramRain = /*#__PURE__*/function () {
                         activity.unshift(finalActivity);
                         listOfUsersRained = []; // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
                         _iterator = _createForOfIteratorHelper(withoutBots);
                         _context.prev = 57;
 

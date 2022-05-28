@@ -766,7 +766,6 @@ var listenMatrixReactDrop = /*#__PURE__*/function () {
                                             newStringListUsers = listOfUsersRained.join(", ");
                                             cutStringListUsers = newStringListUsers.match(/.{1,6999}(\s|$)/g); // eslint-disable-next-line no-restricted-syntax
 
-                                            // eslint-disable-next-line no-restricted-syntax
                                             _iterator2 = _createForOfIteratorHelper(cutStringListUsers);
                                             _context8.prev = 60;
 
@@ -1273,7 +1272,6 @@ var matrixReactDrop = /*#__PURE__*/function () {
                         findUpdatedReactDrop = _context15.sent;
                         listenMatrixReactDrop(matrixClient, sendReactDropMessage.event_id, distance, findUpdatedReactDrop, io, queue); // eslint-disable-next-line no-restricted-syntax
 
-                        // eslint-disable-next-line no-restricted-syntax
                         _iterator3 = _createForOfIteratorHelper(shuffeledEmojisArray);
                         _context15.prev = 120;
 
