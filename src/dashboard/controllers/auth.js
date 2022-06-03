@@ -16,11 +16,10 @@ export const isDashboardUserBanned = async (
   next,
 ) => {
   if (req.user.banned) {
-    console.log('user is banned');
-    req.logOut();
-    req.session.destroy();
-    res.status(401).send({
-      error: 'USER_BANNED',
+    req.session.destroy((err) => {
+      res.status(401).send({
+        error: 'USER_BANNED',
+      });
     });
   } else {
     next();
@@ -35,72 +34,33 @@ export const signin = async (
   res,
   next,
 ) => {
+  console.log(req.session);
   const ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  let activity;
-  if (req.authErr === 'USER_NOT_EXIST') {
-    throw new Error("User doesn't exist");
-  }
-  if (req.authErr === 'EMAIL_NOT_VERIFIED') {
-    res.locals.email = req.user_email;
-    const user = await db.dashboardUser.findOne({
-      where: {
-        [Op.or]: [
-          {
-            email: req.user_email.toLowerCase(),
-          },
-        ],
+  const activity = await db.activity.create({
+    dashboardUserId: req.user.id,
+    type: 'login_s',
+    //  ipId: res.locals.ip[0].id,
+  });
+  res.locals.activity = await db.activity.findOne({
+    where: {
+      id: activity.id,
+    },
+    attributes: [
+      'createdAt',
+      'type',
+    ],
+    include: [
+      {
+        model: db.dashboardUser,
+        as: 'dashboardUser',
+        required: false,
+        attributes: ['username'],
       },
-    });
-    if (user) {
-      const verificationToken = await generateVerificationToken(24);
-      if (user.authused === true) {
-        throw new Error("Authentication token already used");
-      }
-      const updatedUser = await user.update({
-        authexpires: verificationToken.tomorrow,
-        authtoken: verificationToken.authtoken,
-      });
-      const {
-        email,
-        authtoken,
-      } = updatedUser;
-      sendVerificationEmail(email, authtoken);
-      req.session.destroy();
-      res.status(401).send({
-        error: req.authErr,
-        email: res.locals.email,
-      });
-      throw new Error(req.authErr);
-    }
-  } else if (req.authErr) {
-    req.session.destroy();
-    throw new Error("LOGIN_ERROR");
-  } else {
-    const activity = await db.activity.create({
-      dashboardUserId: req.user.id,
-      type: 'login_s',
-      //  ipId: res.locals.ip[0].id,
-    });
-    res.locals.activity = await db.activity.findOne({
-      where: {
-        id: activity.id,
-      },
-      attributes: [
-        'createdAt',
-        'type',
-      ],
-      include: [
-        {
-          model: db.dashboardUser,
-          as: 'dashboardUser',
-          required: false,
-          attributes: ['username'],
-        },
-      ],
-    });
-    res.locals.result = req.user.username;
-    return next();
-  }
+    ],
+  });
+  res.locals.result = req.user.username;
+
+  return next();
 };
 
 export const destroySession = async (
@@ -132,10 +92,9 @@ export const destroySession = async (
       },
     ],
   });
-  req.logOut();
-  req.session.destroy();
-  res.redirect("/");
-  next();
+  req.session.destroy((err) => {
+    res.redirect('/');
+  });
 };
 
 /**

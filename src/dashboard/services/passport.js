@@ -4,6 +4,9 @@ import { Op } from 'sequelize';
 import { config } from "dotenv";
 import db from '../../models';
 
+import { sendVerificationEmail } from '../helpers/email';
+import { generateVerificationToken } from '../helpers/generate';
+
 // import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 // import { sendVerificationEmail } from '../helpers/email';
 
@@ -38,7 +41,7 @@ const localLogin = new LocalStrategy(localOptions, async (
   password,
   done,
 ) => {
-  db.dashboardUser.findOne({
+  const user = await db.dashboardUser.findOne({
     where: {
       [Op.or]: [
         {
@@ -46,33 +49,61 @@ const localLogin = new LocalStrategy(localOptions, async (
         },
       ],
     },
-  }).then((user) => {
-    if (!user) {
-      req.authErr = 'USER_NOT_EXIST';
-      return done(null, false, { message: 'USER_NOT_EXIST' });
-    }
-    user.comparePassword(password, (err, isMatch) => {
+  });
+  if (!user) {
+    return done(
+      {
+        message: 'LOGIN_FAIL',
+      },
+      false,
+    );
+  }
+  if (user) {
+    user.comparePassword(password, async (err, isMatch) => {
       if (!isMatch) {
-        console.log('password does not match');
-        req.authErr = 'WRONG_PASSWORD';
-        return done(null, false, { message: 'USER_NOT_EXIST' });
+        return done(
+          {
+            message: 'LOGIN_FAIL',
+          },
+          false,
+        );
       }
-
       if (user.role < 1) {
-        console.log('email is not verified');
-        req.authErr = 'EMAIL_NOT_VERIFIED';
-        return done('EMAIL_NOT_VERIFIED', false);
+        if (user.authused === true) {
+          return done(
+            {
+              message: 'AUTH_TOKEN_USED',
+            },
+            false,
+          );
+        }
+        const verificationToken = await generateVerificationToken(24);
+        const updatedUser = await user.update({
+          authexpires: verificationToken.tomorrow,
+          authtoken: verificationToken.authtoken,
+        });
+        const {
+          username,
+          email,
+          authtoken,
+        } = updatedUser;
+        sendVerificationEmail(
+          username,
+          email,
+          authtoken,
+        );
+        req.session.destroy();
+        return done(
+          {
+            message: 'EMAIL_NOT_VERIFIED',
+            email,
+          },
+          false,
+        );
       }
-      console.log('end locallogin');
       req.session.tfa = user.tfa;
       done(null, user);
     });
-  }).catch((error) => {
-    console.log('localLogin error services/passport');
-    console.log(error);
-    req.authErr = error;
-    done(error, false);
-  });
+  }
 });
-
 passport.use(localLogin);

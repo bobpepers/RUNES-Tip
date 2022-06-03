@@ -170,6 +170,7 @@ import {
 const requireSignin = passport.authenticate('local', {
   session: true,
   failWithError: true,
+  keepSessionInfo: true,
 });
 
 const IsAuthenticated = (req, res, next) => {

@@ -56,25 +56,29 @@ export const discordRouter = (
 ) => {
   let counter = 0;
   const interval = setInterval(async () => {
-    if (counter % 2 === 0) {
-      const priceInfo = await db.currency.findOne({
-        where: {
-          iso: 'USD',
-        },
-      });
-      discordClient.user.setPresence({
-        activities: [{
-          name: `$${priceInfo.price}/${settings.coin.ticker}`,
-          type: "WATCHING",
-        }],
-      });
-    } else {
-      discordClient.user.setPresence({
-        activities: [{
-          name: `${settings.bot.command.discord}`,
-          type: "PLAYING",
-        }],
-      });
+    try {
+      if (counter % 2 === 0) {
+        const priceInfo = await db.currency.findOne({
+          where: {
+            iso: 'USD',
+          },
+        });
+        discordClient.user.setPresence({
+          activities: [{
+            name: `$${priceInfo.price}/${settings.coin.ticker}`,
+            type: "WATCHING",
+          }],
+        });
+      } else {
+        discordClient.user.setPresence({
+          activities: [{
+            name: `${settings.bot.command.discord}`,
+            type: "PLAYING",
+          }],
+        });
+      }
+    } catch (e) {
+      console.log(e);
     }
     counter += 1;
   }, 40000);

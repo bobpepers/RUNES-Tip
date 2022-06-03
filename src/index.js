@@ -388,9 +388,23 @@ const conditionalCSRF = function (
   });
 
   app.use((err, req, res, next) => {
-    res.status(500).send({
-      error: err.message,
-    });
+    if (err.message && err.message === "EMAIL_NOT_VERIFIED") {
+      res.status(401).send({
+        error: err.message,
+        email: err.email,
+      });
+    } else if (
+      (err.message && err === 'LOGIN_FAIL')
+      || (err.message && err === 'AUTH_TOKEN_USED')
+    ) {
+      res.status(401).send({
+        error: err.message,
+      });
+    } else {
+      res.status(500).send({
+        error: err.message,
+      });
+    }
   });
 
   server.listen(port);
