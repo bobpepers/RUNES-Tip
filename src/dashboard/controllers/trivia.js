@@ -95,10 +95,10 @@ export const insertTrivia = async (
   if (req.body.question.question === '') {
     throw new Error("question cannot be empty");
   }
-  if (req.body.question.answers.length < 2) {
+  if (Object.keys(req.body.question.answers).length < 2) {
     throw new Error("must have more then 2 answers");
   }
-  if (req.body.question.answers.length > 5) {
+  if (Object.keys(req.body.question.answers).length > 5) {
     throw new Error("maximum is 5 answers");
   }
   if (!_.find(req.body.question.answers, { correct: 'true' })) {

@@ -184,7 +184,7 @@ var insertTrivia = /*#__PURE__*/function () {
             throw new Error("question cannot be empty");
 
           case 2:
-            if (!(req.body.question.answers.length < 2)) {
+            if (!(Object.keys(req.body.question.answers).length < 2)) {
               _context4.next = 4;
               break;
             }
@@ -192,7 +192,7 @@ var insertTrivia = /*#__PURE__*/function () {
             throw new Error("must have more then 2 answers");
 
           case 4:
-            if (!(req.body.question.answers.length > 5)) {
+            if (!(Object.keys(req.body.question.answers).length > 5)) {
               _context4.next = 6;
               break;
             }
