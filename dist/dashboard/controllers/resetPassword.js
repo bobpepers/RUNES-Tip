@@ -35,65 +35,62 @@ var resetPassword = /*#__PURE__*/function () {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            console.log('resetPassword');
             email = req.body.email;
-            _context.next = 4;
+            _context.next = 3;
             return _models["default"].dashboardUser.findOne({
-              where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
-                email: email
-              }])
+              where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [_sequelize.Sequelize.where(_sequelize.Sequelize.fn('lower', _sequelize.Sequelize.col('email')), _sequelize.Sequelize.fn('lower', email))])
             });
 
-          case 4:
+          case 3:
             user = _context.sent;
 
             if (user) {
-              _context.next = 7;
+              _context.next = 6;
               break;
             }
 
             throw new Error("email doesn't exists");
 
-          case 7:
+          case 6:
             if (!user) {
-              _context.next = 21;
+              _context.next = 20;
               break;
             }
 
-            _context.next = 10;
+            _context.next = 9;
             return (0, _generate.generateVerificationToken)(1);
 
-          case 10:
+          case 9:
             verificationToken = _context.sent;
-            _context.next = 13;
+            _context.next = 12;
             return user.update({
               resetpassexpires: verificationToken.expires,
               resetpasstoken: verificationToken.token,
               resetpassused: false
             });
 
-          case 13:
+          case 12:
             updatedUser = _context.sent;
-            _context.next = 16;
+            _context.next = 15;
             return (0, _email.sendResetPassword)(email, updatedUser.username, updatedUser.resetpasstoken);
 
-          case 16:
+          case 15:
             successSend = _context.sent;
 
             if (successSend) {
-              _context.next = 19;
+              _context.next = 18;
               break;
             }
 
             throw new Error("Failed to send email");
 
-          case 19:
+          case 18:
             res.locals.result = {
               success: true
             };
             return _context.abrupt("return", next());
 
-          case 21:
+          case 20:
           case "end":
             return _context.stop();
         }

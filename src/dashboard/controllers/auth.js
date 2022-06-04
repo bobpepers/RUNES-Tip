@@ -117,7 +117,7 @@ export const signup = async (req, res, next) => {
     throw new Error("USERNAME_NO_SPACES_OR_SPECIAL_CHARACTERS_ALLOWED");
   }
 
-  const User = await db.dashboardUser.findOne({
+  const user = await db.dashboardUser.findOne({
     where: {
       [Op.or]: [
         Sequelize.where(Sequelize.fn('lower', Sequelize.col('username')), Sequelize.fn('lower', username)),
@@ -126,8 +126,8 @@ export const signup = async (req, res, next) => {
     },
   });
 
-  const isUserNameEqual = User.username.localeCompare(username, undefined, { sensitivity: 'accent' });
-  const isEmailEqual = User.email.localeCompare(email, undefined, { sensitivity: 'accent' });
+  const isUserNameEqual = user && user.username.localeCompare(username, undefined, { sensitivity: 'accent' });
+  const isEmailEqual = user && user.email.localeCompare(email, undefined, { sensitivity: 'accent' });
 
   if (isUserNameEqual === 0) {
     throw new Error("USERNAME_ALREADY_EXIST");

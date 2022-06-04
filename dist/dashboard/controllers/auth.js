@@ -169,7 +169,7 @@ exports.destroySession = destroySession;
 
 var signup = /*#__PURE__*/function () {
   var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(req, res, next) {
-    var _req$body$props, email, password, username, textCharacters, User, isUserNameEqual, isEmailEqual;
+    var _req$body$props, email, password, username, textCharacters, user, isUserNameEqual, isEmailEqual;
 
     return _regenerator["default"].wrap(function _callee5$(_context5) {
       while (1) {
@@ -201,11 +201,11 @@ var signup = /*#__PURE__*/function () {
             });
 
           case 8:
-            User = _context5.sent;
-            isUserNameEqual = User.username.localeCompare(username, undefined, {
+            user = _context5.sent;
+            isUserNameEqual = user && user.username.localeCompare(username, undefined, {
               sensitivity: 'accent'
             });
-            isEmailEqual = User.email.localeCompare(email, undefined, {
+            isEmailEqual = user && user.email.localeCompare(email, undefined, {
               sensitivity: 'accent'
             });
 

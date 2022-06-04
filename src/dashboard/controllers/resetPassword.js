@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt-nodejs';
 import {
   Op,
+  Sequelize,
 } from 'sequelize';
 import { sendResetPassword } from '../helpers/email';
 import { generateVerificationToken } from '../helpers/generate';
@@ -11,12 +12,13 @@ import db from '../../models';
  * Reset password
  */
 export const resetPassword = async (req, res, next) => {
-  console.log('resetPassword');
-  const { email } = req.body;
+  const {
+    email,
+  } = req.body;
   const user = await db.dashboardUser.findOne({
     where: {
       [Op.or]: [
-        { email },
+        Sequelize.where(Sequelize.fn('lower', Sequelize.col('email')), Sequelize.fn('lower', email)),
       ],
     },
   });
