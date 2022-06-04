@@ -1,12 +1,12 @@
 import {
   Transaction,
   Op,
+  Sequelize,
 } from 'sequelize';
 import { sendVerificationEmail } from '../helpers/email';
 import db from '../../models';
 import { generateVerificationToken } from '../helpers/generate';
 import timingSafeEqual from '../helpers/timingSafeEqual';
-import { hasUpperCase } from '../helpers/utils';
 
 /**
  * Is Dashboard User Banned?
@@ -35,7 +35,6 @@ export const signin = async (
   res,
   next,
 ) => {
-  console.log(req.session);
   const ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   const activity = await db.activity.create({
     dashboardUserId: req.user.id,
@@ -116,32 +115,24 @@ export const signup = async (req, res, next) => {
   const textCharacters = new RegExp("^[a-zA-Z0-9]*$");
   if (!textCharacters.test(username)) {
     throw new Error("USERNAME_NO_SPACES_OR_SPECIAL_CHARACTERS_ALLOWED");
-    // return res.status(401).send({
-    //   error: 'USERNAME_NO_SPACES_OR_SPECIAL_CHARACTERS_ALLOWED',
-    // });
-  }
-
-  if (hasUpperCase(email)) {
-    throw new Error("EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT");
   }
 
   const User = await db.dashboardUser.findOne({
     where: {
       [Op.or]: [
-        {
-          username,
-        },
-        {
-          email,
-        },
+        Sequelize.where(Sequelize.fn('lower', Sequelize.col('username')), Sequelize.fn('lower', username)),
+        Sequelize.where(Sequelize.fn('lower', Sequelize.col('email')), Sequelize.fn('lower', email)),
       ],
     },
   });
 
-  if (User && User.username.toLowerCase() === username.toLowerCase()) {
+  const isUserNameEqual = User.username.localeCompare(username, undefined, { sensitivity: 'accent' });
+  const isEmailEqual = User.email.localeCompare(email, undefined, { sensitivity: 'accent' });
+
+  if (isUserNameEqual === 0) {
     throw new Error("USERNAME_ALREADY_EXIST");
   }
-  if (User && User.email === email) {
+  if (isEmailEqual === 0) {
     throw new Error("EMAIL_ALREADY_EXIST");
   }
 
@@ -166,7 +157,6 @@ export const signup = async (req, res, next) => {
       return res.json({
         email,
       });
-      // next();
     });
   });
 };
@@ -179,19 +169,14 @@ export const resendVerification = async (
   res,
   next,
 ) => {
-  console.log('resend verification');
-  const { email } = req.body;
-
-  if (hasUpperCase(email)) {
-    throw new Error("EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT");
-  }
+  const {
+    email,
+  } = req.body;
 
   db.dashboardUser.findOne({
     where: {
       [Op.or]: [
-        {
-          email,
-        },
+        Sequelize.where(Sequelize.fn('lower', Sequelize.col('email')), Sequelize.fn('lower', email)),
       ],
     },
   }).then(async (user) => {
@@ -204,7 +189,10 @@ export const resendVerification = async (
       authexpires: verificationToken.expires,
       authtoken: verificationToken.token,
     }).then((updatedUser) => {
-      const { email, authtoken } = updatedUser;
+      const {
+        email,
+        authtoken,
+      } = updatedUser;
       sendVerificationEmail(email, authtoken);
       res.json({ success: true });
     }).catch((err) => {
@@ -228,16 +216,10 @@ export const verifyEmail = (
     token,
   } = req.body;
 
-  if (hasUpperCase(email)) {
-    throw new Error("EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT");
-  }
-
   db.dashboardUser.findOne({
     where: {
       [Op.or]: [
-        {
-          email,
-        },
+        Sequelize.where(Sequelize.fn('lower', Sequelize.col('email')), Sequelize.fn('lower', email)),
       ],
     },
   }).then((user) => {

@@ -22,8 +22,6 @@ var _email2 = require("../helpers/email");
 
 var _generate = require("../helpers/generate");
 
-var _utils = require("../helpers/utils");
-
 // import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 // import { sendVerificationEmail } from '../helpers/email';
 (0, _dotenv.config)();
@@ -91,28 +89,16 @@ var localLogin = new _passportLocal["default"](localOptions, /*#__PURE__*/functi
       while (1) {
         switch (_context4.prev = _context4.next) {
           case 0:
-            if (!(0, _utils.hasUpperCase)(email)) {
-              _context4.next = 2;
-              break;
-            }
-
-            return _context4.abrupt("return", done({
-              message: 'EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT'
-            }, false));
-
-          case 2:
-            _context4.next = 4;
+            _context4.next = 2;
             return _models["default"].dashboardUser.findOne({
-              where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
-                email: email
-              }])
+              where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [_sequelize.Sequelize.where(_sequelize.Sequelize.fn('lower', _sequelize.Sequelize.col('email')), _sequelize.Sequelize.fn('lower', email))])
             });
 
-          case 4:
+          case 2:
             user = _context4.sent;
 
             if (user) {
-              _context4.next = 7;
+              _context4.next = 5;
               break;
             }
 
@@ -120,7 +106,7 @@ var localLogin = new _passportLocal["default"](localOptions, /*#__PURE__*/functi
               message: 'LOGIN_FAIL'
             }, false));
 
-          case 7:
+          case 5:
             if (user) {
               user.comparePassword(password, /*#__PURE__*/function () {
                 var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(err, isMatch) {
@@ -194,7 +180,7 @@ var localLogin = new _passportLocal["default"](localOptions, /*#__PURE__*/functi
               }());
             }
 
-          case 8:
+          case 6:
           case "end":
             return _context4.stop();
         }

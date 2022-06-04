@@ -23,8 +23,6 @@ var _generate = require("../helpers/generate");
 
 var _timingSafeEqual = _interopRequireDefault(require("../helpers/timingSafeEqual"));
 
-var _utils = require("../helpers/utils");
-
 /**
  * Is Dashboard User Banned?
  */
@@ -70,18 +68,17 @@ var signin = /*#__PURE__*/function () {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            console.log(req.session);
             ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-            _context2.next = 4;
+            _context2.next = 3;
             return _models["default"].activity.create({
               dashboardUserId: req.user.id,
               type: 'login_s' //  ipId: res.locals.ip[0].id,
 
             });
 
-          case 4:
+          case 3:
             activity = _context2.sent;
-            _context2.next = 7;
+            _context2.next = 6;
             return _models["default"].activity.findOne({
               where: {
                 id: activity.id
@@ -95,12 +92,12 @@ var signin = /*#__PURE__*/function () {
               }]
             });
 
-          case 7:
+          case 6:
             res.locals.activity = _context2.sent;
             res.locals.result = req.user.username;
             return _context2.abrupt("return", next());
 
-          case 10:
+          case 9:
           case "end":
             return _context2.stop();
         }
@@ -172,7 +169,7 @@ exports.destroySession = destroySession;
 
 var signup = /*#__PURE__*/function () {
   var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(req, res, next) {
-    var _req$body$props, email, password, username, textCharacters, User;
+    var _req$body$props, email, password, username, textCharacters, User, isUserNameEqual, isEmailEqual;
 
     return _regenerator["default"].wrap(function _callee5$(_context5) {
       while (1) {
@@ -198,27 +195,21 @@ var signup = /*#__PURE__*/function () {
             throw new Error("USERNAME_NO_SPACES_OR_SPECIAL_CHARACTERS_ALLOWED");
 
           case 6:
-            if (!(0, _utils.hasUpperCase)(email)) {
-              _context5.next = 8;
-              break;
-            }
-
-            throw new Error("EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT");
-
-          case 8:
-            _context5.next = 10;
+            _context5.next = 8;
             return _models["default"].dashboardUser.findOne({
-              where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
-                username: username
-              }, {
-                email: email
-              }])
+              where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [_sequelize.Sequelize.where(_sequelize.Sequelize.fn('lower', _sequelize.Sequelize.col('username')), _sequelize.Sequelize.fn('lower', username)), _sequelize.Sequelize.where(_sequelize.Sequelize.fn('lower', _sequelize.Sequelize.col('email')), _sequelize.Sequelize.fn('lower', email))])
             });
 
-          case 10:
+          case 8:
             User = _context5.sent;
+            isUserNameEqual = User.username.localeCompare(username, undefined, {
+              sensitivity: 'accent'
+            });
+            isEmailEqual = User.email.localeCompare(email, undefined, {
+              sensitivity: 'accent'
+            });
 
-            if (!(User && User.username.toLowerCase() === username.toLowerCase())) {
+            if (!(isUserNameEqual === 0)) {
               _context5.next = 13;
               break;
             }
@@ -226,7 +217,7 @@ var signup = /*#__PURE__*/function () {
             throw new Error("USERNAME_ALREADY_EXIST");
 
           case 13:
-            if (!(User && User.email === email)) {
+            if (!(isEmailEqual === 0)) {
               _context5.next = 15;
               break;
             }
@@ -268,7 +259,7 @@ var signup = /*#__PURE__*/function () {
                           (0, _email.sendVerificationEmail)(email, newUser.authtoken);
                           return res.json({
                             email: email
-                          }); // next();
+                          });
                         });
 
                       case 7:
@@ -310,21 +301,10 @@ var resendVerification = /*#__PURE__*/function () {
       while (1) {
         switch (_context7.prev = _context7.next) {
           case 0:
-            console.log('resend verification');
             email = req.body.email;
 
-            if (!(0, _utils.hasUpperCase)(email)) {
-              _context7.next = 4;
-              break;
-            }
-
-            throw new Error("EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT");
-
-          case 4:
             _models["default"].dashboardUser.findOne({
-              where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
-                email: email
-              }])
+              where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [_sequelize.Sequelize.where(_sequelize.Sequelize.fn('lower', _sequelize.Sequelize.col('email')), _sequelize.Sequelize.fn('lower', email))])
             }).then( /*#__PURE__*/function () {
               var _ref7 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(user) {
                 var verificationToken;
@@ -378,7 +358,7 @@ var resendVerification = /*#__PURE__*/function () {
               next(err);
             });
 
-          case 5:
+          case 2:
           case "end":
             return _context7.stop();
         }
@@ -402,14 +382,8 @@ var verifyEmail = function verifyEmail(req, res, next) {
       email = _req$body.email,
       token = _req$body.token;
 
-  if ((0, _utils.hasUpperCase)(email)) {
-    throw new Error("EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT");
-  }
-
   _models["default"].dashboardUser.findOne({
-    where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
-      email: email
-    }])
+    where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [_sequelize.Sequelize.where(_sequelize.Sequelize.fn('lower', _sequelize.Sequelize.col('email')), _sequelize.Sequelize.fn('lower', email))])
   }).then(function (user) {
     if (!user) {
       throw new Error('USER_NOT_EXIST');
