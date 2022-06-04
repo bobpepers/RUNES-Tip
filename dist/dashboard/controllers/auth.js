@@ -23,6 +23,8 @@ var _generate = require("../helpers/generate");
 
 var _timingSafeEqual = _interopRequireDefault(require("../helpers/timingSafeEqual"));
 
+var _utils = require("../helpers/utils");
+
 /**
  * Is Dashboard User Banned?
  */
@@ -33,11 +35,10 @@ var isDashboardUserBanned = /*#__PURE__*/function () {
         switch (_context.prev = _context.next) {
           case 0:
             if (req.user.banned) {
-              console.log('user is banned');
-              req.logOut();
-              req.session.destroy();
-              res.status(401).send({
-                error: 'USER_BANNED'
+              req.session.destroy(function (err) {
+                res.status(401).send({
+                  error: 'USER_BANNED'
+                });
               });
             } else {
               next();
@@ -64,101 +65,26 @@ exports.isDashboardUserBanned = isDashboardUserBanned;
 
 var signin = /*#__PURE__*/function () {
   var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2(req, res, next) {
-    var ip, activity, user, verificationToken, updatedUser, email, authtoken, _activity;
-
+    var ip, activity;
     return _regenerator["default"].wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
+            console.log(req.session);
             ip = req.headers['cf-connecting-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-
-            if (!(req.authErr === 'USER_NOT_EXIST')) {
-              _context2.next = 3;
-              break;
-            }
-
-            throw new Error("User doesn't exist");
-
-          case 3:
-            if (!(req.authErr === 'EMAIL_NOT_VERIFIED')) {
-              _context2.next = 24;
-              break;
-            }
-
-            res.locals.email = req.user_email;
-            _context2.next = 7;
-            return _models["default"].dashboardUser.findOne({
-              where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
-                email: req.user_email.toLowerCase()
-              }])
-            });
-
-          case 7:
-            user = _context2.sent;
-
-            if (!user) {
-              _context2.next = 22;
-              break;
-            }
-
-            _context2.next = 11;
-            return (0, _generate.generateVerificationToken)(24);
-
-          case 11:
-            verificationToken = _context2.sent;
-
-            if (!(user.authused === true)) {
-              _context2.next = 14;
-              break;
-            }
-
-            throw new Error("Authentication token already used");
-
-          case 14:
-            _context2.next = 16;
-            return user.update({
-              authexpires: verificationToken.tomorrow,
-              authtoken: verificationToken.authtoken
-            });
-
-          case 16:
-            updatedUser = _context2.sent;
-            email = updatedUser.email, authtoken = updatedUser.authtoken;
-            (0, _email.sendVerificationEmail)(email, authtoken);
-            req.session.destroy();
-            res.status(401).send({
-              error: req.authErr,
-              email: res.locals.email
-            });
-            throw new Error(req.authErr);
-
-          case 22:
-            _context2.next = 37;
-            break;
-
-          case 24:
-            if (!req.authErr) {
-              _context2.next = 29;
-              break;
-            }
-
-            req.session.destroy();
-            throw new Error("LOGIN_ERROR");
-
-          case 29:
-            _context2.next = 31;
+            _context2.next = 4;
             return _models["default"].activity.create({
               dashboardUserId: req.user.id,
               type: 'login_s' //  ipId: res.locals.ip[0].id,
 
             });
 
-          case 31:
-            _activity = _context2.sent;
-            _context2.next = 34;
+          case 4:
+            activity = _context2.sent;
+            _context2.next = 7;
             return _models["default"].activity.findOne({
               where: {
-                id: _activity.id
+                id: activity.id
               },
               attributes: ['createdAt', 'type'],
               include: [{
@@ -169,12 +95,12 @@ var signin = /*#__PURE__*/function () {
               }]
             });
 
-          case 34:
+          case 7:
             res.locals.activity = _context2.sent;
             res.locals.result = req.user.username;
             return _context2.abrupt("return", next());
 
-          case 37:
+          case 10:
           case "end":
             return _context2.stop();
         }
@@ -221,12 +147,11 @@ var destroySession = /*#__PURE__*/function () {
 
           case 5:
             res.locals.activity = _context3.sent;
-            req.logOut();
-            req.session.destroy();
-            res.redirect("/");
-            next();
+            req.session.destroy(function (err) {
+              res.redirect('/');
+            });
 
-          case 10:
+          case 7:
           case "end":
             return _context3.stop();
         }
@@ -273,35 +198,43 @@ var signup = /*#__PURE__*/function () {
             throw new Error("USERNAME_NO_SPACES_OR_SPECIAL_CHARACTERS_ALLOWED");
 
           case 6:
-            _context5.next = 8;
+            if (!(0, _utils.hasUpperCase)(email)) {
+              _context5.next = 8;
+              break;
+            }
+
+            throw new Error("EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT");
+
+          case 8:
+            _context5.next = 10;
             return _models["default"].dashboardUser.findOne({
               where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
                 username: username
               }, {
-                email: email.toLowerCase()
+                email: email
               }])
             });
 
-          case 8:
+          case 10:
             User = _context5.sent;
 
             if (!(User && User.username.toLowerCase() === username.toLowerCase())) {
-              _context5.next = 11;
+              _context5.next = 13;
               break;
             }
 
             throw new Error("USERNAME_ALREADY_EXIST");
 
-          case 11:
-            if (!(User && User.email.toLowerCase() === email.toLowerCase())) {
-              _context5.next = 13;
+          case 13:
+            if (!(User && User.email === email)) {
+              _context5.next = 15;
               break;
             }
 
             throw new Error("EMAIL_ALREADY_EXIST");
 
-          case 13:
-            _context5.next = 15;
+          case 15:
+            _context5.next = 17;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -320,7 +253,7 @@ var signup = /*#__PURE__*/function () {
                         return _models["default"].dashboardUser.create({
                           username: username,
                           password: password,
-                          email: email.toLowerCase(),
+                          email: email,
                           authused: false,
                           authexpires: verificationToken.expires,
                           authtoken: verificationToken.token
@@ -332,9 +265,9 @@ var signup = /*#__PURE__*/function () {
                       case 5:
                         newUser = _context4.sent;
                         t.afterCommit(function () {
-                          (0, _email.sendVerificationEmail)(email.toLowerCase(), newUser.authtoken);
+                          (0, _email.sendVerificationEmail)(email, newUser.authtoken);
                           return res.json({
-                            email: email.toLowerCase()
+                            email: email
                           }); // next();
                         });
 
@@ -351,7 +284,7 @@ var signup = /*#__PURE__*/function () {
               };
             }());
 
-          case 15:
+          case 17:
           case "end":
             return _context5.stop();
         }
@@ -380,9 +313,17 @@ var resendVerification = /*#__PURE__*/function () {
             console.log('resend verification');
             email = req.body.email;
 
+            if (!(0, _utils.hasUpperCase)(email)) {
+              _context7.next = 4;
+              break;
+            }
+
+            throw new Error("EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT");
+
+          case 4:
             _models["default"].dashboardUser.findOne({
               where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
-                email: email.toLowerCase()
+                email: email
               }])
             }).then( /*#__PURE__*/function () {
               var _ref7 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(user) {
@@ -414,7 +355,7 @@ var resendVerification = /*#__PURE__*/function () {
                         }).then(function (updatedUser) {
                           var email = updatedUser.email,
                               authtoken = updatedUser.authtoken;
-                          (0, _email.sendVerificationEmail)(email.toLowerCase(), authtoken);
+                          (0, _email.sendVerificationEmail)(email, authtoken);
                           res.json({
                             success: true
                           });
@@ -437,7 +378,7 @@ var resendVerification = /*#__PURE__*/function () {
               next(err);
             });
 
-          case 3:
+          case 5:
           case "end":
             return _context7.stop();
         }
@@ -461,9 +402,13 @@ var verifyEmail = function verifyEmail(req, res, next) {
       email = _req$body.email,
       token = _req$body.token;
 
+  if ((0, _utils.hasUpperCase)(email)) {
+    throw new Error("EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT");
+  }
+
   _models["default"].dashboardUser.findOne({
     where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
-      email: email.toLowerCase()
+      email: email
     }])
   }).then(function (user) {
     if (!user) {

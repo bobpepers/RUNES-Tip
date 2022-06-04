@@ -228,11 +228,15 @@ export const verifyEmail = (
     token,
   } = req.body;
 
+  if (hasUpperCase(email)) {
+    throw new Error("EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT");
+  }
+
   db.dashboardUser.findOne({
     where: {
       [Op.or]: [
         {
-          email: email.toLowerCase(),
+          email,
         },
       ],
     },

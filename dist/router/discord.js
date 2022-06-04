@@ -98,19 +98,21 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
+            _context.prev = 0;
+
             if (!(counter % 2 === 0)) {
-              _context.next = 7;
+              _context.next = 8;
               break;
             }
 
-            _context.next = 3;
+            _context.next = 4;
             return _models["default"].currency.findOne({
               where: {
                 iso: 'USD'
               }
             });
 
-          case 3:
+          case 4:
             priceInfo = _context.sent;
             discordClient.user.setPresence({
               activities: [{
@@ -118,10 +120,10 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
                 type: "WATCHING"
               }]
             });
-            _context.next = 8;
+            _context.next = 9;
             break;
 
-          case 7:
+          case 8:
             discordClient.user.setPresence({
               activities: [{
                 name: "".concat(settings.bot.command.discord),
@@ -129,15 +131,24 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
               }]
             });
 
-          case 8:
+          case 9:
+            _context.next = 14;
+            break;
+
+          case 11:
+            _context.prev = 11;
+            _context.t0 = _context["catch"](0);
+            console.log(_context.t0);
+
+          case 14:
             counter += 1;
 
-          case 9:
+          case 15:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee);
+    }, _callee, null, [[0, 11]]);
   })), 40000);
   discordClient.on("presenceUpdate", function (oldMember, newMember) {// const { username } = newMember.user;
     // console.log('presenceUpdate');

@@ -18,6 +18,12 @@ var _dotenv = require("dotenv");
 
 var _models = _interopRequireDefault(require("../../models"));
 
+var _email2 = require("../helpers/email");
+
+var _generate = require("../helpers/generate");
+
+var _utils = require("../helpers/utils");
+
 // import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 // import { sendVerificationEmail } from '../helpers/email';
 (0, _dotenv.config)();
@@ -79,55 +85,121 @@ _passport["default"].deserializeUser( /*#__PURE__*/function () {
 }());
 
 var localLogin = new _passportLocal["default"](localOptions, /*#__PURE__*/function () {
-  var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(req, email, password, done) {
-    return _regenerator["default"].wrap(function _callee3$(_context3) {
+  var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(req, email, password, done) {
+    var user;
+    return _regenerator["default"].wrap(function _callee4$(_context4) {
       while (1) {
-        switch (_context3.prev = _context3.next) {
+        switch (_context4.prev = _context4.next) {
           case 0:
-            _models["default"].dashboardUser.findOne({
+            if (!(0, _utils.hasUpperCase)(email)) {
+              _context4.next = 2;
+              break;
+            }
+
+            return _context4.abrupt("return", done({
+              message: 'EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT'
+            }, false));
+
+          case 2:
+            _context4.next = 4;
+            return _models["default"].dashboardUser.findOne({
               where: (0, _defineProperty2["default"])({}, _sequelize.Op.or, [{
-                email: email.toLowerCase()
+                email: email
               }])
-            }).then(function (user) {
-              if (!user) {
-                req.authErr = 'USER_NOT_EXIST';
-                return done(null, false, {
-                  message: 'USER_NOT_EXIST'
-                });
-              }
-
-              user.comparePassword(password, function (err, isMatch) {
-                if (!isMatch) {
-                  console.log('password does not match');
-                  req.authErr = 'WRONG_PASSWORD';
-                  return done(null, false, {
-                    message: 'USER_NOT_EXIST'
-                  });
-                }
-
-                if (user.role < 1) {
-                  console.log('email is not verified');
-                  req.authErr = 'EMAIL_NOT_VERIFIED';
-                  return done('EMAIL_NOT_VERIFIED', false);
-                }
-
-                console.log('end locallogin');
-                req.session.tfa = user.tfa;
-                done(null, user);
-              });
-            })["catch"](function (error) {
-              console.log('localLogin error services/passport');
-              console.log(error);
-              req.authErr = error;
-              done(error, false);
             });
 
-          case 1:
+          case 4:
+            user = _context4.sent;
+
+            if (user) {
+              _context4.next = 7;
+              break;
+            }
+
+            return _context4.abrupt("return", done({
+              message: 'LOGIN_FAIL'
+            }, false));
+
+          case 7:
+            if (user) {
+              user.comparePassword(password, /*#__PURE__*/function () {
+                var _ref4 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(err, isMatch) {
+                  var verificationToken, updatedUser, username, _email, authtoken;
+
+                  return _regenerator["default"].wrap(function _callee3$(_context3) {
+                    while (1) {
+                      switch (_context3.prev = _context3.next) {
+                        case 0:
+                          if (isMatch) {
+                            _context3.next = 2;
+                            break;
+                          }
+
+                          return _context3.abrupt("return", done({
+                            message: 'LOGIN_FAIL'
+                          }, false));
+
+                        case 2:
+                          if (!(user.role < 1)) {
+                            _context3.next = 15;
+                            break;
+                          }
+
+                          if (!(user.authused === true)) {
+                            _context3.next = 5;
+                            break;
+                          }
+
+                          return _context3.abrupt("return", done({
+                            message: 'AUTH_TOKEN_USED'
+                          }, false));
+
+                        case 5:
+                          _context3.next = 7;
+                          return (0, _generate.generateVerificationToken)(24);
+
+                        case 7:
+                          verificationToken = _context3.sent;
+                          _context3.next = 10;
+                          return user.update({
+                            authexpires: verificationToken.tomorrow,
+                            authtoken: verificationToken.authtoken
+                          });
+
+                        case 10:
+                          updatedUser = _context3.sent;
+                          username = updatedUser.username, _email = updatedUser.email, authtoken = updatedUser.authtoken;
+                          (0, _email2.sendVerificationEmail)(username, _email, authtoken);
+                          req.session.destroy();
+                          return _context3.abrupt("return", done({
+                            message: 'EMAIL_NOT_VERIFIED',
+                            email: _email
+                          }, false));
+
+                        case 15:
+                          req.session.tfa = user.tfa;
+                          done(null, user);
+
+                        case 17:
+                        case "end":
+                          return _context3.stop();
+                      }
+                    }
+                  }, _callee3);
+                }));
+
+                return function (_x9, _x10) {
+                  return _ref4.apply(this, arguments);
+                };
+              }());
+            }
+
+          case 8:
           case "end":
-            return _context3.stop();
+            return _context4.stop();
         }
       }
-    }, _callee3);
+    }, _callee4);
   }));
 
   return function (_x5, _x6, _x7, _x8) {

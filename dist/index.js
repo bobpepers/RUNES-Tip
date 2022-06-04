@@ -92,6 +92,7 @@ var _logger = _interopRequireDefault(require("./helpers/logger"));
 
 /* eslint-disable import/first */
 global.Olm = _olm["default"];
+Object.freeze(Object.prototype);
 (0, _dotenv.config)();
 
 var checkCSRFRoute = function checkCSRFRoute(req) {
@@ -431,9 +432,20 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
             }, _callee2);
           })));
           app.use(function (err, req, res, next) {
-            res.status(500).send({
-              error: err.message
-            });
+            if (err.message && err.message === "EMAIL_NOT_VERIFIED") {
+              res.status(401).send({
+                error: err.message,
+                email: err.email
+              });
+            } else if (err.message && err === 'LOGIN_FAIL' || err.message && err === 'AUTH_TOKEN_USED' || err.message && err === 'EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT') {
+              res.status(401).send({
+                error: err.message
+              });
+            } else {
+              res.status(500).send({
+                error: err.message
+              });
+            }
           });
           server.listen(port);
           console.log('server listening on:', port);
