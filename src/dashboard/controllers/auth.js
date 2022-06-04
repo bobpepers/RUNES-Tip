@@ -6,6 +6,7 @@ import { sendVerificationEmail } from '../helpers/email';
 import db from '../../models';
 import { generateVerificationToken } from '../helpers/generate';
 import timingSafeEqual from '../helpers/timingSafeEqual';
+import { hasUpperCase } from '../helpers/utils';
 
 /**
  * Is Dashboard User Banned?
@@ -120,6 +121,10 @@ export const signup = async (req, res, next) => {
     // });
   }
 
+  if (hasUpperCase(email)) {
+    throw new Error("EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT");
+  }
+
   const User = await db.dashboardUser.findOne({
     where: {
       [Op.or]: [
@@ -127,7 +132,7 @@ export const signup = async (req, res, next) => {
           username,
         },
         {
-          email: email.toLowerCase(),
+          email,
         },
       ],
     },
@@ -136,7 +141,7 @@ export const signup = async (req, res, next) => {
   if (User && User.username.toLowerCase() === username.toLowerCase()) {
     throw new Error("USERNAME_ALREADY_EXIST");
   }
-  if (User && User.email.toLowerCase() === email.toLowerCase()) {
+  if (User && User.email === email) {
     throw new Error("EMAIL_ALREADY_EXIST");
   }
 
@@ -147,7 +152,7 @@ export const signup = async (req, res, next) => {
     const newUser = await db.dashboardUser.create({
       username,
       password,
-      email: email.toLowerCase(),
+      email,
       authused: false,
       authexpires: verificationToken.expires,
       authtoken: verificationToken.token,
@@ -157,9 +162,9 @@ export const signup = async (req, res, next) => {
     });
 
     t.afterCommit(() => {
-      sendVerificationEmail(email.toLowerCase(), newUser.authtoken);
+      sendVerificationEmail(email, newUser.authtoken);
       return res.json({
-        email: email.toLowerCase(),
+        email,
       });
       // next();
     });
@@ -176,11 +181,16 @@ export const resendVerification = async (
 ) => {
   console.log('resend verification');
   const { email } = req.body;
+
+  if (hasUpperCase(email)) {
+    throw new Error("EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT");
+  }
+
   db.dashboardUser.findOne({
     where: {
       [Op.or]: [
         {
-          email: email.toLowerCase(),
+          email,
         },
       ],
     },
@@ -195,7 +205,7 @@ export const resendVerification = async (
       authtoken: verificationToken.token,
     }).then((updatedUser) => {
       const { email, authtoken } = updatedUser;
-      sendVerificationEmail(email.toLowerCase(), authtoken);
+      sendVerificationEmail(email, authtoken);
       res.json({ success: true });
     }).catch((err) => {
       next(err);

@@ -51,6 +51,8 @@ import logger from "./helpers/logger";
 
 global.Olm = olm;
 
+Object.freeze(Object.prototype);
+
 config();
 
 const checkCSRFRoute = (req) => {
@@ -396,6 +398,7 @@ const conditionalCSRF = function (
     } else if (
       (err.message && err === 'LOGIN_FAIL')
       || (err.message && err === 'AUTH_TOKEN_USED')
+      || (err.message && err === 'EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT')
     ) {
       res.status(401).send({
         error: err.message,

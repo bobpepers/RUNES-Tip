@@ -6,6 +6,7 @@ import db from '../../models';
 
 import { sendVerificationEmail } from '../helpers/email';
 import { generateVerificationToken } from '../helpers/generate';
+import { hasUpperCase } from '../helpers/utils';
 
 // import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 // import { sendVerificationEmail } from '../helpers/email';
@@ -41,11 +42,19 @@ const localLogin = new LocalStrategy(localOptions, async (
   password,
   done,
 ) => {
+  if (hasUpperCase(email)) {
+    return done(
+      {
+        message: 'EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT',
+      },
+      false,
+    );
+  }
   const user = await db.dashboardUser.findOne({
     where: {
       [Op.or]: [
         {
-          email: email.toLowerCase(),
+          email,
         },
       ],
     },
