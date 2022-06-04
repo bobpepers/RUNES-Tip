@@ -173,69 +173,70 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   }, _tfa.istfa);
-  app.post('/api/signup', use(_recaptcha.verifyMyCaptcha), use(_ip.insertIp), use(_auth.signup));
-  app.post('/api/functions/withdrawal/accept', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, use(_tfa.ensuretfa), _ip.insertIp, attachResLocalsClients, _withdrawals.acceptWithdrawal, respondResult);
-  app.post('/api/functions/withdrawal/decline', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, use(_tfa.ensuretfa), _ip.insertIp, attachResLocalsClients, _withdrawals.declineWithdrawal, respondResult);
-  app.post('/api/management/user/ban', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_users.banUser), respondResult);
-  app.post('/api/management/channel/ban', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_channels.banChannel), respondResult);
-  app.post('/api/management/server/ban', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_servers.banServer), respondResult);
-  app.post('/api/management/pricecurrencies', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_priceCurrencies.fetchPriceCurrencies), respondCountAndResult);
-  app.post('/api/management/pricecurrencies/remove', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_priceCurrencies.removePriceCurrency), respondResult);
-  app.post('/api/management/pricecurrencies/update', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_priceCurrencies.updatePriceCurrency), respondResult);
-  app.post('/api/management/pricecurrencies/add', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_priceCurrencies.addPriceCurrency), respondResult);
-  app.post('/api/management/pricecurrencies/updateprice', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_priceCurrencies.updatePriceCurrencyPrices), respondResult);
-  app.post('/api/management/feature/remove', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_features.removeFeature), respondResult);
-  app.post('/api/management/feature/update', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_features.updateFeature), respondResult);
-  app.post('/api/management/feature/add', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_features.addFeature), respondResult);
-  app.post('/api/management/features', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_features.fetchFeatures), respondCountAndResult);
-  app.post('/api/management/bot/settings/update', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_bots.updateBotSettings), respondResult);
-  app.post('/api/management/bot/settings', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_bots.fetchBotSettings), respondCountAndResult);
-  app.post('/api/management/channels', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_channels.fetchChannels), respondCountAndResult);
-  app.get('/api/management/triviaquestions', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_trivia.fetchTriviaQuestions), respondCountAndResult);
-  app.post('/api/management/trivia/switch', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_trivia.switchTriviaQuestion), respondResult);
-  app.post('/api/management/trivia/remove', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_trivia.removeTriviaQuestion), respondResult);
-  app.post('/api/management/trivia/insert', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_trivia.insertTrivia), respondResult);
-  app.get('/api/sync/blocks', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_sync.startSyncBlocks), respondResult);
-  app.get('/api/blocknumber', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_blockNumber.fetchBlockNumber), respondResult);
-  app.post('/api/activity', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_activity.fetchActivity), respondCountAndResult);
-  app.post('/api/deposits/patch', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_deposits.patchDeposits), respondResult);
-  app.post('/api/user', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_user.fetchUser), respondResult);
-  app.post('/api/management/users', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_users.fetchUsers), respondCountAndResult);
-  app.post('/api/functions/withdrawals', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_withdrawals.fetchWithdrawals), respondCountAndResult);
-  app.post('/api/functions/deposits', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_deposits.fetchDeposits), respondCountAndResult);
-  app.post('/api/functions/rains', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_rain.fetchRains), respondCountAndResult);
-  app.post('/api/functions/rain', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_rain.fetchRain), respondResult);
-  app.post('/api/functions/floods', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_flood.fetchFloods), respondCountAndResult);
-  app.post('/api/functions/flood', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_flood.fetchFlood), respondResult);
-  app.post('/api/functions/sleets', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_sleet.fetchSleets), respondCountAndResult);
-  app.post('/api/functions/sleet', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_sleet.fetchSleet), respondResult);
-  app.post('/api/functions/soaks', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_soak.fetchSoaks), respondCountAndResult);
-  app.post('/api/functions/soak', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_soak.fetchSoak), respondResult);
-  app.post('/api/functions/thunders', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_thunder.fetchThunders), respondCountAndResult);
-  app.post('/api/functions/thunder', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_thunder.fetchThunder), respondResult);
-  app.post('/api/functions/reactdrops', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_reactdrop.fetchReactdrops), respondCountAndResult);
-  app.post('/api/functions/reactdrop', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_reactdrop.fetchReactdrop), respondResult);
-  app.post('/api/functions/tips', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_tip.fetchTips), respondCountAndResult);
-  app.post('/api/functions/tip', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_tip.fetchTip), respondResult);
-  app.post('/api/functions/thunderstorms', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_thunderstorm.fetchThunderstorms), respondCountAndResult);
-  app.post('/api/functions/thunderstorm', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_thunderstorm.fetchThunderstorm), respondResult);
-  app.post('/api/functions/hurricanes', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_hurricane.fetchHurricanes), respondCountAndResult);
-  app.post('/api/functions/hurricane', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_hurricane.fetchHurricane), respondResult);
-  app.post('/api/functions/trivias', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_trivia.fetchTrivias), respondCountAndResult);
-  app.post('/api/functions/trivia', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_trivia.fetchTrivia), respondResult);
-  app.post('/api/functions/voicerains', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_voicerain.fetchVoicerains), respondCountAndResult);
-  app.post('/api/functions/voicerain', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_voicerain.fetchVoicerain), respondResult);
-  app.post('/api/functions/errors', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_errors.fetchErrors), respondCountAndResult);
-  app.post('/api/management/withdrawaladdresses', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_withdrawalAddresses.fetchWithdrawalAddresses), respondCountAndResult);
-  app.post('/api/management/withdrawaladdress', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_withdrawalAddresses.fetchWithdrawalAddress), respondResult);
-  app.post('/api/management/dashboardusers', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_dashboardUsers.fetchDashboardUsers), respondCountAndResult);
-  app.post('/api/management/servers', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), attachResLocalsClients, use(_servers.fetchServers), respondCountAndResult);
-  app.post('/api/management/server/leave', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), attachResLocalsClients, use(_servers.leaveServer), respondResult);
-  app.get('/api/status', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, _ip.insertIp, use(_tfa.ensuretfa), use(_status.fetchNodeStatus), respondResult);
-  app.get('/api/balance', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, use(_tfa.ensuretfa), use(_balance.fetchBalance), respondResult);
-  app.get('/api/faucet/balance', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, use(_tfa.ensuretfa), use(_faucet.fetchFaucetBalance), respondResult);
-  app.get('/api/liability', IsAuthenticated, use(_admin.isAdmin), _auth.isDashboardUserBanned, use(_tfa.ensuretfa), use(_liability.fetchLiability), respondResult);
-  app.post('/api/signup/verify-email', _ip.insertIp, use(_auth.verifyEmail), function (req, res) {
+  app.post('/api/signup', use(_recaptcha.verifyMyCaptcha), use(use(_ip.insertIp)), use(_auth.signup));
+  app.post('/api/functions/withdrawal/accept', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_tfa.ensuretfa), use(_ip.insertIp), attachResLocalsClients, use(_withdrawals.acceptWithdrawal), respondResult);
+  app.post('/api/functions/withdrawal/decline', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_tfa.ensuretfa), use(_ip.insertIp), attachResLocalsClients, use(_withdrawals.declineWithdrawal), respondResult);
+  app.post('/api/management/user/ban', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_users.banUser), respondResult);
+  app.post('/api/management/channel/ban', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_channels.banChannel), respondResult);
+  app.post('/api/management/server/ban', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_servers.banServer), respondResult);
+  app.post('/api/management/pricecurrencies', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_priceCurrencies.fetchPriceCurrencies), respondCountAndResult);
+  app.post('/api/management/pricecurrencies/remove', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_priceCurrencies.removePriceCurrency), respondResult);
+  app.post('/api/management/pricecurrencies/update', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_priceCurrencies.updatePriceCurrency), respondResult);
+  app.post('/api/management/pricecurrencies/add', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_priceCurrencies.addPriceCurrency), respondResult);
+  app.post('/api/management/pricecurrencies/updateprice', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_priceCurrencies.updatePriceCurrencyPrices), respondResult);
+  app.post('/api/management/feature/remove', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_features.removeFeature), respondResult);
+  app.post('/api/management/feature/update', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_features.updateFeature), respondResult);
+  app.post('/api/management/feature/add', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_features.addFeature), respondResult);
+  app.post('/api/management/features', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_features.fetchFeatures), respondCountAndResult);
+  app.post('/api/management/bot/settings/update', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_bots.updateBotSettings), respondResult);
+  app.post('/api/management/bot/settings', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_bots.fetchBotSettings), respondCountAndResult);
+  app.post('/api/management/channels', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_channels.fetchChannels), respondCountAndResult);
+  app.get('/api/management/triviaquestions', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_trivia.fetchTriviaQuestions), respondCountAndResult);
+  app.post('/api/management/trivia/switch', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_trivia.switchTriviaQuestion), respondResult);
+  app.post('/api/management/trivia/remove', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_trivia.removeTriviaQuestion), respondResult);
+  app.post('/api/management/trivia/insert', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_trivia.insertTrivia), respondResult);
+  app.get('/api/sync/blocks', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_sync.startSyncBlocks), respondResult);
+  app.get('/api/blocknumber', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_blockNumber.fetchBlockNumber), respondResult);
+  app.post('/api/activity', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_activity.fetchActivity), respondCountAndResult);
+  app.post('/api/deposits/patch', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_deposits.patchDeposits), respondResult);
+  app.post('/api/user', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_user.fetchUser), respondResult);
+  app.post('/api/management/users', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_users.fetchUsers), respondCountAndResult);
+  app.post('/api/functions/withdrawals', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_withdrawals.fetchWithdrawals), respondCountAndResult);
+  app.post('/api/functions/deposits', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_deposits.fetchDeposits), respondCountAndResult);
+  app.post('/api/functions/rains', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_rain.fetchRains), respondCountAndResult);
+  app.post('/api/functions/rain', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_rain.fetchRain), respondResult);
+  app.post('/api/functions/floods', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_flood.fetchFloods), respondCountAndResult);
+  app.post('/api/functions/flood', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_flood.fetchFlood), respondResult);
+  app.post('/api/functions/sleets', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_sleet.fetchSleets), respondCountAndResult);
+  app.post('/api/functions/sleet', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_sleet.fetchSleet), respondResult);
+  app.post('/api/functions/soaks', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_soak.fetchSoaks), respondCountAndResult);
+  app.post('/api/functions/soak', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_soak.fetchSoak), respondResult);
+  app.post('/api/functions/thunders', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_thunder.fetchThunders), respondCountAndResult);
+  app.post('/api/functions/thunder', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_thunder.fetchThunder), respondResult);
+  app.post('/api/functions/reactdrops', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_reactdrop.fetchReactdrops), respondCountAndResult);
+  app.post('/api/functions/reactdrop', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_reactdrop.fetchReactdrop), respondResult);
+  app.post('/api/functions/tips', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_tip.fetchTips), respondCountAndResult);
+  app.post('/api/functions/tip', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_tip.fetchTip), respondResult);
+  app.post('/api/functions/thunderstorms', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_thunderstorm.fetchThunderstorms), respondCountAndResult);
+  app.post('/api/functions/thunderstorm', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_thunderstorm.fetchThunderstorm), respondResult);
+  app.post('/api/functions/hurricanes', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_hurricane.fetchHurricanes), respondCountAndResult);
+  app.post('/api/functions/hurricane', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_hurricane.fetchHurricane), respondResult);
+  app.post('/api/functions/trivias', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_trivia.fetchTrivias), respondCountAndResult);
+  app.post('/api/functions/trivia', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_trivia.fetchTrivia), respondResult);
+  app.post('/api/functions/voicerains', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_voicerain.fetchVoicerains), respondCountAndResult);
+  app.post('/api/functions/voicerain', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_voicerain.fetchVoicerain), respondResult);
+  app.post('/api/functions/errors', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_errors.fetchErrors), respondCountAndResult);
+  app.post('/api/management/withdrawaladdresses', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_withdrawalAddresses.fetchWithdrawalAddresses), respondCountAndResult);
+  app.post('/api/management/withdrawaladdress', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_withdrawalAddresses.fetchWithdrawalAddress), respondResult);
+  app.post('/api/management/userinfo', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_userInfo.fetchUserInfo), respondResult);
+  app.post('/api/management/dashboardusers', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_dashboardUsers.fetchDashboardUsers), respondCountAndResult);
+  app.post('/api/management/servers', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), attachResLocalsClients, use(_servers.fetchServers), respondCountAndResult);
+  app.post('/api/management/server/leave', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), attachResLocalsClients, use(_servers.leaveServer), respondResult);
+  app.get('/api/status', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_status.fetchNodeStatus), respondResult);
+  app.get('/api/balance', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_tfa.ensuretfa), use(_balance.fetchBalance), respondResult);
+  app.get('/api/faucet/balance', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_tfa.ensuretfa), use(_faucet.fetchFaucetBalance), respondResult);
+  app.get('/api/liability', use(IsAuthenticated), use(_admin.isAdmin), use(_auth.isDashboardUserBanned), use(_tfa.ensuretfa), use(_liability.fetchLiability), respondResult);
+  app.post('/api/signup/verify-email', use(_ip.insertIp), use(_auth.verifyEmail), function (req, res) {
     console.log(res.locals.error);
 
     if (res.locals.error === 'AUTH_TOKEN_EXPIRED') {
@@ -263,19 +264,19 @@ var dashboardRouter = function dashboardRouter(app, io, discordClient, telegramC
       });
     }
   });
-  app.post('/api/resend-verify-code', // IsAuthenticated,
-  _ip.insertIp, // rateLimiterMiddlewarePhone,
+  app.post('/api/resend-verify-code', // use(IsAuthenticated),
+  use(_ip.insertIp), // rateLimiterMiddlewarePhone,
   // use(ensuretfa),
   // updateLastSeen,
   use(_auth.resendVerification));
-  app.post('/api/signin', _recaptcha.verifyMyCaptcha, use(_ip.insertIp), use(requireSignin), _auth.isDashboardUserBanned, use(_auth.signin), respondResult);
-  app.post('/api/reset-password', _recaptcha.verifyMyCaptcha, use(_resetPassword.resetPassword), respondResult);
+  app.post('/api/signin', use(_recaptcha.verifyMyCaptcha), use(_ip.insertIp), use(requireSignin), use(_auth.isDashboardUserBanned), use(_auth.signin), respondResult);
+  app.post('/api/reset-password', use(_recaptcha.verifyMyCaptcha), use(_resetPassword.resetPassword), respondResult);
   app.post('/api/reset-password/verify', use(_resetPassword.verifyResetPassword), respondResult);
   app.post('/api/reset-password/new', use(_resetPassword.resetPasswordNew), respondResult);
-  app.post('/api/2fa/enable', IsAuthenticated, _auth.isDashboardUserBanned, use(_ip.insertIp), use(_tfa.ensuretfa), // updateLastSeen,
+  app.post('/api/2fa/enable', use(IsAuthenticated), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), // updateLastSeen,
   use(_tfa.enabletfa), respondResult);
-  app.post('/api/2fa/disable', IsAuthenticated, use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_tfa.disabletfa), respondResult);
-  app.post('/api/2fa/unlock', IsAuthenticated, use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.unlocktfa), respondResult);
+  app.post('/api/2fa/disable', use(IsAuthenticated), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.ensuretfa), use(_tfa.disabletfa), respondResult);
+  app.post('/api/2fa/unlock', use(IsAuthenticated), use(_auth.isDashboardUserBanned), use(_ip.insertIp), use(_tfa.unlocktfa), respondResult);
   app.get('/api/logout', use(_ip.insertIp), use(_auth.destroySession));
 };
 

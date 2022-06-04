@@ -281,40 +281,40 @@ export const dashboardRouter = (
   app.post(
     '/api/signup',
     use(verifyMyCaptcha),
-    use(insertIp),
+    use(use(insertIp)),
     use(signup),
   );
 
   app.post(
     '/api/functions/withdrawal/accept',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
+    use(isDashboardUserBanned),
     use(ensuretfa),
-    insertIp,
+    use(insertIp),
     attachResLocalsClients,
-    acceptWithdrawal,
+    use(acceptWithdrawal),
     respondResult,
   );
 
   app.post(
     '/api/functions/withdrawal/decline',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
+    use(isDashboardUserBanned),
     use(ensuretfa),
-    insertIp,
+    use(insertIp),
     attachResLocalsClients,
-    declineWithdrawal,
+    use(declineWithdrawal),
     respondResult,
   );
 
   app.post(
     '/api/management/user/ban',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(banUser),
     respondResult,
@@ -322,10 +322,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/channel/ban',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(banChannel),
     respondResult,
@@ -333,10 +333,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/server/ban',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(banServer),
     respondResult,
@@ -344,10 +344,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/pricecurrencies',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchPriceCurrencies),
     respondCountAndResult,
@@ -355,10 +355,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/pricecurrencies/remove',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(removePriceCurrency),
     respondResult,
@@ -366,10 +366,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/pricecurrencies/update',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(updatePriceCurrency),
     respondResult,
@@ -377,10 +377,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/pricecurrencies/add',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(addPriceCurrency),
     respondResult,
@@ -388,10 +388,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/pricecurrencies/updateprice',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(updatePriceCurrencyPrices),
     respondResult,
@@ -399,10 +399,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/feature/remove',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(removeFeature),
     respondResult,
@@ -410,10 +410,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/feature/update',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(updateFeature),
     respondResult,
@@ -421,10 +421,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/feature/add',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(addFeature),
     respondResult,
@@ -432,10 +432,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/features',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchFeatures),
     respondCountAndResult,
@@ -443,10 +443,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/bot/settings/update',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(updateBotSettings),
     respondResult,
@@ -454,10 +454,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/bot/settings',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchBotSettings),
     respondCountAndResult,
@@ -465,10 +465,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/channels',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchChannels),
     respondCountAndResult,
@@ -476,10 +476,10 @@ export const dashboardRouter = (
 
   app.get(
     '/api/management/triviaquestions',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchTriviaQuestions),
     respondCountAndResult,
@@ -487,10 +487,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/trivia/switch',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(switchTriviaQuestion),
     respondResult,
@@ -498,10 +498,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/trivia/remove',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(removeTriviaQuestion),
     respondResult,
@@ -509,10 +509,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/trivia/insert',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(insertTrivia),
     respondResult,
@@ -520,10 +520,10 @@ export const dashboardRouter = (
 
   app.get(
     '/api/sync/blocks',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(startSyncBlocks),
     respondResult,
@@ -531,10 +531,10 @@ export const dashboardRouter = (
 
   app.get(
     '/api/blocknumber',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchBlockNumber),
     respondResult,
@@ -542,10 +542,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/activity',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchActivity),
     respondCountAndResult,
@@ -553,10 +553,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/deposits/patch',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(patchDeposits),
     respondResult,
@@ -564,10 +564,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/user',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchUser),
     respondResult,
@@ -575,10 +575,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/users',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchUsers),
     respondCountAndResult,
@@ -586,10 +586,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/withdrawals',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchWithdrawals),
     respondCountAndResult,
@@ -597,10 +597,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/deposits',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchDeposits),
     respondCountAndResult,
@@ -608,10 +608,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/rains',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchRains),
     respondCountAndResult,
@@ -619,10 +619,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/rain',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchRain),
     respondResult,
@@ -630,10 +630,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/floods',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchFloods),
     respondCountAndResult,
@@ -641,10 +641,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/flood',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchFlood),
     respondResult,
@@ -652,10 +652,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/sleets',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchSleets),
     respondCountAndResult,
@@ -663,10 +663,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/sleet',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchSleet),
     respondResult,
@@ -674,10 +674,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/soaks',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchSoaks),
     respondCountAndResult,
@@ -685,10 +685,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/soak',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchSoak),
     respondResult,
@@ -696,10 +696,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/thunders',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchThunders),
     respondCountAndResult,
@@ -707,10 +707,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/thunder',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchThunder),
     respondResult,
@@ -718,10 +718,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/reactdrops',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchReactdrops),
     respondCountAndResult,
@@ -729,10 +729,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/reactdrop',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchReactdrop),
     respondResult,
@@ -740,10 +740,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/tips',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchTips),
     respondCountAndResult,
@@ -751,10 +751,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/tip',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchTip),
     respondResult,
@@ -762,10 +762,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/thunderstorms',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchThunderstorms),
     respondCountAndResult,
@@ -773,10 +773,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/thunderstorm',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchThunderstorm),
     respondResult,
@@ -784,10 +784,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/hurricanes',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchHurricanes),
     respondCountAndResult,
@@ -795,10 +795,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/hurricane',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchHurricane),
     respondResult,
@@ -806,10 +806,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/trivias',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchTrivias),
     respondCountAndResult,
@@ -817,10 +817,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/trivia',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchTrivia),
     respondResult,
@@ -828,10 +828,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/voicerains',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchVoicerains),
     respondCountAndResult,
@@ -839,10 +839,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/voicerain',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchVoicerain),
     respondResult,
@@ -850,10 +850,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/functions/errors',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchErrors),
     respondCountAndResult,
@@ -861,10 +861,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/withdrawaladdresses',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchWithdrawalAddresses),
     respondCountAndResult,
@@ -872,21 +872,32 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/withdrawaladdress',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchWithdrawalAddress),
     respondResult,
   );
 
   app.post(
-    '/api/management/dashboardusers',
-    IsAuthenticated,
+    '/api/management/userinfo',
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
+    use(ensuretfa),
+    use(fetchUserInfo),
+    respondResult,
+  );
+
+  app.post(
+    '/api/management/dashboardusers',
+    use(IsAuthenticated),
+    use(isAdmin),
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchDashboardUsers),
     respondCountAndResult,
@@ -894,10 +905,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/servers',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     attachResLocalsClients,
     use(fetchServers),
@@ -906,10 +917,10 @@ export const dashboardRouter = (
 
   app.post(
     '/api/management/server/leave',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     attachResLocalsClients,
     use(leaveServer),
@@ -918,10 +929,10 @@ export const dashboardRouter = (
 
   app.get(
     '/api/status',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
-    insertIp,
+    use(isDashboardUserBanned),
+    use(insertIp),
     use(ensuretfa),
     use(fetchNodeStatus),
     respondResult,
@@ -929,9 +940,9 @@ export const dashboardRouter = (
 
   app.get(
     '/api/balance',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
+    use(isDashboardUserBanned),
     use(ensuretfa),
     use(fetchBalance),
     respondResult,
@@ -939,9 +950,9 @@ export const dashboardRouter = (
 
   app.get(
     '/api/faucet/balance',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
+    use(isDashboardUserBanned),
     use(ensuretfa),
     use(fetchFaucetBalance),
     respondResult,
@@ -949,9 +960,9 @@ export const dashboardRouter = (
 
   app.get(
     '/api/liability',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isAdmin),
-    isDashboardUserBanned,
+    use(isDashboardUserBanned),
     use(ensuretfa),
     use(fetchLiability),
     respondResult,
@@ -959,7 +970,7 @@ export const dashboardRouter = (
 
   app.post(
     '/api/signup/verify-email',
-    insertIp,
+    use(insertIp),
     use(verifyEmail),
     (req, res) => {
       console.log(res.locals.error);
@@ -990,8 +1001,8 @@ export const dashboardRouter = (
 
   app.post(
     '/api/resend-verify-code',
-    // IsAuthenticated,
-    insertIp,
+    // use(IsAuthenticated),
+    use(insertIp),
     // rateLimiterMiddlewarePhone,
     // use(ensuretfa),
     // updateLastSeen,
@@ -1000,17 +1011,17 @@ export const dashboardRouter = (
 
   app.post(
     '/api/signin',
-    verifyMyCaptcha,
+    use(verifyMyCaptcha),
     use(insertIp),
     use(requireSignin),
-    isDashboardUserBanned,
+    use(isDashboardUserBanned),
     use(signin),
     respondResult,
   );
 
   app.post(
     '/api/reset-password',
-    verifyMyCaptcha,
+    use(verifyMyCaptcha),
     use(resetPassword),
     respondResult,
   );
@@ -1029,8 +1040,8 @@ export const dashboardRouter = (
 
   app.post(
     '/api/2fa/enable',
-    IsAuthenticated,
-    isDashboardUserBanned,
+    use(IsAuthenticated),
+    use(isDashboardUserBanned),
     use(insertIp),
     use(ensuretfa),
     // updateLastSeen,
@@ -1040,7 +1051,7 @@ export const dashboardRouter = (
 
   app.post(
     '/api/2fa/disable',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isDashboardUserBanned),
     use(insertIp),
     use(ensuretfa),
@@ -1050,7 +1061,7 @@ export const dashboardRouter = (
 
   app.post(
     '/api/2fa/unlock',
-    IsAuthenticated,
+    use(IsAuthenticated),
     use(isDashboardUserBanned),
     use(insertIp),
     use(unlocktfa),
