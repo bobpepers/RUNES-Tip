@@ -433,16 +433,16 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
           })));
           app.use(function (err, req, res, next) {
             if (err.message && err.message === "EMAIL_NOT_VERIFIED") {
-              res.status(401).send({
+              res.status(401).json({
                 error: err.message,
                 email: err.email
               });
             } else if (err.message && err === 'LOGIN_FAIL' || err.message && err === 'AUTH_TOKEN_USED' || err.message && err === 'EMAIL_ONLY_ALLOW_LOWER_CASE_INPUT') {
-              res.status(401).send({
+              res.status(401).json({
                 error: err.message
               });
             } else {
-              res.status(500).send({
+              res.status(500).json({
                 error: err.message
               });
             }
