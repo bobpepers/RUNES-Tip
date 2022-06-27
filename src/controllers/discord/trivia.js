@@ -720,7 +720,6 @@ export const discordTrivia = async (
 
           const updateMessage = setInterval(async () => {
             now = new Date().getTime();
-            console.log('listen trivia');
             distance = countDownDate - now;
             await triviaMessage.edit({
               embeds: [
@@ -733,6 +732,9 @@ export const discordTrivia = async (
                   amount,
                   totalPeople,
                 )],
+            }).catch((e) => {
+              console.log('edit trivia message error');
+              console.log(e);
             });
             if (distance < 0) {
               clearInterval(updateMessage);

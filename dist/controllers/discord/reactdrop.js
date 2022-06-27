@@ -1315,6 +1315,9 @@ var discordReactDrop = /*#__PURE__*/function () {
                                   _context13.next = 4;
                                   return reactMessage.edit({
                                     embeds: [(0, _discord2.reactDropMessage)(newUpdatedReactDrop.id, distance, message.author.id, filteredMessage[4], amount)]
+                                  })["catch"](function (e) {
+                                    console.log('edit reactdrop message error');
+                                    console.log(e);
                                   });
 
                                 case 4:

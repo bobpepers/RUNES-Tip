@@ -1176,19 +1176,21 @@ var discordTrivia = /*#__PURE__*/function () {
                               switch (_context10.prev = _context10.next) {
                                 case 0:
                                   now = new Date().getTime();
-                                  console.log('listen trivia');
                                   distance = countDownDate - now;
-                                  _context10.next = 5;
+                                  _context10.next = 4;
                                   return triviaMessage.edit({
                                     embeds: [(0, _discord2.triviaMessageDiscord)(newTrivia.id, distance, message.author.id, randomQuestion.question, answerString, amount, totalPeople)]
+                                  })["catch"](function (e) {
+                                    console.log('edit trivia message error');
+                                    console.log(e);
                                   });
 
-                                case 5:
+                                case 4:
                                   if (distance < 0) {
                                     clearInterval(updateMessage);
                                   }
 
-                                case 6:
+                                case 5:
                                 case "end":
                                   return _context10.stop();
                               }

@@ -77,6 +77,9 @@ export const recoverDiscordReactdrops = async (
             runningReactDrop.amount,
           ),
         ],
+      }).catch((e) => {
+        console.log('edit reactdrop message error');
+        console.log(e);
       });
       if (distance < 0) {
         clearInterval(updateMessage);
@@ -184,6 +187,9 @@ export const recoverDiscordTrivia = async (
             runningTrivia.userCount,
           ),
         ],
+      }).catch((e) => {
+        console.log('edit trivia message error');
+        console.log(e);
       });
       if (distance < 0) {
         clearInterval(updateMessage);

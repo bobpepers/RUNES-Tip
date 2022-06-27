@@ -104,6 +104,9 @@ var recoverDiscordReactdrops = /*#__PURE__*/function () {
                                 _context.next = 4;
                                 return reactMessage.edit({
                                   embeds: [(0, _discord2.reactDropMessage)(runningReactDrop.id, distance, actualUserId, runningReactDrop.emoji, runningReactDrop.amount)]
+                                })["catch"](function (e) {
+                                  console.log('edit reactdrop message error');
+                                  console.log(e);
                                 });
 
                               case 4:
@@ -278,6 +281,9 @@ var recoverDiscordTrivia = /*#__PURE__*/function () {
                                 _context4.next = 4;
                                 return triviaMessage.edit({
                                   embeds: [(0, _discord2.triviaMessageDiscord)(runningTrivia.id, distance, actualUserId, runningTrivia.triviaquestion.question, answerString, runningTrivia.amount, runningTrivia.userCount)]
+                                })["catch"](function (e) {
+                                  console.log('edit trivia message error');
+                                  console.log(e);
                                 });
 
                               case 4:

@@ -777,6 +777,9 @@ export const discordReactDrop = async (
                   amount,
                 ),
               ],
+            }).catch((e) => {
+              console.log('edit reactdrop message error');
+              console.log(e);
             });
             if (distance < 0) {
               clearInterval(updateMessage);
