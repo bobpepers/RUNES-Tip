@@ -11,7 +11,9 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
-var _discord = require("../../messages/discord");
+var _discord = require("discord.js");
+
+var _discord2 = require("../../messages/discord");
 
 var _models = _interopRequireDefault(require("../../models"));
 
@@ -52,20 +54,20 @@ var discordLeaderboard = /*#__PURE__*/function () {
 
           case 6:
             // const reactdrop = await db.reactdrop.find
-            if (message.channel.type === 'DM') {
+            if (message.channel.type === _discord.ChannelType.DM) {
               message.author.send({
-                embeds: [(0, _discord.statsMessage)(message)]
+                embeds: [(0, _discord2.statsMessage)(message)]
               })["catch"](function (e) {
                 console.log(e);
               });
             }
 
-            if (message.channel.type === 'GUILD_TEXT') {
+            if (message.channel.type === _discord.ChannelType.GuildText) {
               message.channel.send({
-                embeds: [(0, _discord.warnDirectMessage)(message.author.id, 'Help')]
+                embeds: [(0, _discord2.warnDirectMessage)(message.author.id, 'Help')]
               });
               message.author.send({
-                embeds: [(0, _discord.statsMessage)(message)]
+                embeds: [(0, _discord2.statsMessage)(message)]
               })["catch"](function (e) {
                 console.log(e);
               });

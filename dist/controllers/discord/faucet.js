@@ -102,7 +102,12 @@ var discordFaucetClaim = /*#__PURE__*/function () {
                         return _context.abrupt("return");
 
                       case 19:
-                        row = new _discord.MessageActionRow().addComponents(new _discord.MessageButton().setCustomId('claimFaucet').setLabel('Claim Faucet').setStyle('PRIMARY'));
+                        row = new _discord.ActionRowBuilder().addComponents(new _discord.ButtonBuilder({
+                          label: 'Claim Faucet',
+                          style: _discord.ButtonStyle.Primary,
+                          customId: 'claimFaucet',
+                          emoji: '💦'
+                        }));
 
                         if (!(Number(faucet.amount) < 10000)) {
                           _context.next = 28;

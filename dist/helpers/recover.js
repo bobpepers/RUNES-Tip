@@ -240,7 +240,7 @@ var recoverDiscordTrivia = /*#__PURE__*/function () {
                       countDownDate = _context5.sent;
                       now = new Date().getTime();
                       distance = countDownDate - now;
-                      row = new _discord.MessageActionRow();
+                      row = new _discord.ActionRowBuilder();
                       alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
                       answers = _lodash["default"].shuffle(runningTrivia.triviaquestion.triviaanswers);
                       answerString = '';
@@ -252,7 +252,7 @@ var recoverDiscordTrivia = /*#__PURE__*/function () {
                       try {
                         for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
                           answer = _step3.value;
-                          row.addComponents(new _discord.MessageButton().setCustomId(answer.answer).setLabel(alphabet[parseInt(positionAlphabet, 10)]).setStyle('PRIMARY'));
+                          row.addComponents(new _discord.ButtonBuilder().setCustomId(answer.answer).setLabel(alphabet[parseInt(positionAlphabet, 10)]).setStyle(_discord.ButtonStyle.Primary));
                           answerString += "".concat(alphabet[parseInt(positionAlphabet, 10)], ". ").concat(answer.answer, "\n");
                           positionAlphabet += 1;
                         } // eslint-disable-next-line no-await-in-loop

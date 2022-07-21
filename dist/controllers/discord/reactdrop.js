@@ -54,9 +54,12 @@ var listenReactDrop = /*#__PURE__*/function () {
               return true;
             };
 
+            console.log(distance);
+            console.log('distance');
             collector = reactMessage.createReactionCollector({
               filter: filter,
-              time: distance
+              time: distance // dispose: true,
+
             });
             collector.on('collect', /*#__PURE__*/function () {
               var _ref2 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee7(reaction, collector) {
@@ -157,8 +160,8 @@ var listenReactDrop = /*#__PURE__*/function () {
                         _context7.next = 30;
                         return collector.send({
                           embeds: [(0, _discord2.ReactdropCaptchaMessage)(collector.id)],
-                          // files: [new MessageAttachment(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')],
-                          files: [new _discord.MessageAttachment(captchaPngFixed, 'captcha.png')]
+                          // files: [new AttachmentBuilder(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')],
+                          files: [new _discord.AttachmentBuilder(captchaPngFixed, 'captcha.png')]
                         })["catch"](function (e) {
                           console.log('failed to send captcha');
                           console.log(e);
@@ -231,7 +234,8 @@ var listenReactDrop = /*#__PURE__*/function () {
 
                                               case 5:
                                                 reactDropRecord = _context.sent;
-                                                backToReactDropButton = new _discord.MessageActionRow().addComponents(new _discord.MessageButton().setLabel('Back to ReactDrop').setStyle('LINK').setURL("https://discord.com/channels/".concat(reactDropRecord.group.groupId.replace("discord-", ""), "/").concat(reactDropRecord.channel.channelId.replace("discord-", ""), "/").concat(reactDropRecord.messageId)));
+                                                backToReactDropButton = new _discord.ActionRowBuilder().addComponents(new _discord.ButtonBuilder() // .setEmoji('↩')
+                                                .setLabel('Back to ReactDrop').setStyle(_discord.ButtonStyle.Link).setURL("https://discord.com/channels/".concat(reactDropRecord.group.groupId.replace("discord-", ""), "/").concat(reactDropRecord.channel.channelId.replace("discord-", ""), "/").concat(reactDropRecord.messageId)));
                                                 _context.next = 9;
                                                 return m.react('✅');
 
@@ -279,7 +283,7 @@ var listenReactDrop = /*#__PURE__*/function () {
 
                                               case 18:
                                                 _reactDropRecord = _context.sent;
-                                                row = new _discord.MessageActionRow().addComponents(new _discord.MessageButton().setLabel('Back to ReactDrop').setStyle('LINK').setURL("https://discord.com/channels/".concat(_reactDropRecord.group.groupId.replace("discord-", ""), "/").concat(_reactDropRecord.channel.channelId.replace("discord-", ""), "/").concat(_reactDropRecord.messageId)));
+                                                row = new _discord.ActionRowBuilder().addComponents(new _discord.ButtonBuilder({}).setLabel('Back to ReactDrop').setStyle('LINK').setURL("https://discord.com/channels/".concat(_reactDropRecord.group.groupId.replace("discord-", ""), "/").concat(_reactDropRecord.channel.channelId.replace("discord-", ""), "/").concat(_reactDropRecord.messageId)));
                                                 _context.next = 22;
                                                 return m.react('❌');
 
@@ -880,7 +884,7 @@ var listenReactDrop = /*#__PURE__*/function () {
               }, _callee11);
             })));
 
-          case 4:
+          case 6:
           case "end":
             return _context12.stop();
         }

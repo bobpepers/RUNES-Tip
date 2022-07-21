@@ -232,11 +232,8 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
           }()); // Discord
 
           discordClient = new _discord.Client({
-            intents: [_discord.Intents.FLAGS.GUILDS, _discord.Intents.FLAGS.GUILD_MEMBERS, _discord.Intents.FLAGS.GUILD_PRESENCES, _discord.Intents.FLAGS.GUILD_MESSAGES, _discord.Intents.FLAGS.DIRECT_MESSAGES, _discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS, _discord.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, _discord.Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS, _discord.Intents.FLAGS.GUILD_VOICE_STATES],
-            partials: ['MESSAGE', 'CHANNEL', 'REACTION'] // makeCache: Options.cacheWithLimits({
-            //  GuildEmoji: 5000, // This is default
-            // }),
-
+            intents: [_discord.GatewayIntentBits.Guilds, _discord.GatewayIntentBits.GuildMembers, _discord.GatewayIntentBits.GuildMessages, _discord.GatewayIntentBits.DirectMessages, _discord.GatewayIntentBits.GuildMessageReactions, _discord.GatewayIntentBits.DirectMessageReactions, _discord.GatewayIntentBits.GuildEmojisAndStickers, _discord.GatewayIntentBits.GuildVoiceStates, _discord.GatewayIntentBits.MessageContent, _discord.GatewayIntentBits.GuildPresences, _discord.GatewayIntentBits.GuildInvites],
+            partials: [_discord.Partials.Message, _discord.Partials.Channel, _discord.Partials.Reaction]
           });
           _context3.next = 34;
           return discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
@@ -413,7 +410,7 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
             // Update price every 5 minutes
             (0, _updatePrice.updatePrice)();
           });
-          scheduleWithdrawal = _nodeSchedule["default"].scheduleJob('*/1 * * * *', /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
+          scheduleWithdrawal = _nodeSchedule["default"].scheduleJob('*/2 * * * *', /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
             var autoWithdrawalSetting;
             return _regenerator["default"].wrap(function _callee2$(_context2) {
               while (1) {

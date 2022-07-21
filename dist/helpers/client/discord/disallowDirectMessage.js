@@ -11,13 +11,15 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _discord = require("discord.js");
+
 var _sequelize = require("sequelize");
 
 var _models = _interopRequireDefault(require("../../../models"));
 
 var _logger = _interopRequireDefault(require("../../logger"));
 
-var _discord = require("../../../messages/discord");
+var _discord2 = require("../../../messages/discord");
 
 var capitalize = function capitalize(s) {
   return s && s[0].toUpperCase() + s.slice(1);
@@ -42,7 +44,7 @@ var disallowDirectMessage = /*#__PURE__*/function () {
                   while (1) {
                     switch (_context.prev = _context.next) {
                       case 0:
-                        if (!(message.channel.type === 'DM')) {
+                        if (!(message.channel.type === _discord.ChannelType.DM)) {
                           _context.next = 8;
                           break;
                         }
@@ -61,7 +63,7 @@ var disallowDirectMessage = /*#__PURE__*/function () {
                         activity.unshift(notDirectActivity);
                         _context.next = 7;
                         return message.channel.send({
-                          embeds: [(0, _discord.NotInDirectMessage)(message, capitalize(functionType))]
+                          embeds: [(0, _discord2.NotInDirectMessage)(message, capitalize(functionType))]
                         });
 
                       case 7:
@@ -114,7 +116,7 @@ var disallowDirectMessage = /*#__PURE__*/function () {
                         _context2.prev = 10;
                         _context2.next = 13;
                         return message.channel.send({
-                          embeds: [(0, _discord.discordErrorMessage)(capitalize(functionType))]
+                          embeds: [(0, _discord2.discordErrorMessage)(capitalize(functionType))]
                         })["catch"](function (e) {
                           console.log(e);
                         });

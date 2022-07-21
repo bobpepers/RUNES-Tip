@@ -13,9 +13,11 @@ var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/sli
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _discord = require("discord.js");
+
 var _sequelize = require("sequelize");
 
-var _discord = require("../../messages/discord");
+var _discord2 = require("../../messages/discord");
 
 var _models = _interopRequireDefault(require("../../models"));
 
@@ -117,31 +119,31 @@ var discordCoinInfo = /*#__PURE__*/function () {
                         finalActivity = _context.sent;
                         activity.unshift(finalActivity);
 
-                        if (!(message.channel.type === 'DM')) {
+                        if (!(message.channel.type === _discord.ChannelType.DM)) {
                           _context.next = 28;
                           break;
                         }
 
                         _context.next = 28;
                         return message.author.send({
-                          embeds: [(0, _discord.coinInfoMessage)(blockHeight.id, priceInfo, walletInfo.walletversion)]
+                          embeds: [(0, _discord2.coinInfoMessage)(blockHeight.id, priceInfo, walletInfo.walletversion)]
                         });
 
                       case 28:
-                        if (!(message.channel.type === 'GUILD_TEXT')) {
+                        if (!(message.channel.type === _discord.ChannelType.GuildText)) {
                           _context.next = 33;
                           break;
                         }
 
                         _context.next = 31;
                         return message.author.send({
-                          embeds: [(0, _discord.coinInfoMessage)(blockHeight.id, priceInfo)]
+                          embeds: [(0, _discord2.coinInfoMessage)(blockHeight.id, priceInfo)]
                         });
 
                       case 31:
                         _context.next = 33;
                         return message.channel.send({
-                          embeds: [(0, _discord.warnDirectMessage)(message.author.id, 'Coin Info')]
+                          embeds: [(0, _discord2.warnDirectMessage)(message.author.id, 'Coin Info')]
                         });
 
                       case 33:
@@ -195,7 +197,7 @@ var discordCoinInfo = /*#__PURE__*/function () {
 
                         _context2.next = 13;
                         return message.channel.send({
-                          embeds: [(0, _discord.cannotSendMessageUser)("Coin Info", message)]
+                          embeds: [(0, _discord2.cannotSendMessageUser)("Coin Info", message)]
                         })["catch"](function (e) {
                           console.log(e);
                         });
@@ -207,7 +209,7 @@ var discordCoinInfo = /*#__PURE__*/function () {
                       case 15:
                         _context2.next = 17;
                         return message.channel.send({
-                          embeds: [(0, _discord.discordErrorMessage)("Coin Info")]
+                          embeds: [(0, _discord2.discordErrorMessage)("Coin Info")]
                         })["catch"](function (e) {
                           console.log(e);
                         });

@@ -87,7 +87,7 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                         depositQrFixed = depositQr.replace('data:image/png;base64,', '');
                         userId = user.user_id.replace('discord-', '');
 
-                        if (!(message.channel.type === 'DM')) {
+                        if (!(message.channel.type === _discord.ChannelType.DM)) {
                           _context.next = 21;
                           break;
                         }
@@ -95,11 +95,14 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                         _context.next = 21;
                         return message.author.send({
                           embeds: [(0, _discord2.depositAddressMessage)(userId, user)],
-                          files: [new _discord.MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')]
+                          files: [{
+                            attachment: Buffer.from(depositQrFixed, 'base64'),
+                            name: 'qr.png'
+                          }]
                         });
 
                       case 21:
-                        if (!(message.channel.type === 'GUILD_TEXT')) {
+                        if (!(message.channel.type === _discord.ChannelType.GuildText)) {
                           _context.next = 26;
                           break;
                         }
@@ -107,7 +110,10 @@ var fetchDiscordWalletDepositAddress = /*#__PURE__*/function () {
                         _context.next = 24;
                         return message.author.send({
                           embeds: [(0, _discord2.depositAddressMessage)(userId, user)],
-                          files: [new _discord.MessageAttachment(Buffer.from(depositQrFixed, 'base64'), 'qr.png')]
+                          files: [{
+                            attachment: Buffer.from(depositQrFixed, 'base64'),
+                            name: 'qr.png'
+                          }]
                         });
 
                       case 24:

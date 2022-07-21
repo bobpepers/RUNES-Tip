@@ -13,8 +13,7 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _discord = require("../../../messages/discord");
 
-// import BigNumber from "bignumber.js";
-// import db from '../../models';
+/* eslint-disable prefer-destructuring */
 var executeTipFunction = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(tipFunction, queue, amount, discordClient, message, filteredMessageDiscord, io, groupTask, channelTask, setting, faucetSetting) {
     var operationName, userBeingTipped, msgFilter;

@@ -13,9 +13,11 @@ var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/sli
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _discord = require("discord.js");
+
 var _sequelize = require("sequelize");
 
-var _discord = require("../../messages/discord");
+var _discord2 = require("../../messages/discord");
 
 var _models = _interopRequireDefault(require("../../models"));
 
@@ -105,31 +107,31 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
                         findActivity = _context.sent;
                         activity.unshift(findActivity);
 
-                        if (!(message.channel.type === 'DM')) {
+                        if (!(message.channel.type === _discord.ChannelType.DM)) {
                           _context.next = 23;
                           break;
                         }
 
                         _context.next = 23;
                         return message.author.send({
-                          embeds: [(0, _discord.listTransactionsMessage)(userId, user, transactions)]
+                          embeds: [(0, _discord2.listTransactionsMessage)(userId, user, transactions)]
                         });
 
                       case 23:
-                        if (!(message.channel.type === 'GUILD_TEXT')) {
+                        if (!(message.channel.type === _discord.ChannelType.GuildText)) {
                           _context.next = 28;
                           break;
                         }
 
                         _context.next = 26;
                         return message.author.send({
-                          embeds: [(0, _discord.listTransactionsMessage)(userId, user, transactions)]
+                          embeds: [(0, _discord2.listTransactionsMessage)(userId, user, transactions)]
                         });
 
                       case 26:
                         _context.next = 28;
                         return message.channel.send({
-                          embeds: [(0, _discord.warnDirectMessage)(userId, 'Balance')]
+                          embeds: [(0, _discord2.warnDirectMessage)(userId, 'Balance')]
                         });
 
                       case 28:
@@ -181,7 +183,7 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
 
                         _context2.next = 12;
                         return message.channel.send({
-                          embeds: [(0, _discord.cannotSendMessageUser)("List transactions", message)]
+                          embeds: [(0, _discord2.cannotSendMessageUser)("List transactions", message)]
                         })["catch"](function (e) {
                           console.log(e);
                         });
@@ -193,7 +195,7 @@ var fetchDiscordListTransactions = /*#__PURE__*/function () {
                       case 14:
                         _context2.next = 16;
                         return message.channel.send({
-                          embeds: [(0, _discord.discordErrorMessage)("List transactions")]
+                          embeds: [(0, _discord2.discordErrorMessage)("List transactions")]
                         })["catch"](function (e) {
                           console.log(e);
                         });

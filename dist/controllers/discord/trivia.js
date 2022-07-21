@@ -39,13 +39,19 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 
 var listenTrivia = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee9(triviaMessage, distance, triviaRecord, io, queue, updateMessage, answerString) {
-    var collector;
+    var filter, collector;
     return _regenerator["default"].wrap(function _callee9$(_context9) {
       while (1) {
         switch (_context9.prev = _context9.next) {
           case 0:
+            filter = function filter(interaction) {
+              return interaction.isButton();
+            }; // alternative for componentType: 'BUTTON'
+
+
             collector = triviaMessage.createMessageComponentCollector({
-              componentType: 'BUTTON',
+              // componentType: 'BUTTON', // This stopped working in v14.. why? we tried BUTTON, Button, button... it should still work according to the documentation
+              filter: filter,
               time: distance
             });
             collector.on('collect', /*#__PURE__*/function () {
@@ -54,12 +60,22 @@ var listenTrivia = /*#__PURE__*/function () {
                   while (1) {
                     switch (_context4.prev = _context4.next) {
                       case 0:
+                        console.log('collecting');
+                        console.log('collecting');
+                        console.log('collecting');
+                        console.log('collecting');
+                        console.log('collecting');
+                        console.log('collecting');
+                        console.log('collecting');
+                        console.log('collecting');
+                        console.log(reaction);
+
                         if (reaction.user.bot) {
-                          _context4.next = 3;
+                          _context4.next = 12;
                           break;
                         }
 
-                        _context4.next = 3;
+                        _context4.next = 12;
                         return queue.add( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
                           return _regenerator["default"].wrap(function _callee3$(_context3) {
                             while (1) {
@@ -261,7 +277,7 @@ var listenTrivia = /*#__PURE__*/function () {
                           }, _callee3);
                         })));
 
-                      case 3:
+                      case 12:
                       case "end":
                         return _context4.stop();
                     }
@@ -719,7 +735,7 @@ var listenTrivia = /*#__PURE__*/function () {
               }, _callee8);
             })));
 
-          case 3:
+          case 4:
           case "end":
             return _context9.stop();
         }
@@ -1033,7 +1049,7 @@ var discordTrivia = /*#__PURE__*/function () {
 
                       case 100:
                         wallet = _context11.sent;
-                        row = new _discord.MessageActionRow();
+                        row = new _discord.ActionRowBuilder();
                         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
                         answers = _lodash["default"].shuffle(randomQuestion.triviaanswers);
                         answerString = '';
@@ -1068,7 +1084,7 @@ var discordTrivia = /*#__PURE__*/function () {
                         try {
                           for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
                             answer = _step3.value;
-                            row.addComponents(new _discord.MessageButton().setCustomId(answer.answer).setLabel(alphabet[parseInt(positionAlphabet, 10)]).setStyle('PRIMARY'));
+                            row.addComponents(new _discord.ButtonBuilder().setCustomId(answer.answer).setLabel(alphabet[parseInt(positionAlphabet, 10)]).setStyle(_discord.ButtonStyle.Primary));
                             answerString += "".concat(alphabet[parseInt(positionAlphabet, 10)], ". ").concat(answer.answer, "\n");
                             positionAlphabet += 1;
                           }

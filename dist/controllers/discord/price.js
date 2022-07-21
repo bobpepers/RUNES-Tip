@@ -13,9 +13,11 @@ var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/sli
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _discord = require("discord.js");
+
 var _sequelize = require("sequelize");
 
-var _discord = require("../../messages/discord");
+var _discord2 = require("../../messages/discord");
 
 var _models = _interopRequireDefault(require("../../models"));
 
@@ -100,25 +102,25 @@ var discordPrice = /*#__PURE__*/function () {
                         findActivity = _context.sent;
                         activity.unshift(findActivity);
 
-                        if (!(message.channel.type === 'DM')) {
+                        if (!(message.channel.type === _discord.ChannelType.DM)) {
                           _context.next = 24;
                           break;
                         }
 
                         _context.next = 24;
                         return message.author.send({
-                          embeds: [(0, _discord.priceMessage)(replyString)]
+                          embeds: [(0, _discord2.priceMessage)(replyString)]
                         });
 
                       case 24:
-                        if (!(message.channel.type === 'GUILD_TEXT')) {
+                        if (!(message.channel.type === _discord.ChannelType.GuildText)) {
                           _context.next = 27;
                           break;
                         }
 
                         _context.next = 27;
                         return message.channel.send({
-                          embeds: [(0, _discord.priceMessage)(replyString)]
+                          embeds: [(0, _discord2.priceMessage)(replyString)]
                         });
 
                       case 27:
@@ -164,7 +166,7 @@ var discordPrice = /*#__PURE__*/function () {
                         _logger["default"].error("Error Discord Balance Requested by: ".concat(message.author.id, "-").concat(message.author.username, "#").concat(message.author.discriminator, " - ").concat(err));
 
                         message.channel.send({
-                          embeds: [(0, _discord.discordErrorMessage)("Price")]
+                          embeds: [(0, _discord2.discordErrorMessage)("Price")]
                         })["catch"](function (e) {
                           console.log(e);
                         });

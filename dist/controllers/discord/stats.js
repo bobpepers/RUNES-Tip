@@ -15,11 +15,13 @@ var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/sli
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _discord = require("discord.js");
+
 var _sequelize = require("sequelize");
 
 var _lodash = _interopRequireDefault(require("lodash"));
 
-var _discord = require("../../messages/discord");
+var _discord2 = require("../../messages/discord");
 
 var _models = _interopRequireDefault(require("../../models"));
 
@@ -155,7 +157,7 @@ var discordStats = /*#__PURE__*/function () {
                         activity.unshift(activityA);
                         _context.next = 21;
                         return message.channel.send({
-                          embeds: [(0, _discord.invalidTimeMessage)(message, 'Stats')]
+                          embeds: [(0, _discord2.invalidTimeMessage)(message, 'Stats')]
                         });
 
                       case 21:
@@ -203,7 +205,7 @@ var discordStats = /*#__PURE__*/function () {
                         childWhereOptionsTriviaTips.amount = (0, _defineProperty2["default"])({}, _sequelize.Op.ne, null);
                         parentWhereOptions.id = user.id;
 
-                        if (!(message.channel.type === 'GUILD_TEXT')) {
+                        if (!(message.channel.type === _discord.ChannelType.GuildText)) {
                           _context.next = 42;
                           break;
                         }
@@ -212,7 +214,7 @@ var discordStats = /*#__PURE__*/function () {
                         childWhereOptionsTriviaTips.groupId = groupTask.id;
                         _context.next = 42;
                         return message.channel.send({
-                          embeds: [(0, _discord.warnDirectMessage)(message.author.id, 'Statistics')]
+                          embeds: [(0, _discord2.warnDirectMessage)(message.author.id, 'Statistics')]
                         });
 
                       case 42:
@@ -434,7 +436,7 @@ var discordStats = /*#__PURE__*/function () {
                         userWithIncludes = _context.sent;
                         console.log(userWithIncludes.triviatips);
 
-                        if (message.channel.type === 'DM') {
+                        if (message.channel.type === _discord.ChannelType.DM) {
                           // spend
                           groupedTips = userWithIncludes.tips ? groupGlobal(userWithIncludes.tips, 'spend', 'tips') : {};
                           groupedReactdrops = userWithIncludes.reactdrops ? groupGlobal(userWithIncludes.reactdrops, 'spend', 'reactdrops') : {};
@@ -457,7 +459,7 @@ var discordStats = /*#__PURE__*/function () {
                           groupedTriviaTips = userWithIncludes.triviatips ? groupGlobal(userWithIncludes.triviatips, 'earned', 'trivias') : {};
                         }
 
-                        if (message.channel.type === 'GUILD_TEXT') {
+                        if (message.channel.type === _discord.ChannelType.GuildText) {
                           // spend
                           groupedTips = userWithIncludes.tips ? group(userWithIncludes.tips, 'spend', 'tips') : {};
                           groupedReactdrops = userWithIncludes.reactdrops ? group(userWithIncludes.reactdrops, 'spend', 'reactdrops') : {};
@@ -492,7 +494,7 @@ var discordStats = /*#__PURE__*/function () {
 
                         _context.next = 52;
                         return message.author.send({
-                          embeds: [(0, _discord.statsMessage)(message, "No data found!")]
+                          embeds: [(0, _discord2.statsMessage)(message, "No data found!")]
                         });
 
                       case 52:
@@ -604,7 +606,7 @@ var discordStats = /*#__PURE__*/function () {
 
                         _context.next = 81;
                         return message.author.send({
-                          embeds: [(0, _discord.statsMessage)(message, serverString)]
+                          embeds: [(0, _discord2.statsMessage)(message, serverString)]
                         });
 
                       case 81:
@@ -679,7 +681,7 @@ var discordStats = /*#__PURE__*/function () {
 
                         _context2.next = 11;
                         return message.channel.send({
-                          embeds: [(0, _discord.discordErrorMessage)("Stats")]
+                          embeds: [(0, _discord2.discordErrorMessage)("Stats")]
                         })["catch"](function (e) {
                           console.log(e);
                         });

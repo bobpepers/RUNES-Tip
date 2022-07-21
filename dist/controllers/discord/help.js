@@ -13,9 +13,11 @@ var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/sli
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _discord = require("discord.js");
+
 var _sequelize = require("sequelize");
 
-var _discord = require("../../messages/discord");
+var _discord2 = require("../../messages/discord");
 
 var _models = _interopRequireDefault(require("../../models"));
 
@@ -77,43 +79,43 @@ var discordHelp = /*#__PURE__*/function () {
                       case 11:
                         withdraw = _context.sent;
 
-                        if (!(message.channel.type === 'DM')) {
+                        if (!(message.channel.type === _discord.ChannelType.DM)) {
                           _context.next = 17;
                           break;
                         }
 
                         _context.next = 15;
                         return message.author.send({
-                          embeds: [(0, _discord.helpMessageOne)(withdraw)]
+                          embeds: [(0, _discord2.helpMessageOne)(withdraw)]
                         });
 
                       case 15:
                         _context.next = 17;
                         return message.author.send({
-                          embeds: [(0, _discord.helpMessageTwo)(withdraw)]
+                          embeds: [(0, _discord2.helpMessageTwo)(withdraw)]
                         });
 
                       case 17:
-                        if (!(message.channel.type === 'GUILD_TEXT')) {
+                        if (!(message.channel.type === _discord.ChannelType.GuildText)) {
                           _context.next = 24;
                           break;
                         }
 
                         _context.next = 20;
                         return message.author.send({
-                          embeds: [(0, _discord.helpMessageOne)(withdraw)]
+                          embeds: [(0, _discord2.helpMessageOne)(withdraw)]
                         });
 
                       case 20:
                         _context.next = 22;
                         return message.author.send({
-                          embeds: [(0, _discord.helpMessageTwo)(withdraw)]
+                          embeds: [(0, _discord2.helpMessageTwo)(withdraw)]
                         });
 
                       case 22:
                         _context.next = 24;
                         return message.channel.send({
-                          embeds: [(0, _discord.warnDirectMessage)(message.author.id, 'Help')]
+                          embeds: [(0, _discord2.warnDirectMessage)(message.author.id, 'Help')]
                         });
 
                       case 24:
@@ -189,7 +191,7 @@ var discordHelp = /*#__PURE__*/function () {
 
                         _context2.next = 12;
                         return message.channel.send({
-                          embeds: [(0, _discord.cannotSendMessageUser)("Help", message)]
+                          embeds: [(0, _discord2.cannotSendMessageUser)("Help", message)]
                         })["catch"](function (e) {
                           console.log(e);
                         });
@@ -201,7 +203,7 @@ var discordHelp = /*#__PURE__*/function () {
                       case 14:
                         _context2.next = 16;
                         return message.channel.send({
-                          embeds: [(0, _discord.discordErrorMessage)("Help")]
+                          embeds: [(0, _discord2.discordErrorMessage)("Help")]
                         })["catch"](function (e) {
                           console.log(e);
                         });

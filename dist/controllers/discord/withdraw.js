@@ -13,11 +13,13 @@ var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/sli
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _discord = require("discord.js");
+
 var _sequelize = require("sequelize");
 
 var _models = _interopRequireDefault(require("../../models"));
 
-var _discord = require("../../messages/discord");
+var _discord2 = require("../../messages/discord");
 
 var _logger = _interopRequireDefault(require("../../helpers/logger"));
 
@@ -124,7 +126,7 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
 
                         _context.next = 33;
                         return message.author.send({
-                          embeds: [(0, _discord.invalidAddressMessage)(message)]
+                          embeds: [(0, _discord2.invalidAddressMessage)(message)]
                         });
 
                       case 33:
@@ -133,14 +135,14 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                           break;
                         }
 
-                        if (!(message.channel.type !== 'DM')) {
+                        if (!(message.channel.type !== _discord.ChannelType.DM)) {
                           _context.next = 37;
                           break;
                         }
 
                         _context.next = 37;
                         return message.channel.send({
-                          embeds: [(0, _discord.warnDirectMessage)(userId, 'Withdraw')]
+                          embeds: [(0, _discord2.warnDirectMessage)(userId, 'Withdraw')]
                         });
 
                       case 37:
@@ -166,18 +168,18 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
 
                         _context.next = 46;
                         return message.author.send({
-                          embeds: [(0, _discord.unableToWithdrawToSelfMessage)(message)]
+                          embeds: [(0, _discord2.unableToWithdrawToSelfMessage)(message)]
                         });
 
                       case 46:
-                        if (!(message.channel.type !== 'DM')) {
+                        if (!(message.channel.type !== _discord.ChannelType.DM)) {
                           _context.next = 49;
                           break;
                         }
 
                         _context.next = 49;
                         return message.channel.send({
-                          embeds: [(0, _discord.warnDirectMessage)(userId, 'Withdraw')]
+                          embeds: [(0, _discord2.warnDirectMessage)(userId, 'Withdraw')]
                         });
 
                       case 49:
@@ -205,7 +207,7 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
 
                         _context.next = 59;
                         return message.channel.send({
-                          embeds: [(0, _discord.discordTransactionMemoTooLongMessage)(message, memo.length)]
+                          embeds: [(0, _discord2.discordTransactionMemoTooLongMessage)(message, memo.length)]
                         });
 
                       case 59:
@@ -262,31 +264,31 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                         activityCreate = _context.sent;
                         activity.unshift(activityCreate);
 
-                        if (!(message.channel.type === 'DM')) {
+                        if (!(message.channel.type === _discord.ChannelType.DM)) {
                           _context.next = 77;
                           break;
                         }
 
                         _context.next = 77;
                         return message.author.send({
-                          embeds: [(0, _discord.reviewMessage)(message, transaction)]
+                          embeds: [(0, _discord2.reviewMessage)(message, transaction)]
                         });
 
                       case 77:
-                        if (!(message.channel.type === 'GUILD_TEXT')) {
+                        if (!(message.channel.type === _discord.ChannelType.GuildText)) {
                           _context.next = 82;
                           break;
                         }
 
                         _context.next = 80;
                         return message.author.send({
-                          embeds: [(0, _discord.reviewMessage)(message, transaction)]
+                          embeds: [(0, _discord2.reviewMessage)(message, transaction)]
                         });
 
                       case 80:
                         _context.next = 82;
                         return message.channel.send({
-                          embeds: [(0, _discord.warnDirectMessage)(userId, 'Withdraw')]
+                          embeds: [(0, _discord2.warnDirectMessage)(userId, 'Withdraw')]
                         });
 
                       case 82:
@@ -340,7 +342,7 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
 
                         _context2.next = 13;
                         return message.channel.send({
-                          embeds: [(0, _discord.cannotSendMessageUser)("Withdraw", message)]
+                          embeds: [(0, _discord2.cannotSendMessageUser)("Withdraw", message)]
                         })["catch"](function (e) {
                           console.log(e);
                         });
@@ -352,7 +354,7 @@ var withdrawDiscordCreate = /*#__PURE__*/function () {
                       case 15:
                         _context2.next = 17;
                         return message.channel.send({
-                          embeds: [(0, _discord.discordErrorMessage)("Withdraw")]
+                          embeds: [(0, _discord2.discordErrorMessage)("Withdraw")]
                         })["catch"](function (e) {
                           console.log(e);
                         });

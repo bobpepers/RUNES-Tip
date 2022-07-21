@@ -15,7 +15,9 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _sequelize = require("sequelize");
 
-var _discord = require("../../messages/discord");
+var _discord = require("discord.js");
+
+var _discord2 = require("../../messages/discord");
 
 var _models = _interopRequireDefault(require("../../models"));
 
@@ -76,31 +78,31 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
                         priceInfo = _context.sent;
                         userId = user.user_id.replace('discord-', '');
 
-                        if (!(message.channel.type === 'DM')) {
+                        if (!(message.channel.type === _discord.ChannelType.DM)) {
                           _context.next = 16;
                           break;
                         }
 
                         _context.next = 16;
                         return message.author.send({
-                          embeds: [(0, _discord.balanceMessage)(userId, user, priceInfo)]
+                          embeds: [(0, _discord2.balanceMessage)(userId, user, priceInfo)]
                         });
 
                       case 16:
-                        if (!(message.channel.type === 'GUILD_TEXT')) {
+                        if (!(message.channel.type === _discord.ChannelType.GuildText)) {
                           _context.next = 21;
                           break;
                         }
 
                         _context.next = 19;
                         return message.author.send({
-                          embeds: [(0, _discord.balanceMessage)(userId, user, priceInfo)]
+                          embeds: [(0, _discord2.balanceMessage)(userId, user, priceInfo)]
                         });
 
                       case 19:
                         _context.next = 21;
                         return message.channel.send({
-                          embeds: [(0, _discord.warnDirectMessage)(userId, 'Balance')]
+                          embeds: [(0, _discord2.warnDirectMessage)(userId, 'Balance')]
                         });
 
                       case 21:
@@ -180,7 +182,7 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
 
                         _context2.next = 12;
                         return message.channel.send({
-                          embeds: [(0, _discord.cannotSendMessageUser)("Balance", message)]
+                          embeds: [(0, _discord2.cannotSendMessageUser)("Balance", message)]
                         })["catch"](function (e) {
                           console.log(e);
                         });
@@ -192,7 +194,7 @@ var fetchDiscordWalletBalance = /*#__PURE__*/function () {
                       case 14:
                         _context2.next = 16;
                         return message.channel.send({
-                          embeds: [(0, _discord.discordErrorMessage)("Balance")]
+                          embeds: [(0, _discord2.discordErrorMessage)("Balance")]
                         })["catch"](function (e) {
                           console.log(e);
                         });
