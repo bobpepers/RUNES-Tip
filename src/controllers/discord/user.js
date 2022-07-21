@@ -122,20 +122,20 @@ export const createUpdateDiscordUser = async (
 
       t.afterCommit(async () => {
         if (newAccount) {
-          const userClient = await discordClient.users.fetch(userInfo.id).catch((e) => {
-            console.log(e);
-          });
-          if (userClient) {
-            await userClient.send({
-              embeds: [
-                discordWelcomeMessage(
-                  userInfo,
-                ),
-              ],
-            }).catch((e) => {
-              console.log(e);
-            });
-          }
+          // const userClient = await discordClient.users.fetch(userInfo.id).catch((e) => {
+          //   console.log(e);
+          // });
+          // if (userClient) {
+          //   await userClient.send({
+          //     embeds: [
+          //       discordWelcomeMessage(
+          //         userInfo,
+          //       ),
+          //     ],
+          //   }).catch((e) => {
+          //     console.log(e);
+          //   });
+          // }
         }
       });
     }).catch(async (err) => {

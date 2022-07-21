@@ -220,37 +220,27 @@ var createUpdateDiscordUser = /*#__PURE__*/function () {
                                   user = _yield$generateUserWa2[0];
                                   newAccount = _yield$generateUserWa2[1];
                                   t.afterCommit( /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
-                                    var userClient;
                                     return _regenerator["default"].wrap(function _callee2$(_context2) {
                                       while (1) {
                                         switch (_context2.prev = _context2.next) {
                                           case 0:
-                                            if (!newAccount) {
-                                              _context2.next = 7;
-                                              break;
+                                            if (newAccount) {// const userClient = await discordClient.users.fetch(userInfo.id).catch((e) => {
+                                              //   console.log(e);
+                                              // });
+                                              // if (userClient) {
+                                              //   await userClient.send({
+                                              //     embeds: [
+                                              //       discordWelcomeMessage(
+                                              //         userInfo,
+                                              //       ),
+                                              //     ],
+                                              //   }).catch((e) => {
+                                              //     console.log(e);
+                                              //   });
+                                              // }
                                             }
 
-                                            _context2.next = 3;
-                                            return discordClient.users.fetch(userInfo.id)["catch"](function (e) {
-                                              console.log(e);
-                                            });
-
-                                          case 3:
-                                            userClient = _context2.sent;
-
-                                            if (!userClient) {
-                                              _context2.next = 7;
-                                              break;
-                                            }
-
-                                            _context2.next = 7;
-                                            return userClient.send({
-                                              embeds: [(0, _discord.discordWelcomeMessage)(userInfo)]
-                                            })["catch"](function (e) {
-                                              console.log(e);
-                                            });
-
-                                          case 7:
+                                          case 1:
                                           case "end":
                                             return _context2.stop();
                                         }
