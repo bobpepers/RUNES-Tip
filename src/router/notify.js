@@ -34,7 +34,7 @@ export const notifyRouter = (
   queue,
 ) => {
   app.post(
-    '/api/chaininfo/block',
+    '/api/rpc/blocknotify',
     localhostOnly,
     (req, res) => {
       if (settings.coin.setting === 'Runebase') {

@@ -102,6 +102,23 @@ class Komodo {
     return this.provider.rawCall('z_getbalances');
   }
 
+  getBalance() {
+    return this.provider.rawCall('getbalance');
+  }
+
+  zMergeToAddress(
+    fromAddresses,
+    toAddress,
+  ) {
+    return this.provider.rawCall(
+      'z_mergetoaddress',
+      [
+        fromAddresses,
+        toAddress,
+      ],
+    );
+  }
+
   /**
    * Send ARRR to many
    * @param {string} address The Pirate address to send ARRR from.
@@ -156,6 +173,14 @@ class Komodo {
    */
   getWalletInfo() {
     return this.provider.rawCall('getwalletinfo');
+  }
+
+  /**
+   * Gets a list of unspent transactions
+   * @return {Promise} Promise containing result object or Error
+   */
+  listUnspent() {
+    return this.provider.rawCall('listunspent');
   }
 
   /**

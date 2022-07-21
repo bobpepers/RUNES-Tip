@@ -41,6 +41,7 @@ import { startPirateSync } from "./services/syncPirate";
 import { patchRunebaseDeposits } from "./helpers/blockchain/runebase/patcher";
 import { patchPirateDeposits } from "./helpers/blockchain/pirate/patcher";
 import { patchKomodoDeposits } from "./helpers/blockchain/komodo/patcher";
+import { consolidateKomodoFunds } from "./helpers/blockchain/komodo/consolidate";
 import { processWithdrawals } from "./services/processWithdrawals";
 import {
   recoverDiscordReactdrops,
@@ -59,7 +60,7 @@ const checkCSRFRoute = (req) => {
   const hostmachine = req.headers.host.split(':')[0];
   if (
     (
-      req.url === '/api/chaininfo/block'
+      req.url === '/api/rpc/blocknotify'
       && (
         hostmachine === 'localhost'
         || hostmachine === '127.0.0.1'
@@ -179,8 +180,8 @@ const conditionalCSRF = function (
     // const userId = socket.request.session.passport ? socket.request.session.passport.user : '';
     if (
       socket.request.user
-    && (socket.request.user.role === 4
-      || socket.request.user.role === 8)
+      && (socket.request.user.role === 4
+        || socket.request.user.role === 8)
     ) {
       socket.join('admin');
       // sockets[parseInt(userId, 10)] = socket;
@@ -307,6 +308,12 @@ const conditionalCSRF = function (
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
       patchKomodoDeposits();
     });
+
+    await consolidateKomodoFunds();
+
+    const scheduleKomodoConsolidation = schedule.scheduleJob('*/30 * * * *', () => {
+      consolidateKomodoFunds();
+    });
   } else {
     await startRunebaseSync(
       discordClient,
@@ -360,12 +367,12 @@ const conditionalCSRF = function (
     queue,
   );
 
-  const scheduleUpdateConversionRatesFiat = schedule.scheduleJob('0 */8 * * *', () => { // Update Fiat conversion rates every 8 hours
+  const scheduleUpdateConversionRatesFiat = schedule.scheduleJob('0 */12 * * *', () => { // Update Fiat conversion rates every 12 hours
     updateConversionRatesFiat();
   });
 
   updateConversionRatesCrypto();
-  const scheduleUpdateConversionRatesCrypto = schedule.scheduleJob('*/10 * * * *', () => { // Update price every 10 minutes
+  const scheduleUpdateConversionRatesCrypto = schedule.scheduleJob('*/15 * * * *', () => { // Update price every 15 minutes
     updateConversionRatesCrypto();
   });
 
@@ -374,7 +381,7 @@ const conditionalCSRF = function (
     updatePrice();
   });
 
-  const scheduleWithdrawal = schedule.scheduleJob('*/8 * * * *', async () => { // Process a withdrawal every 8 minutes
+  const scheduleWithdrawal = schedule.scheduleJob('*/1 * * * *', async () => { // Process a withdrawal every minute
     const autoWithdrawalSetting = await db.features.findOne({
       where: {
         name: 'autoWithdrawal',

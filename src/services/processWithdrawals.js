@@ -12,52 +12,90 @@ import {
 import { matrixWithdrawalAcceptedMessage } from "../messages/matrix";
 import { processWithdrawal } from "./processWithdrawal";
 import { findUserDirectMessageRoom } from '../helpers/client/matrix/directMessageRoom';
+import getCoinSettings from '../config/settings';
+import { getInstance } from "./rclient";
 
 config();
+
+const settings = getCoinSettings();
 
 export const processWithdrawals = async (
   telegramClient,
   discordClient,
   matrixClient,
 ) => {
+  const transaction = await db.transaction.findOne({
+    where: {
+      phase: 'review',
+    },
+    include: [
+      {
+        model: db.address,
+        as: 'address',
+        include: [
+          {
+            model: db.wallet,
+            as: 'wallet',
+            include: [{
+              model: db.user,
+              as: 'user',
+            }],
+          },
+        ],
+      },
+    ],
+  });
+
+  if (!transaction) {
+    console.log('No withdrawal to process');
+    return;
+  }
+
+  if (settings.coin.setting === 'Komodo') {
+    // const amountOfKomodoCoinsAvailable = await getInstance().getBalance();
+    const listKomodoUnspent = await getInstance().listUnspent();
+    const didWeFindUnspentConsolidationAddress = listKomodoUnspent.find((obj) => obj.address === process.env.KOMODO_CONSOLIDATION_ADDRESS);
+    // console.log('amountOfKomodoCoinsAvailable');
+    // console.log(amountOfKomodoCoinsAvailable);
+    console.log(didWeFindUnspentConsolidationAddress);
+    console.log(didWeFindUnspentConsolidationAddress && didWeFindUnspentConsolidationAddress.amount);
+    console.log(transaction.amount / 1e8);
+    if (
+      !didWeFindUnspentConsolidationAddress
+      || didWeFindUnspentConsolidationAddress.amount < (transaction.amount / 1e8)
+      || !didWeFindUnspentConsolidationAddress.spendable
+    ) {
+      console.log('not enough komodo coins available at the moment');
+      return;
+    }
+  }
+  if (settings.coin.setting === 'Pirate') {
+    const amountOfPirateCoinsAvailable = await getInstance().zGetBalance(process.env.PIRATE_MAIN_ADDRESS);
+    console.log('amountOfPirateCoinsAvailable');
+    console.log(amountOfPirateCoinsAvailable);
+    if (amountOfPirateCoinsAvailable < (transaction.amount / 1e8)) {
+      console.log('not enough pirate coins available at the moment');
+      return;
+    }
+  }
+
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
     let updatedTrans;
-    const transaction = await db.transaction.findOne({
-      where: {
-        phase: 'review',
-      },
-      include: [
-        {
-          model: db.address,
-          as: 'address',
-          include: [
-            {
-              model: db.wallet,
-              as: 'wallet',
-              include: [{
-                model: db.user,
-                as: 'user',
-              }],
-            },
-          ],
-        },
-      ],
-      transaction: t,
-      lock: t.LOCK.UPDATE,
-    });
-    if (!transaction) {
-      console.log('No withdrawal to process');
-      return;
-    }
     if (transaction) {
       const [
         response,
         responseStatus,
       ] = await processWithdrawal(transaction);
 
-      if (responseStatus && responseStatus === 500) {
+      console.log(responseStatus);
+      console.log('responseStatus');
+
+      if (
+        responseStatus
+        // && responseStatus === 500
+      ) {
         updatedTrans = await transaction.update(
           {
             // txid: response,
@@ -106,6 +144,30 @@ export const processWithdrawals = async (
             lock: t.LOCK.UPDATE,
           },
         );
+      } else {
+        updatedTrans = await transaction.update(
+          {
+            // txid: response,
+            phase: 'failed',
+            type: 'send',
+          },
+          {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          },
+        );
+        const activityF = await db.activity.create(
+          {
+            spenderId: transaction.address.wallet.userId,
+            type: 'withdraw_f',
+            transactionId: transaction.id,
+          },
+          {
+            transaction: t,
+            lock: t.LOCK.UPDATE,
+          },
+        );
+        return;
       }
     }
 
@@ -162,6 +224,12 @@ export const processWithdrawals = async (
     });
   }).catch(async (err) => {
     console.log(err);
+    await transaction.update(
+      {
+        phase: 'failed',
+        type: 'send',
+      },
+    );
     try {
       await telegramClient.telegram.sendMessage(
         Number(process.env.TELEGRAM_ADMIN_ID),

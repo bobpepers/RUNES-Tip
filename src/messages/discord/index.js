@@ -428,7 +428,7 @@ export const reviewMessage = (
   const result = new MessageEmbed()
     .setColor(settings.bot.color)
     .setTitle(`Withdraw #${transaction.id}`)
-    .setDescription(`<@${message.author.id}>, Your withdrawal is being reviewed
+    .setDescription(`<@${message.author.id}>, Your withdrawal has been queued
 
 amount: **${amount} ${settings.coin.ticker}**
 fee: **${fee} ${settings.coin.ticker}**
@@ -1430,11 +1430,11 @@ example:
 \`\`\`${settings.bot.command.discord} withdraw ${settings.coin.exampleAddress} 5.20 \`\`\`${settings.coin.setting === 'Pirate' ? `\`\`\`\n${settings.bot.command.discord} withdraw ${settings.coin.exampleAddress} 5.20 lorem ipsum memo text\`\`\`` : ''}
 Note: Minimal amount to withdraw: ${withdraw.min / 1e8} ${settings.coin.ticker}. A withdrawal fee of ${withdraw.fee / 1e2}% ${settings.coin.ticker}. half of the withdrawal fee will be automatically deducted from the amount and will be donated to the common faucet pot.
 `);
-    // .setTimestamp()
-    // .setFooter({
-    //  text: `${settings.bot.name} v${pjson.version}`,
-    //  iconURL: settings.coin.logo,
-    // });
+  // .setTimestamp()
+  // .setFooter({
+  //  text: `${settings.bot.name} v${pjson.version}`,
+  //  iconURL: settings.coin.logo,
+  // });
   return result;
 };
 

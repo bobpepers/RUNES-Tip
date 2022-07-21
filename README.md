@@ -60,6 +60,10 @@ CONFIG_FILE=PIRATE
 #PIRATE ONLY (has to be the same address used for consolidating pirate on node config)
 PIRATE_MAIN_ADDRESS=zs1gk4gus9ya7f4rr3jr2v2rjsqrh8n67534u5dtnu3cjvcqw867ft3ewfeqg6fsakeh8vyqe2xyrg
 
+##NOTE: If We Reinstate DUSTTIP This must be still added to it's .env file
+#KOMODO TYPE BLOCKCHAINS ONLY (consolidation address for all the funds)
+KOMODO_CONSOLIDATION_ADDRESS=xx
+
 ```
 ## Create database mysql terminal
 ```
