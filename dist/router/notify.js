@@ -40,7 +40,7 @@ var localhostOnly = function localhostOnly(req, res, next) {
 };
 
 var notifyRouter = function notifyRouter(app, discordClient, telegramClient, matrixClient, io, settings, queue) {
-  app.post('/api/chaininfo/block', localhostOnly, function (req, res) {
+  app.post('/api/rpc/blocknotify', localhostOnly, function (req, res) {
     if (settings.coin.setting === 'Runebase') {
       (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, matrixClient, queue);
     } else if (settings.coin.setting === 'Pirate') {

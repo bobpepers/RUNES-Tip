@@ -13,6 +13,8 @@ var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/
 
 var _sequelize = require("sequelize");
 
+var _dotenv = require("dotenv");
+
 var _models = _interopRequireDefault(require("../../../models"));
 
 var _rclient = require("../../../services/rclient");
@@ -20,6 +22,8 @@ var _rclient = require("../../../services/rclient");
 function _asyncIterator(iterable) { var method, async, sync, retry = 2; for ("undefined" != typeof Symbol && (async = Symbol.asyncIterator, sync = Symbol.iterator); retry--;) { if (async && null != (method = iterable[async])) return method.call(iterable); if (sync && null != (method = iterable[sync])) return new AsyncFromSyncIterator(method.call(iterable)); async = "@@asyncIterator", sync = "@@iterator"; } throw new TypeError("Object is not async iterable"); }
 
 function AsyncFromSyncIterator(s) { function AsyncFromSyncIteratorContinuation(r) { if (Object(r) !== r) return Promise.reject(new TypeError(r + " is not an object.")); var done = r.done; return Promise.resolve(r.value).then(function (value) { return { value: value, done: done }; }); } return AsyncFromSyncIterator = function AsyncFromSyncIterator(s) { this.s = s, this.n = s.next; }, AsyncFromSyncIterator.prototype = { s: null, n: null, next: function next() { return AsyncFromSyncIteratorContinuation(this.n.apply(this.s, arguments)); }, "return": function _return(value) { var ret = this.s["return"]; return void 0 === ret ? Promise.resolve({ value: value, done: !0 }) : AsyncFromSyncIteratorContinuation(ret.apply(this.s, arguments)); }, "throw": function _throw(value) { var thr = this.s["return"]; return void 0 === thr ? Promise.reject(value) : AsyncFromSyncIteratorContinuation(thr.apply(this.s, arguments)); } }, new AsyncFromSyncIterator(s); }
+
+(0, _dotenv.config)();
 
 function patchKomodoDeposits() {
   return _patchKomodoDeposits.apply(this, arguments);
@@ -50,16 +54,21 @@ function _patchKomodoDeposits() {
                       trans = _step.value;
 
                       if (!(trans.category === 'receive')) {
-                        _context2.next = 9;
+                        _context2.next = 10;
                         break;
                       }
 
                       if (!trans.address) {
-                        _context2.next = 9;
+                        _context2.next = 10;
                         break;
                       }
 
-                      _context2.next = 5;
+                      if (!(trans.address !== process.env.KOMODO_CONSOLIDATION_ADDRESS)) {
+                        _context2.next = 10;
+                        break;
+                      }
+
+                      _context2.next = 6;
                       return _models["default"].address.findOne({
                         where: {
                           address: trans.address
@@ -70,15 +79,15 @@ function _patchKomodoDeposits() {
                         }]
                       });
 
-                    case 5:
+                    case 6:
                       address = _context2.sent;
 
                       if (!address) {
-                        _context2.next = 9;
+                        _context2.next = 10;
                         break;
                       }
 
-                      _context2.next = 9;
+                      _context2.next = 10;
                       return _models["default"].sequelize.transaction({
                         isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
                       }, /*#__PURE__*/function () {
@@ -126,7 +135,7 @@ function _patchKomodoDeposits() {
                         };
                       }());
 
-                    case 9:
+                    case 10:
                     case "end":
                       return _context2.stop();
                   }

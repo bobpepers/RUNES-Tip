@@ -15,6 +15,8 @@ var _pirateSettings = _interopRequireDefault(require("./pirateSettings"));
 
 var _dustSettings = _interopRequireDefault(require("./dustSettings"));
 
+var _tokelSettings = _interopRequireDefault(require("./tokelSettings"));
+
 (0, _dotenv.config)();
 
 var getCoinSettings = function getCoinSettings() {
@@ -28,6 +30,10 @@ var getCoinSettings = function getCoinSettings() {
 
   if (process.env.CONFIG_FILE === 'DUST') {
     return _dustSettings["default"];
+  }
+
+  if (process.env.CONFIG_FILE === 'TOKEL') {
+    return _tokelSettings["default"];
   }
 };
 

@@ -171,6 +171,16 @@ var Pirate = /*#__PURE__*/function () {
       return this.provider.rawCall('zs_listtransactions', [0, 0, 0, mostRecent]);
     }
     /**
+     * Get Balance of address
+     * @return {Promise} Amount of coins available in address
+     */
+
+  }, {
+    key: "zGetBalance",
+    value: function zGetBalance(address) {
+      return this.provider.rawCall('z_getbalance', [address]);
+    }
+    /**
      * Lists all balances
      * @return {Promise} Array of unspent transaction outputs or Error
      */

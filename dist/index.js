@@ -84,6 +84,8 @@ var _patcher2 = require("./helpers/blockchain/pirate/patcher");
 
 var _patcher3 = require("./helpers/blockchain/komodo/patcher");
 
+var _consolidate = require("./helpers/blockchain/komodo/consolidate");
+
 var _processWithdrawals = require("./services/processWithdrawals");
 
 var _recover = require("./helpers/recover");
@@ -98,7 +100,7 @@ Object.freeze(Object.prototype);
 var checkCSRFRoute = function checkCSRFRoute(req) {
   var hostmachine = req.headers.host.split(':')[0];
 
-  if (req.url === '/api/chaininfo/block' && (hostmachine === 'localhost' || hostmachine === '127.0.0.1') || req.url === '/api/rpc/walletnotify' && (hostmachine === 'localhost' || hostmachine === '127.0.0.1')) {
+  if (req.url === '/api/rpc/blocknotify' && (hostmachine === 'localhost' || hostmachine === '127.0.0.1') || req.url === '/api/rpc/walletnotify' && (hostmachine === 'localhost' || hostmachine === '127.0.0.1')) {
     return true;
   }
 
@@ -121,7 +123,7 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
 };
 
 (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3() {
-  var localStorage, settings, queue, port, app, server, io, RedisStore, redisClient, sessionMiddleware, wrap, sockets, discordClient, telegramClient, storeSession, telegramApiClient, matrixClient, matrixLoginCredentials, schedulePatchDeposits, _schedulePatchDeposits, _schedulePatchDeposits2, _schedulePatchDeposits3, scheduleUpdateConversionRatesFiat, scheduleUpdateConversionRatesCrypto, schedulePriceUpdate, scheduleWithdrawal;
+  var localStorage, settings, queue, port, app, server, io, RedisStore, redisClient, sessionMiddleware, wrap, sockets, discordClient, telegramClient, storeSession, telegramApiClient, matrixClient, matrixLoginCredentials, schedulePatchDeposits, _schedulePatchDeposits, _schedulePatchDeposits2, scheduleKomodoConsolidation, _schedulePatchDeposits3, scheduleUpdateConversionRatesFiat, scheduleUpdateConversionRatesCrypto, schedulePriceUpdate, scheduleWithdrawal;
 
   return _regenerator["default"].wrap(function _callee3$(_context3) {
     while (1) {
@@ -319,7 +321,7 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
           schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher.patchRunebaseDeposits)();
           });
-          _context3.next = 87;
+          _context3.next = 90;
           break;
 
         case 66:
@@ -339,12 +341,12 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
           _schedulePatchDeposits = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher2.patchPirateDeposits)();
           });
-          _context3.next = 87;
+          _context3.next = 90;
           break;
 
         case 74:
           if (!(settings.coin.setting === 'Komodo')) {
-            _context3.next = 82;
+            _context3.next = 85;
             break;
           }
 
@@ -359,44 +361,51 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
           _schedulePatchDeposits2 = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher3.patchKomodoDeposits)();
           });
-          _context3.next = 87;
-          break;
+          _context3.next = 82;
+          return (0, _consolidate.consolidateKomodoFunds)();
 
         case 82:
-          _context3.next = 84;
+          scheduleKomodoConsolidation = _nodeSchedule["default"].scheduleJob('*/30 * * * *', function () {
+            (0, _consolidate.consolidateKomodoFunds)();
+          });
+          _context3.next = 90;
+          break;
+
+        case 85:
+          _context3.next = 87;
           return (0, _syncRunebase.startRunebaseSync)(discordClient, telegramClient, matrixClient, queue);
 
-        case 84:
-          _context3.next = 86;
+        case 87:
+          _context3.next = 89;
           return (0, _patcher.patchRunebaseDeposits)();
 
-        case 86:
+        case 89:
           _schedulePatchDeposits3 = _nodeSchedule["default"].scheduleJob('10 */1 * * *', function () {
             (0, _patcher.patchRunebaseDeposits)();
           });
 
-        case 87:
+        case 90:
           (0, _router.router)(app, discordClient, telegramClient, telegramApiClient, matrixClient, io, settings, queue);
           (0, _router2.dashboardRouter)(app, io, discordClient, telegramClient, telegramApiClient, matrixClient);
-          _context3.next = 91;
+          _context3.next = 94;
           return (0, _recover.recoverDiscordReactdrops)(discordClient, io, queue);
 
-        case 91:
-          _context3.next = 93;
+        case 94:
+          _context3.next = 96;
           return (0, _recover.recoverDiscordTrivia)(discordClient, io, queue);
 
-        case 93:
-          _context3.next = 95;
+        case 96:
+          _context3.next = 98;
           return (0, _recover.recoverMatrixReactdrops)(matrixClient, io, queue);
 
-        case 95:
-          scheduleUpdateConversionRatesFiat = _nodeSchedule["default"].scheduleJob('0 */8 * * *', function () {
-            // Update Fiat conversion rates every 8 hours
+        case 98:
+          scheduleUpdateConversionRatesFiat = _nodeSchedule["default"].scheduleJob('0 */12 * * *', function () {
+            // Update Fiat conversion rates every 12 hours
             (0, _updateConversionRates.updateConversionRatesFiat)();
           });
           (0, _updateConversionRates.updateConversionRatesCrypto)();
-          scheduleUpdateConversionRatesCrypto = _nodeSchedule["default"].scheduleJob('*/10 * * * *', function () {
-            // Update price every 10 minutes
+          scheduleUpdateConversionRatesCrypto = _nodeSchedule["default"].scheduleJob('*/15 * * * *', function () {
+            // Update price every 15 minutes
             (0, _updateConversionRates.updateConversionRatesCrypto)();
           });
           (0, _updatePrice.updatePrice)();
@@ -404,7 +413,7 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
             // Update price every 5 minutes
             (0, _updatePrice.updatePrice)();
           });
-          scheduleWithdrawal = _nodeSchedule["default"].scheduleJob('*/8 * * * *', /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
+          scheduleWithdrawal = _nodeSchedule["default"].scheduleJob('*/1 * * * *', /*#__PURE__*/(0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee2() {
             var autoWithdrawalSetting;
             return _regenerator["default"].wrap(function _callee2$(_context2) {
               while (1) {
@@ -450,7 +459,7 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
           server.listen(port);
           console.log('server listening on:', port);
 
-        case 104:
+        case 107:
         case "end":
           return _context3.stop();
       }

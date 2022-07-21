@@ -170,6 +170,16 @@ var Komodo = /*#__PURE__*/function () {
     value: function zGetBalances() {
       return this.provider.rawCall('z_getbalances');
     }
+  }, {
+    key: "getBalance",
+    value: function getBalance() {
+      return this.provider.rawCall('getbalance');
+    }
+  }, {
+    key: "zMergeToAddress",
+    value: function zMergeToAddress(fromAddresses, toAddress) {
+      return this.provider.rawCall('z_mergetoaddress', [fromAddresses, toAddress]);
+    }
     /**
      * Send ARRR to many
      * @param {string} address The Pirate address to send ARRR from.
@@ -240,6 +250,16 @@ var Komodo = /*#__PURE__*/function () {
     key: "getWalletInfo",
     value: function getWalletInfo() {
       return this.provider.rawCall('getwalletinfo');
+    }
+    /**
+     * Gets a list of unspent transactions
+     * @return {Promise} Promise containing result object or Error
+     */
+
+  }, {
+    key: "listUnspent",
+    value: function listUnspent() {
+      return this.provider.rawCall('listunspent');
     }
     /**
      * Lists unspent transaction outputs.

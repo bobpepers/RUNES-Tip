@@ -288,7 +288,7 @@ var reviewMessage = function reviewMessage(message, transaction) {
   var amount = (transaction.amount / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
   var fee = (transaction.feeAmount / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
   var total = ((transaction.amount - transaction.feeAmount) / 1e8).toFixed(8).replace(/(\.0+|0+)$/, '');
-  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Withdraw #".concat(transaction.id)).setDescription("<@".concat(message.author.id, ">, Your withdrawal is being reviewed\n\namount: **").concat(amount, " ").concat(settings.coin.ticker, "**\nfee: **").concat(fee, " ").concat(settings.coin.ticker, "**\ntotal: **").concat(total, " ").concat(settings.coin.ticker, "**").concat(settings.coin.setting === 'Pirate' && transaction.memo && transaction.memo !== '' ? "\nmemo: **".concat(transaction.memo, "**") : '')).setTimestamp().setFooter({
+  var result = new _discord.MessageEmbed().setColor(settings.bot.color).setTitle("Withdraw #".concat(transaction.id)).setDescription("<@".concat(message.author.id, ">, Your withdrawal has been queued\n\namount: **").concat(amount, " ").concat(settings.coin.ticker, "**\nfee: **").concat(fee, " ").concat(settings.coin.ticker, "**\ntotal: **").concat(total, " ").concat(settings.coin.ticker, "**").concat(settings.coin.setting === 'Pirate' && transaction.memo && transaction.memo !== '' ? "\nmemo: **".concat(transaction.memo, "**") : '')).setTimestamp().setFooter({
     text: "".concat(settings.bot.name, " v").concat(_package["default"].version),
     iconURL: settings.coin.logo
   });
