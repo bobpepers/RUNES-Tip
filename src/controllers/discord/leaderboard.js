@@ -1,5 +1,8 @@
 /* eslint-disable import/prefer-default-export */
 import {
+  ChannelType,
+} from 'discord.js';
+import {
   warnDirectMessage,
   statsMessage,
 } from '../../messages/discord';
@@ -31,12 +34,12 @@ export const discordLeaderboard = async (
     return;
   }
   // const reactdrop = await db.reactdrop.find
-  if (message.channel.type === 'DM') {
+  if (message.channel.type === ChannelType.DM) {
     message.author.send({ embeds: [statsMessage(message)] }).catch((e) => {
       console.log(e);
     });
   }
-  if (message.channel.type === 'GUILD_TEXT') {
+  if (message.channel.type === ChannelType.GuildText) {
     message.channel.send({ embeds: [warnDirectMessage(message.author.id, 'Help')] });
     message.author.send({ embeds: [statsMessage(message)] }).catch((e) => {
       console.log(e);

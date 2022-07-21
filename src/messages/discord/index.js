@@ -1,4 +1,4 @@
-import { MessageEmbed } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 import moment from 'moment';
 import getCoinSettings from '../../config/settings';
 import pjson from "../../../package.json";
@@ -9,7 +9,7 @@ const settings = getCoinSettings();
 export const discordUserBannedMessage = (
   user,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor("#C70039")
     .setTitle(`🚫     User: ${user.username} Banned     🚫`)
     .setDescription(`Reason:
@@ -26,7 +26,7 @@ ${user.banMessage}`)
 export const discordServerBannedMessage = (
   server,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(`#C70039`)
     .setTitle('🚫     Server Banned     🚫')
     .setDescription(`Reason:
@@ -41,7 +41,7 @@ ${server.banMessage}`)
 };
 
 export const priceMessage = (replyString) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Price')
     .setThumbnail(settings.coin.logo)
@@ -56,7 +56,7 @@ export const priceMessage = (replyString) => {
 };
 
 export const discordChannelBannedMessage = (channel) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor('#FF7900')
     .setTitle('❗     Channel Restricted     ❗')
     .setDescription(`Reason:
@@ -75,28 +75,50 @@ export const coinInfoMessage = (
   priceInfo,
   walletVersion,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Tipbot')
-    .addField("Coin Info", settings.coin.description)
-    .addField("\u200b", "\u200b")
+    .addFields(
+      { name: "Coin Info", value: settings.coin.description },
+    )
+    .addFields(
+      { name: "\u200b", value: "\u200b" },
+    )
     .addFields(
       { name: "Coin Name", value: settings.coin.name, inline: true },
       { name: "Ticker", value: settings.coin.ticker, inline: true },
     )
-    .addField("\u200b", "\u200b")
+    .addFields(
+      { name: "\u200b", value: "\u200b" },
+    )
     .addFields(
       { name: "Current block height", value: `${blockHeight}`, inline: true },
       { name: "Wallet version", value: `${walletVersion}`, inline: true },
     )
-    .addField("\u200b", "\u200b")
-    .addField("Website", settings.coin.website)
-    .addField("Github", settings.coin.github)
-    .addField("Block Explorer", settings.coin.explorer)
-    .addField("Discord Server", settings.coin.discord)
-    .addField("Telegram Group", settings.coin.telegram)
-    .addField("Exchanges", settings.coin.exchanges.join('\n'))
-    .addField("Current price", `$${priceInfo.price} (source: coinpaprika)`)
+    .addFields(
+      { name: "\u200b", value: "\u200b" },
+    )
+    .addFields(
+      { name: "Website", value: settings.coin.website },
+    )
+    .addFields(
+      { name: "Github", value: settings.coin.github },
+    )
+    .addFields(
+      { name: "Block Explorer", value: settings.coin.explorer },
+    )
+    .addFields(
+      { name: "Discord Server", value: settings.coin.discord },
+    )
+    .addFields(
+      { name: "Telegram Group", value: settings.coin.telegram },
+    )
+    .addFields(
+      { name: "Exchanges", value: settings.coin.exchanges.join('\n') },
+    )
+    .addFields(
+      { name: "Current price", value: `$${priceInfo.price} (source: coinpaprika)` },
+    )
     .setTimestamp()
     .setFooter({
       text: `${settings.bot.name} v${pjson.version}`,
@@ -122,7 +144,7 @@ export const triviaMessageDiscord = (
   const seconds = Math.floor((distance % (1000 * 60)) / 1000);
   const ended = days < 1 && hours < 1 && minutes < 1 && seconds < 1;
 
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Trivia #${id}`)
     .setDescription(`👨‍🏫 <@${author}> has started a trivia question for ${totalPeople} ${Number(totalPeople) === 1 ? 'person' : 'people'}! 👨‍🏫
@@ -158,7 +180,7 @@ export const reactDropMessage = (
   const seconds = Math.floor((distance % (1000 * 60)) / 1000);
   const ended = days < 1 && hours < 1 && minutes < 1 && seconds < 1;
 
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Reactdrop #${id}`)
     .setDescription(`:tada: <@${author}> has started a react airdrop! :tada:
@@ -181,7 +203,7 @@ export const AfterTriviaSuccessMessage = (
   amountEach,
   initiator,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Trivia #${endTrivia.id}`)
     .setDescription(`:tada:[Trivia](https://discord.com/channels/${endTrivia.group.groupId.replace("discord-", "")}/${endTrivia.channel.channelId.replace("discord-", "")}/${endTrivia.messageId}) started by <@${initiator}> has finished!:tada:
@@ -197,7 +219,7 @@ export const AfterTriviaSuccessMessage = (
 };
 
 export const AfterReactDropSuccessMessage = (endReactDrop, amountEach, initiator) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Reactdrop #${endReactDrop.id}`)
     .setDescription(`:tada:[React airdrop](https://discord.com/channels/${endReactDrop.group.groupId.replace("discord-", "")}/${endReactDrop.channel.channelId.replace("discord-", "")}/${endReactDrop.messageId}) started by <@${initiator}> has finished!:tada:
@@ -213,7 +235,7 @@ export const AfterReactDropSuccessMessage = (endReactDrop, amountEach, initiator
 };
 
 export const discordLimitSpamMessage = (userId, myFunctionName) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(myFunctionName)
     .setDescription(`🚫 Slow down! 🚫
@@ -228,7 +250,7 @@ export const discordLimitSpamMessage = (userId, myFunctionName) => {
 };
 
 export const minimumTimeReactDropMessage = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Reactdrop')
     .setDescription(`Minimum time for reactdrop is 60 seconds (60s)`)
@@ -242,7 +264,7 @@ export const minimumTimeReactDropMessage = (message) => {
 };
 
 export const maxTimeTriviaMessage = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Trivia')
     .setDescription(`Maximum time is 2 days`)
@@ -256,7 +278,7 @@ export const maxTimeTriviaMessage = (message) => {
 };
 
 export const maxTimeReactdropMessage = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Reactdrop')
     .setDescription(`Maximum time is 2 days`)
@@ -270,7 +292,7 @@ export const maxTimeReactdropMessage = (message) => {
 };
 
 export const ignoreMeMessage = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Ignore me')
     .setDescription(`<@${message.author.id}>, you will no longer be @mentioned while receiving rains, soaks and other mass operations, but will continue to receive coins from them.
@@ -285,7 +307,7 @@ If you wish to be @mentioned, please issue this command again.`)
 };
 
 export const unIngoreMeMessage = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Ignore me')
     .setDescription(`<@${message.author.id}>, you will again be @mentioned while receiving rains, soaks and other mass operations.
@@ -300,7 +322,7 @@ If you do not wish to be @mentioned, please issue this command again.`)
 };
 
 export const notAVoiceChannel = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Voice Rain')
     .setDescription(`<@${message.author.id}>, Incorrect voice channel defined`)
@@ -314,7 +336,7 @@ export const notAVoiceChannel = (message) => {
 };
 
 export const voiceChannelNotFound = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Voice Rain')
     .setDescription(`<@${message.author.id}>, Voice channel not found`)
@@ -328,7 +350,7 @@ export const voiceChannelNotFound = (message) => {
 };
 
 export const cannotSendMessageUser = (title, message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, ${settings.bot.name} was unable to send you a direct message.\nPlease check your discord privacy settings.`)
@@ -342,7 +364,7 @@ export const cannotSendMessageUser = (title, message) => {
 };
 
 export const discordErrorMessage = (title) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`Something went wrong.`)
@@ -359,7 +381,7 @@ export const discordDepositConfirmedMessage = (
   amount,
   trans,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Deposit #${trans.id}`)
     .setDescription(`Deposit Confirmed
@@ -374,7 +396,7 @@ ${trans.amount / 1e8} ${settings.coin.ticker} has been credited to your wallet`)
 };
 
 export const discordIncomingDepositMessage = (detail) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Deposit #${detail.transaction[0].id}`)
     .setDescription(`incoming deposit detected for ${detail.amount} ${settings.coin.ticker}
@@ -390,7 +412,7 @@ ${settings.coin.explorer}/tx/${detail.transaction[0].txid}`)
 };
 
 export const discordUserWithdrawalRejectMessage = (title) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Withdraw')
     .setDescription(`Your withdrawal has been rejected`)
@@ -405,7 +427,7 @@ export const discordUserWithdrawalRejectMessage = (title) => {
 
 // transactionNotFoundMessage
 export const transactionNotFoundMessage = (title) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`Transaction not found`)
@@ -425,7 +447,7 @@ export const reviewMessage = (
   const amount = ((transaction.amount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
   const fee = ((transaction.feeAmount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
   const total = (((transaction.amount - transaction.feeAmount) / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Withdraw #${transaction.id}`)
     .setDescription(`<@${message.author.id}>, Your withdrawal has been queued
@@ -448,7 +470,7 @@ export const discordWithdrawalAcceptedMessage = (
   const amount = ((updatedTrans.amount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
   const fee = ((updatedTrans.feeAmount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
   const total = (((updatedTrans.amount - updatedTrans.feeAmount) / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Withdraw #${updatedTrans.id}`)
     .setDescription(`Your withdrawal has been accepted
@@ -468,7 +490,7 @@ ${settings.coin.explorer}/tx/${updatedTrans.txid}`)
 };
 
 export const discordWithdrawalConfirmedMessage = (userId, trans) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Withdraw #${trans.id}`)
     .setDescription(`<@${userId}>, Your withdrawal has been complete`)
@@ -491,7 +513,7 @@ __date:__ ${transaction.createdAt.toLocaleDateString("en-US")}
 __txId:__ ${transaction.txid}\n\n`);
   }
 
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('List Transactions')
     .setDescription(`<@${userId}>'s latest withdrawals and deposits\n
@@ -507,7 +529,7 @@ ${myString}`)
 };
 
 export const balanceMessage = (userId, user, priceInfo) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Balance')
     .setDescription(`<@${userId}>'s current available balance: ${user.wallet.available / 1e8} ${settings.coin.ticker}
@@ -531,7 +553,7 @@ export const DiscordFeeMessage = (message, fee) => {
       feeString += `${key}: ${fee[key].fee / 1e2}% (${fee[key].type})\n`;
     }
   }
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Fee Schedule')
     .setDescription(`${feeString}`)
@@ -546,7 +568,7 @@ export const DiscordFeeMessage = (message, fee) => {
 };
 
 export const ReactdropCaptchaMessage = (userId) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Reactdrop')
     .setDescription(`<@${userId}>'s you have 1 minute to guess`)
@@ -561,7 +583,7 @@ export const ReactdropCaptchaMessage = (userId) => {
 };
 
 export const depositAddressMessage = (userId, user) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Deposit')
     .setDescription(`<@${userId}>'s deposit address:
@@ -577,7 +599,7 @@ export const depositAddressMessage = (userId, user) => {
 };
 
 export const featureDisabledChannelMessage = (name) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(name)
     .setDescription(`This Feature has been disabled for this channel`)
@@ -591,7 +613,7 @@ export const featureDisabledChannelMessage = (name) => {
 };
 
 export const featureDisabledServerMessage = (name) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(name)
     .setDescription(`This Feature has been disabled for this server`)
@@ -605,7 +627,7 @@ export const featureDisabledServerMessage = (name) => {
 };
 
 export const featureDisabledGlobalMessage = (name) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(name)
     .setDescription(`This Feature has been disabled`)
@@ -634,7 +656,7 @@ export const halvingMessage = (
   const months = moment.duration(distance).months();
   const years = moment.duration(distance).years();
 
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`📅 Reward halving happens on or around **${nextHalvingDate}** at block height **${nextBlockHalving}**
@@ -657,7 +679,7 @@ export const halvingMessage = (
 };
 
 export const unableToWithdrawToSelfMessage = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Tip')
     .setDescription(`<@${message.author.id}>, unable to withdraw to your own deposit address`)
@@ -671,7 +693,7 @@ export const unableToWithdrawToSelfMessage = (message) => {
 };
 
 export const tipFaucetSuccessMessage = (message, amount) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Tip')
     .setDescription(`<@${message.author.id}> tipped ${amount / 1e8} ${settings.coin.ticker} to Faucet`)
@@ -690,7 +712,7 @@ export const tipSingleSuccessMessage = (
   listOfUsersRained,
   amount,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Tip #${id}`)
     .setDescription(`<@${message.author.id}> tipped ${amount / 1e8} ${settings.coin.ticker} to ${listOfUsersRained[0]}`)
@@ -711,7 +733,7 @@ export const tipMultipleSuccessMessage = (
   type,
 ) => {
   const userText = listOfUsersRained.join(", ");
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Tip #${id}`)
     .setDescription(`<@${message.author.id}> tipped **${(amount * listOfUsersRained.length) / 1e8} ${settings.coin.ticker}** to ${listOfUsersRained.length} users
@@ -729,7 +751,7 @@ Type: **${capitalize(type)}**
 };
 
 export const unableToFindUserTipMessage = (message, amount) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Tip')
     .setDescription(`Unable to find user to tip.`)
@@ -751,7 +773,7 @@ export const AfterSuccessMessage = (
   type,
   typeH,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`${type} #${id}`)
     .setDescription(`<@${message.author.id}> ${typeH} **${amount / 1e8} ${settings.coin.ticker}** on ${withoutBots.length} users\n💸 **${amountPerUser / 1e8} ${settings.coin.ticker}** each 💸`)
@@ -765,7 +787,7 @@ export const AfterSuccessMessage = (
 };
 
 export const notEnoughActiveUsersMessage = (message, title) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, not enough active users`)
@@ -782,7 +804,7 @@ export const discordWithdrawalRejectedMessage = (
   updatedTransaction,
 ) => {
   console.log(updatedTransaction);
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Withdraw #${updatedTransaction.id}`)
     .setDescription(`Your withdrawal has been rejected`)
@@ -796,7 +818,7 @@ export const discordWithdrawalRejectedMessage = (
 };
 
 export const walletNotFoundMessage = (message, title) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, Wallet not found`)
@@ -810,7 +832,7 @@ export const walletNotFoundMessage = (message, title) => {
 };
 
 export const minimumMessage = (message, setting, type) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(type)
     .setDescription(`<@${message.author.id}>, Minimum ${type} is ${setting.min / 1e8} ${settings.coin.ticker}`)
@@ -828,7 +850,7 @@ export const timeOutAllAmoutMessageDiscord = (
   operationName,
   userBeingTipped,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(capitalize(operationName))
     .setDescription(`<@${message.author.id}>, the request to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker} has expired`)
@@ -845,7 +867,7 @@ export const canceledAllAmoutMessageDiscord = (
   operationName,
   userBeingTipped,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(capitalize(operationName))
     .setDescription(`<@${message.author.id}>, you canceled the request to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}`)
@@ -863,7 +885,7 @@ export const confirmAllAmoutMessageDiscord = (
   operationName,
   userBeingTipped,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(capitalize(operationName))
     .setDescription(`<@${message.author.id}>, are you sure that you want to ${operationName} ${userBeingTipped ? `${userBeingTipped} ` : ``}all your ${settings.coin.ticker}?
@@ -882,7 +904,7 @@ export const claimTooFactFaucetMessage = (username, distance) => {
   const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
   const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Faucet')
     .setDescription(`⏱️ ${username}, you have to wait ${hours === 1 ? `${hours} hour` : ''}${hours > 1 ? `${hours} hours,` : ''} ${minutes === 1 ? `${minutes} minute` : ''}${minutes > 1 ? `${minutes} minutes and` : ''} ${seconds === 1 ? `${seconds} second` : ''}${seconds > 1 ? `${seconds} seconds` : ''} before claiming the faucet again (the faucet can be claimed every 4 hours).`)
@@ -900,7 +922,7 @@ export const faucetClaimedMessage = (
   username,
   amount,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Faucet #${id}`)
     .setDescription(`💧 ${username}, you have been tipped **${amount / 1e8} ${settings.coin.ticker}** from the faucet.`)
@@ -914,7 +936,7 @@ export const faucetClaimedMessage = (
 };
 
 export const dryFaucetMessage = () => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Faucet')
     .setDescription(`🏜️ Faucet is dry`)
@@ -928,7 +950,7 @@ export const dryFaucetMessage = () => {
 };
 
 export const hurricaneMaxUserAmountMessage = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Hurricane')
     .setDescription(`<@${message.author.id}>, Maximum user amount is 50`)
@@ -942,7 +964,7 @@ export const hurricaneMaxUserAmountMessage = (message) => {
 };
 
 export const hurricaneInvalidUserAmount = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Hurricane')
     .setDescription(`<@${message.author.id}>, Invalid amount of users`)
@@ -956,7 +978,7 @@ export const hurricaneInvalidUserAmount = (message) => {
 };
 
 export const thunderstormMaxUserAmountMessage = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('ThunderStorm')
     .setDescription(`<@${message.author.id}>, Maximum user amount is 50`)
@@ -970,7 +992,7 @@ export const thunderstormMaxUserAmountMessage = (message) => {
 };
 
 export const thunderstormInvalidUserAmount = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('ThunderStorm')
     .setDescription(`<@${message.author.id}>, Invalid amount of users`)
@@ -984,7 +1006,7 @@ export const thunderstormInvalidUserAmount = (message) => {
 };
 
 export const hurricaneUserZeroAmountMessage = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Hurricane')
     .setDescription(`<@${message.author.id}>, minimum amount of users to thunderstorm is 1`)
@@ -998,7 +1020,7 @@ export const hurricaneUserZeroAmountMessage = (message) => {
 };
 
 export const thunderstormUserZeroAmountMessage = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('ThunderStorm')
     .setDescription(`<@${message.author.id}>, minimum amount of users to thunderstorm is 1`)
@@ -1017,7 +1039,7 @@ export const AfterThunderSuccess = (
   amount,
   userThunder,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Thunder #${id}`)
     .setDescription(`⛈ ${userThunder} has been hit with ${amount / 1e8} ${settings.coin.ticker} ⛈`)
@@ -1031,7 +1053,7 @@ export const AfterThunderSuccess = (
 };
 
 export const invalidPeopleAmountMessage = (message, title) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, Invalid amount of people to win ${title}`)
@@ -1045,7 +1067,7 @@ export const invalidPeopleAmountMessage = (message, title) => {
 };
 
 export const invalidTimeMessage = (message, title) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, Invalid time`)
@@ -1059,7 +1081,7 @@ export const invalidTimeMessage = (message, title) => {
 };
 
 export const noTriviaQuestionFoundMessage = (message, title) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, No trivia question found`)
@@ -1073,7 +1095,7 @@ export const noTriviaQuestionFoundMessage = (message, title) => {
 };
 
 export const invalidEmojiMessage = (message, title) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, You used an invalid emoji`)
@@ -1090,7 +1112,7 @@ export const insufficientBalanceMessage = (
   message,
   title,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, Insufficient balance`)
@@ -1107,7 +1129,7 @@ export const userNotFoundMessage = (
   message,
   title,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, User not found`)
@@ -1123,7 +1145,7 @@ export const userNotFoundMessage = (
 export const invalidAddressMessage = (
   message,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Withdraw')
     .setDescription(`<@${message.author.id}>, Invalid ${settings.coin.name} Address`)
@@ -1137,7 +1159,7 @@ export const invalidAddressMessage = (
 };
 
 export const invalidAmountMessage = (message, title) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, Invalid Amount`)
@@ -1151,7 +1173,7 @@ export const invalidAmountMessage = (message, title) => {
 };
 
 export const minimumWithdrawalMessage = (message, min) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Withdraw')
     .setDescription(`<@${message.author.id}>, Minimum Withdrawal is ${min / 1e8} ${settings.coin.ticker}`)
@@ -1165,7 +1187,7 @@ export const minimumWithdrawalMessage = (message, min) => {
 };
 
 export const disablePublicStatsMessage = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle("Statistics")
     .setDescription(`<@${message.author.id}>, Public Statistics has been disabled`)
@@ -1180,7 +1202,7 @@ export const disablePublicStatsMessage = (message) => {
 };
 
 export const NotInDirectMessage = (message, title) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`<@${message.author.id}>, Can't use this command in a direct message`)
@@ -1195,7 +1217,7 @@ export const NotInDirectMessage = (message, title) => {
 };
 
 export const enablePublicStatsMeMessage = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle("Statistics")
     .setDescription(`<@${message.author.id}>, Public Statistic has been enabled`)
@@ -1210,7 +1232,7 @@ export const enablePublicStatsMeMessage = (message) => {
 };
 
 export const notEnoughUsersToTip = (message) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Tip`)
     .setDescription(`<@${message.author.id}>, Not enough users to tip`)
@@ -1225,7 +1247,7 @@ export const notEnoughUsersToTip = (message) => {
 };
 
 export const statsMessage = (message, statsMessage) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Statistics`)
     .setDescription(`<@${message.author.id}>, ${statsMessage}`)
@@ -1239,7 +1261,7 @@ export const statsMessage = (message, statsMessage) => {
   return result;
 };
 export const ReactDropReturnInitiatorMessage = () => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Reactdrop`)
     .setDescription(`Nobody claimed, returning funds to reactdrop initiator`)
@@ -1256,7 +1278,7 @@ export const ReactDropReturnInitiatorMessage = () => {
 export const discordWelcomeMessage = (
   userInfo,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Bot`)
     .setDescription(`Welcome <@${userInfo.id}>, we created a wallet for you.
@@ -1272,7 +1294,7 @@ Type "${settings.bot.command.discord} help" for usage info`)
 };
 
 export const discordBotMaintenanceMessage = () => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Bot`)
     .setDescription(`Discord tipbot maintenance`)
@@ -1287,7 +1309,7 @@ export const discordBotMaintenanceMessage = () => {
 };
 
 export const discordBotDisabledMessage = () => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Bot`)
     .setDescription(`Discord tipbot disabled`)
@@ -1302,7 +1324,7 @@ export const discordBotDisabledMessage = () => {
 };
 
 export const triviaReturnInitiatorMessage = () => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Trivia`)
     .setDescription(`Nobody claimed, returning funds to trivia initiator`)
@@ -1328,7 +1350,7 @@ export const miningMessage = (
   pirateBitcoinPrice,
   difficultyInG,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`💻 **Renting:** 1 MSol/s
@@ -1356,7 +1378,7 @@ export const miningMessage = (
 };
 
 export const warnDirectMessage = (userId, title) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`<@${userId}>, I've sent you a direct message.`)
@@ -1374,7 +1396,7 @@ export const discordTransactionMemoTooLongMessage = (
   message,
   memoLength,
 ) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Withdraw')
     .setDescription(`<@${message.author.id}>, Your withdrawal memo is too long!
@@ -1390,7 +1412,7 @@ We found ${memoLength} characters, maximum length is 512`)
 };
 
 export const helpMessageOne = (withdraw) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`${`${settings.bot.name} v${pjson.version}`} Help`)
     .setDescription(`\`${settings.bot.command.discord}\`
@@ -1439,7 +1461,7 @@ Note: Minimal amount to withdraw: ${withdraw.min / 1e8} ${settings.coin.ticker}.
 };
 
 export const helpMessageTwo = (withdraw) => {
-  const result = new MessageEmbed()
+  const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     // .setTitle(`${`${settings.bot.name} v${pjson.version}`} Help`)
     .setDescription(`\`${settings.bot.command.discord} <@user> <amount|all>\`

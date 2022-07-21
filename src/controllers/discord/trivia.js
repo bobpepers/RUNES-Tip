@@ -3,8 +3,9 @@
 import _ from 'lodash';
 import { Transaction } from "sequelize";
 import {
-  MessageActionRow,
-  MessageButton,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
 } from "discord.js";
 import {
   triviaMessageDiscord,
@@ -32,10 +33,24 @@ export const listenTrivia = async (
   updateMessage,
   answerString,
 ) => {
-  const collector = triviaMessage.createMessageComponentCollector({ componentType: 'BUTTON', time: distance });
+  const filter = (interaction) => interaction.isButton(); // alternative for componentType: 'BUTTON'
+  const collector = triviaMessage.createMessageComponentCollector({
+    // componentType: 'BUTTON', // This stopped working in v14.. why? we tried BUTTON, Button, button... it should still work according to the documentation
+    filter,
+    time: distance,
+  });
   collector.on('collect', async (
     reaction,
   ) => {
+    console.log('collecting');
+    console.log('collecting');
+    console.log('collecting');
+    console.log('collecting');
+    console.log('collecting');
+    console.log('collecting');
+    console.log('collecting');
+    console.log('collecting');
+    console.log(reaction);
     if (!reaction.user.bot) {
       await queue.add(async () => {
         await db.sequelize.transaction({
@@ -595,7 +610,7 @@ export const discordTrivia = async (
             lock: t.LOCK.UPDATE,
           });
 
-          const row = new MessageActionRow();
+          const row = new ActionRowBuilder();
           const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
           const answers = _.shuffle(randomQuestion.triviaanswers);
           let answerString = '';
@@ -621,10 +636,10 @@ export const discordTrivia = async (
           // eslint-disable-next-line no-restricted-syntax
           for (const answer of answers) {
             row.addComponents(
-              new MessageButton()
+              new ButtonBuilder()
                 .setCustomId(answer.answer)
                 .setLabel(alphabet[parseInt(positionAlphabet, 10)])
-                .setStyle('PRIMARY'),
+                .setStyle(ButtonStyle.Primary),
             );
             answerString += `${alphabet[parseInt(positionAlphabet, 10)]}. ${answer.answer}\n`;
             positionAlphabet += 1;

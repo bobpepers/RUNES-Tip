@@ -1,8 +1,9 @@
 /* eslint-disable import/prefer-default-export */
 import { Transaction } from "sequelize";
 import {
-  MessageActionRow,
-  MessageButton,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
 } from "discord.js";
 import {
   dryFaucetMessage,
@@ -56,11 +57,13 @@ export const discordFaucetClaim = async (
       return;
     }
 
-    const row = new MessageActionRow().addComponents(
-      new MessageButton()
-        .setCustomId('claimFaucet')
-        .setLabel('Claim Faucet')
-        .setStyle('PRIMARY'),
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder({
+        label: 'Claim Faucet',
+        style: ButtonStyle.Primary,
+        customId: 'claimFaucet',
+        emoji: '💦',
+      }),
     );
 
     if (Number(faucet.amount) < 10000) {

@@ -1,7 +1,8 @@
 /* eslint-disable import/first */
 import {
   Client,
-  Intents,
+  GatewayIntentBits,
+  Partials,
 } from "discord.js";
 import _ from 'lodash';
 import { Telegraf } from "telegraf";
@@ -195,25 +196,25 @@ const conditionalCSRF = function (
   // Discord
   const discordClient = new Client({
     intents: [
-      Intents.FLAGS.GUILDS,
-      Intents.FLAGS.GUILD_MEMBERS,
-      Intents.FLAGS.GUILD_PRESENCES,
-      Intents.FLAGS.GUILD_MESSAGES,
-      Intents.FLAGS.DIRECT_MESSAGES,
-      Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-      Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
-      Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
-      Intents.FLAGS.GUILD_VOICE_STATES,
+      GatewayIntentBits.Guilds,
+      GatewayIntentBits.GuildMembers,
+      GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.DirectMessages,
+      GatewayIntentBits.GuildMessageReactions,
+      GatewayIntentBits.DirectMessageReactions,
+      GatewayIntentBits.GuildEmojisAndStickers,
+      GatewayIntentBits.GuildVoiceStates,
+      GatewayIntentBits.MessageContent,
+      GatewayIntentBits.GuildPresences,
+      GatewayIntentBits.GuildInvites,
     ],
     partials: [
-      'MESSAGE',
-      'CHANNEL',
-      'REACTION',
+      Partials.Message,
+      Partials.Channel,
+      Partials.Reaction,
     ],
-    // makeCache: Options.cacheWithLimits({
-    //  GuildEmoji: 5000, // This is default
-    // }),
   });
+
   await discordClient.login(process.env.DISCORD_CLIENT_TOKEN);
 
   // telegraf client

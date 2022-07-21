@@ -3,9 +3,10 @@
 import _ from 'lodash';
 import { Transaction } from "sequelize";
 import {
-  MessageAttachment,
-  MessageActionRow,
-  MessageButton,
+  AttachmentBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
 } from "discord.js";
 import {
   reactDropMessage,
@@ -35,9 +36,12 @@ export const listenReactDrop = async (
   queue,
 ) => {
   const filter = () => true;
+  console.log(distance);
+  console.log('distance');
   const collector = reactMessage.createReactionCollector({
     filter,
     time: distance,
+    // dispose: true,
   });
 
   collector.on('collect', async (
@@ -98,9 +102,9 @@ export const listenReactDrop = async (
                   collector.id,
                 ),
               ],
-              // files: [new MessageAttachment(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')],
+              // files: [new AttachmentBuilder(Buffer.from(captchaPngFixed, 'base64'), 'captcha.png')],
               files: [
-                new MessageAttachment(
+                new AttachmentBuilder(
                   captchaPngFixed,
                   'captcha.png',
                 ),
@@ -147,10 +151,11 @@ export const listenReactDrop = async (
                       transaction: t,
                     });
 
-                    const backToReactDropButton = new MessageActionRow().addComponents(
-                      new MessageButton()
+                    const backToReactDropButton = new ActionRowBuilder().addComponents(
+                      new ButtonBuilder()
+                        // .setEmoji('↩')
                         .setLabel('Back to ReactDrop')
-                        .setStyle('LINK')
+                        .setStyle(ButtonStyle.Link)
                         .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.messageId}`),
                     );
 
@@ -185,8 +190,10 @@ export const listenReactDrop = async (
                       lock: t.LOCK.UPDATE,
                       transaction: t,
                     });
-                    const row = new MessageActionRow().addComponents(
-                      new MessageButton()
+                    const row = new ActionRowBuilder().addComponents(
+                      new ButtonBuilder({
+
+                      })
                         .setLabel('Back to ReactDrop')
                         .setStyle('LINK')
                         .setURL(`https://discord.com/channels/${reactDropRecord.group.groupId.replace("discord-", "")}/${reactDropRecord.channel.channelId.replace("discord-", "")}/${reactDropRecord.messageId}`),
@@ -437,7 +444,7 @@ export const listenReactDrop = async (
             const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
             // eslint-disable-next-line no-restricted-syntax
             for (const element of cutStringListUsers) {
-            // eslint-disable-next-line no-await-in-loop
+              // eslint-disable-next-line no-await-in-loop
               await reactMessage.channel.send(element);
             }
             const initiator = endReactDrop.user.user_id.replace('discord-', '');

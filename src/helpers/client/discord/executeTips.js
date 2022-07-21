@@ -1,5 +1,4 @@
-// import BigNumber from "bignumber.js";
-// import db from '../../models';
+/* eslint-disable prefer-destructuring */
 import {
   confirmAllAmoutMessageDiscord,
   timeOutAllAmoutMessageDiscord,
@@ -24,7 +23,7 @@ export const executeTipFunction = async (
   if (
     !filteredMessageDiscord[2]
     || (filteredMessageDiscord[1].startsWith('<@')
-    && !filteredMessageDiscord[2].startsWith('<@'))
+      && !filteredMessageDiscord[2].startsWith('<@'))
   ) {
     operationName = 'tip';
     userBeingTipped = filteredMessageDiscord[1];
@@ -53,12 +52,12 @@ export const executeTipFunction = async (
 
     const msgFilter = (m) => {
       const filtered = m.author.id === message.author.id
-          && (
-            m.content.toUpperCase() === 'YES'
-            || m.content.toUpperCase() === 'Y'
-            || m.content.toUpperCase() === 'NO'
-            || m.content.toUpperCase() === 'N'
-          );
+        && (
+          m.content.toUpperCase() === 'YES'
+          || m.content.toUpperCase() === 'Y'
+          || m.content.toUpperCase() === 'NO'
+          || m.content.toUpperCase() === 'N'
+        );
       return filtered;
     };
 
@@ -71,7 +70,7 @@ export const executeTipFunction = async (
       const collectedMessage = collected.first();
       if (
         collectedMessage.content.toUpperCase() === 'YES'
-          || collectedMessage.content.toUpperCase() === 'Y'
+        || collectedMessage.content.toUpperCase() === 'Y'
       ) {
         await queue.add(async () => {
           const task = await tipFunction(
@@ -88,7 +87,7 @@ export const executeTipFunction = async (
         });
       } else if (
         collectedMessage.content.toUpperCase() === 'NO'
-          || collectedMessage.content.toUpperCase() === 'N'
+        || collectedMessage.content.toUpperCase() === 'N'
       ) {
         await message.channel.send({
           embeds: [

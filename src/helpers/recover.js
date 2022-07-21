@@ -1,6 +1,7 @@
 import {
-  MessageActionRow,
-  MessageButton,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
 } from "discord.js";
 import _ from 'lodash';
 import db from "../models";
@@ -139,7 +140,7 @@ export const recoverDiscordTrivia = async (
     const countDownDate = await runningTrivia.ends.getTime();
     let now = new Date().getTime();
     let distance = countDownDate - now;
-    const row = new MessageActionRow();
+    const row = new ActionRowBuilder();
     const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
     const answers = _.shuffle(runningTrivia.triviaquestion.triviaanswers);
     let answerString = '';
@@ -148,10 +149,10 @@ export const recoverDiscordTrivia = async (
     // eslint-disable-next-line no-restricted-syntax
     for (const answer of answers) {
       row.addComponents(
-        new MessageButton()
+        new ButtonBuilder()
           .setCustomId(answer.answer)
           .setLabel(alphabet[parseInt(positionAlphabet, 10)])
-          .setStyle('PRIMARY'),
+          .setStyle(ButtonStyle.Primary),
       );
       answerString += `${alphabet[parseInt(positionAlphabet, 10)]}. ${answer.answer}\n`;
       positionAlphabet += 1;

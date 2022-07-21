@@ -1,5 +1,8 @@
 import { Transaction } from "sequelize";
 import {
+  ChannelType,
+} from 'discord.js';
+import {
   warnDirectMessage,
   balanceMessage,
   discordErrorMessage,
@@ -40,7 +43,7 @@ export const fetchDiscordWalletBalance = async (
 
     const userId = user.user_id.replace('discord-', '');
 
-    if (message.channel.type === 'DM') {
+    if (message.channel.type === ChannelType.DM) {
       await message.author.send({
         embeds: [
           balanceMessage(
@@ -52,7 +55,7 @@ export const fetchDiscordWalletBalance = async (
       });
     }
 
-    if (message.channel.type === 'GUILD_TEXT') {
+    if (message.channel.type === ChannelType.GuildText) {
       await message.author.send({
         embeds: [
           balanceMessage(

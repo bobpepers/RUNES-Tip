@@ -1,4 +1,7 @@
 /* eslint-disable import/prefer-default-export */
+import {
+  ChannelType,
+} from 'discord.js';
 import { Transaction } from "sequelize";
 import db from '../../models';
 import {
@@ -92,7 +95,7 @@ export const withdrawDiscordCreate = async (
     }
 
     if (isInvalidAddress || isNodeOffline) {
-      if (message.channel.type !== 'DM') {
+      if (message.channel.type !== ChannelType.DM) {
         await message.channel.send({
           embeds: [
             warnDirectMessage(
@@ -123,7 +126,7 @@ export const withdrawDiscordCreate = async (
           ),
         ],
       });
-      if (message.channel.type !== 'DM') {
+      if (message.channel.type !== ChannelType.DM) {
         await message.channel.send({
           embeds: [
             warnDirectMessage(
@@ -199,7 +202,7 @@ export const withdrawDiscordCreate = async (
     );
     activity.unshift(activityCreate);
 
-    if (message.channel.type === 'DM') {
+    if (message.channel.type === ChannelType.DM) {
       await message.author.send({
         embeds: [
           reviewMessage(
@@ -210,7 +213,7 @@ export const withdrawDiscordCreate = async (
       });
     }
 
-    if (message.channel.type === 'GUILD_TEXT') {
+    if (message.channel.type === ChannelType.GuildText) {
       await message.author.send({
         embeds: [
           reviewMessage(

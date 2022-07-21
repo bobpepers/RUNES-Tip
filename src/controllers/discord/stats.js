@@ -1,5 +1,8 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable import/prefer-default-export */
+import {
+  ChannelType,
+} from 'discord.js';
 import { Transaction, Op } from "sequelize";
 import _ from 'lodash';
 import {
@@ -97,7 +100,7 @@ export const discordStats = async (
     if (!user) return;
 
     if (filteredMessageDiscord[2]) {
-    // eslint-disable-next-line prefer-destructuring
+      // eslint-disable-next-line prefer-destructuring
       textTime = filteredMessageDiscord[2];
       cutLastTimeLetter = textTime.substring(textTime.length - 1, textTime.length).toLowerCase();
       cutNumberTime = textTime.substring(0, textTime.length - 1);
@@ -105,13 +108,13 @@ export const discordStats = async (
     }
     if (
       (filteredMessageDiscord[2]
-      && !isnum)
-    // && Number(cutNumberTime) < 0
-    && (
-      cutLastTimeLetter !== 'd'
-      || cutLastTimeLetter !== 'h'
-      || cutLastTimeLetter !== 'm'
-      || cutLastTimeLetter !== 's')
+        && !isnum)
+      // && Number(cutNumberTime) < 0
+      && (
+        cutLastTimeLetter !== 'd'
+        || cutLastTimeLetter !== 'h'
+        || cutLastTimeLetter !== 'm'
+        || cutLastTimeLetter !== 's')
     ) {
       console.log('not pass');
       const activityA = await db.activity.create({
@@ -135,13 +138,13 @@ export const discordStats = async (
 
     if (
       (filteredMessageDiscord[2]
-      && isnum)
-    // && Number(cutNumberTime) < 0
-    && (
-      cutLastTimeLetter === 'd'
-      || cutLastTimeLetter === 'h'
-      || cutLastTimeLetter === 'm'
-      || cutLastTimeLetter === 's')
+        && isnum)
+      // && Number(cutNumberTime) < 0
+      && (
+        cutLastTimeLetter === 'd'
+        || cutLastTimeLetter === 'h'
+        || cutLastTimeLetter === 'm'
+        || cutLastTimeLetter === 's')
     ) {
       let dateObj = await new Date().getTime();
       if (cutLastTimeLetter === 'd') {
@@ -164,7 +167,7 @@ export const discordStats = async (
     childWhereOptionsTriviaTips.amount = { [Op.ne]: null };
     parentWhereOptions.id = user.id;
 
-    if (message.channel.type === 'GUILD_TEXT') {
+    if (message.channel.type === ChannelType.GuildText) {
       childWhereOptions.groupId = groupTask.id;
       childWhereOptionsTriviaTips.groupId = groupTask.id;
       await message.channel.send({
@@ -180,7 +183,7 @@ export const discordStats = async (
     const userWithIncludes = await db.user.findOne({
       where: parentWhereOptions,
       include: [
-      // Spend
+        // Spend
         {
           model: db.tip,
           as: 'tips',
@@ -470,8 +473,8 @@ export const discordStats = async (
     let groupedTriviaTips;
 
     console.log(userWithIncludes.triviatips);
-    if (message.channel.type === 'DM') {
-    // spend
+    if (message.channel.type === ChannelType.DM) {
+      // spend
       groupedTips = userWithIncludes.tips ? groupGlobal(userWithIncludes.tips, 'spend', 'tips') : {};
       groupedReactdrops = userWithIncludes.reactdrops ? groupGlobal(userWithIncludes.reactdrops, 'spend', 'reactdrops') : {};
       groupedFloods = userWithIncludes.floods ? groupGlobal(userWithIncludes.floods, 'spend', 'floods') : {};
@@ -493,8 +496,8 @@ export const discordStats = async (
       groupedSleetTips = userWithIncludes.sleettips ? groupGlobal(userWithIncludes.sleettips, 'earned', 'sleets') : {};
       groupedTriviaTips = userWithIncludes.triviatips ? groupGlobal(userWithIncludes.triviatips, 'earned', 'trivias') : {};
     }
-    if (message.channel.type === 'GUILD_TEXT') {
-    // spend
+    if (message.channel.type === ChannelType.GuildText) {
+      // spend
       groupedTips = userWithIncludes.tips ? group(userWithIncludes.tips, 'spend', 'tips') : {};
       groupedReactdrops = userWithIncludes.reactdrops ? group(userWithIncludes.reactdrops, 'spend', 'reactdrops') : {};
       groupedFloods = userWithIncludes.floods ? group(userWithIncludes.floods, 'spend', 'floods') : {};
@@ -560,77 +563,77 @@ export const discordStats = async (
       console.log('serverObj');
       // Spend
       const spendTips = mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.tips
-      && `${mergedObject[`${serverObj}`].spend.tips.length} tips for ${mergedObject[`${serverObj}`].spend.tips.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].spend.tips.length} tips for ${mergedObject[`${serverObj}`].spend.tips.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const spendFloods = mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.floods
-      && `${mergedObject[`${serverObj}`].spend.floods.length} floods for ${mergedObject[`${serverObj}`].spend.floods.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].spend.floods.length} floods for ${mergedObject[`${serverObj}`].spend.floods.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const spendRains = mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.rains
-      && `${mergedObject[`${serverObj}`].spend.rains.length} rains for ${mergedObject[`${serverObj}`].spend.rains.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].spend.rains.length} rains for ${mergedObject[`${serverObj}`].spend.rains.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const spendSoaks = mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.soaks
-      && `${mergedObject[`${serverObj}`].spend.soaks.length} soaks for ${mergedObject[`${serverObj}`].spend.soaks.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].spend.soaks.length} soaks for ${mergedObject[`${serverObj}`].spend.soaks.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const spendHurricanes = mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.hurricanes
-      && `${mergedObject[`${serverObj}`].spend.hurricanes.length} hurricanes for ${mergedObject[`${serverObj}`].spend.hurricanes.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].spend.hurricanes.length} hurricanes for ${mergedObject[`${serverObj}`].spend.hurricanes.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const spendThunders = mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.thunders
-      && `${mergedObject[`${serverObj}`].spend.thunders.length} thunders for ${mergedObject[`${serverObj}`].spend.thunders.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].spend.thunders.length} thunders for ${mergedObject[`${serverObj}`].spend.thunders.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const spendThunderstorms = mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.thunderstorms
-      && `${mergedObject[`${serverObj}`].spend.thunderstorms.length} thunderstorms for ${mergedObject[`${serverObj}`].spend.thunderstorms.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].spend.thunderstorms.length} thunderstorms for ${mergedObject[`${serverObj}`].spend.thunderstorms.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const spendReactDrops = mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.reactdrops
-      && `${mergedObject[`${serverObj}`].spend.reactdrops.length} reactdrops for ${mergedObject[`${serverObj}`].spend.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].spend.reactdrops.length} reactdrops for ${mergedObject[`${serverObj}`].spend.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const spendTrivias = mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.trivias
-      && `${mergedObject[`${serverObj}`].spend.trivias.length} Trivia for ${mergedObject[`${serverObj}`].spend.trivias.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].spend.trivias.length} Trivia for ${mergedObject[`${serverObj}`].spend.trivias.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const spendTotal = (mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.tips ? mergedObject[`${serverObj}`].spend.tips.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
-      + (mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.floods ? mergedObject[`${serverObj}`].spend.floods.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
-      + (mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.rains ? mergedObject[`${serverObj}`].spend.rains.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
-      + (mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.soaks ? mergedObject[`${serverObj}`].spend.soaks.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
-      + (mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.hurricanes ? mergedObject[`${serverObj}`].spend.hurricanes.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
-      + (mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.thunders ? mergedObject[`${serverObj}`].spend.thunders.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
-      + (mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.thunderstorms ? mergedObject[`${serverObj}`].spend.thunderstorms.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
-      + (mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.reactdrops ? mergedObject[`${serverObj}`].spend.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0);
+        + (mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.floods ? mergedObject[`${serverObj}`].spend.floods.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+        + (mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.rains ? mergedObject[`${serverObj}`].spend.rains.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+        + (mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.soaks ? mergedObject[`${serverObj}`].spend.soaks.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+        + (mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.hurricanes ? mergedObject[`${serverObj}`].spend.hurricanes.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+        + (mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.thunders ? mergedObject[`${serverObj}`].spend.thunders.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+        + (mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.thunderstorms ? mergedObject[`${serverObj}`].spend.thunderstorms.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+        + (mergedObject[`${serverObj}`].spend && mergedObject[`${serverObj}`].spend.reactdrops ? mergedObject[`${serverObj}`].spend.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0);
 
       // Earned
       const earnedTips = mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.tips
-      && `${mergedObject[`${serverObj}`].earned.tips.length} tips for ${mergedObject[`${serverObj}`].earned.tips.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].earned.tips.length} tips for ${mergedObject[`${serverObj}`].earned.tips.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const earnedFloods = mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.floods
-      && `${mergedObject[`${serverObj}`].earned.floods.length} floods for ${mergedObject[`${serverObj}`].earned.floods.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].earned.floods.length} floods for ${mergedObject[`${serverObj}`].earned.floods.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const earnedRains = mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.rains
-      && `${mergedObject[`${serverObj}`].earned.rains.length} rains for ${mergedObject[`${serverObj}`].earned.rains.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].earned.rains.length} rains for ${mergedObject[`${serverObj}`].earned.rains.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const earnedSoaks = mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.soaks
-      && `${mergedObject[`${serverObj}`].earned.soaks.length} soaks for ${mergedObject[`${serverObj}`].earned.soaks.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].earned.soaks.length} soaks for ${mergedObject[`${serverObj}`].earned.soaks.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const earnedHurricanes = mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.hurricanes
-      && `${mergedObject[`${serverObj}`].earned.hurricanes.length} hurricanes for ${mergedObject[`${serverObj}`].earned.hurricanes.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].earned.hurricanes.length} hurricanes for ${mergedObject[`${serverObj}`].earned.hurricanes.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const earnedThunders = mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.thunders
-      && `${mergedObject[`${serverObj}`].earned.thunders.length} thunders for ${mergedObject[`${serverObj}`].earned.thunders.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].earned.thunders.length} thunders for ${mergedObject[`${serverObj}`].earned.thunders.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const earnedThunderstorms = mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.thunderstorms
-      && `${mergedObject[`${serverObj}`].earned.thunderstorms.length} thunderstorms for ${mergedObject[`${serverObj}`].earned.thunderstorms.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].earned.thunderstorms.length} thunderstorms for ${mergedObject[`${serverObj}`].earned.thunderstorms.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const earnedReactDrops = mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.reactdrops
-      && `${mergedObject[`${serverObj}`].earned.reactdrops.length} reactdrops for ${mergedObject[`${serverObj}`].earned.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].earned.reactdrops.length} reactdrops for ${mergedObject[`${serverObj}`].earned.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const earnedTrivias = mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.trivias
-      && `${mergedObject[`${serverObj}`].earned.trivias.length} trivia for ${mergedObject[`${serverObj}`].earned.trivias.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
+        && `${mergedObject[`${serverObj}`].earned.trivias.length} trivia for ${mergedObject[`${serverObj}`].earned.trivias.reduce((a, b) => +a + +b.amount, 0) / 1e8} ${settings.coin.ticker}`;
 
       const earnedTotal = (mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.tips ? mergedObject[`${serverObj}`].earned.tips.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
-    + (mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.floods ? mergedObject[`${serverObj}`].earned.floods.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
-    + (mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.rains ? mergedObject[`${serverObj}`].earned.rains.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
-    + (mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.soaks ? mergedObject[`${serverObj}`].earned.soaks.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
-    + (mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.hurricanes ? mergedObject[`${serverObj}`].earned.hurricanes.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
-    + (mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.thunders ? mergedObject[`${serverObj}`].earned.thunders.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
-    + (mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.thunderstorms ? mergedObject[`${serverObj}`].earned.thunderstorms.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
-    + (mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.reactdrops ? mergedObject[`${serverObj}`].earned.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0);
+        + (mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.floods ? mergedObject[`${serverObj}`].earned.floods.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+        + (mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.rains ? mergedObject[`${serverObj}`].earned.rains.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+        + (mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.soaks ? mergedObject[`${serverObj}`].earned.soaks.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+        + (mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.hurricanes ? mergedObject[`${serverObj}`].earned.hurricanes.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+        + (mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.thunders ? mergedObject[`${serverObj}`].earned.thunders.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+        + (mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.thunderstorms ? mergedObject[`${serverObj}`].earned.thunderstorms.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0)
+        + (mergedObject[`${serverObj}`].earned && mergedObject[`${serverObj}`].earned.reactdrops ? mergedObject[`${serverObj}`].earned.reactdrops.reduce((a, b) => +a + +b.amount, 0) / 1e8 : 0);
 
       const serverString = `_**${serverObj}**_
 

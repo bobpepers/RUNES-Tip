@@ -1,3 +1,6 @@
+import {
+  ChannelType,
+} from 'discord.js';
 import { Transaction } from "sequelize";
 import db from '../../../models';
 import logger from "../../logger";
@@ -20,7 +23,7 @@ export const disallowDirectMessage = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    if (message.channel.type === 'DM') {
+    if (message.channel.type === ChannelType.DM) {
       const notDirectActivity = await db.activity.create({
         type: `${functionType}_f`,
         spenderId: user.id,
@@ -29,7 +32,14 @@ export const disallowDirectMessage = async (
         transaction: t,
       });
       activity.unshift(notDirectActivity);
-      await message.channel.send({ embeds: [NotInDirectMessage(message, capitalize(functionType))] });
+      await message.channel.send({
+        embeds: [
+          NotInDirectMessage(
+            message,
+            capitalize(functionType),
+          ),
+        ],
+      });
       disallow = true;
     }
 
@@ -48,7 +58,13 @@ export const disallowDirectMessage = async (
     console.log(err);
     logger.error(`${functionType} error: ${err}`);
     try {
-      await message.channel.send({ embeds: [discordErrorMessage(capitalize(functionType))] }).catch((e) => {
+      await message.channel.send({
+        embeds: [
+          discordErrorMessage(
+            capitalize(functionType),
+          ),
+        ],
+      }).catch((e) => {
         console.log(e);
       });
     } catch (err) {

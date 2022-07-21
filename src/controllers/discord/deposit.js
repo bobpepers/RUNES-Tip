@@ -1,4 +1,7 @@
-import { MessageAttachment } from "discord.js";
+import {
+  MessageAttachment,
+  ChannelType,
+} from "discord.js";
 import { Transaction } from "sequelize";
 import QRCode from "qrcode";
 import db from '../../models';
@@ -39,7 +42,7 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
 
     const userId = user.user_id.replace('discord-', '');
 
-    if (message.channel.type === 'DM') {
+    if (message.channel.type === ChannelType.DM) {
       await message.author.send({
         embeds: [
           depositAddressMessage(
@@ -48,17 +51,17 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
           ),
         ],
         files: [
-          new MessageAttachment(
-            Buffer.from(
+          {
+            attachment: Buffer.from(
               depositQrFixed,
               'base64',
             ),
-            'qr.png',
-          ),
+            name: 'qr.png',
+          },
         ],
       });
     }
-    if (message.channel.type === 'GUILD_TEXT') {
+    if (message.channel.type === ChannelType.GuildText) {
       await message.author.send({
         embeds: [
           depositAddressMessage(
@@ -67,13 +70,13 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
           ),
         ],
         files: [
-          new MessageAttachment(
-            Buffer.from(
+          {
+            attachment: Buffer.from(
               depositQrFixed,
               'base64',
             ),
-            'qr.png',
-          ),
+            name: 'qr.png',
+          },
         ],
       });
       await message.channel.send({
