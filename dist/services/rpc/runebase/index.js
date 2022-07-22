@@ -63,6 +63,46 @@ var Runebase = /*#__PURE__*/function () {
 
       return isConnected;
     }()
+  }, {
+    key: "walletCreateFundedPsbt",
+    value: function walletCreateFundedPsbt(inputs, outputs, lockTime, options) {
+      return this.provider.rawCall('walletcreatefundedpsbt', [inputs, outputs, lockTime, options]);
+    }
+  }, {
+    key: "walletProcessPsbt",
+    value: function walletProcessPsbt(psbt) {
+      return this.provider.rawCall('walletprocesspsbt', [psbt]);
+    }
+  }, {
+    key: "finalizePsbt",
+    value: function finalizePsbt(psbt) {
+      return this.provider.rawCall('finalizepsbt', [psbt]);
+    }
+  }, {
+    key: "listUnspent",
+    value: function listUnspent() {
+      return this.provider.rawCall('listunspent');
+    }
+  }, {
+    key: "getHexAddress",
+    value: function getHexAddress(address) {
+      return this.provider.rawCall('gethexaddress', [address]);
+    }
+  }, {
+    key: "createRawTransaction",
+    value: function createRawTransaction(inputs, outputs) {
+      return this.provider.rawCall('createrawtransaction', [inputs, outputs]);
+    }
+  }, {
+    key: "signRawTransactionWithWallet",
+    value: function signRawTransactionWithWallet(raw) {
+      return this.provider.rawCall('signrawtransactionwithwallet', [raw]);
+    }
+  }, {
+    key: "sendRawTransaction",
+    value: function sendRawTransaction(raw) {
+      return this.provider.rawCall('sendrawtransaction', [raw]);
+    }
     /** ******** BLOCKCHAIN ********* */
 
     /**

@@ -38,7 +38,7 @@ var settings = (0, _settings["default"])();
 
 var processWithdrawals = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee4(telegramClient, discordClient, matrixClient) {
-    var transaction, listKomodoUnspent, didWeFindUnspentConsolidationAddress, amountOfPirateCoinsAvailable;
+    var transaction, listRunebaseUnspent, foundConsolidationRunebaseAddress, listKomodoUnspent, didWeFindUnspentConsolidationAddress, amountOfPirateCoinsAvailable;
     return _regenerator["default"].wrap(function _callee4$(_context4) {
       while (1) {
         switch (_context4.prev = _context4.next) {
@@ -74,8 +74,8 @@ var processWithdrawals = /*#__PURE__*/function () {
             return _context4.abrupt("return");
 
           case 6:
-            if (!(settings.coin.setting === 'Komodo')) {
-              _context4.next = 17;
+            if (!(settings.coin.setting === 'Runebase')) {
+              _context4.next = 14;
               break;
             }
 
@@ -83,48 +83,66 @@ var processWithdrawals = /*#__PURE__*/function () {
             return (0, _rclient.getInstance)().listUnspent();
 
           case 9:
+            listRunebaseUnspent = _context4.sent;
+            foundConsolidationRunebaseAddress = listRunebaseUnspent.find(function (obj) {
+              return obj.address === process.env.RUNEBASE_CONSOLIDATION_ADDRESS;
+            });
+
+            if (!(!foundConsolidationRunebaseAddress || foundConsolidationRunebaseAddress.amount < transaction.amount / 1e8 || !foundConsolidationRunebaseAddress.spendable)) {
+              _context4.next = 14;
+              break;
+            }
+
+            console.log('not enough Runebase coins available at the moment');
+            return _context4.abrupt("return");
+
+          case 14:
+            if (!(settings.coin.setting === 'Komodo')) {
+              _context4.next = 22;
+              break;
+            }
+
+            _context4.next = 17;
+            return (0, _rclient.getInstance)().listUnspent();
+
+          case 17:
             listKomodoUnspent = _context4.sent;
             didWeFindUnspentConsolidationAddress = listKomodoUnspent.find(function (obj) {
               return obj.address === process.env.KOMODO_CONSOLIDATION_ADDRESS;
-            }); // console.log('amountOfKomodoCoinsAvailable');
-            // console.log(amountOfKomodoCoinsAvailable);
-
-            console.log(didWeFindUnspentConsolidationAddress);
-            console.log(didWeFindUnspentConsolidationAddress && didWeFindUnspentConsolidationAddress.amount);
-            console.log(transaction.amount / 1e8);
+            });
 
             if (!(!didWeFindUnspentConsolidationAddress || didWeFindUnspentConsolidationAddress.amount < transaction.amount / 1e8 || !didWeFindUnspentConsolidationAddress.spendable)) {
-              _context4.next = 17;
+              _context4.next = 22;
               break;
             }
 
             console.log('not enough komodo coins available at the moment');
             return _context4.abrupt("return");
 
-          case 17:
+          case 22:
             if (!(settings.coin.setting === 'Pirate')) {
-              _context4.next = 26;
+              _context4.next = 31;
               break;
             }
 
-            _context4.next = 20;
+            _context4.next = 25;
             return (0, _rclient.getInstance)().zGetBalance(process.env.PIRATE_MAIN_ADDRESS);
 
-          case 20:
+          case 25:
             amountOfPirateCoinsAvailable = _context4.sent;
             console.log('amountOfPirateCoinsAvailable');
             console.log(amountOfPirateCoinsAvailable);
 
             if (!(amountOfPirateCoinsAvailable < transaction.amount / 1e8)) {
-              _context4.next = 26;
+              _context4.next = 31;
               break;
             }
 
             console.log('not enough pirate coins available at the moment');
             return _context4.abrupt("return");
 
-          case 26:
-            _context4.next = 28;
+          case 31:
+            _context4.next = 33;
             return _models["default"].sequelize.transaction({
               isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
             }, /*#__PURE__*/function () {
@@ -403,7 +421,7 @@ var processWithdrawals = /*#__PURE__*/function () {
               };
             }());
 
-          case 28:
+          case 33:
           case "end":
             return _context4.stop();
         }

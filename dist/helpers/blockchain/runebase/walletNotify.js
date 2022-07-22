@@ -55,7 +55,7 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
                         res.locals.detail = [];
 
                         if (!(transaction.details && transaction.details.length > 0)) {
-                          _context.next = 50;
+                          _context.next = 51;
                           break;
                         }
 
@@ -70,18 +70,23 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
 
                       case 9:
                         if (!(_iteratorAbruptCompletion = !(_step = _context.sent).done)) {
-                          _context.next = 34;
+                          _context.next = 35;
                           break;
                         }
 
                         detail = _step.value;
 
-                        if (!(detail.category === 'receive')) {
-                          _context.next = 31;
+                        if (!(detail.address !== process.env.RUNEBASE_CONSOLIDATION_ADDRESS)) {
+                          _context.next = 32;
                           break;
                         }
 
-                        _context.next = 14;
+                        if (!(detail.category === 'receive')) {
+                          _context.next = 32;
+                          break;
+                        }
+
+                        _context.next = 15;
                         return _models["default"].address.findOne({
                           where: {
                             address: detail.address
@@ -98,11 +103,11 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 14:
+                      case 15:
                         address = _context.sent;
 
                         if (!address) {
-                          _context.next = 31;
+                          _context.next = 32;
                           break;
                         }
 
@@ -123,7 +128,7 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
                           res.locals.detail[parseInt(i, 10)].userId = address.wallet.user.user_id.replace('matrix-', '');
                         }
 
-                        _context.next = 22;
+                        _context.next = 23;
                         return _models["default"].transaction.findOrCreate({
                           where: {
                             txid: transaction.txid,
@@ -142,15 +147,15 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 22:
+                      case 23:
                         res.locals.detail[parseInt(i, 10)].transaction = _context.sent;
 
                         if (!res.locals.detail[parseInt(i, 10)].transaction[1]) {
-                          _context.next = 30;
+                          _context.next = 31;
                           break;
                         }
 
-                        _context.next = 26;
+                        _context.next = 27;
                         return _models["default"].activity.findOrCreate({
                           where: {
                             transactionId: res.locals.detail[parseInt(i, 10)].transaction[0].id
@@ -165,71 +170,71 @@ var walletNotifyRunebase = /*#__PURE__*/function () {
                           lock: t.LOCK.UPDATE
                         });
 
-                      case 26:
+                      case 27:
                         activity = _context.sent;
                         res.locals.activity.unshift(activity[0]);
                         res.locals.detail[parseInt(i, 10)].amount = detail.amount;
 
                         _logger["default"].info("deposit detected for addressid: ".concat(res.locals.detail[parseInt(i, 10)].transaction[0].addressId, " and txid: ").concat(res.locals.detail[parseInt(i, 10)].transaction[0].txid));
 
-                      case 30:
+                      case 31:
                         i += 1;
 
-                      case 31:
+                      case 32:
                         _iteratorAbruptCompletion = false;
                         _context.next = 7;
                         break;
 
-                      case 34:
-                        _context.next = 40;
+                      case 35:
+                        _context.next = 41;
                         break;
 
-                      case 36:
-                        _context.prev = 36;
+                      case 37:
+                        _context.prev = 37;
                         _context.t0 = _context["catch"](5);
                         _didIteratorError = true;
                         _iteratorError = _context.t0;
 
-                      case 40:
-                        _context.prev = 40;
+                      case 41:
                         _context.prev = 41;
+                        _context.prev = 42;
 
                         if (!(_iteratorAbruptCompletion && _iterator["return"] != null)) {
-                          _context.next = 45;
+                          _context.next = 46;
                           break;
                         }
 
-                        _context.next = 45;
+                        _context.next = 46;
                         return _iterator["return"]();
 
-                      case 45:
-                        _context.prev = 45;
+                      case 46:
+                        _context.prev = 46;
 
                         if (!_didIteratorError) {
-                          _context.next = 48;
+                          _context.next = 49;
                           break;
                         }
 
                         throw _iteratorError;
 
-                      case 48:
-                        return _context.finish(45);
-
                       case 49:
-                        return _context.finish(40);
+                        return _context.finish(46);
 
                       case 50:
+                        return _context.finish(41);
+
+                      case 51:
                         t.afterCommit(function () {
                           console.log('commited');
                           next();
                         });
 
-                      case 51:
+                      case 52:
                       case "end":
                         return _context.stop();
                     }
                   }
-                }, _callee, null, [[5, 36, 40, 50], [41,, 45, 49]]);
+                }, _callee, null, [[5, 37, 41, 51], [42,, 46, 50]]);
               }));
 
               return function (_x4) {

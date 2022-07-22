@@ -49,17 +49,22 @@ function _patchRunebaseDeposits() {
                     case 0:
                       trans = _step.value;
 
+                      if (!(trans.address !== process.env.RUNEBASE_CONSOLIDATION_ADDRESS)) {
+                        _context2.next = 10;
+                        break;
+                      }
+
                       if (!(trans.category === 'receive')) {
-                        _context2.next = 9;
+                        _context2.next = 10;
                         break;
                       }
 
                       if (!trans.address) {
-                        _context2.next = 9;
+                        _context2.next = 10;
                         break;
                       }
 
-                      _context2.next = 5;
+                      _context2.next = 6;
                       return _models["default"].address.findOne({
                         where: {
                           address: trans.address
@@ -70,15 +75,15 @@ function _patchRunebaseDeposits() {
                         }]
                       });
 
-                    case 5:
+                    case 6:
                       address = _context2.sent;
 
                       if (!address) {
-                        _context2.next = 9;
+                        _context2.next = 10;
                         break;
                       }
 
-                      _context2.next = 9;
+                      _context2.next = 10;
                       return _models["default"].sequelize.transaction({
                         isolationLevel: _sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE
                       }, /*#__PURE__*/function () {
@@ -126,7 +131,7 @@ function _patchRunebaseDeposits() {
                         };
                       }());
 
-                    case 9:
+                    case 10:
                     case "end":
                       return _context2.stop();
                   }

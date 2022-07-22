@@ -30,7 +30,7 @@ var settings = (0, _settings["default"])();
 
 var processWithdrawal = /*#__PURE__*/function () {
   var _ref = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee(transaction) {
-    var response, responseStatus, amount, hexMemo, preResponse, opStatus;
+    var response, responseStatus, amount, listUnspent, foundConsolidationRunebaseAddress, inputs, outputs, rawTransaction, signedTransaction, hexMemo, preResponse, opStatus;
     return _regenerator["default"].wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
@@ -38,67 +38,98 @@ var processWithdrawal = /*#__PURE__*/function () {
             amount = (transaction.amount - Number(transaction.feeAmount)) / 1e8; // Add New Currency here (default fallback is Runebase)
 
             if (!(settings.coin.setting === 'Runebase')) {
-              _context.next = 14;
+              _context.next = 27;
               break;
             }
 
             _context.prev = 2;
             _context.next = 5;
-            return (0, _rclient.getInstance)().sendToAddress(transaction.to_from, amount.toFixed(8).toString());
+            return (0, _rclient.getInstance)().listUnspent();
 
           case 5:
-            response = _context.sent;
-            _context.next = 12;
-            break;
+            listUnspent = _context.sent;
+            foundConsolidationRunebaseAddress = listUnspent.find(function (obj) {
+              return obj.address === process.env.RUNEBASE_CONSOLIDATION_ADDRESS;
+            });
 
-          case 8:
-            _context.prev = 8;
-            _context.t0 = _context["catch"](2);
-            console.log(_context.t0);
-            responseStatus = _context.t0.reponse.status;
-
-          case 12:
-            _context.next = 64;
-            break;
-
-          case 14:
-            if (!(settings.coin.setting === 'Komodo')) {
-              _context.next = 27;
+            if (!(foundConsolidationRunebaseAddress && amount + 0.005 < foundConsolidationRunebaseAddress.amount)) {
+              _context.next = 19;
               break;
             }
 
-            _context.prev = 15;
+            inputs = [{
+              txid: foundConsolidationRunebaseAddress.txid,
+              vout: foundConsolidationRunebaseAddress.vout
+            }];
+            outputs = [(0, _defineProperty2["default"])({}, transaction.to_from, amount.toFixed(8).toString()), (0, _defineProperty2["default"])({}, process.env.RUNEBASE_CONSOLIDATION_ADDRESS, (foundConsolidationRunebaseAddress.amount - amount - 0.005).toFixed(8).toString())];
+            _context.next = 12;
+            return (0, _rclient.getInstance)().createRawTransaction(inputs, outputs);
+
+          case 12:
+            rawTransaction = _context.sent;
+            _context.next = 15;
+            return (0, _rclient.getInstance)().signRawTransactionWithWallet(rawTransaction);
+
+          case 15:
+            signedTransaction = _context.sent;
             _context.next = 18;
-            return (0, _rclient.getInstance)().sendToAddress(transaction.to_from, amount.toFixed(8).toString());
+            return (0, _rclient.getInstance)().sendRawTransaction(signedTransaction.hex);
 
           case 18:
             response = _context.sent;
+
+          case 19:
             _context.next = 25;
             break;
 
           case 21:
             _context.prev = 21;
-            _context.t1 = _context["catch"](15);
-            console.log(_context.t1);
-            responseStatus = _context.t1.reponse.status;
+            _context.t0 = _context["catch"](2);
+            console.log(_context.t0);
+            responseStatus = _context.t0.reponse.status;
 
           case 25:
-            _context.next = 64;
+            _context.next = 77;
             break;
 
           case 27:
-            if (!(settings.coin.setting === 'Pirate')) {
-              _context.next = 55;
+            if (!(settings.coin.setting === 'Komodo')) {
+              _context.next = 40;
               break;
             }
 
             _context.prev = 28;
             _context.next = 31;
-            return (0, _utils.fromUtf8ToHex)(transaction.memo);
+            return (0, _rclient.getInstance)().sendToAddress(transaction.to_from, amount.toFixed(8).toString());
 
           case 31:
+            response = _context.sent;
+            _context.next = 38;
+            break;
+
+          case 34:
+            _context.prev = 34;
+            _context.t1 = _context["catch"](28);
+            console.log(_context.t1);
+            responseStatus = _context.t1.reponse.status;
+
+          case 38:
+            _context.next = 77;
+            break;
+
+          case 40:
+            if (!(settings.coin.setting === 'Pirate')) {
+              _context.next = 68;
+              break;
+            }
+
+            _context.prev = 41;
+            _context.next = 44;
+            return (0, _utils.fromUtf8ToHex)(transaction.memo);
+
+          case 44:
             hexMemo = _context.sent;
-            _context.next = 34;
+            _context.next = 47;
             return (0, _rclient.getInstance)().zSendMany(process.env.PIRATE_MAIN_ADDRESS, [_objectSpread({
               address: transaction.to_from,
               amount: amount.toFixed(8)
@@ -106,73 +137,73 @@ var processWithdrawal = /*#__PURE__*/function () {
               memo: hexMemo
             })], 1, 0.0001);
 
-          case 34:
+          case 47:
             preResponse = _context.sent;
-            _context.next = 37;
+            _context.next = 50;
             return (0, _rclient.getInstance)().zGetOperationStatus([preResponse]);
 
-          case 37:
+          case 50:
             opStatus = _context.sent;
 
-          case 38:
+          case 51:
             if (!(!opStatus || opStatus[0].status === 'executing')) {
-              _context.next = 46;
+              _context.next = 59;
               break;
             }
 
-            _context.next = 41;
+            _context.next = 54;
             return new Promise(function (resolve) {
               return setTimeout(resolve, 1000);
             });
 
-          case 41:
-            _context.next = 43;
+          case 54:
+            _context.next = 56;
             return (0, _rclient.getInstance)().zGetOperationStatus([preResponse]);
 
-          case 43:
+          case 56:
             opStatus = _context.sent;
-            _context.next = 38;
+            _context.next = 51;
             break;
 
-          case 46:
+          case 59:
             response = opStatus[0].result.txid;
-            _context.next = 53;
+            _context.next = 66;
             break;
 
-          case 49:
-            _context.prev = 49;
-            _context.t2 = _context["catch"](28);
+          case 62:
+            _context.prev = 62;
+            _context.t2 = _context["catch"](41);
             console.log(_context.t2);
             responseStatus = _context.t2.response.status;
 
-          case 53:
-            _context.next = 64;
+          case 66:
+            _context.next = 77;
             break;
 
-          case 55:
-            _context.prev = 55;
-            _context.next = 58;
+          case 68:
+            _context.prev = 68;
+            _context.next = 71;
             return (0, _rclient.getInstance)().sendToAddress(transaction.to_from, amount.toFixed(8).toString());
 
-          case 58:
+          case 71:
             response = _context.sent;
-            _context.next = 64;
+            _context.next = 77;
             break;
 
-          case 61:
-            _context.prev = 61;
-            _context.t3 = _context["catch"](55);
+          case 74:
+            _context.prev = 74;
+            _context.t3 = _context["catch"](68);
             responseStatus = _context.t3.reponse.status;
 
-          case 64:
+          case 77:
             return _context.abrupt("return", [response, responseStatus]);
 
-          case 65:
+          case 78:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[2, 8], [15, 21], [28, 49], [55, 61]]);
+    }, _callee, null, [[2, 21], [28, 34], [41, 62], [68, 74]]);
   }));
 
   return function processWithdrawal(_x) {
