@@ -11,7 +11,7 @@ const BN = BigNumber.clone({ DECIMAL_PLACES: 8 });
 
 export async function consolidateRunebaseFunds() {
   const listUnspent = await getInstance().listUnspent();
-  if (listUnspent.length > 3) {
+  if (listUnspent.length > 1) {
     const sliceTo = listUnspent.length > 10 ? 10 : listUnspent.length;
     const unspentSlice = listUnspent.slice(0, sliceTo);
     console.log(unspentSlice);

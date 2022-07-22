@@ -48,7 +48,7 @@ function _consolidateRunebaseFunds() {
           case 2:
             listUnspent = _context.sent;
 
-            if (!(listUnspent.length > 3)) {
+            if (!(listUnspent.length > 1)) {
               _context.next = 25;
               break;
             }
