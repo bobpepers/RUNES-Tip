@@ -1,3 +1,4 @@
+import { ActivityType } from "discord.js";
 import { config } from "dotenv";
 import db from '../models';
 import { fetchDiscordWalletBalance } from '../controllers/discord/balance';
@@ -66,14 +67,14 @@ export const discordRouter = (
         discordClient.user.setPresence({
           activities: [{
             name: `$${priceInfo.price}/${settings.coin.ticker}`,
-            type: "WATCHING",
+            type: ActivityType.Watching,
           }],
         });
       } else {
         discordClient.user.setPresence({
           activities: [{
             name: `${settings.bot.command.discord}`,
-            type: "PLAYING",
+            type: ActivityType.Playing,
           }],
         });
       }

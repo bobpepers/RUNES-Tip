@@ -11,6 +11,8 @@ var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"))
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
+var _discord = require("discord.js");
+
 var _dotenv = require("dotenv");
 
 var _models = _interopRequireDefault(require("../models"));
@@ -83,7 +85,7 @@ var _settings = require("../controllers/discord/settings");
 
 var _settings2 = require("../controllers/settings");
 
-var _discord = require("../messages/discord");
+var _discord2 = require("../messages/discord");
 
 // import { discordLeaderboard } from '../controllers/discord/leaderboard';
 // import getCoinSettings from '../config/settings';
@@ -117,7 +119,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
             discordClient.user.setPresence({
               activities: [{
                 name: "$".concat(priceInfo.price, "/").concat(settings.coin.ticker),
-                type: "WATCHING"
+                type: _discord.ActivityType.Watching
               }]
             });
             _context.next = 9;
@@ -127,7 +129,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
             discordClient.user.setPresence({
               activities: [{
                 name: "".concat(settings.bot.command.discord),
-                type: "PLAYING"
+                type: _discord.ActivityType.Playing
               }]
             });
 
@@ -428,7 +430,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
               _context34.next = 18;
               return message.channel.send({
-                embeds: [(0, _discord.discordServerBannedMessage)(groupTask)]
+                embeds: [(0, _discord2.discordServerBannedMessage)(groupTask)]
               })["catch"](function (e) {
                 console.log(e);
               });
@@ -444,7 +446,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
               _context34.next = 22;
               return message.channel.send({
-                embeds: [(0, _discord.discordChannelBannedMessage)(channelTask)]
+                embeds: [(0, _discord2.discordChannelBannedMessage)(channelTask)]
               })["catch"](function (e) {
                 console.log(e);
               });
@@ -460,7 +462,7 @@ var discordRouter = function discordRouter(discordClient, queue, io, settings) {
 
               _context34.next = 26;
               return message.channel.send({
-                embeds: [(0, _discord.discordUserBannedMessage)(lastSeenDiscordTask)]
+                embeds: [(0, _discord2.discordUserBannedMessage)(lastSeenDiscordTask)]
               })["catch"](function (e) {
                 console.log(e);
               });
