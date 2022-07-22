@@ -205,7 +205,7 @@ const conditionalCSRF = function (
       GatewayIntentBits.DirectMessageReactions,
       GatewayIntentBits.GuildEmojisAndStickers,
       GatewayIntentBits.GuildVoiceStates,
-      GatewayIntentBits.MessageContent,
+      // GatewayIntentBits.MessageContent,
       GatewayIntentBits.GuildPresences,
       GatewayIntentBits.GuildInvites,
     ],

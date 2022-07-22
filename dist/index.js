@@ -234,7 +234,8 @@ var conditionalCSRF = function conditionalCSRF(req, res, next) {
           }()); // Discord
 
           discordClient = new _discord.Client({
-            intents: [_discord.GatewayIntentBits.Guilds, _discord.GatewayIntentBits.GuildMembers, _discord.GatewayIntentBits.GuildMessages, _discord.GatewayIntentBits.DirectMessages, _discord.GatewayIntentBits.GuildMessageReactions, _discord.GatewayIntentBits.DirectMessageReactions, _discord.GatewayIntentBits.GuildEmojisAndStickers, _discord.GatewayIntentBits.GuildVoiceStates, _discord.GatewayIntentBits.MessageContent, _discord.GatewayIntentBits.GuildPresences, _discord.GatewayIntentBits.GuildInvites],
+            intents: [_discord.GatewayIntentBits.Guilds, _discord.GatewayIntentBits.GuildMembers, _discord.GatewayIntentBits.GuildMessages, _discord.GatewayIntentBits.DirectMessages, _discord.GatewayIntentBits.GuildMessageReactions, _discord.GatewayIntentBits.DirectMessageReactions, _discord.GatewayIntentBits.GuildEmojisAndStickers, _discord.GatewayIntentBits.GuildVoiceStates, // GatewayIntentBits.MessageContent,
+            _discord.GatewayIntentBits.GuildPresences, _discord.GatewayIntentBits.GuildInvites],
             partials: [_discord.Partials.Message, _discord.Partials.Channel, _discord.Partials.Reaction]
           });
           _context10.next = 34;
