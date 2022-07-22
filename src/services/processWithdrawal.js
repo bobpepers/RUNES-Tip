@@ -15,7 +15,33 @@ export const processWithdrawal = async (transaction) => {
   // Add New Currency here (default fallback is Runebase)
   if (settings.coin.setting === 'Runebase') {
     try {
-      response = await getInstance().sendToAddress(transaction.to_from, (amount.toFixed(8)).toString());
+      const listUnspent = await getInstance().listUnspent();
+      const foundConsolidationRunebaseAddress = listUnspent.find((obj) => obj.address === process.env.RUNEBASE_CONSOLIDATION_ADDRESS);
+      if (
+        foundConsolidationRunebaseAddress
+        && (amount + 0.005) < foundConsolidationRunebaseAddress.amount
+      ) {
+        const inputs = [
+          {
+            txid: foundConsolidationRunebaseAddress.txid,
+            vout: foundConsolidationRunebaseAddress.vout,
+          },
+        ];
+        const outputs = [
+          {
+            [transaction.to_from]: (amount.toFixed(8)).toString(),
+          },
+          {
+            [process.env.RUNEBASE_CONSOLIDATION_ADDRESS]: ((((foundConsolidationRunebaseAddress.amount - amount) - 0.005)).toFixed(8)).toString(),
+          },
+        ];
+        const rawTransaction = await getInstance().createRawTransaction(
+          inputs,
+          outputs,
+        );
+        const signedTransaction = await getInstance().signRawTransactionWithWallet(rawTransaction);
+        response = await getInstance().sendRawTransaction(signedTransaction.hex);
+      }
     } catch (e) {
       console.log(e);
       responseStatus = e.reponse.status;

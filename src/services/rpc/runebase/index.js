@@ -19,6 +19,57 @@ class Runebase {
     }
   }
 
+  walletCreateFundedPsbt(
+    inputs,
+    outputs,
+    lockTime,
+    options,
+  ) {
+    return this.provider.rawCall(
+      'walletcreatefundedpsbt',
+      [
+        inputs,
+        outputs,
+        lockTime,
+        options,
+      ],
+    );
+  }
+
+  walletProcessPsbt(psbt) {
+    return this.provider.rawCall('walletprocesspsbt', [psbt]);
+  }
+
+  finalizePsbt(psbt) {
+    return this.provider.rawCall('finalizepsbt', [psbt]);
+  }
+
+  listUnspent() {
+    return this.provider.rawCall('listunspent');
+  }
+
+  getHexAddress(address) {
+    return this.provider.rawCall('gethexaddress', [address]);
+  }
+
+  createRawTransaction(
+    inputs,
+    outputs,
+  ) {
+    return this.provider.rawCall('createrawtransaction', [
+      inputs,
+      outputs,
+    ]);
+  }
+
+  signRawTransactionWithWallet(raw) {
+    return this.provider.rawCall('signrawtransactionwithwallet', [raw]);
+  }
+
+  sendRawTransaction(raw) {
+    return this.provider.rawCall('sendrawtransaction', [raw]);
+  }
+
   /** ******** BLOCKCHAIN ********* */
   /**
    * Returns the block info for a given block hash.

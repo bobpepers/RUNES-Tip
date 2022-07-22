@@ -18,5 +18,6 @@ logs/app.log
 .env.production.pirate
 .env.development.dust
 .env.production.dust
+.env.development.tokel
 /scratch
 /telegram_session

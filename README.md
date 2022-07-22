@@ -64,6 +64,8 @@ PIRATE_MAIN_ADDRESS=zs1gk4gus9ya7f4rr3jr2v2rjsqrh8n67534u5dtnu3cjvcqw867ft3ewfeq
 #KOMODO TYPE BLOCKCHAINS ONLY (consolidation address for all the funds)
 KOMODO_CONSOLIDATION_ADDRESS=xx
 
+#RUNEBASE TYPE BLOCKCHAINS ONLY (consolidation address for all the funds)
+RUNEBASE_CONSOLIDATION_ADDRESS=xx
 ```
 ## Create database mysql terminal
 ```

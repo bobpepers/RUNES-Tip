@@ -43,6 +43,7 @@ import { patchRunebaseDeposits } from "./helpers/blockchain/runebase/patcher";
 import { patchPirateDeposits } from "./helpers/blockchain/pirate/patcher";
 import { patchKomodoDeposits } from "./helpers/blockchain/komodo/patcher";
 import { consolidateKomodoFunds } from "./helpers/blockchain/komodo/consolidate";
+import { consolidateRunebaseFunds } from "./helpers/blockchain/runebase/consolidate";
 import { processWithdrawals } from "./services/processWithdrawals";
 import {
   recoverDiscordReactdrops,
@@ -283,6 +284,12 @@ const conditionalCSRF = function (
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
       patchRunebaseDeposits();
     });
+
+    const scheduleRunebaseConsolidation = schedule.scheduleJob('*/1 * * * *', async () => {
+      await queue.add(async () => {
+        await consolidateRunebaseFunds();
+      });
+    });
   } else if (settings.coin.setting === 'Pirate') {
     await startPirateSync(
       discordClient,
@@ -312,8 +319,10 @@ const conditionalCSRF = function (
 
     await consolidateKomodoFunds();
 
-    const scheduleKomodoConsolidation = schedule.scheduleJob('*/30 * * * *', () => {
-      consolidateKomodoFunds();
+    const scheduleKomodoConsolidation = schedule.scheduleJob('*/30 * * * *', async () => {
+      await queue.add(async () => {
+        await consolidateKomodoFunds();
+      });
     });
   } else {
     await startRunebaseSync(
@@ -327,6 +336,12 @@ const conditionalCSRF = function (
 
     const schedulePatchDeposits = schedule.scheduleJob('10 */1 * * *', () => {
       patchRunebaseDeposits();
+    });
+
+    const scheduleRunebaseConsolidation = schedule.scheduleJob('*/55 * * * *', async () => {
+      await queue.add(async () => {
+        await consolidateRunebaseFunds();
+      });
     });
   }
 
@@ -389,11 +404,13 @@ const conditionalCSRF = function (
       },
     });
     if (autoWithdrawalSetting.enabled) {
-      processWithdrawals(
-        telegramClient,
-        discordClient,
-        matrixClient,
-      );
+      await queue.add(async () => {
+        await processWithdrawals(
+          telegramClient,
+          discordClient,
+          matrixClient,
+        );
+      });
     }
   });
 

@@ -51,15 +51,22 @@ export const processWithdrawals = async (
     return;
   }
 
+  if (settings.coin.setting === 'Runebase') {
+    const listRunebaseUnspent = await getInstance().listUnspent();
+    const foundConsolidationRunebaseAddress = listRunebaseUnspent.find((obj) => obj.address === process.env.RUNEBASE_CONSOLIDATION_ADDRESS);
+    if (
+      !foundConsolidationRunebaseAddress
+      || foundConsolidationRunebaseAddress.amount < (transaction.amount / 1e8)
+      || !foundConsolidationRunebaseAddress.spendable
+    ) {
+      console.log('not enough Runebase coins available at the moment');
+      return;
+    }
+  }
+
   if (settings.coin.setting === 'Komodo') {
-    // const amountOfKomodoCoinsAvailable = await getInstance().getBalance();
     const listKomodoUnspent = await getInstance().listUnspent();
     const didWeFindUnspentConsolidationAddress = listKomodoUnspent.find((obj) => obj.address === process.env.KOMODO_CONSOLIDATION_ADDRESS);
-    // console.log('amountOfKomodoCoinsAvailable');
-    // console.log(amountOfKomodoCoinsAvailable);
-    console.log(didWeFindUnspentConsolidationAddress);
-    console.log(didWeFindUnspentConsolidationAddress && didWeFindUnspentConsolidationAddress.amount);
-    console.log(transaction.amount / 1e8);
     if (
       !didWeFindUnspentConsolidationAddress
       || didWeFindUnspentConsolidationAddress.amount < (transaction.amount / 1e8)
