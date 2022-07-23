@@ -21,6 +21,7 @@ export const validateAmount = async (
   let activity;
   const capType = capitalize(type);
   let amount = 0;
+  const discordUserId = user.user_id.replace('discord-', '');
 
   if (!preAmount) {
     const noPreAmountActivity = await db.activity.create({
@@ -50,7 +51,7 @@ export const validateAmount = async (
     await message.channel.send({
       embeds: [
         invalidAmountMessage(
-          message,
+          discordUserId,
           capType,
         ),
       ],
@@ -96,7 +97,7 @@ export const validateAmount = async (
     await message.channel.send({
       embeds: [
         minimumMessage(
-          message,
+          discordUserId,
           setting,
           capType,
         ),
@@ -141,7 +142,7 @@ export const validateAmount = async (
     await message.channel.send({
       embeds: [
         invalidAmountMessage(
-          message,
+          discordUserId,
           capType,
         ),
       ],
@@ -164,7 +165,7 @@ export const validateAmount = async (
     await message.channel.send({
       embeds: [
         invalidAmountMessage(
-          message,
+          discordUserId,
           capType,
         ),
       ],
@@ -204,7 +205,7 @@ export const validateAmount = async (
     await message.channel.send({
       embeds: [
         insufficientBalanceMessage(
-          message,
+          discordUserId,
           capType,
         ),
       ],

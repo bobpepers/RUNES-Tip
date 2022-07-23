@@ -11,8 +11,10 @@ import {
 import db from '../../models';
 import logger from "../../helpers/logger";
 import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
+import { fetchDiscordChannel } from '../../helpers/client/discord/fetchDiscordChannel';
 
 export const fetchDiscordListTransactions = async (
+  discordClient,
   message,
   io,
 ) => {
@@ -33,6 +35,14 @@ export const fetchDiscordListTransactions = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
+
+    const [
+      discordChannel,
+      discordUserDMChannel,
+    ] = await fetchDiscordChannel(
+      discordClient,
+      message,
+    );
 
     const userId = user.user_id.replace('discord-', '');
 
@@ -74,7 +84,7 @@ export const fetchDiscordListTransactions = async (
     });
     activity.unshift(findActivity);
     if (message.channel.type === ChannelType.DM) {
-      await message.author.send({
+      await discordUserDMChannel.send({
         embeds: [
           listTransactionsMessage(
             userId,
@@ -86,7 +96,7 @@ export const fetchDiscordListTransactions = async (
     }
 
     if (message.channel.type === ChannelType.GuildText) {
-      await message.author.send({
+      await discordUserDMChannel.send({
         embeds: [
           listTransactionsMessage(
             userId,
@@ -95,11 +105,11 @@ export const fetchDiscordListTransactions = async (
           ),
         ],
       });
-      await message.channel.send({
+      await discordChannel.send({
         embeds: [
           warnDirectMessage(
             userId,
-            'Balance',
+            'List Transactions',
           ),
         ],
       });

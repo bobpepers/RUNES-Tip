@@ -63,13 +63,17 @@ export const discordThunder = async (
       && member.presence.status
       && member.presence.status === "online");
 
-    const preWithoutBots = await mapMembers(
+    const [
+      preWithoutBots,
+      optionalRole,
+    ] = await mapMembers(
       message,
       t,
       filteredMessage[3],
       onlineMembers,
       setting,
     );
+
     const withoutBots = _.sampleSize(preWithoutBots, 1);
 
     if (withoutBots.length < 1) {
@@ -83,7 +87,10 @@ export const discordThunder = async (
       activity.unshift(failActivity);
       await message.channel.send({
         embeds: [
-          notEnoughActiveUsersMessage(message, 'Thunder'),
+          notEnoughActiveUsersMessage(
+            user.user_id.replace('discord-', ''),
+            'Thunder',
+          ),
         ],
       });
       return;
@@ -220,10 +227,11 @@ export const discordThunder = async (
         await message.channel.send({
           embeds: [
             AfterThunderSuccess(
-              message,
+              user.user_id.replace('discord-', ''),
               thunderRecord.id,
               amount,
               userThunder,
+              optionalRole,
             ),
           ],
         });

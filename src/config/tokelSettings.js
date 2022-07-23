@@ -5,10 +5,13 @@ module.exports = {
     color: "#550a8a",
     url: {
       telegram: "",
-      discord: "https://discord.com/oauth2/authorize?client_id=999573343000854658&scope=bot&permissions=523328",
+      discord: "https://discord.com/oauth2/authorize?client_id=999573343000854658&scope=bot&permissions=523328&scope=bot%20applications.commands",
     },
     command: {
-      discord: "!tokeltip",
+      discord: {
+        normal: "!tokeltip",
+        slash: "tokeltip",
+      },
       telegram: "!tokeltip",
       matrix: "!tokeltip",
     },

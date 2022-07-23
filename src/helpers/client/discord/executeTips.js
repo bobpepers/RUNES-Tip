@@ -18,6 +18,12 @@ export const executeTipFunction = async (
   setting,
   faucetSetting,
 ) => {
+  let discordUserIdSelf;
+  if (message.user) {
+    discordUserIdSelf = message.user.id;
+  } else if (message.author) {
+    discordUserIdSelf = message.author.id;
+  }
   let operationName;
   let userBeingTipped;
   if (
@@ -40,7 +46,7 @@ export const executeTipFunction = async (
     await message.channel.send({
       embeds: [
         confirmAllAmoutMessageDiscord(
-          message,
+          discordUserIdSelf,
           operationName,
           userBeingTipped,
         ),
@@ -51,7 +57,7 @@ export const executeTipFunction = async (
     });
 
     const msgFilter = (m) => {
-      const filtered = m.author.id === message.author.id
+      const filtered = m.author.id === discordUserIdSelf
         && (
           m.content.toUpperCase() === 'YES'
           || m.content.toUpperCase() === 'Y'
@@ -92,7 +98,7 @@ export const executeTipFunction = async (
         await message.channel.send({
           embeds: [
             canceledAllAmoutMessageDiscord(
-              message,
+              discordUserIdSelf,
               operationName,
               userBeingTipped,
             ),
@@ -106,7 +112,7 @@ export const executeTipFunction = async (
       await message.channel.send({
         embeds: [
           timeOutAllAmoutMessageDiscord(
-            message,
+            discordUserIdSelf,
             operationName,
             userBeingTipped,
           ),

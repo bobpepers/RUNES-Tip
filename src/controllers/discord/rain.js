@@ -67,7 +67,10 @@ export const discordRain = async (
       );
     });
 
-    const withoutBots = await mapMembers(
+    const [
+      withoutBots,
+      optionalRole,
+    ] = await mapMembers(
       message,
       t,
       filteredMessage[3],
@@ -88,7 +91,7 @@ export const discordRain = async (
       await message.channel.send({
         embeds: [
           notEnoughActiveUsersMessage(
-            message,
+            user.user_id.replace('discord-', ''),
             'Rain',
           ),
         ],
@@ -235,13 +238,14 @@ export const discordRain = async (
     await message.channel.send({
       embeds: [
         AfterSuccessMessage(
-          message,
+          user.user_id.replace('discord-', ''),
           rainRecord.id,
           amount,
           withoutBots,
           amountPerUser,
           'Rain',
           'rained',
+          optionalRole,
         ),
       ],
     });

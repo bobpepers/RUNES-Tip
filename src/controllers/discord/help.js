@@ -13,11 +13,14 @@ import {
 import db from '../../models';
 import logger from "../../helpers/logger";
 import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
+import { fetchDiscordChannel } from '../../helpers/client/discord/fetchDiscordChannel';
 
 export const discordHelp = async (
+  discordClient,
   message,
   io,
 ) => {
+  console.log('running help');
   const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -34,6 +37,15 @@ export const discordHelp = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
+    const [
+      discordChannel,
+      discordUserDMChannel,
+    ] = await fetchDiscordChannel(
+      discordClient,
+      message,
+    );
+    console.log('found user');
+    console.log(user);
 
     const withdraw = await db.features.findOne(
       {
@@ -45,16 +57,17 @@ export const discordHelp = async (
         transaction: t,
       },
     );
-
+    console.log(message.channel.type);
     if (message.channel.type === ChannelType.DM) {
-      await message.author.send({
+      console.log('channel is of type DM');
+      await discordUserDMChannel.send({
         embeds: [
           helpMessageOne(
             withdraw,
           ),
         ],
       });
-      await message.author.send({
+      await discordUserDMChannel.send({
         embeds: [
           helpMessageTwo(
             withdraw,
@@ -63,30 +76,32 @@ export const discordHelp = async (
       });
     }
     if (message.channel.type === ChannelType.GuildText) {
-      await message.author.send({
+      console.log('channel is of type guildText');
+      await discordUserDMChannel.send({
         embeds: [
           helpMessageOne(
             withdraw,
           ),
         ],
       });
-      await message.author.send({
+      await discordUserDMChannel.send({
         embeds: [
           helpMessageTwo(
             withdraw,
           ),
         ],
       });
-      await message.channel.send({
+      await discordChannel.send({
         embeds: [
           warnDirectMessage(
-            message.author.id,
+            user.user_id.replace('discord-', ''),
             'Help',
           ),
         ],
       });
     }
-
+    console.log(user);
+    console.log(user.id);
     const preActivity = await db.activity.create({
       type: 'help_s',
       earnerId: user.id,
@@ -110,6 +125,7 @@ export const discordHelp = async (
     });
     activity.unshift(finalActivity);
   }).catch(async (err) => {
+    console.log(err);
     try {
       await db.error.create({
         type: 'help',
@@ -118,7 +134,7 @@ export const discordHelp = async (
     } catch (e) {
       logger.error(`Error Discord: ${e}`);
     }
-    logger.error(`Error Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
+    // logger.error(`Error Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
     if (err.code && err.code === 50007) {
       await message.channel.send({
         embeds: [

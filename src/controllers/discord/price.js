@@ -60,24 +60,13 @@ export const discordPrice = async (
     });
     activity.unshift(findActivity);
 
-    if (message.channel.type === ChannelType.DM) {
-      await message.author.send({
-        embeds: [
-          priceMessage(
-            replyString,
-          ),
-        ],
-      });
-    }
-    if (message.channel.type === ChannelType.GuildText) {
-      await message.channel.send({
-        embeds: [
-          priceMessage(
-            replyString,
-          ),
-        ],
-      });
-    }
+    await message.channel.send({
+      embeds: [
+        priceMessage(
+          replyString,
+        ),
+      ],
+    });
 
     t.afterCommit(() => {
       console.log('done price request');
@@ -91,7 +80,7 @@ export const discordPrice = async (
     } catch (e) {
       logger.error(`Error Discord: ${e}`);
     }
-    logger.error(`Error Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
+    // logger.error(`Error Discord Balance Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
     message.channel.send({
       embeds: [
         discordErrorMessage(

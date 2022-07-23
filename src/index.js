@@ -51,6 +51,7 @@ import {
   recoverMatrixReactdrops,
 } from './helpers/recover';
 import logger from "./helpers/logger";
+import { deployCommands } from './helpers/client/discord/deployCommands';
 
 global.Olm = olm;
 
@@ -205,7 +206,7 @@ const conditionalCSRF = function (
       GatewayIntentBits.DirectMessageReactions,
       GatewayIntentBits.GuildEmojisAndStickers,
       GatewayIntentBits.GuildVoiceStates,
-      // GatewayIntentBits.MessageContent,
+      GatewayIntentBits.MessageContent,
       GatewayIntentBits.GuildPresences,
       GatewayIntentBits.GuildInvites,
     ],
@@ -268,6 +269,11 @@ const conditionalCSRF = function (
     discordClient,
     telegramClient,
     matrixClient,
+  );
+
+  await deployCommands(
+    process.env.DISCORD_CLIENT_TOKEN,
+    discordClient.user.id,
   );
 
   // patch deposits and sync

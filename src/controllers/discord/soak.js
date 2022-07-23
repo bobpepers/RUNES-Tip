@@ -62,7 +62,10 @@ export const discordSoak = async (
       || (member.presence && member.presence.status === "idle")
       || (member.presence && member.presence.status === "dnd"));
 
-    const withoutBots = await mapMembers(
+    const [
+      withoutBots,
+      optionalRole,
+    ] = await mapMembers(
       message,
       t,
       filteredMessage[3],
@@ -82,7 +85,7 @@ export const discordSoak = async (
       await message.channel.send({
         embeds: [
           notEnoughActiveUsersMessage(
-            message,
+            user.user_id.replace('discord-', ''),
             'Soak',
           ),
         ],
@@ -226,13 +229,14 @@ export const discordSoak = async (
     await message.channel.send({
       embeds: [
         AfterSuccessMessage(
-          message,
+          user.user_id.replace('discord-', ''),
           soakRecord.id,
           amount,
           withoutBots,
           amountPerUser,
           'Soak',
           'soaked',
+          optionalRole,
         ),
       ],
     });

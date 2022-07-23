@@ -13,8 +13,10 @@ import db from '../../models';
 import logger from "../../helpers/logger";
 import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 import { getInstance } from '../../services/rclient';
+import { fetchDiscordChannel } from '../../helpers/client/discord/fetchDiscordChannel';
 
 export const discordCoinInfo = async (
+  discordClient,
   message,
   io,
 ) => {
@@ -35,6 +37,14 @@ export const discordCoinInfo = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
+
+    const [
+      discordChannel,
+      discordUserDMChannel,
+    ] = await fetchDiscordChannel(
+      discordClient,
+      message,
+    );
 
     const walletInfo = await getInstance().getWalletInfo();
 
@@ -73,7 +83,7 @@ export const discordCoinInfo = async (
     activity.unshift(finalActivity);
 
     if (message.channel.type === ChannelType.DM) {
-      await message.author.send({
+      await discordUserDMChannel.send({
         embeds: [
           coinInfoMessage(
             blockHeight.id,
@@ -84,7 +94,7 @@ export const discordCoinInfo = async (
       });
     }
     if (message.channel.type === ChannelType.GuildText) {
-      await message.author.send({
+      await discordUserDMChannel.send({
         embeds: [
           coinInfoMessage(
             blockHeight.id,
@@ -92,10 +102,10 @@ export const discordCoinInfo = async (
           ),
         ],
       });
-      await message.channel.send({
+      await discordChannel.send({
         embeds: [
           warnDirectMessage(
-            message.author.id,
+            user.user_id.replace('discord-', ''),
             'Coin Info',
           ),
         ],

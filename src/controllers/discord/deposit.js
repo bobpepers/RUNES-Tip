@@ -13,8 +13,13 @@ import {
 } from '../../messages/discord';
 import logger from "../../helpers/logger";
 import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
+import { fetchDiscordChannel } from '../../helpers/client/discord/fetchDiscordChannel';
 
-export const fetchDiscordWalletDepositAddress = async (message, io) => {
+export const fetchDiscordWalletDepositAddress = async (
+  discordClient,
+  message,
+  io,
+) => {
   const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -32,8 +37,16 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
     }
     if (!user) return;
 
+    const [
+      discordChannel,
+      discordUserDMChannel,
+    ] = await fetchDiscordChannel(
+      discordClient,
+      message,
+    );
+
     if (user && user.wallet && !user.wallet.addresses) {
-      await message.author.send("Deposit Address not found");
+      await discordUserDMChannel.send("Deposit Address not found");
       return;
     }
 
@@ -43,7 +56,7 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
     const userId = user.user_id.replace('discord-', '');
 
     if (message.channel.type === ChannelType.DM) {
-      await message.author.send({
+      await discordUserDMChannel.send({
         embeds: [
           depositAddressMessage(
             userId,
@@ -62,7 +75,7 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
       });
     }
     if (message.channel.type === ChannelType.GuildText) {
-      await message.author.send({
+      await discordUserDMChannel.send({
         embeds: [
           depositAddressMessage(
             userId,
@@ -79,7 +92,7 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
           },
         ],
       });
-      await message.channel.send({
+      await discordChannel.send({
         embeds: [
           warnDirectMessage(
             userId,
@@ -112,9 +125,10 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
     activity.unshift(finalActivity);
 
     t.afterCommit(() => {
-      console.log(`Success Deposit Address Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
+      // console.log(`Success Deposit Address Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator}`);
     });
   }).catch(async (err) => {
+    console.log(err);
     try {
       await db.error.create({
         type: 'deposit',
@@ -124,7 +138,7 @@ export const fetchDiscordWalletDepositAddress = async (message, io) => {
       logger.error(`Error Discord: ${e}`);
     }
     console.log(err);
-    logger.error(`Error Deposit Address Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
+    // logger.error(`Error Deposit Address Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
     console.log(err.code);
     if (err.code && err.code === 50007) {
       await message.channel.send({

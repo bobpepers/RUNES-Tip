@@ -178,7 +178,7 @@ export const fetchFeeSchedule = async (
     });
     activity.unshift(finalActivity);
 
-    await message.reply({
+    await message.channel.send({
       embeds: [
         DiscordFeeMessage(
           message,

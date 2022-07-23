@@ -1,14 +1,17 @@
 module.exports = {
   startSyncBlock: 1690401,
   bot: {
-    name: "PirateTipBot",
+    name: "PirateTip",
     color: "#BB9645",
     url: {
       telegram: "",
-      discord: "https://discord.com/oauth2/authorize?client_id=919753481894633474&scope=bot&permissions=523328",
+      discord: "https://discord.com/oauth2/authorize?client_id=919753481894633474&scope=bot&permissions=523328&scope=bot%20applications.commands",
     },
     command: {
-      discord: "!piratetip",
+      discord: {
+        normal: "!piratetip",
+        slash: "piratetip",
+      },
       telegram: "!piratetip",
       matrix: "!piratetip",
     },

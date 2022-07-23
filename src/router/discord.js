@@ -1,4 +1,7 @@
-import { ActivityType } from "discord.js";
+import {
+  ActivityType,
+  InteractionType,
+} from "discord.js";
 import { config } from "dotenv";
 import db from '../models';
 import { fetchDiscordWalletBalance } from '../controllers/discord/balance';
@@ -73,7 +76,7 @@ export const discordRouter = (
       } else {
         discordClient.user.setPresence({
           activities: [{
-            name: `${settings.bot.command.discord}`,
+            name: `/${settings.bot.command.discord.slash}`,
             type: ActivityType.Playing,
           }],
         });
@@ -97,13 +100,22 @@ export const discordRouter = (
   });
 
   discordClient.on("interactionCreate", async (interaction) => {
-    if (!interaction.isButton()) return;
-    let groupTask;
-    let groupTaskId;
-    let channelTask;
-    let channelTaskId;
-    let lastSeenDiscordTask;
+    // if (!interaction.isButton()) return;
     if (!interaction.user.bot) {
+      if (interaction.type === InteractionType.ApplicationCommand) {
+        // Defer the interaction
+        await interaction.deferReply().catch((e) => {
+          console.log(e);
+        });
+      }
+      // console.log(interaction);
+      let groupTask;
+      let groupTaskId;
+      let channelTask;
+      let channelTaskId;
+      let lastSeenDiscordTask;
+      let disallow;
+
       const maintenance = await isMaintenanceOrDisabled(
         interaction,
         'discord',
@@ -124,7 +136,415 @@ export const discordRouter = (
         groupTaskId = groupTask && groupTask.id;
         channelTaskId = channelTask && channelTask.id;
       });
+      // If the Interaction is a command
+      if (interaction.type === InteractionType.ApplicationCommand) {
+        console.log(interaction);
+        const faucetSetting = await waterFaucetSettings(
+          groupTaskId,
+          channelTaskId,
+        );
+        if (!faucetSetting) return;
+
+        // Help Message
+        if (interaction.options.getSubcommand() === 'help') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'Help',
+          );
+          if (limited) return;
+          await queue.add(async () => {
+            const task = await discordHelp(
+              discordClient,
+              interaction,
+              io,
+            );
+          });
+        }
+        // Balance Message
+        if (interaction.options.getSubcommand() === 'balance') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'Balance',
+          );
+          if (limited) return;
+          await queue.add(async () => {
+            const task = await fetchDiscordWalletBalance(
+              discordClient,
+              interaction,
+              io,
+            );
+          });
+        }
+        // Deposit Message
+        if (interaction.options.getSubcommand() === 'deposit') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'Deposit',
+          );
+          if (limited) return;
+          await queue.add(async () => {
+            const task = await fetchDiscordWalletDepositAddress(
+              discordClient,
+              interaction,
+              io,
+            );
+          });
+        }
+        // Claim Faucet
+        if (interaction.options.getSubcommand() === 'faucet') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'Faucet',
+          );
+          if (limited) return;
+          const setting = await discordFeatureSettings(
+            interaction,
+            'faucet',
+            groupTaskId,
+            channelTaskId,
+          );
+          if (!setting) return;
+
+          await queue.add(async () => {
+            const task = await discordFaucetClaim(
+              discordClient,
+              interaction,
+              io,
+            );
+          });
+        }
+        // Show current fee schedule
+        if (interaction.options.getSubcommand() === 'fees') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'Fees',
+          );
+          if (limited) return;
+          await queue.add(async () => {
+            const task = await fetchFeeSchedule(
+              interaction,
+              io,
+              groupTaskId,
+              channelTaskId,
+            );
+          });
+        }
+        // Show coin info
+        if (interaction.options.getSubcommand() === 'info') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'Info',
+          );
+          if (limited) return;
+          await queue.add(async () => {
+            const task = await discordCoinInfo(
+              discordClient,
+              interaction,
+              io,
+            );
+          });
+        }
+        // Show current price
+        if (interaction.options.getSubcommand() === 'price') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'Price',
+          );
+          if (limited) return;
+          await queue.add(async () => {
+            const task = await discordPrice(
+              interaction,
+              io,
+            );
+          });
+        }
+        // Show your stats
+        if (interaction.options.getSubcommand() === 'stats') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'Stats',
+          );
+          if (limited) return;
+          const filteredMessageDiscord = [];
+          filteredMessageDiscord[0] = settings.bot.command.discord.normal;
+          filteredMessageDiscord[1] = 'stats';
+          filteredMessageDiscord[2] = interaction.options.getString('time');
+          await queue.add(async () => {
+            const task = await discordStats(
+              discordClient,
+              interaction,
+              filteredMessageDiscord,
+              io,
+              groupTask,
+              channelTask,
+            );
+          });
+        }
+        // Lists the user's transactions
+        if (interaction.options.getSubcommand() === 'listtransactions') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'ListTransactions',
+          );
+          if (limited) return;
+          await queue.add(async () => {
+            const task = await fetchDiscordListTransactions(
+              discordClient,
+              interaction,
+              io,
+            );
+          });
+        }
+        // Toggle ignoreme
+        if (interaction.options.getSubcommand() === 'ignoreme') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'IgnoreMe',
+          );
+          if (limited) return;
+          await queue.add(async () => {
+            const task = await setIgnoreMe(
+              interaction,
+              io,
+            );
+          });
+        }
+        // Toggle public stats
+        if (interaction.options.getSubcommand() === 'publicstats') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'PublicStats',
+          );
+          if (limited) return;
+          await queue.add(async () => {
+            const task = await discordPublicStats(interaction, io);
+          });
+        }
+
+        // Initiate Flood
+        if (interaction.options.getSubcommand() === 'flood') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'Flood',
+          );
+          if (limited) return;
+
+          await queue.add(async () => {
+            disallow = await disallowDirectMessage(
+              interaction,
+              lastSeenDiscordTask,
+              'flood',
+              io,
+            );
+          });
+          if (disallow) return;
+
+          const setting = await discordFeatureSettings(
+            interaction,
+            'flood',
+            groupTaskId,
+            channelTaskId,
+          );
+          if (!setting) return;
+
+          const filteredMessageDiscord = [];
+          filteredMessageDiscord[0] = settings.bot.command.discord.normal;
+          filteredMessageDiscord[1] = 'flood';
+          filteredMessageDiscord[2] = interaction.options.getString('amount');
+          filteredMessageDiscord[3] = interaction.options.getString('role');
+          await executeTipFunction(
+            discordFlood,
+            queue,
+            filteredMessageDiscord[2],
+            discordClient,
+            interaction,
+            filteredMessageDiscord,
+            io,
+            groupTask,
+            channelTask,
+            setting,
+            faucetSetting,
+          );
+        }
+
+        if (interaction.options.getSubcommand() === 'rain') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'Rain',
+          );
+          if (limited) return;
+
+          await queue.add(async () => {
+            disallow = await disallowDirectMessage(
+              interaction,
+              lastSeenDiscordTask,
+              'rain',
+              io,
+            );
+          });
+          if (disallow) return;
+
+          const setting = await discordFeatureSettings(
+            interaction,
+            'rain',
+            groupTaskId,
+            channelTaskId,
+          );
+          if (!setting) return;
+
+          const filteredMessageDiscord = [];
+          filteredMessageDiscord[0] = settings.bot.command.discord.normal;
+          filteredMessageDiscord[1] = 'rain';
+          filteredMessageDiscord[2] = interaction.options.getString('amount');
+          filteredMessageDiscord[3] = interaction.options.getString('role');
+
+          await executeTipFunction(
+            discordRain,
+            queue,
+            filteredMessageDiscord[2],
+            discordClient,
+            interaction,
+            filteredMessageDiscord,
+            io,
+            groupTask,
+            channelTask,
+            setting,
+            faucetSetting,
+          );
+        }
+
+        if (interaction.options.getSubcommand() === 'soak') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'Soak',
+          );
+          if (limited) return;
+
+          await queue.add(async () => {
+            disallow = await disallowDirectMessage(
+              interaction,
+              lastSeenDiscordTask,
+              'soak',
+              io,
+            );
+          });
+          if (disallow) return;
+
+          const setting = await discordFeatureSettings(
+            interaction,
+            'soak',
+            groupTaskId,
+            channelTaskId,
+          );
+          if (!setting) return;
+
+          const filteredMessageDiscord = [];
+          filteredMessageDiscord[0] = settings.bot.command.discord.normal;
+          filteredMessageDiscord[1] = 'soak';
+          filteredMessageDiscord[2] = interaction.options.getString('amount');
+          filteredMessageDiscord[3] = interaction.options.getString('role');
+
+          await executeTipFunction(
+            discordSoak,
+            queue,
+            filteredMessageDiscord[2],
+            discordClient,
+            interaction,
+            filteredMessageDiscord,
+            io,
+            groupTask,
+            channelTask,
+            setting,
+            faucetSetting,
+          );
+        }
+        if (interaction.options.getSubcommand() === 'thunder') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'Thunder',
+          );
+          if (limited) return;
+
+          await queue.add(async () => {
+            disallow = await disallowDirectMessage(
+              interaction,
+              lastSeenDiscordTask,
+              'thunder',
+              io,
+            );
+          });
+          if (disallow) return;
+
+          const setting = await discordFeatureSettings(
+            interaction,
+            'thunder',
+            groupTaskId,
+            channelTaskId,
+          );
+          if (!setting) return;
+
+          const filteredMessageDiscord = [];
+          filteredMessageDiscord[0] = settings.bot.command.discord.normal;
+          filteredMessageDiscord[1] = 'thunder';
+          filteredMessageDiscord[2] = interaction.options.getString('amount');
+          filteredMessageDiscord[3] = interaction.options.getString('role');
+
+          await executeTipFunction(
+            discordThunder,
+            queue,
+            filteredMessageDiscord[2],
+            discordClient,
+            interaction,
+            filteredMessageDiscord,
+            io,
+            groupTask,
+            channelTask,
+            setting,
+            faucetSetting,
+          );
+        }
+        if (interaction.options.getSubcommand() === 'sleet') {
+        }
+
+        // Complete command edit message
+        await interaction.editReply('Success').catch((e) => {
+          console.log(e);
+        });
+      }
+
+      // If the interaction is a button
       if (interaction.isButton()) {
+        // if the button is a faucetClaim
         if (interaction.customId === 'claimFaucet') {
           const limited = await myRateLimiter(
             discordClient,
@@ -143,6 +563,7 @@ export const discordRouter = (
 
           await queue.add(async () => {
             const task = await discordFaucetClaim(
+              discordClient,
               interaction,
               io,
             );
@@ -152,6 +573,7 @@ export const discordRouter = (
           });
         }
       }
+      // End Button interactions
     }
   });
 
@@ -179,7 +601,7 @@ export const discordRouter = (
       groupTaskId = groupTask && groupTask.id;
       channelTaskId = channelTask && channelTask.id;
     }
-    if (!message.content.startsWith(settings.bot.command.discord) || message.author.bot) return;
+    if (!message.content.startsWith(settings.bot.command.discord.normal) || message.author.bot) return;
     const maintenance = await isMaintenanceOrDisabled(message, 'discord');
     if (maintenance.maintenance || !maintenance.enabled) return;
     if (groupTask && groupTask.banned) {
@@ -240,7 +662,11 @@ export const discordRouter = (
       );
       if (limited) return;
       await queue.add(async () => {
-        const task = await discordHelp(message, io);
+        const task = await discordHelp(
+          discordClient,
+          message,
+          io,
+        );
       });
     }
 
@@ -253,7 +679,11 @@ export const discordRouter = (
       );
       if (limited) return;
       await queue.add(async () => {
-        const task = await discordHelp(message, io);
+        const task = await discordHelp(
+          discordClient,
+          message,
+          io,
+        );
       });
     }
 
@@ -285,6 +715,7 @@ export const discordRouter = (
       if (limited) return;
       await queue.add(async () => {
         const task = await discordStats(
+          discordClient,
           message,
           filteredMessageDiscord,
           io,
@@ -368,7 +799,11 @@ export const discordRouter = (
       );
       if (limited) return;
       await queue.add(async () => {
-        const task = await discordCoinInfo(message, io);
+        const task = await discordCoinInfo(
+          discordClient,
+          message,
+          io,
+        );
       });
     }
 
@@ -394,7 +829,11 @@ export const discordRouter = (
       );
       if (limited) return;
       await queue.add(async () => {
-        const task = await fetchDiscordWalletBalance(message, io);
+        const task = await fetchDiscordWalletBalance(
+          discordClient,
+          message,
+          io,
+        );
       });
     }
 
@@ -407,7 +846,11 @@ export const discordRouter = (
       );
       if (limited) return;
       await queue.add(async () => {
-        const task = await fetchDiscordListTransactions(message, io);
+        const task = await fetchDiscordListTransactions(
+          discordClient,
+          message,
+          io,
+        );
       });
     }
 
@@ -442,6 +885,7 @@ export const discordRouter = (
 
       await queue.add(async () => {
         const task = await discordFaucetClaim(
+          discordClient,
           message,
           io,
         );
@@ -457,7 +901,11 @@ export const discordRouter = (
       );
       if (limited) return;
       await queue.add(async () => {
-        const task = await fetchDiscordWalletDepositAddress(message, io);
+        const task = await fetchDiscordWalletDepositAddress(
+          discordClient,
+          message,
+          io,
+        );
       });
     }
 

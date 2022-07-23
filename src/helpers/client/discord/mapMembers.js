@@ -15,14 +15,22 @@ export const mapMembers = async (
   let mappedMembersArray = [];
   const withoutBots = [];
 
+  let discordUserIdOfSelf;
+  if (message.user) {
+    discordUserIdOfSelf = message.user.id;
+  } else if (message.author) {
+    discordUserIdOfSelf = message.author.id;
+  }
+
   if (optionalRoleMessage && optionalRoleMessage.startsWith('<@&')) {
     roleId = optionalRoleMessage.substr(3).slice(0, -1);
   }
+
   if (roleId) {
-    const filterWithRoles = await onlineMembers.filter((member) => member._roles.includes(roleId) && !member.user.bot && member.user.id !== message.author.id);
+    const filterWithRoles = await onlineMembers.filter((member) => member._roles.includes(roleId) && !member.user.bot && member.user.id !== discordUserIdOfSelf);
     mappedMembersArray = await filterWithRoles.map((a) => a.user);
   } else {
-    const filterWithoutRoles = await onlineMembers.filter((a) => !a.user.bot && a.user.id !== message.author.id);
+    const filterWithoutRoles = await onlineMembers.filter((a) => !a.user.bot && a.user.id !== discordUserIdOfSelf);
     mappedMembersArray = await filterWithoutRoles.map((a) => a.user);
   }
   if (mappedMembersArray.length > setting.maxSampleSize) {
@@ -54,7 +62,7 @@ export const mapMembers = async (
     });
     if (userExist) {
       const userIdTest = await userExist.user_id.replace('discord-', '');
-      if (userIdTest !== message.author.id) {
+      if (userIdTest !== discordUserIdOfSelf) {
         if (!userExist.banned) {
           await withoutBots.push(userExist);
         }
@@ -92,12 +100,15 @@ export const mapMembers = async (
       });
       if (userExistNew) {
         const userIdTest = await userExistNew.user_id.replace('discord-', '');
-        if (userIdTest !== message.author.id) {
+        if (userIdTest !== discordUserIdOfSelf) {
           await withoutBots.push(userExistNew);
         }
       }
     }
   }
   const withoutBotsSorted = await _.sortBy(withoutBots, 'createdAt');
-  return withoutBotsSorted;
+  return [
+    withoutBotsSorted,
+    roleId,
+  ];
 };

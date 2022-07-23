@@ -15,10 +15,12 @@ import db from '../../models';
 import getCoinSettings from '../../config/settings';
 import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
 import logger from "../../helpers/logger";
+import { fetchDiscordChannel } from '../../helpers/client/discord/fetchDiscordChannel';
 
 const settings = getCoinSettings();
 
 export const discordFaucetClaim = async (
+  discordClient,
   message,
   io,
 ) => {
@@ -38,6 +40,14 @@ export const discordFaucetClaim = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
+
+    const [
+      discordChannel,
+      discordUserDMChannel,
+    ] = await fetchDiscordChannel(
+      discordClient,
+      message,
+    );
 
     const faucet = await db.faucet.findOne({
       order: [
@@ -75,7 +85,9 @@ export const discordFaucetClaim = async (
       });
       activity.push(fActivity);
       await message.channel.send({
-        embeds: [dryFaucetMessage()],
+        embeds: [
+          dryFaucetMessage(),
+        ],
         components: [row],
       });
       return;

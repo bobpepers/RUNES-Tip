@@ -15,6 +15,7 @@ import db from '../../models';
 import getCoinSettings from '../../config/settings';
 import logger from "../../helpers/logger";
 import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
+import { fetchDiscordChannel } from '../../helpers/client/discord/fetchDiscordChannel';
 
 const settings = getCoinSettings();
 
@@ -68,6 +69,7 @@ function group(
 }
 
 export const discordStats = async (
+  discordClient,
   message,
   filteredMessageDiscord,
   io,
@@ -99,6 +101,16 @@ export const discordStats = async (
     }
     if (!user) return;
 
+    const userId = user.user_id.replace('discord-', '');
+
+    const [
+      discordChannel,
+      discordUserDMChannel,
+    ] = await fetchDiscordChannel(
+      discordClient,
+      message,
+    );
+
     if (filteredMessageDiscord[2]) {
       // eslint-disable-next-line prefer-destructuring
       textTime = filteredMessageDiscord[2];
@@ -125,10 +137,10 @@ export const discordStats = async (
         transaction: t,
       });
       activity.unshift(activityA);
-      await message.channel.send({
+      await discordChannel.send({
         embeds: [
           invalidTimeMessage(
-            message,
+            userId,
             'Stats',
           ),
         ],
@@ -170,10 +182,10 @@ export const discordStats = async (
     if (message.channel.type === ChannelType.GuildText) {
       childWhereOptions.groupId = groupTask.id;
       childWhereOptionsTriviaTips.groupId = groupTask.id;
-      await message.channel.send({
+      await discordChannel.send({
         embeds: [
           warnDirectMessage(
-            message.author.id,
+            userId,
             'Statistics',
           ),
         ],
@@ -547,10 +559,10 @@ export const discordStats = async (
     );
 
     if (_.isEmpty(mergedObject)) {
-      await message.author.send({
+      await discordUserDMChannel.send({
         embeds: [
           statsMessage(
-            message,
+            userId,
             "No data found!",
           ),
         ],
@@ -643,10 +655,10 @@ ${spendTips ? `Tips: ${spendTips}\n` : ''}${spendRains ? `Rains: ${spendRains}\n
 ${mergedObject[`${serverObj}`].earned ? '_Earned_\n' : ''}
 ${earnedTips ? `Tips: ${earnedTips}\n` : ''}${earnedRains ? `Rains: ${earnedRains}\n` : ''}${earnedFloods ? `Floods: ${earnedFloods}\n` : ''}${earnedSoaks ? `Soaks: ${earnedSoaks}\n` : ''}${earnedHurricanes ? `Hurricanes: ${earnedHurricanes}\n` : ''}${earnedThunders ? `Thunders: ${earnedThunders}\n` : ''}${earnedThunderstorms ? `Thunderstorms: ${earnedThunderstorms}\n` : ''}${earnedReactDrops ? `ReactDrops: ${earnedReactDrops}\n` : ''}${earnedTrivias ? `Trivia: ${earnedTrivias}\n` : ''}${earnedTotal ? `Total Earned: ${earnedTotal} ${settings.coin.ticker}\n` : ''}`;
       // eslint-disable-next-line no-await-in-loop
-      await message.author.send({
+      await discordUserDMChannel.send({
         embeds: [
           statsMessage(
-            message,
+            userId,
             serverString,
           ),
         ],
@@ -675,6 +687,7 @@ ${earnedTips ? `Tips: ${earnedTips}\n` : ''}${earnedRains ? `Rains: ${earnedRain
     });
     activity.unshift(finalActivity);
   }).catch(async (err) => {
+    console.log(err);
     try {
       await db.error.create({
         type: 'stats',

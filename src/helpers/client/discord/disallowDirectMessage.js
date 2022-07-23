@@ -19,6 +19,12 @@ export const disallowDirectMessage = async (
 ) => {
   const activity = [];
   let disallow = false;
+  let userId;
+  if (message.user) {
+    userId = message.user.id;
+  } else if (message.author) {
+    userId = message.author.id;
+  }
 
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -35,7 +41,7 @@ export const disallowDirectMessage = async (
       await message.channel.send({
         embeds: [
           NotInDirectMessage(
-            message,
+            userId,
             capitalize(functionType),
           ),
         ],

@@ -66,7 +66,10 @@ export const discordFlood = async (
       return member;
     });
 
-    const withoutBots = await mapMembers(
+    const [
+      withoutBots,
+      optionalRole,
+    ] = await mapMembers(
       message,
       t,
       filteredMessage[3],
@@ -86,7 +89,7 @@ export const discordFlood = async (
       await message.channel.send({
         embeds: [
           notEnoughActiveUsersMessage(
-            message,
+            user.user_id.replace('discord-', ''),
             'Flood',
           ),
         ],
@@ -230,13 +233,14 @@ export const discordFlood = async (
     await message.channel.send({
       embeds: [
         AfterSuccessMessage(
-          message,
+          user.user_id.replace('discord-', ''),
           floodRecord.id,
           amount,
           withoutBots,
           amountPerUser,
           'Flood',
           'flooded',
+          optionalRole,
         ),
       ],
     });

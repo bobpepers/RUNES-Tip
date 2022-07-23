@@ -27,6 +27,7 @@ export const setIgnoreMe = async (message, io) => {
       activity.unshift(userActivity);
     }
     if (!user) return;
+    const userId = user.user_id.replace('discord-', '');
 
     if (user.ignoreMe) {
       await user.update({
@@ -38,7 +39,7 @@ export const setIgnoreMe = async (message, io) => {
       await message.channel.send({
         embeds: [
           unIngoreMeMessage(
-            message,
+            userId,
           ),
         ],
       });
@@ -52,7 +53,7 @@ export const setIgnoreMe = async (message, io) => {
       await message.channel.send({
         embeds: [
           ignoreMeMessage(
-            message,
+            userId,
           ),
         ],
       });

@@ -11,8 +11,10 @@ import {
 import db from '../../models';
 import logger from "../../helpers/logger";
 import { userWalletExist } from "../../helpers/client/discord/userWalletExist";
+import { fetchDiscordChannel } from '../../helpers/client/discord/fetchDiscordChannel';
 
 export const fetchDiscordWalletBalance = async (
+  discordClient,
   message,
   io,
 ) => {
@@ -33,6 +35,14 @@ export const fetchDiscordWalletBalance = async (
     }
     if (!user) return;
 
+    const [
+      discordChannel,
+      discordUserDMChannel,
+    ] = await fetchDiscordChannel(
+      discordClient,
+      message,
+    );
+
     const priceInfo = await db.currency.findOne({
       where: {
         iso: 'USD',
@@ -44,7 +54,7 @@ export const fetchDiscordWalletBalance = async (
     const userId = user.user_id.replace('discord-', '');
 
     if (message.channel.type === ChannelType.DM) {
-      await message.author.send({
+      await discordUserDMChannel.send({
         embeds: [
           balanceMessage(
             userId,
@@ -56,7 +66,7 @@ export const fetchDiscordWalletBalance = async (
     }
 
     if (message.channel.type === ChannelType.GuildText) {
-      await message.author.send({
+      await discordUserDMChannel.send({
         embeds: [
           balanceMessage(
             userId,
@@ -65,7 +75,7 @@ export const fetchDiscordWalletBalance = async (
           ),
         ],
       });
-      await message.channel.send({
+      await discordChannel.send({
         embeds: [
           warnDirectMessage(
             userId,

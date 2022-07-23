@@ -30,6 +30,8 @@ export const discordPublicStats = async (
     }
     if (!user) return;
 
+    const userId = user.user_id.replace('discord-', '');
+
     if (user.publicStats) {
       await user.update({
         publicStats: false,
@@ -40,7 +42,7 @@ export const discordPublicStats = async (
       await message.channel.send({
         embeds: [
           disablePublicStatsMessage(
-            message,
+            userId,
           ),
         ],
       });
@@ -54,7 +56,7 @@ export const discordPublicStats = async (
       await message.channel.send({
         embeds: [
           enablePublicStatsMeMessage(
-            message,
+            userId,
           ),
         ],
       });

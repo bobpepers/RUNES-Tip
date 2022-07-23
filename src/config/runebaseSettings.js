@@ -1,14 +1,17 @@
 module.exports = {
   startSyncBlock: 500000,
   bot: {
-    name: "RunesTipBot",
+    name: "RunesTip",
     color: "#0099ff",
     url: {
       telegram: "",
-      discord: "https://discord.com/oauth2/authorize?client_id=906563045248094249&scope=bot&permissions=523328",
+      discord: "https://discord.com/oauth2/authorize?client_id=906563045248094249&scope=bot&permissions=523328&scope=bot%20applications.commands",
     },
     command: {
-      discord: "!runestip",
+      discord: {
+        normal: "!runestip",
+        slash: "runestip",
+      },
       telegram: "!runestip",
       matrix: "!runestip",
     },
