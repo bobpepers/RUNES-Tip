@@ -134,7 +134,7 @@ mainTipBotCommand
       .setName('voicerain')
       .setDescription('initiate a voicerain')
       .addStringOption((option) => option.setName('amount').setDescription('Enter an amount').setRequired(true))
-      .addStringOption((option) => option.setName('channel').setDescription('Enter a voice-channel').setRequired(true))
+      .addChannelOption((option) => option.setName('channel').setDescription('Enter a voice-channel').setRequired(true))
       .addRoleOption((option) => option.setName('role').setDescription('Optional role')),
   )
   .addSubcommand(
@@ -145,7 +145,6 @@ mainTipBotCommand
       .addStringOption((option) => option.setName('amount').setDescription('Enter the amount you want to tip').setRequired(true))
       .addStringOption((option) => option.setName('type')
         .setDescription('Each (Tip each user the amount) or Split (Split the amount between the users)')
-        .setRequired(true)
         .addChoices(
           { name: 'Each', value: 'each' },
           { name: 'Split', value: 'split' },
@@ -171,7 +170,22 @@ if (settings.coin.name === 'Pirate') {
       (subcommand) => subcommand
         .setName('halving')
         .setDescription(`Get halving info`),
+    ).addSubcommand(
+      (subcommand) => subcommand
+        .setName('withdraw')
+        .setDescription('initiate a withdrawal')
+        .addStringOption((option) => option.setName('address').setDescription('Enter a address').setRequired(true))
+        .addStringOption((option) => option.setName('amount').setDescription('Enter an amount').setRequired(true))
+        .addStringOption((option) => option.setName('memo').setDescription('an optional memo')),
     );
+} else {
+  mainTipBotCommand.addSubcommand(
+    (subcommand) => subcommand
+      .setName('withdraw')
+      .setDescription('initiate a withdrawal')
+      .addStringOption((option) => option.setName('address').setDescription('Enter a address').setRequired(true))
+      .addStringOption((option) => option.setName('amount').setDescription('Enter an amount').setRequired(true)),
+  );
 }
 
 const commands = [

@@ -31,27 +31,6 @@ export const discordVoiceRain = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    if (!filteredMessage[3].startsWith('<#')) {
-      await message.channel.send({
-        embeds: [
-          notAVoiceChannel(
-            message,
-          ),
-        ],
-      });
-      return;
-    }
-    if (!filteredMessage[3].endsWith('>')) {
-      await message.channel.send({
-        embeds: [
-          notAVoiceChannel(
-            message,
-          ),
-        ],
-      });
-      return;
-    }
-
     const [
       user,
       userActivity,
@@ -64,6 +43,29 @@ export const discordVoiceRain = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
+
+    const discordUserId = user.user_id.replace('discord-', '');
+
+    if (!filteredMessage[3].startsWith('<#')) {
+      await message.channel.send({
+        embeds: [
+          notAVoiceChannel(
+            discordUserId,
+          ),
+        ],
+      });
+      return;
+    }
+    if (!filteredMessage[3].endsWith('>')) {
+      await message.channel.send({
+        embeds: [
+          notAVoiceChannel(
+            discordUserId,
+          ),
+        ],
+      });
+      return;
+    }
 
     const [
       validAmount,
@@ -96,7 +98,9 @@ export const discordVoiceRain = async (
     if (!voiceChannel) {
       await message.channel.send({
         embeds: [
-          voiceChannelNotFound(message),
+          voiceChannelNotFound(
+            discordUserId,
+          ),
         ],
       });
       return;
@@ -104,7 +108,10 @@ export const discordVoiceRain = async (
 
     const onlineMembers = await discordClient.channels.cache.get(voiceChannelId).members;
 
-    const withoutBots = await mapMembers(
+    const [
+      withoutBots,
+      optionalRole,
+    ] = await mapMembers(
       message,
       t,
       filteredMessage[4],
@@ -124,7 +131,7 @@ export const discordVoiceRain = async (
       await message.channel.send({
         embeds: [
           notEnoughActiveUsersMessage(
-            message,
+            discordUserId,
             'Voice Rain',
           ),
         ],
@@ -271,13 +278,14 @@ export const discordVoiceRain = async (
     await message.channel.send({
       embeds: [
         AfterSuccessMessage(
-          message,
+          discordUserId,
           rainRecord.id,
           amount,
           withoutBots,
           amountPerUser,
           'VoiceRain',
           'rained',
+          optionalRole,
         ),
       ],
     });

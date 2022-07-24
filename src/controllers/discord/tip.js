@@ -36,9 +36,6 @@ export const tipRunesToDiscordUser = async (
   let type = 'split';
   let userActivity;
 
-  console.log(discordClient);
-  console.log('discordClient');
-
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
@@ -55,6 +52,8 @@ export const tipRunesToDiscordUser = async (
     }
     if (!user) return;
 
+    const discordUserSelfId = user.user_id.replace('discord-', '');
+    console.log("1");
     // make users to tip array
     while (!AmountPositionEnded) {
       let discordId;
@@ -71,7 +70,7 @@ export const tipRunesToDiscordUser = async (
       ) {
         discordId = filteredMessage[parseInt(AmountPosition, 10)].slice(2).slice(0, -1);
       }
-
+      console.log("2");
       // eslint-disable-next-line no-await-in-loop
       const userExist = await db.user.findOne({
         where: {
@@ -96,14 +95,14 @@ export const tipRunesToDiscordUser = async (
       });
       if (userExist) {
         const userIdTest = userExist.user_id.replace('discord-', '');
-        if (userIdTest !== message.author.id) {
+        if (userIdTest !== discordUserSelfId) {
           if (!usersToTip.find((o) => o.id === userExist.id)) {
             usersToTip.push(userExist);
           }
         }
       }
       if (!userExist) {
-        if (discordId !== message.author.id) {
+        if (discordId !== discordUserSelfId) {
           const userClient = await discordClient.users.fetch(discordId);
           if (
             userClient
@@ -140,7 +139,7 @@ export const tipRunesToDiscordUser = async (
             });
             if (newUserExist) {
               const userNewIdTest = newUserExist.user_id.replace('discord-', '');
-              if (userNewIdTest !== message.author.id) {
+              if (userNewIdTest !== discordUserSelfId) {
                 if (!usersToTip.find((o) => o.id === newUserExist.id)) {
                   usersToTip.push(newUserExist);
                 }
@@ -158,18 +157,18 @@ export const tipRunesToDiscordUser = async (
         AmountPositionEnded = true;
       }
     }
-
+    console.log("3");
     if (usersToTip.length < 1) {
       await message.channel.send({
         embeds: [
           notEnoughUsersToTip(
-            message,
+            discordUserSelfId,
           ),
         ],
       });
       return;
     }
-
+    console.log("4");
     if (filteredMessage[AmountPosition + 1] && filteredMessage[AmountPosition + 1].toLowerCase() === 'each') {
       type = 'each';
     }
@@ -192,7 +191,7 @@ export const tipRunesToDiscordUser = async (
       activity.unshift(activityValiateAmount);
       return;
     }
-
+    console.log("5");
     //
     const updatedBalance = await user.wallet.update({
       available: user.wallet.available - amount,
@@ -336,14 +335,14 @@ export const tipRunesToDiscordUser = async (
       const cutStringListUsers = newStringListUsers.match(/.{1,1999}(\s|$)/g);
       // eslint-disable-next-line no-restricted-syntax
       for (const element of cutStringListUsers) {
-      // eslint-disable-next-line no-await-in-loop
+        // eslint-disable-next-line no-await-in-loop
         await message.channel.send(element);
       }
 
       await message.channel.send({
         embeds: [
           tipMultipleSuccessMessage(
-            message,
+            discordUserSelfId,
             tipRecord.id,
             listOfUsersRained,
             userTipAmount,
@@ -403,11 +402,6 @@ export const tipCoinsToDiscordFaucet = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    // if (!groupTask || !channelTask) {
-    //  await message.channel.send({ embeds: [NotInDirectMessage(message, 'Tip')] });
-    //  return;
-    // }
-
     [
       user,
       userActivity,
@@ -420,7 +414,6 @@ export const tipCoinsToDiscordFaucet = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
-    // console.lgo(discordClient);
 
     const userExist = await db.user.findOne({
       where: {
@@ -589,10 +582,11 @@ export const tipCoinsToDiscordFaucet = async (
         listOfUsersRained.push(`<@${userIdReceivedRain}>`);
       }
     }
+    const discordUserId = user.user_id.replace('discord-', '');
     await message.channel.send({
       embeds: [
         tipFaucetSuccessMessage(
-          message,
+          discordUserId,
           userTipAmount,
         ),
       ],

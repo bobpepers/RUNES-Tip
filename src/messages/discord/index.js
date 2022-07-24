@@ -300,33 +300,42 @@ If you do not wish to be @mentioned, please issue this command again.`)
   return result;
 };
 
-export const notAVoiceChannel = (message) => {
+export const notAVoiceChannel = (discordUserId) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Voice Rain')
-    .setDescription(`<@${message.author.id}>, Incorrect voice channel defined`)
+    .setDescription(`<@${discordUserId}>, Incorrect voice channel defined`)
     .setTimestamp()
     .setFooter(footer);
 
   return result;
 };
 
-export const voiceChannelNotFound = (message) => {
+export const voiceChannelNotFound = (discordUserId) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Voice Rain')
-    .setDescription(`<@${message.author.id}>, Voice channel not found`)
+    .setDescription(`<@${discordUserId}>, Voice channel not found`)
     .setTimestamp()
     .setFooter(footer);
 
   return result;
 };
 
-export const cannotSendMessageUser = (title, message) => {
+export const cannotSendMessageUser = (
+  title,
+  message,
+) => {
+  let discordUserIdSelf;
+  if (message.user) {
+    discordUserIdSelf = message.user.id;
+  } else if (message.author) {
+    discordUserIdSelf = message.author.id;
+  }
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
-    .setDescription(`<@${message.author.id}>, ${settings.bot.name} was unable to send you a direct message.\nPlease check your discord privacy settings.`)
+    .setDescription(`<@${discordUserIdSelf}>, ${settings.bot.name} was unable to send you a direct message.\nPlease check your discord privacy settings.`)
     .setTimestamp()
     .setFooter(footer);
 
@@ -396,7 +405,7 @@ export const transactionNotFoundMessage = (title) => {
 };
 
 export const reviewMessage = (
-  message,
+  userId,
   transaction,
 ) => {
   const amount = ((transaction.amount / 1e8).toFixed(8)).replace(/(\.0+|0+)$/, '');
@@ -405,7 +414,7 @@ export const reviewMessage = (
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Withdraw #${transaction.id}`)
-    .setDescription(`<@${message.author.id}>, Your withdrawal has been queued
+    .setDescription(`<@${userId}>, Your withdrawal has been queued
 
 amount: **${amount} ${settings.coin.ticker}**
 fee: **${fee} ${settings.coin.ticker}**
@@ -597,22 +606,25 @@ export const halvingMessage = (
   return result;
 };
 
-export const unableToWithdrawToSelfMessage = (message) => {
+export const unableToWithdrawToSelfMessage = (userId) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Tip')
-    .setDescription(`<@${message.author.id}>, unable to withdraw to your own deposit address`)
+    .setDescription(`<@${userId}>, unable to withdraw to your own deposit address`)
     .setTimestamp()
     .setFooter(footer);
 
   return result;
 };
 
-export const tipFaucetSuccessMessage = (message, amount) => {
+export const tipFaucetSuccessMessage = (
+  userId,
+  amount,
+) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Tip')
-    .setDescription(`<@${message.author.id}> tipped ${amount / 1e8} ${settings.coin.ticker} to Faucet`)
+    .setDescription(`<@${userId}> tipped ${amount / 1e8} ${settings.coin.ticker} to Faucet`)
     .setTimestamp()
     .setFooter(footer);
 
@@ -620,7 +632,7 @@ export const tipFaucetSuccessMessage = (message, amount) => {
 };
 
 export const tipSingleSuccessMessage = (
-  message,
+  userId,
   id,
   listOfUsersRained,
   amount,
@@ -628,7 +640,7 @@ export const tipSingleSuccessMessage = (
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Tip #${id}`)
-    .setDescription(`<@${message.author.id}> tipped ${amount / 1e8} ${settings.coin.ticker} to ${listOfUsersRained[0]}`)
+    .setDescription(`<@${userId}> tipped ${amount / 1e8} ${settings.coin.ticker} to ${listOfUsersRained[0]}`)
     .setTimestamp()
     .setFooter(footer);
 
@@ -636,7 +648,7 @@ export const tipSingleSuccessMessage = (
 };
 
 export const tipMultipleSuccessMessage = (
-  message,
+  userId,
   id,
   listOfUsersRained,
   amount,
@@ -646,7 +658,7 @@ export const tipMultipleSuccessMessage = (
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Tip #${id}`)
-    .setDescription(`<@${message.author.id}> tipped **${(amount * listOfUsersRained.length) / 1e8} ${settings.coin.ticker}** to ${listOfUsersRained.length} users
+    .setDescription(`<@${userId}> tipped **${(amount * listOfUsersRained.length) / 1e8} ${settings.coin.ticker}** to ${listOfUsersRained.length} users
 
 Type: **${capitalize(type)}**
 
@@ -718,10 +730,16 @@ export const discordWithdrawalRejectedMessage = (
 };
 
 export const walletNotFoundMessage = (message, title) => {
+  let discordUserIdSelf;
+  if (message.user) {
+    discordUserIdSelf = message.user.id;
+  } else if (message.author) {
+    discordUserIdSelf = message.author.id;
+  }
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
-    .setDescription(`<@${message.author.id}>, Wallet not found`)
+    .setDescription(`<@${discordUserIdSelf}>, Wallet not found`)
     .setTimestamp()
     .setFooter(footer);
 
@@ -987,10 +1005,16 @@ export const userNotFoundMessage = (
   message,
   title,
 ) => {
+  let discordUserIdSelf;
+  if (message.user) {
+    discordUserIdSelf = message.user.id;
+  } else if (message.author) {
+    discordUserIdSelf = message.author.id;
+  }
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
-    .setDescription(`<@${message.author.id}>, User not found`)
+    .setDescription(`<@${discordUserIdSelf}>, User not found`)
     .setTimestamp()
     .setFooter(footer);
 
@@ -998,12 +1022,12 @@ export const userNotFoundMessage = (
 };
 
 export const invalidAddressMessage = (
-  message,
+  userId,
 ) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Withdraw')
-    .setDescription(`<@${message.author.id}>, Invalid ${settings.coin.name} Address`)
+    .setDescription(`<@${userId}>, Invalid ${settings.coin.name} Address`)
     .setTimestamp()
     .setFooter(footer);
 
@@ -1018,17 +1042,6 @@ export const invalidAmountMessage = (
     .setColor(settings.bot.color)
     .setTitle(title)
     .setDescription(`<@${discordUserId}>, Invalid Amount`)
-    .setTimestamp()
-    .setFooter(footer);
-
-  return result;
-};
-
-export const minimumWithdrawalMessage = (message, min) => {
-  const result = new EmbedBuilder()
-    .setColor(settings.bot.color)
-    .setTitle('Withdraw')
-    .setDescription(`<@${message.author.id}>, Minimum Withdrawal is ${min / 1e8} ${settings.coin.ticker}`)
     .setTimestamp()
     .setFooter(footer);
 
@@ -1076,11 +1089,11 @@ export const enablePublicStatsMeMessage = (userId) => {
   return result;
 };
 
-export const notEnoughUsersToTip = (message) => {
+export const notEnoughUsersToTip = (userId) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Tip`)
-    .setDescription(`<@${message.author.id}>, Not enough users to tip`)
+    .setDescription(`<@${userId}>, Not enough users to tip`)
     .setThumbnail(settings.coin.logo)
     .setTimestamp()
     .setFooter(footer);
@@ -1121,7 +1134,7 @@ export const discordWelcomeMessage = (
     .setColor(settings.bot.color)
     .setTitle(`Bot`)
     .setDescription(`Welcome <@${userInfo.id}>, we created a wallet for you.
-Type "${settings.bot.command.discord} help" for usage info`)
+Type "/${settings.bot.command.discord.slash} help" for usage info`)
     .setThumbnail(settings.coin.logo)
     .setTimestamp()
     .setFooter(footer);
@@ -1201,7 +1214,10 @@ export const miningMessage = (
   return result;
 };
 
-export const warnDirectMessage = (userId, title) => {
+export const warnDirectMessage = (
+  userId,
+  title,
+) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
@@ -1214,13 +1230,13 @@ export const warnDirectMessage = (userId, title) => {
 };
 
 export const discordTransactionMemoTooLongMessage = (
-  message,
+  userId,
   memoLength,
 ) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Withdraw')
-    .setDescription(`<@${message.author.id}>, Your withdrawal memo is too long!
+    .setDescription(`<@${userId}>, Your withdrawal memo is too long!
 We found ${memoLength} characters, maximum length is 512`)
     .setThumbnail(settings.coin.logo)
     .setTimestamp()
@@ -1282,11 +1298,11 @@ export const helpMessageTwo = (withdraw) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     // .setTitle(`${`${settings.bot.name} v${pjson.version}`} Help`)
-    .setDescription(`\`/${settings.bot.command.discord.slash} <@user> <amount|all>\`
+    .setDescription(`\`/${settings.bot.command.discord.slash} tip <@user> <amount|all>\`
 Tips the @ mentioned user with the desired amount
 example: \`/${settings.bot.command.discord.slash} @test123456#7890 1.00\`
 
-\`/${settings.bot.command.discord.slash} <@user> <@user> <@user> <amount|all> [split|each]\`
+\`/${settings.bot.command.discord.slash} tip <@user> <@user> <@user> <amount|all> [split|each]\`
 Tips the @ mentioned users with the desired amount
 example: \`/${settings.bot.command.discord.slash} @test123456#7890 @test123457#7890 1.00 each\`
 

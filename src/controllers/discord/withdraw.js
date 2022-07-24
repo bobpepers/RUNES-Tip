@@ -1,6 +1,7 @@
 /* eslint-disable import/prefer-default-export */
 import {
   ChannelType,
+  InteractionType,
 } from 'discord.js';
 import { Transaction } from "sequelize";
 import db from '../../models';
@@ -20,6 +21,7 @@ import { validateWithdrawalAddress } from '../../helpers/blockchain/validateWith
 import { disallowWithdrawToSelf } from '../../helpers/withdraw/disallowWithdrawToSelf';
 import { createOrUseExternalWithdrawAddress } from '../../helpers/withdraw/createOrUseExternalWithdrawAddress';
 import { extractWithdrawMemo } from '../../helpers/withdraw/extractWithdrawMemo';
+import { fetchDiscordChannel } from '../../helpers/client/discord/fetchDiscordChannel';
 
 import getCoinSettings from '../../config/settings';
 
@@ -52,6 +54,14 @@ export const withdrawDiscordCreate = async (
     if (!user) return;
 
     const [
+      discordChannel,
+      discordUserDMChannel,
+    ] = await fetchDiscordChannel(
+      discordClient,
+      message,
+    );
+
+    const [
       validAmount,
       activityValiateAmount,
       amount,
@@ -81,14 +91,14 @@ export const withdrawDiscordCreate = async (
     );
 
     if (isNodeOffline) {
-      await message.author.send('Runebase node offline');
+      await discordUserDMChannel.send('Runebase node offline');
     }
 
     if (isInvalidAddress) {
-      await message.author.send({
+      await discordUserDMChannel.send({
         embeds: [
           invalidAddressMessage(
-            message,
+            userId,
           ),
         ],
       });
@@ -96,7 +106,7 @@ export const withdrawDiscordCreate = async (
 
     if (isInvalidAddress || isNodeOffline) {
       if (message.channel.type !== ChannelType.DM) {
-        await message.channel.send({
+        await discordChannel.send({
           embeds: [
             warnDirectMessage(
               userId,
@@ -119,15 +129,15 @@ export const withdrawDiscordCreate = async (
     );
 
     if (isMyAddressActivity) {
-      await message.author.send({
+      await discordUserDMChannel.send({
         embeds: [
           unableToWithdrawToSelfMessage(
-            message,
+            userId,
           ),
         ],
       });
       if (message.channel.type !== ChannelType.DM) {
-        await message.channel.send({
+        await discordChannel.send({
           embeds: [
             warnDirectMessage(
               userId,
@@ -142,15 +152,22 @@ export const withdrawDiscordCreate = async (
 
     let memo = null;
     if (settings.coin.setting === 'Pirate') {
+      let messageContent;
+      console.log(message);
+      if (message.type && message.type === InteractionType.ApplicationCommand) {
+        messageContent = filteredMessage.join(' ');
+      } else {
+        messageContent = message.content;
+      }
       memo = await extractWithdrawMemo(
-        message.content,
+        messageContent,
         filteredMessage,
       );
       if (memo.length > 512) {
-        await message.channel.send({
+        await discordChannel.send({
           embeds: [
             discordTransactionMemoTooLongMessage(
-              message,
+              userId,
               memo.length,
             ),
           ],
@@ -203,10 +220,10 @@ export const withdrawDiscordCreate = async (
     activity.unshift(activityCreate);
 
     if (message.channel.type === ChannelType.DM) {
-      await message.author.send({
+      await discordUserDMChannel.send({
         embeds: [
           reviewMessage(
-            message,
+            userId,
             transaction,
           ),
         ],
@@ -214,15 +231,15 @@ export const withdrawDiscordCreate = async (
     }
 
     if (message.channel.type === ChannelType.GuildText) {
-      await message.author.send({
+      await discordUserDMChannel.send({
         embeds: [
           reviewMessage(
-            message,
+            userId,
             transaction,
           ),
         ],
       });
-      await message.channel.send({
+      await discordChannel.send({
         embeds: [
           warnDirectMessage(
             userId,
