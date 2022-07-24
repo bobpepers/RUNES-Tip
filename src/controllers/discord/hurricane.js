@@ -32,36 +32,6 @@ export const discordHurricane = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    if (Number(filteredMessage[2]) > 50) {
-      await message.channel.send({
-        embeds: [
-          hurricaneMaxUserAmountMessage(
-            message,
-          ),
-        ],
-      });
-      return;
-    }
-    if (Number(filteredMessage[2]) % 1 !== 0) {
-      await message.channel.send({
-        embeds: [
-          hurricaneInvalidUserAmount(
-            message,
-          ),
-        ],
-      });
-      return;
-    }
-    if (Number(filteredMessage[2]) <= 0) {
-      await message.channel.send({
-        embeds: [
-          hurricaneUserZeroAmountMessage(
-            message,
-          ),
-        ],
-      });
-      return;
-    }
     const [
       user,
       userActivity,
@@ -75,18 +45,53 @@ export const discordHurricane = async (
     }
     if (!user) return;
 
+    if (Number(filteredMessage[2]) > 50) {
+      await message.channel.send({
+        embeds: [
+          hurricaneMaxUserAmountMessage(
+            user.user_id.replace('discord-', ''),
+          ),
+        ],
+      });
+      return;
+    }
+    if (Number(filteredMessage[2]) % 1 !== 0) {
+      await message.channel.send({
+        embeds: [
+          hurricaneInvalidUserAmount(
+            user.user_id.replace('discord-', ''),
+          ),
+        ],
+      });
+      return;
+    }
+    if (Number(filteredMessage[2]) <= 0) {
+      await message.channel.send({
+        embeds: [
+          hurricaneUserZeroAmountMessage(
+            user.user_id.replace('discord-', ''),
+          ),
+        ],
+      });
+      return;
+    }
+
     const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
     const onlineMembers = members.filter((member) => (member.presence && member.presence.status === "online")
       || (member.presence && member.presence.status === "idle")
       || (member.presence && member.presence.status === "dnd"));
 
-    const preWithoutBots = await mapMembers(
+    const [
+      preWithoutBots,
+      optionalRole,
+    ] = await mapMembers(
       message,
       t,
       filteredMessage[4],
       onlineMembers,
       setting,
     );
+
     const withoutBots = _.sampleSize(preWithoutBots, Number(filteredMessage[2]));
 
     const [
@@ -118,7 +123,7 @@ export const discordHurricane = async (
       await message.channel.send({
         embeds: [
           notEnoughActiveUsersMessage(
-            message,
+            user.user_id.replace('discord-', ''),
             'Hurricane',
           ),
         ],
@@ -140,6 +145,7 @@ export const discordHurricane = async (
       Number(fee),
       faucetSetting,
     );
+
     const hurricaneRecord = await db.hurricane.create({
       amount,
       feeAmount: fee,
@@ -261,13 +267,14 @@ export const discordHurricane = async (
     await message.channel.send({
       embeds: [
         AfterSuccessMessage(
-          message,
+          user.user_id.replace('discord-', ''),
           hurricaneRecord.id,
           amount,
           withoutBots,
           amountPerUser,
           '⛈ Hurricane ⛈',
           'hurricaned',
+          optionalRole,
         ),
       ],
     });

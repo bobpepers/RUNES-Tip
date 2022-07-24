@@ -14,6 +14,7 @@ export const discordHalving = async (
   halvingData,
   io,
 ) => {
+  console.log('discordHalving');
   const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -82,6 +83,7 @@ export const discordHalving = async (
       transaction: t,
     });
     activity.unshift(finalActivity);
+    console.log('mining complete');
   }).catch(async (err) => {
     try {
       await db.error.create({
@@ -91,7 +93,7 @@ export const discordHalving = async (
     } catch (e) {
       logger.error(`Error Discord: ${e}`);
     }
-    logger.error(`Error Discord Halving Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
+    // logger.error(`Error Discord Halving Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
 
     await message.channel.send({
       embeds: [

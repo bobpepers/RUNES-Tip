@@ -9,7 +9,7 @@ import {
 } from "discord.js";
 import {
   triviaMessageDiscord,
-  minimumTimeReactDropMessage,
+  minimumTimeTriviaMessage,
   invalidTimeMessage,
   AfterTriviaSuccessMessage,
   noTriviaQuestionFoundMessage,
@@ -432,16 +432,11 @@ export const discordTrivia = async (
   queue,
 ) => {
   let activity = [];
-  const useEmojis = [];
-  let user;
+  // const useEmojis = [];
+  // let user;
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    // if (!groupTask || !channelTask) {
-    //  await message.channel.send({ embeds: [NotInDirectMessage(message, 'Trivia')] });
-    //  return;
-    // }
-
     const [
       user,
       userActivity,
@@ -454,6 +449,8 @@ export const discordTrivia = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
+
+    const discordUserId = user.user_id.replace('discord-', '');
 
     const [
       validAmount,
@@ -494,8 +491,9 @@ export const discordTrivia = async (
     const isnum = /^\d+$/.test(cutNumberTime);
 
     if (
-      !isnumPeople
-      && totalPeople % 1 === 0
+      (!isnumPeople
+        && Number(totalPeople) % 1 === 0)
+      || Number(totalPeople) % 1 !== 0
     ) {
       const amountPeopleFailActivity = await db.activity.create({
         type: 'trivia_f',
@@ -505,7 +503,14 @@ export const discordTrivia = async (
         transaction: t,
       });
       activity.unshift(amountPeopleFailActivity);
-      await message.channel.send({ embeds: [invalidPeopleAmountMessage(message, 'Trivia')] });
+      await message.channel.send({
+        embeds: [
+          invalidPeopleAmountMessage(
+            discordUserId,
+            'Trivia',
+          ),
+        ],
+      });
     } else if (
       !isnum
       // && Number(cutNumberTime) < 0
@@ -523,7 +528,14 @@ export const discordTrivia = async (
         transaction: t,
       });
       activity.unshift(timeFailActivity);
-      await message.channel.send({ embeds: [invalidTimeMessage(message, 'Trivia')] });
+      await message.channel.send({
+        embeds: [
+          invalidTimeMessage(
+            discordUserId,
+            'Trivia',
+          ),
+        ],
+      });
     } else if (cutLastTimeLetter === 's' && Number(cutNumberTime) < 30) {
       const timeFailActivity = await db.activity.create({
         type: 'trivia_f',
@@ -533,7 +545,13 @@ export const discordTrivia = async (
         transaction: t,
       });
       activity.unshift(timeFailActivity);
-      await message.channel.send({ embeds: [minimumTimeReactDropMessage(message)] });
+      await message.channel.send({
+        embeds: [
+          minimumTimeTriviaMessage(
+            discordUserId,
+          ),
+        ],
+      });
     } else {
       const randomQuestion = await db.triviaquestion.findOne({
         order: db.sequelize.random(),
@@ -559,7 +577,14 @@ export const discordTrivia = async (
           transaction: t,
         });
         activity.unshift(failFindTriviaQuestion);
-        await message.channel.send({ embeds: [noTriviaQuestionFoundMessage(message, 'Trivia')] });
+        await message.channel.send({
+          embeds: [
+            noTriviaQuestionFoundMessage(
+              discordUserId,
+              'Trivia',
+            ),
+          ],
+        });
       } else {
         const timeDay = Number(cutNumberTime) * 24 * 60 * 60 * 1000;
         const timeHour = Number(cutNumberTime) * 60 * 60 * 1000;
@@ -571,7 +596,13 @@ export const discordTrivia = async (
           || (cutLastTimeLetter === 'm' && timeMinute > 172800000)
           || (cutLastTimeLetter === 's' && timeSecond > 172800000)
         ) {
-          await message.channel.send({ embeds: [maxTimeTriviaMessage(message)] });
+          await message.channel.send({
+            embeds: [
+              maxTimeTriviaMessage(
+                discordUserId,
+              ),
+            ],
+          });
           return;
         }
         let dateObj = await new Date().getTime();
@@ -665,7 +696,7 @@ export const discordTrivia = async (
               triviaMessageDiscord(
                 newTriviaCreate.id,
                 distance,
-                message.author.id,
+                discordUserId,
                 randomQuestion.question,
                 answerString,
                 amount,
@@ -741,7 +772,7 @@ export const discordTrivia = async (
                 triviaMessageDiscord(
                   newTrivia.id,
                   distance,
-                  message.author.id,
+                  discordUserId,
                   randomQuestion.question,
                   answerString,
                   amount,

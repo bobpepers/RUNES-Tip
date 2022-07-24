@@ -199,7 +199,11 @@ export const AfterTriviaSuccessMessage = (
   return result;
 };
 
-export const AfterReactDropSuccessMessage = (endReactDrop, amountEach, initiator) => {
+export const AfterReactDropSuccessMessage = (
+  endReactDrop,
+  amountEach,
+  initiator,
+) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(`Reactdrop #${endReactDrop.id}`)
@@ -224,33 +228,46 @@ export const discordLimitSpamMessage = (userId, myFunctionName) => {
   return result;
 };
 
-export const minimumTimeReactDropMessage = (message) => {
+export const minimumTimeReactDropMessage = (userId) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Reactdrop')
-    .setDescription(`Minimum time for reactdrop is 60 seconds (60s)`)
+    .setDescription(`<@${userId}>, Minimum time for reactdrop is 60 seconds (60s)`)
     .setTimestamp()
     .setFooter(footer);
 
   return result;
 };
 
-export const maxTimeTriviaMessage = (message) => {
+export const minimumTimeTriviaMessage = (userId) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Trivia')
-    .setDescription(`Maximum time is 2 days`)
+    .setDescription(`<@${userId}>, Minimum time for trivia is 30 seconds (30s)`)
     .setTimestamp()
     .setFooter(footer);
 
   return result;
 };
 
-export const maxTimeReactdropMessage = (message) => {
+export const maxTimeTriviaMessage = (
+  userId,
+) => {
+  const result = new EmbedBuilder()
+    .setColor(settings.bot.color)
+    .setTitle('Trivia')
+    .setDescription(`<@${userId}>Maximum time is 2 days`)
+    .setTimestamp()
+    .setFooter(footer);
+
+  return result;
+};
+
+export const maxTimeReactdropMessage = (userId) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Reactdrop')
-    .setDescription(`Maximum time is 2 days`)
+    .setDescription(`<@${userId}>Maximum time is 2 days`)
     .setTimestamp()
     .setFooter(footer);
 
@@ -816,66 +833,66 @@ export const dryFaucetMessage = () => {
   return result;
 };
 
-export const hurricaneMaxUserAmountMessage = (message) => {
+export const hurricaneMaxUserAmountMessage = (userId) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Hurricane')
-    .setDescription(`<@${message.author.id}>, Maximum user amount is 50`)
+    .setDescription(`<@${userId}>, Maximum user amount is 50`)
     .setTimestamp()
     .setFooter(footer);
 
   return result;
 };
 
-export const hurricaneInvalidUserAmount = (message) => {
+export const hurricaneInvalidUserAmount = (userId) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Hurricane')
-    .setDescription(`<@${message.author.id}>, Invalid amount of users`)
+    .setDescription(`<@${userId}>, Invalid amount of users`)
     .setTimestamp()
     .setFooter(footer);
 
   return result;
 };
 
-export const thunderstormMaxUserAmountMessage = (message) => {
+export const thunderstormMaxUserAmountMessage = (userId) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('ThunderStorm')
-    .setDescription(`<@${message.author.id}>, Maximum user amount is 50`)
+    .setDescription(`<@${userId}>, Maximum user amount is 50`)
     .setTimestamp()
     .setFooter(footer);
 
   return result;
 };
 
-export const thunderstormInvalidUserAmount = (message) => {
+export const thunderstormInvalidUserAmount = (userId) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('ThunderStorm')
-    .setDescription(`<@${message.author.id}>, Invalid amount of users`)
+    .setDescription(`<@${userId}>, Invalid amount of users`)
     .setTimestamp()
     .setFooter(footer);
 
   return result;
 };
 
-export const hurricaneUserZeroAmountMessage = (message) => {
+export const hurricaneUserZeroAmountMessage = (userId) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('Hurricane')
-    .setDescription(`<@${message.author.id}>, minimum amount of users to thunderstorm is 1`)
+    .setDescription(`<@${userId}>, minimum amount of users to thunderstorm is 1`)
     .setTimestamp()
     .setFooter(footer);
 
   return result;
 };
 
-export const thunderstormUserZeroAmountMessage = (message) => {
+export const thunderstormUserZeroAmountMessage = (userId) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle('ThunderStorm')
-    .setDescription(`<@${message.author.id}>, minimum amount of users to thunderstorm is 1`)
+    .setDescription(`<@${userId}>, minimum amount of users to thunderstorm is 1`)
     .setTimestamp()
     .setFooter(footer);
 
@@ -899,11 +916,11 @@ export const AfterThunderSuccess = (
   return result;
 };
 
-export const invalidPeopleAmountMessage = (message, title) => {
+export const invalidPeopleAmountMessage = (userId, title) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
-    .setDescription(`<@${message.author.id}>, Invalid amount of people to win ${title}`)
+    .setDescription(`<@${userId}>, Invalid amount of people to win ${title}`)
     .setTimestamp()
     .setFooter(footer);
 
@@ -924,22 +941,28 @@ export const invalidTimeMessage = (
   return result;
 };
 
-export const noTriviaQuestionFoundMessage = (message, title) => {
+export const noTriviaQuestionFoundMessage = (
+  userId,
+  title,
+) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
-    .setDescription(`<@${message.author.id}>, No trivia question found`)
+    .setDescription(`<@${userId}>, No trivia question found`)
     .setTimestamp()
     .setFooter(footer);
 
   return result;
 };
 
-export const invalidEmojiMessage = (message, title) => {
+export const invalidEmojiMessage = (
+  userId,
+  title,
+) => {
   const result = new EmbedBuilder()
     .setColor(settings.bot.color)
     .setTitle(title)
-    .setDescription(`<@${message.author.id}>, You used an invalid emoji`)
+    .setDescription(`<@${userId}>, You used an invalid emoji`)
     .setTimestamp()
     .setFooter(footer);
 

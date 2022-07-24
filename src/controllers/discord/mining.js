@@ -108,7 +108,7 @@ export const discordMining = async (
     } catch (e) {
       logger.error(`Error Discord: ${e}`);
     }
-    logger.error(`Error Discord Halving Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
+    // logger.error(`Error Discord Halving Requested by: ${message.author.id}-${message.author.username}#${message.author.discriminator} - ${err}`);
 
     await message.channel.send({
       embeds: [

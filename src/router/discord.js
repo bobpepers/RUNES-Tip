@@ -343,6 +343,47 @@ export const discordRouter = (
           });
         }
 
+        // Initiate Halving
+        if (settings.coin.halving.enabled) {
+          if (interaction.options.getSubcommand() === 'halving') {
+            const limited = await myRateLimiter(
+              discordClient,
+              interaction,
+              'discord',
+              'Halving',
+            );
+            if (limited) return;
+            await queue.add(async () => {
+              const task = await discordHalving(
+                interaction,
+                settings.coin.halving,
+                io,
+              );
+            });
+          }
+        }
+        // Initiate Mining
+        if (settings.coin.name === 'Pirate') {
+          console.log('mining 1');
+          if (interaction.options.getSubcommand() === 'mining') {
+            console.log('mining 2');
+            const limited = await myRateLimiter(
+              discordClient,
+              interaction,
+              'discord',
+              'Mining',
+            );
+            if (limited) return;
+            await queue.add(async () => {
+              const task = await discordMining(
+                interaction,
+                settings.coin.halving,
+                io,
+              );
+            });
+          }
+        }
+
         // Initiate Flood
         if (interaction.options.getSubcommand() === 'flood') {
           const limited = await myRateLimiter(
@@ -375,7 +416,8 @@ export const discordRouter = (
           filteredMessageDiscord[0] = settings.bot.command.discord.normal;
           filteredMessageDiscord[1] = 'flood';
           filteredMessageDiscord[2] = interaction.options.getString('amount');
-          filteredMessageDiscord[3] = interaction.options.getString('role');
+          filteredMessageDiscord[3] = `<@&${interaction.options.getRole('role').id}>`;
+          console.log(filteredMessageDiscord);
           await executeTipFunction(
             discordFlood,
             queue,
@@ -391,6 +433,7 @@ export const discordRouter = (
           );
         }
 
+        // Initiate Rain
         if (interaction.options.getSubcommand() === 'rain') {
           const limited = await myRateLimiter(
             discordClient,
@@ -422,7 +465,7 @@ export const discordRouter = (
           filteredMessageDiscord[0] = settings.bot.command.discord.normal;
           filteredMessageDiscord[1] = 'rain';
           filteredMessageDiscord[2] = interaction.options.getString('amount');
-          filteredMessageDiscord[3] = interaction.options.getString('role');
+          filteredMessageDiscord[3] = `<@&${interaction.options.getRole('role').id}>`;
 
           await executeTipFunction(
             discordRain,
@@ -438,7 +481,7 @@ export const discordRouter = (
             faucetSetting,
           );
         }
-
+        // Initiate Soak
         if (interaction.options.getSubcommand() === 'soak') {
           const limited = await myRateLimiter(
             discordClient,
@@ -470,7 +513,7 @@ export const discordRouter = (
           filteredMessageDiscord[0] = settings.bot.command.discord.normal;
           filteredMessageDiscord[1] = 'soak';
           filteredMessageDiscord[2] = interaction.options.getString('amount');
-          filteredMessageDiscord[3] = interaction.options.getString('role');
+          filteredMessageDiscord[3] = `<@&${interaction.options.getRole('role').id}>`;
 
           await executeTipFunction(
             discordSoak,
@@ -486,6 +529,7 @@ export const discordRouter = (
             faucetSetting,
           );
         }
+        // Initiate Thunder
         if (interaction.options.getSubcommand() === 'thunder') {
           const limited = await myRateLimiter(
             discordClient,
@@ -517,7 +561,7 @@ export const discordRouter = (
           filteredMessageDiscord[0] = settings.bot.command.discord.normal;
           filteredMessageDiscord[1] = 'thunder';
           filteredMessageDiscord[2] = interaction.options.getString('amount');
-          filteredMessageDiscord[3] = interaction.options.getString('role');
+          filteredMessageDiscord[3] = `<@&${interaction.options.getRole('role').id}>`;
 
           await executeTipFunction(
             discordThunder,
@@ -533,14 +577,266 @@ export const discordRouter = (
             faucetSetting,
           );
         }
+        // Initiate Sleet
         if (interaction.options.getSubcommand() === 'sleet') {
-        }
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'Sleet',
+          );
+          if (limited) return;
 
-        // Complete command edit message
-        await interaction.editReply('Success').catch((e) => {
-          console.log(e);
-        });
+          await queue.add(async () => {
+            disallow = await disallowDirectMessage(
+              interaction,
+              lastSeenDiscordTask,
+              'sleet',
+              io,
+            );
+          });
+          if (disallow) return;
+
+          const setting = await discordFeatureSettings(
+            interaction,
+            'sleet',
+            groupTaskId,
+            channelTaskId,
+          );
+          if (!setting) return;
+
+          const filteredMessageDiscord = [];
+          filteredMessageDiscord[0] = settings.bot.command.discord.normal;
+          filteredMessageDiscord[1] = 'sleet';
+          filteredMessageDiscord[2] = interaction.options.getString('amount');
+          filteredMessageDiscord[3] = interaction.options.getString('time');
+          filteredMessageDiscord[4] = `<@&${interaction.options.getRole('role').id}>`;
+
+          await executeTipFunction(
+            discordSleet,
+            queue,
+            filteredMessageDiscord[2],
+            discordClient,
+            interaction,
+            filteredMessageDiscord,
+            io,
+            groupTask,
+            channelTask,
+            setting,
+            faucetSetting,
+          );
+        }
+        // Initiate Hurricane
+        if (interaction.options.getSubcommand() === 'hurricane') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'Hurricane',
+          );
+          if (limited) return;
+
+          await queue.add(async () => {
+            disallow = await disallowDirectMessage(
+              interaction,
+              lastSeenDiscordTask,
+              'hurricane',
+              io,
+            );
+          });
+          if (disallow) return;
+
+          const setting = await discordFeatureSettings(
+            interaction,
+            'hurricane',
+            groupTaskId,
+            channelTaskId,
+          );
+          if (!setting) return;
+
+          const filteredMessageDiscord = [];
+          filteredMessageDiscord[0] = settings.bot.command.discord.normal;
+          filteredMessageDiscord[1] = 'hurricane';
+          filteredMessageDiscord[2] = interaction.options.getString('people');
+          filteredMessageDiscord[3] = interaction.options.getString('amount');
+          filteredMessageDiscord[4] = `<@&${interaction.options.getRole('role').id}>`;
+
+          await executeTipFunction(
+            discordHurricane,
+            queue,
+            filteredMessageDiscord[3],
+            discordClient,
+            interaction,
+            filteredMessageDiscord,
+            io,
+            groupTask,
+            channelTask,
+            setting,
+            faucetSetting,
+          );
+        }
+        // Initiate Thunderstorm
+        if (interaction.options.getSubcommand() === 'thunderstorm') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'ThunderStorm',
+          );
+          if (limited) return;
+
+          await queue.add(async () => {
+            disallow = await disallowDirectMessage(
+              interaction,
+              lastSeenDiscordTask,
+              'thunderstorm',
+              io,
+            );
+          });
+          if (disallow) return;
+
+          const setting = await discordFeatureSettings(
+            interaction,
+            'thunderstorm',
+            groupTaskId,
+            channelTaskId,
+          );
+          if (!setting) return;
+
+          const filteredMessageDiscord = [];
+          filteredMessageDiscord[0] = settings.bot.command.discord.normal;
+          filteredMessageDiscord[1] = 'thunderstorm';
+          filteredMessageDiscord[2] = interaction.options.getString('people');
+          filteredMessageDiscord[3] = interaction.options.getString('amount');
+          filteredMessageDiscord[4] = `<@&${interaction.options.getRole('role').id}>`;
+
+          await executeTipFunction(
+            discordThunderStorm,
+            queue,
+            filteredMessageDiscord[3],
+            discordClient,
+            interaction,
+            filteredMessageDiscord,
+            io,
+            groupTask,
+            channelTask,
+            setting,
+            faucetSetting,
+          );
+        }
+        // Initiate Trivia
+        if (interaction.options.getSubcommand() === 'trivia') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'Trivia',
+          );
+          if (limited) return;
+
+          await queue.add(async () => {
+            disallow = await disallowDirectMessage(
+              interaction,
+              lastSeenDiscordTask,
+              'trivia',
+              io,
+            );
+          });
+          if (disallow) return;
+
+          const setting = await discordFeatureSettings(
+            interaction,
+            'trivia',
+            groupTaskId,
+            channelTaskId,
+          );
+          if (!setting) return;
+
+          const filteredMessageDiscord = [];
+          filteredMessageDiscord[0] = settings.bot.command.discord.normal;
+          filteredMessageDiscord[1] = 'trivia';
+          filteredMessageDiscord[2] = interaction.options.getString('amount');
+          filteredMessageDiscord[3] = interaction.options.getString('people');
+          filteredMessageDiscord[4] = interaction.options.getString('time');
+
+          await executeTipFunction(
+            discordTrivia,
+            queue,
+            filteredMessageDiscord[2],
+            discordClient,
+            interaction,
+            filteredMessageDiscord,
+            io,
+            groupTask,
+            channelTask,
+            setting,
+            faucetSetting,
+          );
+        }
+        // Initiate Reactdrop
+        if (interaction.options.getSubcommand() === 'reactdrop') {
+          const limited = await myRateLimiter(
+            discordClient,
+            interaction,
+            'discord',
+            'ReactDrop',
+          );
+          if (limited) return;
+
+          await queue.add(async () => {
+            disallow = await disallowDirectMessage(
+              interaction,
+              lastSeenDiscordTask,
+              'reactdrop',
+              io,
+            );
+          });
+          if (disallow) return;
+
+          const setting = await discordFeatureSettings(
+            interaction,
+            'reactdrop',
+            groupTaskId,
+            channelTaskId,
+          );
+          if (!setting) return;
+
+          const filteredMessageDiscord = [];
+          filteredMessageDiscord[0] = settings.bot.command.discord.normal;
+          filteredMessageDiscord[1] = 'reactdrop';
+          filteredMessageDiscord[2] = interaction.options.getString('amount');
+          filteredMessageDiscord[3] = interaction.options.getString('time');
+          filteredMessageDiscord[4] = interaction.options.getString('emoji');
+
+          await executeTipFunction(
+            discordReactDrop,
+            queue,
+            filteredMessageDiscord[2],
+            discordClient,
+            interaction,
+            filteredMessageDiscord,
+            io,
+            groupTask,
+            channelTask,
+            setting,
+            faucetSetting,
+          );
+        }
+        // Initiate VoiceRain
+        if (interaction.options.getSubcommand() === 'voicerain') {
+        }
+        // Initiate Withdraw
+        if (interaction.options.getSubcommand() === 'withdraw') {
+        }
+        // Initiate Tipping
+        if (interaction.options.getSubcommand() === 'tip') {
+        }
       }
+
+      // Complete command edit message
+      await interaction.editReply('Success').catch((e) => {
+        console.log(e);
+      });
 
       // If the interaction is a button
       if (interaction.isButton()) {
@@ -1214,7 +1510,7 @@ export const discordRouter = (
       await executeTipFunction(
         discordThunderStorm,
         queue,
-        filteredMessageDiscord[2],
+        filteredMessageDiscord[3],
         discordClient,
         message,
         filteredMessageDiscord,
@@ -1256,7 +1552,7 @@ export const discordRouter = (
       await executeTipFunction(
         discordHurricane,
         queue,
-        filteredMessageDiscord[2],
+        filteredMessageDiscord[3],
         discordClient,
         message,
         filteredMessageDiscord,

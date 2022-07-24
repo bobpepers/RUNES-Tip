@@ -24,6 +24,7 @@ export const discordSleet = async (
   faucetSetting,
   queue,
 ) => {
+  // filteredMessage[4] <-- optional role, this still needs to be implemented (filter users by role if optional role exists)
   const activity = [];
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
@@ -113,7 +114,7 @@ export const discordSleet = async (
       await message.channel.send({
         embeds: [
           invalidTimeMessage(
-            message,
+            user.user_id.replace('discord-', ''),
             'Sleet',
           ),
         ],
@@ -196,7 +197,7 @@ export const discordSleet = async (
       await message.channel.send({
         embeds: [
           notEnoughActiveUsersMessage(
-            message,
+            user.user_id.replace('discord-', ''),
             'Sleet',
           ),
         ],
@@ -339,7 +340,7 @@ export const discordSleet = async (
       await message.channel.send({
         embeds: [
           AfterSuccessMessage(
-            message,
+            user.user_id.replace('discord-', ''),
             sleetRecord.id,
             amount,
             usersToRain,

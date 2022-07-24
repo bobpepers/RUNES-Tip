@@ -31,37 +31,6 @@ export const discordThunderStorm = async (
   await db.sequelize.transaction({
     isolationLevel: Transaction.ISOLATION_LEVELS.SERIALIZABLE,
   }, async (t) => {
-    if (Number(filteredMessage[2]) > 50) {
-      await message.channel.send({
-        embeds: [
-          thunderstormMaxUserAmountMessage(
-            message,
-          ),
-        ],
-      });
-      return;
-    }
-    if (Number(filteredMessage[2]) % 1 !== 0) {
-      await message.channel.send({
-        embeds: [
-          thunderstormInvalidUserAmount(
-            message,
-          ),
-        ],
-      });
-      return;
-    }
-    if (Number(filteredMessage[2]) <= 0) {
-      await message.channel.send({
-        embeds: [
-          thunderstormUserZeroAmountMessage(
-            message,
-          ),
-        ],
-      });
-      return;
-    }
-
     const [
       user,
       userActivity,
@@ -74,6 +43,37 @@ export const discordThunderStorm = async (
       activity.unshift(userActivity);
     }
     if (!user) return;
+
+    if (Number(filteredMessage[2]) > 50) {
+      await message.channel.send({
+        embeds: [
+          thunderstormMaxUserAmountMessage(
+            user.user_id.replace('discord-', ''),
+          ),
+        ],
+      });
+      return;
+    }
+    if (Number(filteredMessage[2]) % 1 !== 0) {
+      await message.channel.send({
+        embeds: [
+          thunderstormInvalidUserAmount(
+            user.user_id.replace('discord-', ''),
+          ),
+        ],
+      });
+      return;
+    }
+    if (Number(filteredMessage[2]) <= 0) {
+      await message.channel.send({
+        embeds: [
+          thunderstormUserZeroAmountMessage(
+            user.user_id.replace('discord-', ''),
+          ),
+        ],
+      });
+      return;
+    }
 
     const [
       validAmount,
@@ -94,14 +94,17 @@ export const discordThunderStorm = async (
 
     const members = await discordClient.guilds.cache.get(message.guildId).members.fetch({ withPresences: true });
     const onlineMembers = members.filter((member) => member && member.presence && member.presence.status && member.presence.status === "online");
-
-    const preWithoutBots = await mapMembers(
+    const [
+      preWithoutBots,
+      optionalRole,
+    ] = await mapMembers(
       message,
       t,
       filteredMessage[4],
       onlineMembers,
       setting,
     );
+
     const withoutBots = _.sampleSize(preWithoutBots, Number(filteredMessage[2]));
 
     if (withoutBots.length < 1) {
@@ -116,7 +119,7 @@ export const discordThunderStorm = async (
       await message.channel.send({
         embeds: [
           notEnoughActiveUsersMessage(
-            message,
+            user.user_id.replace('discord-', ''),
             'ThunderStorm',
           ),
         ],
@@ -260,13 +263,14 @@ export const discordThunderStorm = async (
     await message.channel.send({
       embeds: [
         AfterSuccessMessage(
-          message,
+          user.user_id.replace('discord-', ''),
           thunderstormRecord.id,
           amount,
           withoutBots,
           amountPerUser,
           '⛈ Thunderstorm ⛈',
           'thunderstormed',
+          optionalRole,
         ),
       ],
     });

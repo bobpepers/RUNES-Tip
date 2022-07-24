@@ -530,6 +530,8 @@ export const discordReactDrop = async (
       return;
     }
 
+    const discordUserId = user.user_id.replace('discord-', '');
+
     // Convert Message time to MS
     let textTime = '5m';
     if (filteredMessage[3]) {
@@ -561,7 +563,7 @@ export const discordReactDrop = async (
       await message.channel.send({
         embeds: [
           invalidTimeMessage(
-            message,
+            discordUserId,
             'Reactdrop',
           ),
         ],
@@ -578,7 +580,7 @@ export const discordReactDrop = async (
       await message.channel.send({
         embeds: [
           minimumTimeReactDropMessage(
-            message,
+            discordUserId,
           ),
         ],
       });
@@ -608,7 +610,7 @@ export const discordReactDrop = async (
         await message.channel.send({
           embeds: [
             invalidEmojiMessage(
-              message,
+              discordUserId,
               'Reactdrop',
             ),
           ],
@@ -624,7 +626,13 @@ export const discordReactDrop = async (
           || (cutLastTimeLetter === 'm' && timeMinute > 172800000)
           || (cutLastTimeLetter === 's' && timeSecond > 172800000)
         ) {
-          await message.channel.send({ embeds: [maxTimeReactdropMessage(message)] });
+          await message.channel.send({
+            embeds: [
+              maxTimeReactdropMessage(
+                discordUserId,
+              ),
+            ],
+          });
           return;
         }
         let dateObj = await new Date().getTime();
@@ -710,7 +718,7 @@ export const discordReactDrop = async (
               reactDropMessage(
                 newReactDrop.id,
                 distance,
-                message.author.id,
+                discordUserId,
                 filteredMessage[4],
                 amount,
               ),
@@ -779,7 +787,7 @@ export const discordReactDrop = async (
                 reactDropMessage(
                   newUpdatedReactDrop.id,
                   distance,
-                  message.author.id,
+                  discordUserId,
                   filteredMessage[4],
                   amount,
                 ),
